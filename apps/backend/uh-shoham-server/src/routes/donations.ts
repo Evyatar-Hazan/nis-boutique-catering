@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { DonationController } from '../controllers/DonationController';
 
-const router = Router();
+const router: Router = Router();
 
 router.post('/', DonationController.createDonation);
 router.get('/', DonationController.getDonations);

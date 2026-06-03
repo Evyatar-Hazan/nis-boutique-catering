@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { AuthService } from '../services/AuthService';
 
-const router = Router();
+const router: Router = Router();
 
 // Google OAuth verification (refactored: expect email/name/picture)
 router.post('/google-verify', async (req: Request, res: Response) => {

@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction } from 'express';
+import express, { Request, Response, NextFunction, Express } from 'express';
 import cors from 'cors';
 import { ApiResponse } from '@monorepo/shared-types';
 import { formatTime } from '@monorepo/shared-utils';
@@ -10,7 +10,7 @@ import contactRouter from './routes/contact';
 import authRouter from './routes/auth';
 import adminRouter from './routes/admin';
 
-const app = express();
+const app: Express = express();
 
 // CORS configuration - must be before other middleware
 const corsOptions = {

@@ -2,7 +2,7 @@ import { Router, Response, Request } from 'express';
 import { ContactController } from '../controllers/ContactController';
 import prisma from '../db/prisma';
 
-const router = Router();
+const router: Router = Router();
 
 router.post('/', ContactController.submitContactMessage);
 router.get('/messages', ContactController.getContactMessages);

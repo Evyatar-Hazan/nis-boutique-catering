@@ -4,7 +4,7 @@ import { AdminService } from '../services/AdminService';
 import { CloudinaryService } from '../services/CloudinaryService';
 import { authMiddleware, AuthRequest } from '../middleware/auth';
 
-const router = Router();
+const router: Router = Router();
 
 // Configure multer for file uploads
 const upload = multer({
