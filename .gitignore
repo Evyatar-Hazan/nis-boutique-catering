@@ -37,3 +37,6 @@ coverage/
 
 # OS
 *.log
+# Prevent nested .git folders from being committed
+apps/**/.git
+apps/**/.git/
