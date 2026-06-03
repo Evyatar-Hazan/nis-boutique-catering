@@ -1,7 +1,7 @@
-import nodemailer from 'nodemailer';
+import * as nodemailer from 'nodemailer';
 
 export class EmailService {
-  private static transporter = nodemailer.createTransport({
+  private static transporter = (nodemailer as any).createTransport({
     // במציאות תשתמש בספק מייל אמיתי כמו Gmail, SendGrid וכו'
     host: process.env.SMTP_HOST || 'localhost',
     port: parseInt(process.env.SMTP_PORT || '587'),
