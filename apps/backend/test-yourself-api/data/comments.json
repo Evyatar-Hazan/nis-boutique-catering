@@ -1,0 +1,16 @@
+[
+  {
+    "id": "c1",
+    "postId": "p1",
+    "authorId": "u2",
+    "body": "Congrats on the first post!",
+    "createdAt": "2024-01-01T11:00:00.000Z"
+  },
+  {
+    "id": "c2",
+    "postId": "p2",
+    "authorId": "u1",
+    "body": "Great tip, thanks!",
+    "createdAt": "2024-01-02T09:00:00.000Z"
+  }
+]

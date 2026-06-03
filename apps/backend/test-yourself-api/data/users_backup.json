@@ -1,0 +1,26 @@
+[
+  {
+    "id": "u1",
+    "name": "Alice Cohen",
+    "username": "alice",
+    "avatarUrl": "/avataras/alice.jpg"
+  },
+  {
+    "id": "u2",
+    "name": "Ben Levi",
+    "username": "ben",
+    "avatarUrl": "/avataras/ben.jpg"
+  },
+  {
+    "id": "u3",
+    "name": "Dana Shalev",
+    "username": "dana",
+    "avatarUrl": "/avataras/dana.jpg"
+  },
+  {
+    "id": "u4",
+    "name": "Eli Bar",
+    "username": "eli",
+    "avatarUrl": "/avataras/eli.jpg"
+  }
+]

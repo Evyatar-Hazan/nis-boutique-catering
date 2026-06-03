@@ -1,0 +1,184 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  WORKER
+  VOLUNTEER
+  CLIENT
+}
+
+enum LoanStatus {
+  ACTIVE
+  RETURNED
+  OVERDUE
+  LOST
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  password     String
+  firstName    String
+  lastName     String
+  phone        String?
+  address      String?
+  role         UserRole  @default(CLIENT)
+  isActive     Boolean   @default(true)
+  refreshToken String?
+  lastLogin    DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  // Relations
+  userPermissions   UserPermission[]
+  loans             Loan[]
+  volunteerActivity VolunteerActivity[]
+  auditLogs         AuditLog[]
+  sessions          Session[]
+
+  @@map("users")
+}
+
+model Permission {
+  id          String @id @default(cuid())
+  name        String @unique
+  description String?
+  createdAt   DateTime @default(now())
+
+  // Relations
+  userPermissions UserPermission[]
+
+  @@map("permissions")
+}
+
+model UserPermission {
+  id           String     @id @default(cuid())
+  userId       String
+  permissionId String
+  grantedAt    DateTime   @default(now())
+  grantedBy    String?
+
+  // Relations
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, permissionId])
+  @@map("user_permissions")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  userId       String
+  refreshToken String   @unique
+  isActive     Boolean  @default(true)
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model Product {
+  id           String   @id @default(cuid())
+  name         String
+  description  String?
+  category     String
+  manufacturer String?
+  model        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  instances ProductInstance[]
+
+  @@map("products")
+}
+
+model ProductInstance {
+  id          String   @id @default(cuid())
+  productId   String
+  barcode     String   @unique
+  serialNumber String?
+  condition   String   @default("good")
+  isAvailable Boolean  @default(true)
+  location    String?
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  loans   Loan[]
+
+  @@map("product_instances")
+}
+
+model Loan {
+  id                String      @id @default(cuid())
+  userId            String
+  productInstanceId String
+  status            LoanStatus  @default(ACTIVE)
+  loanDate          DateTime    @default(now())
+  expectedReturnDate DateTime?
+  actualReturnDate  DateTime?
+  notes             String?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  // Relations
+  user            User            @relation(fields: [userId], references: [id])
+  productInstance ProductInstance @relation(fields: [productInstanceId], references: [id])
+
+  @@map("loans")
+}
+
+model VolunteerActivity {
+  id          String   @id @default(cuid())
+  volunteerId String
+  activityType String
+  description String
+  hours       Float
+  date        DateTime
+  createdAt   DateTime @default(now())
+
+  // Relations
+  volunteer User @relation(fields: [volunteerId], references: [id])
+
+  @@map("volunteer_activities")
+}
+
+model AuditLog {
+  id            String   @id @default(cuid())
+  action        String
+  entityType    String
+  entityId      String?
+  userId        String?
+  ipAddress     String?
+  userAgent     String?
+  description   String
+  metadata      Json?
+  endpoint      String?
+  httpMethod    String?
+  statusCode    Int?
+  executionTime Int?
+  errorMessage  String?
+  createdAt     DateTime @default(now())
+
+  // Relations
+  user User? @relation(fields: [userId], references: [id])
+
+  @@map("audit_logs")
+}

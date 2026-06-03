@@ -1,0 +1,16 @@
+[
+  {
+    "id": "p1",
+    "authorId": "u1",
+    "title": "Welcome to Test Social",
+    "body": "This is our first post!",
+    "createdAt": "2024-01-01T10:00:00.000Z"
+  },
+  {
+    "id": "p2",
+    "authorId": "u2",
+    "title": "Study Tips",
+    "body": "Use spaced repetition for better retention.",
+    "createdAt": "2024-01-02T08:30:00.000Z"
+  }
+]

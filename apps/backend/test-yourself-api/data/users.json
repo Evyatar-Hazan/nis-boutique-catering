@@ -1,0 +1,101 @@
+[
+  {
+    "id": "u1",
+    "name": "Alice Cohen",
+    "email": "alice@example.com",
+    "password": "$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LeX6NYA3h.YJy8fq6",
+    "avatarUrl": "/avataras/alice.jpg",
+    "isEmailVerified": true,
+    "createdAt": "2024-01-15T10:30:00Z",
+    "updatedAt": "2025-10-15T11:44:56.134Z",
+    "followers": [
+      "1760013747554"
+    ]
+  },
+  {
+    "id": "u2",
+    "name": "Ben Levi",
+    "email": "ben@example.com",
+    "password": "$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LeX6NYA3h.YJy8fq6",
+    "avatarUrl": "/avataras/ben.jpg",
+    "isEmailVerified": true,
+    "createdAt": "2024-01-20T14:15:00Z",
+    "updatedAt": "2025-10-15T11:41:41.740Z",
+    "followers": []
+  },
+  {
+    "id": "u3",
+    "name": "Dana Shalev",
+    "email": "dana@example.com",
+    "password": "$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LeX6NYA3h.YJy8fq6",
+    "avatarUrl": "/avataras/dana.jpg",
+    "isEmailVerified": true,
+    "createdAt": "2024-02-01T09:45:00Z",
+    "updatedAt": "2024-02-01T09:45:00Z"
+  },
+  {
+    "id": "u4",
+    "name": "Eli Bar",
+    "email": "eli@example.com",
+    "password": "$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LeX6NYA3h.YJy8fq6",
+    "avatarUrl": "/avataras/eli.jpg",
+    "isEmailVerified": true,
+    "createdAt": "2024-02-10T16:20:00Z",
+    "updatedAt": "2024-02-10T16:20:00Z"
+  },
+  {
+    "id": "1760013081353",
+    "name": "Test User",
+    "email": "test@example.com",
+    "password": "$2b$12$5iogOXeC3g5gUsYCwppI1epTrUXXvczsJZzYTl2FMyyTDpX0AIW5u",
+    "isEmailVerified": false,
+    "emailVerificationToken": "28b7df77196eb3f80530c4294db6ca49ccd4321d62b63fd641e9f4a157a9d6aa",
+    "createdAt": "2025-10-09T12:31:21.353Z",
+    "updatedAt": "2025-10-09T12:31:21.353Z"
+  },
+  {
+    "id": "1760013178206",
+    "name": "New Test User",
+    "email": "newuser@example.com",
+    "password": "$2b$12$naZhC5j49XfwAj0hA8Cqz.3DmDQ/9Qdtbtgue/JlM.fXXRVsjR9M2",
+    "isEmailVerified": true,
+    "createdAt": "2025-10-09T12:32:58.206Z",
+    "updatedAt": "2025-10-09T12:33:31.426Z",
+    "lastLoginAt": "2025-10-09T12:33:09.310Z"
+  },
+  {
+    "id": "1760013747554",
+    "name": "HAZAN EVYATAR YOSEF",
+    "email": "evyatarhazan3.14@gmail.com",
+    "password": "$2b$12$ogx6QHa75eDxzYXGELW...uakjA6aVqz7T6BzNpgv.jgbdI0QwxMa",
+    "isEmailVerified": false,
+    "emailVerificationToken": "349810585ab38ce906d7339a5884515e0c5ea35d25830b711cc53b9649034200",
+    "createdAt": "2025-10-09T12:42:27.554Z",
+    "updatedAt": "2025-10-15T11:44:56.134Z",
+    "following": [
+      "u1"
+    ]
+  },
+  {
+    "id": "1760015494059",
+    "name": "EVYATAR",
+    "email": "7127547@gmail.com",
+    "password": "$2b$12$9UcCQovCormA6tO5NTWzHeUGIZvC7pJLLlLN4LL5aCrZVSOlUPs32",
+    "isEmailVerified": false,
+    "emailVerificationToken": "dbda604197a1203ba411a6175ad15a05fcf70aeb7d9642baa16e9f309b60b25d",
+    "createdAt": "2025-10-09T13:11:34.059Z",
+    "updatedAt": "2025-10-09T13:11:34.059Z"
+  },
+  {
+    "id": "1760527358904",
+    "name": "Smoke User",
+    "email": "smoke+1760527358@example.com",
+    "password": "$2b$12$kbdMBHJ6Tk1o9zPHttKx3Or1n.pQ5NHhQ9LVywGSqWDUQVPjDBiEO",
+    "isEmailVerified": false,
+    "emailVerificationToken": "21cdb39e4359c5aa6c77ab2280db236e62d03188039418d9e0880c625ed69793",
+    "createdAt": "2025-10-15T11:22:38.904Z",
+    "updatedAt": "2025-10-15T11:41:41.740Z",
+    "followers": [],
+    "following": []
+  }
+]

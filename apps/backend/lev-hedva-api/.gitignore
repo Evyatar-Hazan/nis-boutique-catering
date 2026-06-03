@@ -1,0 +1,80 @@
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Build outputs
+dist/
+build/
+*.tsbuildinfo
+
+# Environment files - חשוב! אל תעלה קבצי .env ל-Git
+.env
+.env.local
+.env.production
+.env.test
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# Coverage
+coverage/
+.nyc_output/
+*.lcov
+
+# IDE
+# .vscode/ מוערם - נשמור settings.json ו-extensions.json לשיתוף
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+*.iml
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary
+*.tmp
+*.temp
+tmp/
+temp/
+
+# Database
+*.db
+*.db-journal
+*.sqlite
+
+# Prisma - אל תעלה את קבצי ה-migrations בשלב זה (רק אם זה production)
+# prisma/migrations/ - השאר מוערם כדי שה-migrations יעלו ל-Git
+
+# Docker
+.docker/
+docker-compose.override.yml
+
+# Tests
+test-results/
+playwright-report/
+
+# Cache
+.cache/
+.eslintcache
+.node_repl_history
+
+# Husky
+.husky/_
+
+# Debug
+.env.debug

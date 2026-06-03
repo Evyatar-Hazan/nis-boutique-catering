@@ -1,0 +1,133 @@
+[
+  {
+    "id": "tc1",
+    "testId": "t1",
+    "authorId": "u2",
+    "body": "מבחן מעולה! המורה שלנו עשה כזה השבוע",
+    "createdAt": "2024-02-01T13:00:00.000Z",
+    "likes": [
+      "u1",
+      "u3"
+    ],
+    "parentId": null,
+    "replies": [
+      {
+        "id": "tc2",
+        "testId": "t1",
+        "authorId": "u1",
+        "body": "תודה! השקעתי הרבה זמן בהכנתו",
+        "createdAt": "2024-02-01T13:15:00.000Z",
+        "likes": [
+          "u2"
+        ],
+        "parentId": "tc1",
+        "replies": [
+          {
+            "id": "tc3",
+            "testId": "t1",
+            "authorId": "u3",
+            "body": "באמת נראה שהיה עבודה רבה! כל הכבוד",
+            "createdAt": "2024-02-01T13:30:00.000Z",
+            "likes": [
+              "u1",
+              "u2"
+            ],
+            "parentId": "tc2",
+            "replies": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "tc4",
+    "testId": "t1",
+    "authorId": "u4",
+    "body": "השאלות די קשות, אבל זה מאתגר בצורה טובה",
+    "createdAt": "2024-02-01T14:00:00.000Z",
+    "likes": [
+      "u1",
+      "u2",
+      "u3"
+    ],
+    "parentId": null,
+    "replies": []
+  },
+  {
+    "id": "tc5",
+    "testId": "t2",
+    "authorId": "u1",
+    "body": "מישהו יכול להסביר את השאלה על ההיסטוריה?",
+    "createdAt": "2024-02-02T10:00:00.000Z",
+    "likes": [],
+    "parentId": null,
+    "replies": [
+      {
+        "id": "tc6",
+        "testId": "t2",
+        "authorId": "u3",
+        "body": "השאלה מתייחסת למלחמת העולם השנייה, צריך לזכור את התאריכים המרכזיים",
+        "createdAt": "2024-02-02T10:15:00.000Z",
+        "likes": [
+          "u1",
+          "u4"
+        ],
+        "parentId": "tc5",
+        "replies": [
+          {
+            "id": "tc7",
+            "testId": "t2",
+            "authorId": "u1",
+            "body": "אה, עכשיו אני מבין! תודה רבה",
+            "createdAt": "2024-02-02T10:20:00.000Z",
+            "likes": [
+              "u3"
+            ],
+            "parentId": "tc6",
+            "replies": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "tc1760006159072",
+    "testId": "t2",
+    "authorId": "u1",
+    "body": "dv",
+    "createdAt": "2025-10-09T10:35:59.072Z",
+    "likes": [],
+    "parentId": null,
+    "replies": []
+  },
+  {
+    "id": "tc1760009771827",
+    "testId": "t5",
+    "authorId": "u1",
+    "body": "fsdsdf",
+    "createdAt": "2025-10-09T11:36:11.827Z",
+    "likes": [],
+    "parentId": null,
+    "replies": []
+  },
+  {
+    "id": "tc1760009779526",
+    "testId": "test_1759953062763_nz6x290",
+    "authorId": "u1",
+    "body": "ffffadf",
+    "createdAt": "2025-10-09T11:36:19.526Z",
+    "likes": [],
+    "parentId": null,
+    "replies": []
+  },
+  {
+    "id": "tc1760100697772",
+    "testId": "undefined",
+    "authorId": "u1",
+    "body": "dcvdad",
+    "createdAt": "2025-10-10T12:51:37.772Z",
+    "likes": [],
+    "parentId": null,
+    "replies": []
+  }
+]

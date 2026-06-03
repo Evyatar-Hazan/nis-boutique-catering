@@ -1,0 +1,2612 @@
+[
+  {
+    "id": "t1",
+    "ownerId": "u1",
+    "subject": "Math",
+    "score": 95,
+    "takenAt": "2024-02-01T12:00:00.000Z",
+    "questionsCount": 10,
+    "respondentsCount": 15,
+    "averageScore": 88.4,
+    "averageCorrect": 7.5,
+    "likes": [
+      "u2",
+      "u3",
+      "u4",
+      "u1"
+    ],
+    "questions": [
+      {
+        "question": "מהו הערך של 2 + 2?",
+        "options": [
+          "3",
+          "4",
+          "5",
+          "6"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "question": "מהי הנגזרת של x^2?",
+        "options": [
+          "2x",
+          "x",
+          "x^2",
+          "2"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו שטח ריבוע שצלעו 3?",
+        "options": [
+          "6",
+          "9",
+          "12",
+          "3"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "question": "מהו המספר הראשוני הבא אחרי 7?",
+        "options": [
+          "9",
+          "10",
+          "11",
+          "13"
+        ],
+        "correctIndex": 2
+      },
+      {
+        "question": "מהו הערך של 5 * 6?",
+        "options": [
+          "30",
+          "11",
+          "56",
+          "25"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהי תוצאת 12 / 4?",
+        "options": [
+          "2",
+          "3",
+          "4",
+          "6"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "question": "מהו הערך של 10 - 7?",
+        "options": [
+          "2",
+          "3",
+          "4",
+          "5"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "question": "מהו שטח מלבן שצלעותיו 2 ו-5?",
+        "options": [
+          "7",
+          "10",
+          "12",
+          "5"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "question": "מהו הערך של 3^2?",
+        "options": [
+          "6",
+          "9",
+          "12",
+          "3"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "question": "מהו המספר הזוגי הראשון?",
+        "options": [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        "correctIndex": 2
+      }
+    ]
+  },
+  {
+    "id": "t2",
+    "ownerId": "u2",
+    "subject": "Physics",
+    "score": 87,
+    "takenAt": "2024-02-05T09:15:00.000Z",
+    "questionsCount": 8,
+    "respondentsCount": 20,
+    "averageScore": 82.5,
+    "averageCorrect": 6.2,
+    "likes": [
+      "u1",
+      "u3"
+    ],
+    "questions": [
+      {
+        "question": "מהי יחידת המידה של כוח?",
+        "options": [
+          "ניוטון",
+          "ג'ול",
+          "ואט",
+          "קילוגרם"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהי מהירות האור?",
+        "options": [
+          "300,000 קמ\"ש",
+          "150,000 קמ\"ש",
+          "100,000 קמ\"ש",
+          "1,000 קמ\"ש"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהי יחידת המידה של אנרגיה?",
+        "options": [
+          "ניוטון",
+          "ג'ול",
+          "ואט",
+          "קילוגרם"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "question": "מהו חוק התנועה הראשון של ניוטון?",
+        "options": [
+          "חוק ההתמדה",
+          "חוק הכבידה",
+          "חוק האינרציה",
+          "חוק המהירות"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהי יחידת המידה של עבודה?",
+        "options": [
+          "ג'ול",
+          "ניוטון",
+          "ואט",
+          "קילוגרם"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו חוק שימור האנרגיה?",
+        "options": [
+          "אנרגיה לא נוצרת ולא נעלמת",
+          "אנרגיה נוצרת",
+          "אנרגיה נעלמת",
+          "אנרגיה משתנה"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהי יחידת המידה של הספק?",
+        "options": [
+          "ואט",
+          "ניוטון",
+          "ג'ול",
+          "קילוגרם"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו חוק הכבידה של ניוטון?",
+        "options": [
+          "כל גוף מושך גוף אחר",
+          "גוף נמשך לאדמה",
+          "גוף נע במהירות קבועה",
+          "גוף משנה מסה"
+        ],
+        "correctIndex": 0
+      }
+    ]
+  },
+  {
+    "id": "t3",
+    "ownerId": "u3",
+    "subject": "Chemistry",
+    "score": 91,
+    "takenAt": "2024-03-10T11:30:00.000Z",
+    "questionsCount": 12,
+    "respondentsCount": 18,
+    "averageScore": 85.7,
+    "averageCorrect": 8.1,
+    "likes": [
+      "u1",
+      "u2",
+      "u4"
+    ],
+    "questions": [
+      {
+        "question": "מהו הסמל הכימי של מים?",
+        "options": [
+          "O2",
+          "H2O",
+          "CO2",
+          "NaCl"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "question": "מהו המספר האטומי של פחמן?",
+        "options": [
+          "6",
+          "12",
+          "8",
+          "14"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהי קבוצת האלמנטים של הליום?",
+        "options": [
+          "מתכות",
+          "אלקליות",
+          "גזים אצילים",
+          "הלוגנים"
+        ],
+        "correctIndex": 2
+      },
+      {
+        "question": "מהו מצב הצבירה של מים בטמפרטורת החדר?",
+        "options": [
+          "מוצק",
+          "נוזל",
+          "גז",
+          "פלזמה"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "question": "מהו ה-pH של מים טהורים?",
+        "options": [
+          "7",
+          "1",
+          "14",
+          "0"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו הסמל הכימי של נתרן?",
+        "options": [
+          "Na",
+          "N",
+          "S",
+          "Ne"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו תהליך חמצון?",
+        "options": [
+          "הוספת אלקטרון",
+          "הסרת אלקטרון",
+          "הוספת פרוטון",
+          "הסרת פרוטון"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "question": "מהו הסמל הכימי של חמצן?",
+        "options": [
+          "O",
+          "O2",
+          "O3",
+          "Ox"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "question": "מהי נוסחת הפחמן הדו-חמצני?",
+        "options": [
+          "CO",
+          "CO2",
+          "C2O",
+          "C2O2"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "question": "מהו תהליך הפוטוסינתזה?",
+        "options": [
+          "יצירת חמצן",
+          "יצירת מים",
+          "יצירת גלוקוז",
+          "יצירת פחמן"
+        ],
+        "correctIndex": 2
+      },
+      {
+        "question": "מהו הסמל הכימי של כלור?",
+        "options": [
+          "Cl",
+          "C",
+          "Cr",
+          "Co"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו המסה המולקולרית של מים?",
+        "options": [
+          "18",
+          "2",
+          "16",
+          "20"
+        ],
+        "correctIndex": 0
+      }
+    ]
+  },
+  {
+    "id": "t4",
+    "ownerId": "u1",
+    "subject": "Biology",
+    "score": 78,
+    "takenAt": "2024-03-15T10:00:00.000Z",
+    "questionsCount": 15,
+    "respondentsCount": 25,
+    "averageScore": 79.3,
+    "averageCorrect": 9.2,
+    "questions": [
+      {
+        "question": "מהו איבר הנשימה העיקרי בגוף האדם?",
+        "options": [
+          "לב",
+          "ריאות",
+          "כבד",
+          "כליה"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "question": "מהו ה-DNA?",
+        "options": [
+          "חלבון",
+          "חומצת גרעין",
+          "שומן",
+          "פחמימה"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "question": "מהו תפקיד הלב?",
+        "options": [
+          "נשימה",
+          "הזרמת דם",
+          "עיכול",
+          "הפרשה"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "question": "מהו איבר העיכול הראשי?",
+        "options": [
+          "קיבה",
+          "מעי דק",
+          "מעי גס",
+          "כבד"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו תפקיד הריאות?",
+        "options": [
+          "ספיגת חמצן",
+          "הזרמת דם",
+          "עיכול",
+          "הפרשה"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו תפקיד הכבד?",
+        "options": [
+          "סינון רעלים",
+          "נשימה",
+          "הזרמת דם",
+          "עיכול"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו איבר ההפרשה העיקרי?",
+        "options": [
+          "כליה",
+          "ריאות",
+          "לב",
+          "קיבה"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו תפקיד המוח?",
+        "options": [
+          "חשיבה",
+          "נשימה",
+          "עיכול",
+          "הפרשה"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו תפקיד השרירים?",
+        "options": [
+          "תנועה",
+          "נשימה",
+          "עיכול",
+          "הפרשה"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו תפקיד העצמות?",
+        "options": [
+          "תמיכה",
+          "נשימה",
+          "עיכול",
+          "הפרשה"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו תפקיד הדם?",
+        "options": [
+          "הובלת חמצן",
+          "נשימה",
+          "עיכול",
+          "הפרשה"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו תפקיד העור?",
+        "options": [
+          "הגנה",
+          "נשימה",
+          "עיכול",
+          "הפרשה"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו תפקיד מערכת החיסון?",
+        "options": [
+          "הגנה מפני מחלות",
+          "נשימה",
+          "עיכול",
+          "הפרשה"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו תפקיד מערכת העצבים?",
+        "options": [
+          "העברת אותות",
+          "נשימה",
+          "עיכול",
+          "הפרשה"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו תפקיד מערכת העיכול?",
+        "options": [
+          "פירוק מזון",
+          "נשימה",
+          "עיכול",
+          "הפרשה"
+        ],
+        "correctIndex": 0
+      }
+    ],
+    "likes": [
+      "u1"
+    ]
+  },
+  {
+    "id": "t5",
+    "ownerId": "u4",
+    "subject": "History",
+    "score": 88,
+    "takenAt": "2024-04-01T14:45:00.000Z",
+    "questionsCount": 9,
+    "respondentsCount": 12,
+    "averageScore": 84.1,
+    "averageCorrect": 7.8,
+    "questions": [
+      {
+        "question": "מי היה ראש הממשלה הראשון של ישראל?",
+        "options": [
+          "גולדה מאיר",
+          "דוד בן גוריון",
+          "מנחם בגין",
+          "יצחק רבין"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "question": "באיזו שנה פרצה מלחמת העולם השנייה?",
+        "options": [
+          "1939",
+          "1945",
+          "1914",
+          "1929"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו שם ההסכם שהוביל לסיום מלחמת העולם הראשונה?",
+        "options": [
+          "הסכם ורסאי",
+          "הסכם פריז",
+          "הסכם לונדון",
+          "הסכם רומא"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מי היה נשיא ארה\"ב בזמן מלחמת האזרחים?",
+        "options": [
+          "ג'ורג' וושינגטון",
+          "אברהם לינקולן",
+          "תומס ג'פרסון",
+          "ג'ון קנדי"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "question": "מהו שם התקופה בהיסטוריה בה התפתחה הדפוס?",
+        "options": [
+          "הרנסנס",
+          "העת החדשה",
+          "העת העתיקה",
+          "הביניים"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מי היה קיסר רומא הראשון?",
+        "options": [
+          "יוליוס קיסר",
+          "אוגוסטוס",
+          "נירון",
+          "טיבריוס"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "question": "מהו שם המהפכה שהתרחשה בצרפת ב-1789?",
+        "options": [
+          "המהפכה הצרפתית",
+          "המהפכה האמריקאית",
+          "המהפכה הרוסית",
+          "המהפכה התעשייתית"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מי היה מלך אנגליה בזמן מלחמת מאה השנים?",
+        "options": [
+          "הנרי החמישי",
+          "ג'ון הראשון",
+          "ריצ'רד השלישי",
+          "ג'ורג' השישי"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו שם העיר שנחרבה על ידי הר געש וזכתה לשימור ארכיאולוגי?",
+        "options": [
+          "פומפיי",
+          "רומא",
+          "אתונה",
+          "קונסטנטינופול"
+        ],
+        "correctIndex": 0
+      }
+    ]
+  },
+  {
+    "id": "t6",
+    "ownerId": "u2",
+    "subject": "English",
+    "score": 92,
+    "takenAt": "2024-04-05T09:00:00.000Z",
+    "questionsCount": 11,
+    "respondentsCount": 19,
+    "averageScore": 87.3,
+    "averageCorrect": 8.9,
+    "questions": [
+      {
+        "question": "What is the synonym of 'happy'?",
+        "options": [
+          "sad",
+          "joyful",
+          "angry",
+          "tired"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "question": "What is the antonym of 'cold'?",
+        "options": [
+          "hot",
+          "cool",
+          "warm",
+          "freezing"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "Which word is a noun?",
+        "options": [
+          "run",
+          "quickly",
+          "table",
+          "blue"
+        ],
+        "correctIndex": 2
+      },
+      {
+        "question": "What is the past tense of 'go'?",
+        "options": [
+          "goes",
+          "went",
+          "gone",
+          "going"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "question": "Which is a verb?",
+        "options": [
+          "eat",
+          "apple",
+          "red",
+          "quick"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "What is the plural of 'child'?",
+        "options": [
+          "childs",
+          "children",
+          "childes",
+          "child"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "question": "Which is an adjective?",
+        "options": [
+          "run",
+          "beautiful",
+          "quickly",
+          "table"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "question": "What is the opposite of 'up'?",
+        "options": [
+          "down",
+          "left",
+          "right",
+          "over"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "Which word is a pronoun?",
+        "options": [
+          "he",
+          "run",
+          "blue",
+          "table"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "What is the superlative of 'big'?",
+        "options": [
+          "bigger",
+          "biggest",
+          "big",
+          "most big"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "question": "Which is a preposition?",
+        "options": [
+          "under",
+          "run",
+          "blue",
+          "table"
+        ],
+        "correctIndex": 0
+      }
+    ]
+  },
+  {
+    "id": "t7",
+    "ownerId": "u3",
+    "subject": "Geography",
+    "score": 85,
+    "takenAt": "2024-04-10T08:30:00.000Z",
+    "questionsCount": 10,
+    "respondentsCount": 14,
+    "averageScore": 81.6,
+    "averageCorrect": 6.7,
+    "questions": [
+      {
+        "question": "What is the largest continent?",
+        "options": [
+          "Africa",
+          "Asia",
+          "Europe",
+          "America"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "question": "Which is the longest river in the world?",
+        "options": [
+          "Amazon",
+          "Nile",
+          "Yangtze",
+          "Mississippi"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "question": "What is the capital of France?",
+        "options": [
+          "London",
+          "Berlin",
+          "Paris",
+          "Rome"
+        ],
+        "correctIndex": 2
+      },
+      {
+        "question": "Which ocean is the largest?",
+        "options": [
+          "Atlantic",
+          "Indian",
+          "Pacific",
+          "Arctic"
+        ],
+        "correctIndex": 2
+      },
+      {
+        "question": "What is the smallest continent?",
+        "options": [
+          "Australia",
+          "Europe",
+          "Antarctica",
+          "South America"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "Which country has the largest population?",
+        "options": [
+          "India",
+          "USA",
+          "China",
+          "Russia"
+        ],
+        "correctIndex": 2
+      },
+      {
+        "question": "What is the capital of Japan?",
+        "options": [
+          "Beijing",
+          "Tokyo",
+          "Seoul",
+          "Bangkok"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "question": "Which desert is the largest?",
+        "options": [
+          "Sahara",
+          "Gobi",
+          "Kalahari",
+          "Arabian"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "Which is the highest mountain in the world?",
+        "options": [
+          "Kilimanjaro",
+          "Everest",
+          "Alps",
+          "Andes"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "question": "What is the capital of Brazil?",
+        "options": [
+          "Rio de Janeiro",
+          "Brasilia",
+          "Sao Paulo",
+          "Salvador"
+        ],
+        "correctIndex": 1
+      }
+    ]
+  },
+  {
+    "id": "t8",
+    "ownerId": "u4",
+    "subject": "Computer Science",
+    "score": 98,
+    "takenAt": "2024-04-12T13:20:00.000Z",
+    "questionsCount": 12,
+    "respondentsCount": 22,
+    "averageScore": 92.5,
+    "averageCorrect": 10.2,
+    "questions": [
+      {
+        "question": "What does CPU stand for?",
+        "options": [
+          "Central Processing Unit",
+          "Computer Personal Unit",
+          "Central Power Unit",
+          "Control Processing Unit"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "What is the binary value of 5?",
+        "options": [
+          "101",
+          "110",
+          "100",
+          "111"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "Which is a programming language?",
+        "options": [
+          "HTML",
+          "Python",
+          "CSS",
+          "JPEG"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "question": "What does RAM stand for?",
+        "options": [
+          "Random Access Memory",
+          "Read Access Memory",
+          "Run Access Memory",
+          "Rapid Access Memory"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "Which is an operating system?",
+        "options": [
+          "Windows",
+          "Chrome",
+          "Photoshop",
+          "Excel"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "What is the value of 2^3?",
+        "options": [
+          "6",
+          "8",
+          "4",
+          "16"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "question": "Which is a storage device?",
+        "options": [
+          "Monitor",
+          "Keyboard",
+          "Hard Drive",
+          "Mouse"
+        ],
+        "correctIndex": 2
+      },
+      {
+        "question": "What is the main function of a compiler?",
+        "options": [
+          "Translate code",
+          "Store data",
+          "Display graphics",
+          "Connect to internet"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "Which is a web browser?",
+        "options": [
+          "Chrome",
+          "Word",
+          "Excel",
+          "PowerPoint"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "What is the extension for a JavaScript file?",
+        "options": [
+          ".js",
+          ".py",
+          ".html",
+          ".css"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "Which is a database?",
+        "options": [
+          "MySQL",
+          "Photoshop",
+          "Excel",
+          "Word"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "What does URL stand for?",
+        "options": [
+          "Uniform Resource Locator",
+          "Universal Resource Locator",
+          "Uniform Reference Locator",
+          "Universal Reference Locator"
+        ],
+        "correctIndex": 0
+      }
+    ]
+  },
+  {
+    "id": "t9",
+    "ownerId": "u1",
+    "subject": "Art",
+    "score": 90,
+    "takenAt": "2024-04-15T10:00:00.000Z",
+    "questionsCount": 8,
+    "respondentsCount": 10,
+    "averageScore": 85,
+    "averageCorrect": 7.1,
+    "questions": [
+      {
+        "question": "מי צייר את המונה ליזה?",
+        "options": [
+          "פבלו פיקאסו",
+          "לאונרדו דה וינצ'י",
+          "קלוד מונה",
+          "ואן גוך"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "question": "מהו סגנון האמנות של פיקאסו?",
+        "options": [
+          "קוביזם",
+          "ריאליזם",
+          "אימפרסיוניזם",
+          "סוריאליזם"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו חומר הגלם לפסל שיש?",
+        "options": [
+          "עץ",
+          "שיש",
+          "ברזל",
+          "נייר"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "question": "מהו צבע יסוד?",
+        "options": [
+          "ירוק",
+          "כחול",
+          "כתום",
+          "סגול"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "question": "מהו סגנון האמנות של ואן גוך?",
+        "options": [
+          "אימפרסיוניזם",
+          "פוסט-אימפרסיוניזם",
+          "קוביזם",
+          "ריאליזם"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "question": "מהו כלי ציור עיקרי?",
+        "options": [
+          "מברשת",
+          "סכין",
+          "עיפרון",
+          "עט"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו שם יצירתו של מיכלאנג'לו בתקרת הקפלה הסיסטינית?",
+        "options": [
+          "בריאת האדם",
+          "הסעודה האחרונה",
+          "הצעקה",
+          "הכוכבים"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו סגנון האמנות של קלוד מונה?",
+        "options": [
+          "אימפרסיוניזם",
+          "קוביזם",
+          "ריאליזם",
+          "סוריאליזם"
+        ],
+        "correctIndex": 0
+      }
+    ]
+  },
+  {
+    "id": "t10",
+    "ownerId": "u2",
+    "subject": "Music",
+    "score": 93,
+    "takenAt": "2024-04-18T09:00:00.000Z",
+    "questionsCount": 7,
+    "respondentsCount": 13,
+    "averageScore": 89.2,
+    "averageCorrect": 6.5,
+    "questions": [
+      {
+        "question": "מי הלחין את הסימפוניה התשיעית?",
+        "options": [
+          "בטהובן",
+          "מוצרט",
+          "באך",
+          "שופן"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו כלי נגינה מיתר?",
+        "options": [
+          "פסנתר",
+          "גיטרה",
+          "תוף",
+          "חצוצרה"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "question": "מהו סולם מז'ור?",
+        "options": [
+          "סולם שמח",
+          "סולם עצוב",
+          "סולם מהיר",
+          "סולם איטי"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו כלי נגינה נשיפה?",
+        "options": [
+          "גיטרה",
+          "פסנתר",
+          "חצוצרה",
+          "תוף"
+        ],
+        "correctIndex": 2
+      },
+      {
+        "question": "מי כתב את האופרה 'חליל הקסם'?",
+        "options": [
+          "מוצרט",
+          "ורדי",
+          "פוצ'יני",
+          "בטהובן"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו תפקיד המנצח בתזמורת?",
+        "options": [
+          "להוביל את הנגנים",
+          "לנגן בתוף",
+          "לכתוב תווים",
+          "לשיר"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו כלי נגינה מקלדת?",
+        "options": [
+          "גיטרה",
+          "פסנתר",
+          "תוף",
+          "חצוצרה"
+        ],
+        "correctIndex": 1
+      }
+    ]
+  },
+  {
+    "id": "t11",
+    "ownerId": "u3",
+    "subject": "Philosophy",
+    "score": 88,
+    "takenAt": "2024-04-20T11:30:00.000Z",
+    "questionsCount": 9,
+    "respondentsCount": 15,
+    "averageScore": 84.7,
+    "averageCorrect": 7.9,
+    "questions": [
+      {
+        "question": "מי הוא הפילוסוף היווני שכתב את 'המדינה'?",
+        "options": [
+          "סוקרטס",
+          "אפלטון",
+          "אריסטו",
+          "דקארט"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "question": "מהי דואליזם?",
+        "options": [
+          "שני עקרונות",
+          "עיקרון אחד",
+          "שלושה עקרונות",
+          "ארבעה עקרונות"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מי אמר 'אני חושב משמע אני קיים'?",
+        "options": [
+          "דקארט",
+          "אפלטון",
+          "אריסטו",
+          "סוקרטס"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהי אתיקה?",
+        "options": [
+          "תורת המוסר",
+          "תורת ההיגיון",
+          "תורת הנפש",
+          "תורת המדע"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מי הוא הפילוסוף הגרמני שכתב את 'ביקורת התבונה הטהורה'?",
+        "options": [
+          "קאנט",
+          "הגל",
+          "שופנהאואר",
+          "ניטשה"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהי מטריאליזם?",
+        "options": [
+          "הכל חומר",
+          "הכל רוח",
+          "הכל נפש",
+          "הכל מוסר"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מי הוא הפילוסוף שייסד את הלוגיקה?",
+        "options": [
+          "אריסטו",
+          "אפלטון",
+          "דקארט",
+          "סוקרטס"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהי סופיזם?",
+        "options": [
+          "תורת הספק",
+          "תורת המוסר",
+          "תורת המדע",
+          "תורת הנפש"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מי הוא הפילוסוף שכתב את 'האתיקה'?",
+        "options": [
+          "ספינוזה",
+          "קאנט",
+          "דקארט",
+          "הגל"
+        ],
+        "correctIndex": 0
+      }
+    ]
+  },
+  {
+    "id": "t12",
+    "ownerId": "u4",
+    "subject": "Economics",
+    "score": 85,
+    "takenAt": "2024-04-22T14:45:00.000Z",
+    "questionsCount": 10,
+    "respondentsCount": 18,
+    "averageScore": 80.1,
+    "averageCorrect": 8.3,
+    "questions": [
+      {
+        "question": "מהי הגדרה של אינפלציה?",
+        "options": [
+          "ירידת מחירים",
+          "עליית מחירים",
+          "יציבות מחירים",
+          "שינוי מטבע"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "question": "מהו מוצר ציבורי?",
+        "options": [
+          "מוצר שנצרך על ידי כולם",
+          "מוצר פרטי",
+          "מוצר יקר",
+          "מוצר נדיר"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהי אבטלה?",
+        "options": [
+          "עבודה מלאה",
+          "חוסר עבודה",
+          "עבודה חלקית",
+          "עבודה זמנית"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "question": "מהו תוצר לאומי גולמי?",
+        "options": [
+          "סך כל ההכנסות",
+          "סך כל ההוצאות",
+          "סך כל הייצור",
+          "סך כל היבוא"
+        ],
+        "correctIndex": 2
+      },
+      {
+        "question": "מהי מיסים עקיפים?",
+        "options": [
+          "מע\"מ",
+          "מס הכנסה",
+          "מס רכוש",
+          "מס ירושה"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו שוק חופשי?",
+        "options": [
+          "שוק ללא רגולציה",
+          "שוק עם רגולציה",
+          "שוק ממשלתי",
+          "שוק ציבורי"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהי הגדרה של ביקוש?",
+        "options": [
+          "רצון לקנות",
+          "רצון למכור",
+          "רצון לייצר",
+          "רצון לייבא"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו היצע?",
+        "options": [
+          "כמות שמוכנים למכור",
+          "כמות שמוכנים לקנות",
+          "כמות שמוכנים לייצר",
+          "כמות שמוכנים לייבא"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהי הגדרה של מונופול?",
+        "options": [
+          "שוק עם מוכר יחיד",
+          "שוק עם קונים רבים",
+          "שוק עם מוכרים רבים",
+          "שוק עם קונה יחיד"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו תקציב המדינה?",
+        "options": [
+          "סך ההוצאות וההכנסות של הממשלה",
+          "סך ההוצאות של הציבור",
+          "סך ההכנסות של הציבור",
+          "סך ההשקעות"
+        ],
+        "correctIndex": 0
+      }
+    ]
+  },
+  {
+    "id": "t13",
+    "ownerId": "u1",
+    "subject": "Law",
+    "score": 91,
+    "takenAt": "2024-04-25T12:00:00.000Z",
+    "questionsCount": 11,
+    "respondentsCount": 16,
+    "averageScore": 87.4,
+    "averageCorrect": 9,
+    "questions": [
+      {
+        "question": "מהו חוק יסוד?",
+        "options": [
+          "חוק רגיל",
+          "חוק בעל מעמד חוקתי",
+          "חוק עירוני",
+          "חוק פלילי"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "question": "מהי בג\"ץ?",
+        "options": [
+          "בית משפט עליון",
+          "בית משפט מחוזי",
+          "בית משפט שלום",
+          "בית משפט לתעבורה"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו חוזה?",
+        "options": [
+          "הסכם מחייב",
+          "הסכם לא מחייב",
+          "הסכם זמני",
+          "הסכם בעל פה בלבד"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהי עוולה נזיקית?",
+        "options": [
+          "פגיעה בזולת",
+          "פגיעה בעצמי",
+          "פגיעה ברכוש",
+          "פגיעה במדינה"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו עונש מאסר?",
+        "options": [
+          "קנס",
+          "שלילת חירות",
+          "עבודות שירות",
+          "השעיה"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "question": "מהי חוקה?",
+        "options": [
+          "מסמך חוקתי",
+          "מסמך רגיל",
+          "מסמך עירוני",
+          "מסמך פלילי"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו עורך דין?",
+        "options": [
+          "נציג משפטי",
+          "נציג רפואי",
+          "נציג חינוכי",
+          "נציג ציבורי"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהי ערעור?",
+        "options": [
+          "פנייה לערכאה גבוהה יותר",
+          "פנייה לערכאה נמוכה יותר",
+          "פנייה למשטרה",
+          "פנייה לעירייה"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו פסק דין?",
+        "options": [
+          "החלטה שיפוטית",
+          "החלטה רפואית",
+          "החלטה חינוכית",
+          "החלטה ציבורית"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהי תביעה אזרחית?",
+        "options": [
+          "תביעה בין אנשים פרטיים",
+          "תביעה פלילית",
+          "תביעה עירונית",
+          "תביעה ציבורית"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו בית משפט שלום?",
+        "options": [
+          "ערכאה נמוכה",
+          "ערכאה גבוהה",
+          "ערכאה בינונית",
+          "ערכאה עירונית"
+        ],
+        "correctIndex": 0
+      }
+    ]
+  },
+  {
+    "id": "t14",
+    "ownerId": "u2",
+    "subject": "Medicine",
+    "score": 94,
+    "takenAt": "2024-04-28T09:15:00.000Z",
+    "questionsCount": 12,
+    "respondentsCount": 20,
+    "averageScore": 90.5,
+    "averageCorrect": 10.1,
+    "questions": [
+      {
+        "question": "מהו איבר הנשימה העיקרי בגוף האדם?",
+        "options": [
+          "לב",
+          "ריאות",
+          "כבד",
+          "כליה"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "question": "מהו תפקיד הלב?",
+        "options": [
+          "הזרמת דם",
+          "נשימה",
+          "עיכול",
+          "הפרשה"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהי מחלת הסוכרת?",
+        "options": [
+          "עודף סוכר בדם",
+          "חוסר סוכר בדם",
+          "עודף שומן בדם",
+          "חוסר שומן בדם"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו איבר העיכול הראשי?",
+        "options": [
+          "קיבה",
+          "מעי דק",
+          "מעי גס",
+          "כבד"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו תפקיד הריאות?",
+        "options": [
+          "ספיגת חמצן",
+          "הזרמת דם",
+          "עיכול",
+          "הפרשה"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהי מחלת יתר לחץ דם?",
+        "options": [
+          "לחץ דם גבוה",
+          "לחץ דם נמוך",
+          "לחץ דם תקין",
+          "לחץ דם משתנה"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו תפקיד הכבד?",
+        "options": [
+          "סינון רעלים",
+          "נשימה",
+          "הזרמת דם",
+          "עיכול"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהי מחלת האסתמה?",
+        "options": [
+          "קושי בנשימה",
+          "קושי בעיכול",
+          "קושי בהפרשה",
+          "קושי בתנועה"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו איבר ההפרשה העיקרי?",
+        "options": [
+          "כליה",
+          "ריאות",
+          "לב",
+          "קיבה"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהי מחלת השפעת?",
+        "options": [
+          "מחלה ויראלית",
+          "מחלה חיידקית",
+          "מחלה גנטית",
+          "מחלה כרונית"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו תפקיד המוח?",
+        "options": [
+          "חשיבה",
+          "נשימה",
+          "עיכול",
+          "הפרשה"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהי מחלת הסרטן?",
+        "options": [
+          "חלוקה לא מבוקרת של תאים",
+          "חוסר תאים",
+          "עודף תאים תקינים",
+          "חוסר תאים תקינים"
+        ],
+        "correctIndex": 0
+      }
+    ]
+  },
+  {
+    "id": "t15",
+    "ownerId": "u3",
+    "subject": "Sports",
+    "score": 89,
+    "takenAt": "2024-05-01T10:00:00.000Z",
+    "questionsCount": 8,
+    "respondentsCount": 17,
+    "averageScore": 83.2,
+    "averageCorrect": 6.8,
+    "questions": [
+      {
+        "question": "מהו מספר השחקנים בקבוצת כדורגל?",
+        "options": [
+          "9",
+          "10",
+          "11",
+          "12"
+        ],
+        "correctIndex": 2
+      },
+      {
+        "question": "מהו ענף הספורט בו משתמשים במחבט וכדור קטן?",
+        "options": [
+          "טניס",
+          "כדורגל",
+          "כדורסל",
+          "ריצה"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו שיא העולם בריצת 100 מטר?",
+        "options": [
+          "9.58 שניות",
+          "10.00 שניות",
+          "9.80 שניות",
+          "9.90 שניות"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מי זכה במונדיאל 2018?",
+        "options": [
+          "גרמניה",
+          "צרפת",
+          "ברזיל",
+          "ארגנטינה"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "question": "מהו ענף הספורט בו קופצים למים?",
+        "options": [
+          "שחייה",
+          "קפיצה למים",
+          "ריצה",
+          "כדורמים"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "question": "מהו שם הליגה הבכירה בכדורסל בישראל?",
+        "options": [
+          "ליגת העל",
+          "ליגה לאומית",
+          "ליגה ארצית",
+          "ליגה מחוזית"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו ענף הספורט בו רוכבים על אופניים?",
+        "options": [
+          "רכיבה",
+          "ריצה",
+          "שחייה",
+          "טניס"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו שם המשחק בו זורקים כדור לסל?",
+        "options": [
+          "כדורסל",
+          "כדורגל",
+          "טניס",
+          "רוגבי"
+        ],
+        "correctIndex": 0
+      }
+    ]
+  },
+  {
+    "id": "t16",
+    "ownerId": "u4",
+    "subject": "Literature",
+    "score": 90,
+    "takenAt": "2024-05-03T11:30:00.000Z",
+    "questionsCount": 9,
+    "respondentsCount": 13,
+    "averageScore": 86.7,
+    "averageCorrect": 7.5,
+    "questions": [
+      {
+        "question": "מי כתב את 'הנסיך הקטן'?",
+        "options": [
+          "אנטואן דה סנט-אכזופרי",
+          "ג'יי קיי רולינג",
+          "צ'ארלס דיקנס",
+          "לב טולסטוי"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו ז'אנר ספרותי של 'הארי פוטר'?",
+        "options": [
+          "פנטזיה",
+          "רומן",
+          "מדע בדיוני",
+          "היסטוריה"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מי כתב את 'מלחמה ושלום'?",
+        "options": [
+          "לב טולסטוי",
+          "פושקין",
+          "דוסטויבסקי",
+          "צ'כוב"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו שם הספר של ג'ורג' אורוול על חברה טוטליטרית?",
+        "options": [
+          "1984",
+          "חוות החיות",
+          "הנסיך הקטן",
+          "המשחק של אנדר"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מי כתב את 'הקומדיה האלוהית'?",
+        "options": [
+          "דנטה אליגיירי",
+          "שייקספיר",
+          "הומרוס",
+          "סופוקלס"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו ז'אנר ספרותי של 'המשחק של אנדר'?",
+        "options": [
+          "מדע בדיוני",
+          "פנטזיה",
+          "רומן",
+          "היסטוריה"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מי כתב את 'המלט'?",
+        "options": [
+          "שייקספיר",
+          "דנטה",
+          "הומרוס",
+          "צ'כוב"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו ספר ילדים מפורסם של ד\"ר סוס?",
+        "options": [
+          "החתול שבכובע",
+          "הנסיך הקטן",
+          "פיטר פן",
+          "הארי פוטר"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מי כתב את 'עליסה בארץ הפלאות'?",
+        "options": [
+          "לואיס קרול",
+          "שייקספיר",
+          "דנטה",
+          "צ'כוב"
+        ],
+        "correctIndex": 0
+      }
+    ]
+  },
+  {
+    "id": "t17",
+    "ownerId": "u1",
+    "subject": "Psychology",
+    "score": 87,
+    "takenAt": "2024-05-06T09:00:00.000Z",
+    "questionsCount": 10,
+    "respondentsCount": 15,
+    "averageScore": 82.1,
+    "averageCorrect": 8,
+    "questions": [
+      {
+        "question": "מי נחשב לאבי הפסיכואנליזה?",
+        "options": [
+          "פרויד",
+          "יונג",
+          "אדלר",
+          "פבלוב"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהי התניה קלאסית?",
+        "options": [
+          "למידה באמצעות אסוציאציה",
+          "למידה באמצעות חיזוק",
+          "למידה באמצעות חיקוי",
+          "למידה באמצעות תרגול"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו מבחן רורשאך?",
+        "options": [
+          "מבחן כתמי דיו",
+          "מבחן IQ",
+          "מבחן אישיות",
+          "מבחן זיכרון"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהי פסיכולוגיה חברתית?",
+        "options": [
+          "חקר התנהגות בקבוצה",
+          "חקר המוח",
+          "חקר האישיות",
+          "חקר הזיכרון"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו זיכרון לטווח קצר?",
+        "options": [
+          "זיכרון זמני",
+          "זיכרון קבוע",
+          "זיכרון רגשי",
+          "זיכרון מוטורי"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהי חרדה?",
+        "options": [
+          "תחושת פחד",
+          "תחושת שמחה",
+          "תחושת כעס",
+          "תחושת עייפות"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו מבחן IQ?",
+        "options": [
+          "מבחן אינטליגנציה",
+          "מבחן אישיות",
+          "מבחן זיכרון",
+          "מבחן רגשי"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהי פסיכולוגיה התפתחותית?",
+        "options": [
+          "חקר התפתחות האדם",
+          "חקר המוח",
+          "חקר האישיות",
+          "חקר הזיכרון"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו טיפול קוגניטיבי?",
+        "options": [
+          "טיפול במחשבות",
+          "טיפול בתנועה",
+          "טיפול בתזונה",
+          "טיפול בתרופות"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהי דיכאון?",
+        "options": [
+          "תחושת עצבות ממושכת",
+          "תחושת שמחה",
+          "תחושת כעס",
+          "תחושת עייפות"
+        ],
+        "correctIndex": 0
+      }
+    ]
+  },
+  {
+    "id": "t18",
+    "ownerId": "u2",
+    "subject": "Astronomy",
+    "score": 93,
+    "takenAt": "2024-05-08T13:00:00.000Z",
+    "questionsCount": 8,
+    "respondentsCount": 12,
+    "averageScore": 88.5,
+    "averageCorrect": 7.2,
+    "questions": [
+      {
+        "question": "מהו כוכב הלכת הגדול ביותר במערכת השמש?",
+        "options": [
+          "צדק",
+          "שבתאי",
+          "מאדים",
+          "נוגה"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו שם הגלקסיה שלנו?",
+        "options": [
+          "שביל החלב",
+          "אנדרומדה",
+          "המערכת השמש",
+          "היקום"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו כוכב הלכת הקרוב ביותר לשמש?",
+        "options": [
+          "מרקורי",
+          "נוגה",
+          "ארץ",
+          "מאדים"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו שם הטלסקופ החללי המפורסם?",
+        "options": [
+          "האבל",
+          "קפלר",
+          "ג'יימס וב",
+          "גלילאו"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו כוכב הלכת האדום?",
+        "options": [
+          "מאדים",
+          "נוגה",
+          "צדק",
+          "שבתאי"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו ליקוי חמה?",
+        "options": [
+          "הירח מסתיר את השמש",
+          "השמש מסתירה את הירח",
+          "הארץ מסתירה את השמש",
+          "הארץ מסתירה את הירח"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו שם הכוכב הקרוב ביותר לכדור הארץ?",
+        "options": [
+          "השמש",
+          "מאדים",
+          "נוגה",
+          "צדק"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו שם החללית הראשונה שנחתה על הירח?",
+        "options": [
+          "אפולו 11",
+          "סויוז",
+          "צ'לנג'ר",
+          "ג'מיני"
+        ],
+        "correctIndex": 0
+      }
+    ]
+  },
+  {
+    "id": "t19",
+    "ownerId": "u3",
+    "subject": "Engineering",
+    "score": 88,
+    "takenAt": "2024-05-10T15:00:00.000Z",
+    "questionsCount": 9,
+    "respondentsCount": 14,
+    "averageScore": 84.3,
+    "averageCorrect": 7.6,
+    "questions": [
+      {
+        "question": "מהו מקצוע ההנדסה העוסק בבניית גשרים?",
+        "options": [
+          "הנדסה אזרחית",
+          "הנדסת חשמל",
+          "הנדסת מכונות",
+          "הנדסת תוכנה"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו רכיב אלקטרוני שמגביר זרם?",
+        "options": [
+          "טרנזיסטור",
+          "נגד",
+          "קבל",
+          "דיודה"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו חומר הבנייה הנפוץ ביותר?",
+        "options": [
+          "בטון",
+          "עץ",
+          "פלדה",
+          "זכוכית"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהי יחידת המידה של מתח חשמלי?",
+        "options": [
+          "וולט",
+          "אמפר",
+          "וואט",
+          "אוהם"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו כלי עבודה לחיתוך מתכת?",
+        "options": [
+          "מסור",
+          "מברג",
+          "פטיש",
+          "מקדחה"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו עקרון המנוף?",
+        "options": [
+          "הגדלת כוח",
+          "הקטנת כוח",
+          "הגדלת מהירות",
+          "הקטנת מהירות"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו רכיב שמאחסן אנרגיה חשמלית?",
+        "options": [
+          "קבל",
+          "נגד",
+          "דיודה",
+          "טרנזיסטור"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו מקצוע ההנדסה העוסק במחשבים?",
+        "options": [
+          "הנדסת תוכנה",
+          "הנדסה אזרחית",
+          "הנדסת חשמל",
+          "הנדסת מכונות"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו כלי מדידה של אורך?",
+        "options": [
+          "סרט מדידה",
+          "מברג",
+          "פטיש",
+          "מקדחה"
+        ],
+        "correctIndex": 0
+      }
+    ]
+  },
+  {
+    "id": "t20",
+    "ownerId": "u4",
+    "subject": "Politics",
+    "score": 92,
+    "takenAt": "2024-05-12T12:00:00.000Z",
+    "questionsCount": 8,
+    "respondentsCount": 16,
+    "averageScore": 87.9,
+    "averageCorrect": 7.3,
+    "questions": [
+      {
+        "question": "מי הוא ראש ממשלת ישראל כיום (2024)?",
+        "options": [
+          "יאיר לפיד",
+          "בנימין נתניהו",
+          "נפתלי בנט",
+          "יצחק הרצוג"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "question": "מהי דמוקרטיה?",
+        "options": [
+          "שלטון העם",
+          "שלטון המלך",
+          "שלטון הצבא",
+          "שלטון הדת"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו פרלמנט?",
+        "options": [
+          "בית מחוקקים",
+          "בית משפט",
+          "ממשלה",
+          "צבא"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהי מפלגה?",
+        "options": [
+          "קבוצת אנשים עם דעות פוליטיות משותפות",
+          "קבוצת ספורט",
+          "קבוצת לימוד",
+          "קבוצת עבודה"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו נשיא המדינה?",
+        "options": [
+          "ראש המדינה",
+          "ראש הממשלה",
+          "שר הביטחון",
+          "שר החוץ"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהי קואליציה?",
+        "options": [
+          "שיתוף פעולה בין מפלגות",
+          "שיתוף פעולה בין מדינות",
+          "שיתוף פעולה בין ערים",
+          "שיתוף פעולה בין חברות"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו אופוזיציה?",
+        "options": [
+          "מפלגות שאינן בשלטון",
+          "מפלגות בשלטון",
+          "מפלגות צבאיות",
+          "מפלגות דתיות"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו תפקיד הכנסת?",
+        "options": [
+          "חקיקת חוקים",
+          "ניהול צבא",
+          "ניהול כלכלה",
+          "ניהול חינוך"
+        ],
+        "correctIndex": 0
+      }
+    ]
+  },
+  {
+    "id": "t21",
+    "ownerId": "u1",
+    "subject": "Environment",
+    "score": 86,
+    "takenAt": "2024-05-15T09:00:00.000Z",
+    "questionsCount": 7,
+    "respondentsCount": 11,
+    "averageScore": 80.4,
+    "averageCorrect": 6.1,
+    "questions": [
+      {
+        "question": "מהי התחממות גלובלית?",
+        "options": [
+          "עלייה בטמפרטורת כדור הארץ",
+          "ירידה בטמפרטורה",
+          "שינוי מזג אוויר",
+          "הפחתת זיהום"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו מחזור מים?",
+        "options": [
+          "תהליך בו מים מתאדים, מתעבים ויורדים כגשם",
+          "תהליך בו מים מתייבשים",
+          "תהליך בו מים מתקררים",
+          "תהליך בו מים מתחממים"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו זיהום אוויר?",
+        "options": [
+          "חומרים מזיקים באוויר",
+          "חומרים מזיקים במים",
+          "חומרים מזיקים באדמה",
+          "חומרים מזיקים במזון"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו מיחזור?",
+        "options": [
+          "שימוש חוזר בחומרים",
+          "שימוש חד פעמי",
+          "שימוש במים",
+          "שימוש באוויר"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו אנרגיה מתחדשת?",
+        "options": [
+          "אנרגיה שאינה נגמרת",
+          "אנרגיה מזהמת",
+          "אנרגיה חשמלית",
+          "אנרגיה גרעינית"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו גז חממה?",
+        "options": [
+          "גז הלוכד חום",
+          "גז מקרר",
+          "גז מסוכן",
+          "גז מתחדש"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו תפקיד היער?",
+        "options": [
+          "ספיגת פחמן דו-חמצני",
+          "הפחתת מים",
+          "הפחתת חמצן",
+          "הפחתת חום"
+        ],
+        "correctIndex": 0
+      }
+    ]
+  },
+  {
+    "id": "t22",
+    "ownerId": "u2",
+    "subject": "Business",
+    "score": 90,
+    "takenAt": "2024-05-17T14:00:00.000Z",
+    "questionsCount": 8,
+    "respondentsCount": 13,
+    "averageScore": 85.2,
+    "averageCorrect": 7,
+    "questions": [
+      {
+        "question": "מהו יזמות?",
+        "options": [
+          "הקמת עסק חדש",
+          "ניהול עסק קיים",
+          "סגירת עסק",
+          "מכירת עסק"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו שיווק?",
+        "options": [
+          "קידום מכירות",
+          "ניהול עובדים",
+          "ניהול כספים",
+          "ניהול מלאי"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו רווח?",
+        "options": [
+          "הכנסה פחות הוצאה",
+          "הוצאה פחות הכנסה",
+          "הכנסה בלבד",
+          "הוצאה בלבד"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו תקציב?",
+        "options": [
+          "תכנון הכנסות והוצאות",
+          "תכנון עובדים",
+          "תכנון מלאי",
+          "תכנון שיווק"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו מנהל?",
+        "options": [
+          "אדם שמוביל צוות",
+          "אדם שמוכר מוצרים",
+          "אדם שמייצר מוצרים",
+          "אדם שמפרסם מוצרים"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו מוצר?",
+        "options": [
+          "דבר שנמכר",
+          "דבר שנקנה",
+          "דבר שמיוצר",
+          "דבר שמפורסם"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו שירות?",
+        "options": [
+          "פעולה שניתנת ללקוח",
+          "מוצר פיזי",
+          "מוצר דיגיטלי",
+          "מוצר יקר"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו שוק?",
+        "options": [
+          "מקום בו מתבצעות עסקאות",
+          "מקום בו מתבצעות לימודים",
+          "מקום בו מתבצעות עבודות",
+          "מקום בו מתבצעות מחקרים"
+        ],
+        "correctIndex": 0
+      }
+    ]
+  },
+  {
+    "id": "t23",
+    "ownerId": "u3",
+    "subject": "Technology",
+    "score": 94,
+    "takenAt": "2024-05-20T10:30:00.000Z",
+    "questionsCount": 9,
+    "respondentsCount": 15,
+    "averageScore": 90.1,
+    "averageCorrect": 8.4,
+    "questions": [
+      {
+        "question": "מהו סמארטפון?",
+        "options": [
+          "טלפון חכם",
+          "טלפון רגיל",
+          "טלפון ציבורי",
+          "טלפון נייח"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו אינטרנט?",
+        "options": [
+          "רשת תקשורת עולמית",
+          "רשת תקשורת מקומית",
+          "רשת טלוויזיה",
+          "רשת רדיו"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו רובוט?",
+        "options": [
+          "מכונה אוטומטית",
+          "מכונה ידנית",
+          "מכונה חשמלית",
+          "מכונה מכנית"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו ענן מחשוב?",
+        "options": [
+          "שירות אחסון מרוחק",
+          "שירות אחסון מקומי",
+          "שירות אחסון פיזי",
+          "שירות אחסון דיגיטלי"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו בינה מלאכותית?",
+        "options": [
+          "מערכת לומדת",
+          "מערכת רגילה",
+          "מערכת מכנית",
+          "מערכת חשמלית"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו דואר אלקטרוני?",
+        "options": [
+          "שירות שליחת הודעות באינטרנט",
+          "שירות שליחת הודעות בדואר רגיל",
+          "שירות שליחת הודעות בטלפון",
+          "שירות שליחת הודעות ברדיו"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו אתר אינטרנט?",
+        "options": [
+          "דף מידע ברשת",
+          "דף מידע בספר",
+          "דף מידע בעיתון",
+          "דף מידע בטלוויזיה"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו מחשב נייד?",
+        "options": [
+          "מחשב שניתן לנשיאה",
+          "מחשב שולחני",
+          "מחשב ציבורי",
+          "מחשב נייח"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו אפליקציה?",
+        "options": [
+          "תוכנה למכשיר נייד",
+          "תוכנה למחשב שולחני",
+          "תוכנה לטלוויזיה",
+          "תוכנה לרדיו"
+        ],
+        "correctIndex": 0
+      }
+    ]
+  },
+  {
+    "id": "t24",
+    "ownerId": "u4",
+    "subject": "Education",
+    "score": 91,
+    "takenAt": "2024-05-22T13:00:00.000Z",
+    "questionsCount": 8,
+    "respondentsCount": 12,
+    "averageScore": 86.3,
+    "averageCorrect": 7.2,
+    "questions": [
+      {
+        "question": "מהו בית ספר?",
+        "options": [
+          "מוסד לימודי",
+          "מוסד רפואי",
+          "מוסד משפטי",
+          "מוסד עסקי"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו מורה?",
+        "options": [
+          "אדם שמלמד",
+          "אדם שמטפל",
+          "אדם שמנהל",
+          "אדם שמוכר"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו מבחן?",
+        "options": [
+          "בדיקת ידע",
+          "בדיקת בריאות",
+          "בדיקת משפטית",
+          "בדיקת עסקית"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו שיעור?",
+        "options": [
+          "מפגש לימודי",
+          "מפגש עסקי",
+          "מפגש רפואי",
+          "מפגש משפטי"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו תלמיד?",
+        "options": [
+          "אדם הלומד",
+          "אדם המלמד",
+          "אדם המנהל",
+          "אדם המטפל"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו מקצוע לימוד?",
+        "options": [
+          "תחום ידע",
+          "תחום עבודה",
+          "תחום בריאות",
+          "תחום משפט"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו תעודה?",
+        "options": [
+          "מסמך המעיד על סיום לימודים",
+          "מסמך המעיד על סיום עבודה",
+          "מסמך המעיד על סיום טיפול",
+          "מסמך המעיד על סיום משפט"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "מהו אוניברסיטה?",
+        "options": [
+          "מוסד להשכלה גבוהה",
+          "מוסד רפואי",
+          "מוסד עסקי",
+          "מוסד משפטי"
+        ],
+        "correctIndex": 0
+      }
+    ]
+  }
+]
