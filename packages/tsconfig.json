@@ -1,0 +1,11 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@monorepo/*": [".//*/src"]
+    }
+  },
+  "include": ["**/src/**/*.ts"],
+  "exclude": ["node_modules", "dist", "build", ".turbo"]
+}
