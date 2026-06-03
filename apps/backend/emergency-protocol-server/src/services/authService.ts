@@ -1,9 +1,7 @@
 import { OAuth2Client } from 'google-auth-library';
 import { config } from '../config';
-import { PrismaClient } from '@prisma/client';
+import prisma from '../db/prisma';
 import jwt from 'jsonwebtoken';
-
-const prisma = new PrismaClient();
 const googleClient = new OAuth2Client({
   clientId: config.google.clientId,
   clientSecret: config.google.clientSecret,
