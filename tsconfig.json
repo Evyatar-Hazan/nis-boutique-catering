@@ -35,7 +35,7 @@
       "@monorepo/hebrew-schedule": ["apps/frontend/hebrew-schedule/src"],
       "@monorepo/lev-chedva-website": ["apps/frontend/lev-chedva-website/src"],
       "@monorepo/emergency-protocol-server": ["apps/backend/emergency-protocol-server/src"],
-      "@monorepo/lev-hedva-api": ["apps/backend/4/src"],
+      "@monorepo/lev-hedva-api": ["apps/backend/lev-hedva-api/src"],
       "@monorepo/test-yourself-api": ["apps/backend/test-yourself-api/src"],
       "@monorepo/uh-shoham-server": ["apps/backend/uh-shoham-server/src"]
     }
