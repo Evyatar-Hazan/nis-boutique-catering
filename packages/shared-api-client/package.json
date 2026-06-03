@@ -1,0 +1,38 @@
+{
+  "name": "@monorepo/shared-api-client",
+  "version": "1.0.0",
+  "description": "Shared HTTP API client library with interceptors and error handling",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "type-check": "tsc --noEmit",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@monorepo/shared-types": "workspace: *"
+  },
+  "devDependencies": {
+    "typescript": "~5.9.3"
+  },
+  "keywords": [
+    "api",
+    "client",
+    "http",
+    "fetch",
+    "interceptors",
+    "error-handling",
+    "shared",
+    "monorepo"
+  ],
+  "author": "Evyatar Hazan",
+  "license": "MIT"
+}
