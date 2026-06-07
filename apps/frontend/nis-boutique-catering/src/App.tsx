@@ -37,6 +37,8 @@ interface Service {
   readonly title: string;
   readonly subtitle: string;
   readonly description: string;
+  readonly bestFor: string;
+  readonly promise: string;
   readonly details: readonly string[];
   readonly cta: string;
   readonly image: string;
@@ -52,6 +54,12 @@ interface SimpleCard {
 interface StoryMoment {
   readonly title: string;
   readonly text: string;
+}
+
+interface MenuGroup {
+  readonly title: string;
+  readonly intro: string;
+  readonly items: readonly string[];
 }
 
 interface GalleryImage {
@@ -75,6 +83,8 @@ const services: readonly Service[] = [
     subtitle: 'להכניס את השבת ברוגע, להתענג על הטעם.',
     description:
       'תפריט שבת עשיר, חם ומנחם, שמגיע מוכן, מסודר ומלא בטעם של בית עם גימור של קייטרינג בוטיק. מתאים למשפחה שרוצה להיכנס לשבת רגועה, בלי לוותר על שולחן שנראה ומרגיש מוקפד.',
+    bestFor: 'משפחות, זוגות ומארחים שרוצים שבת רגועה בלי לוותר על שולחן עשיר.',
+    promise: 'מגיע מוכן, מסודר וברור להגשה, עם התאמה לכמות הסועדים ולאופי השבת.',
     details: ['סלטים', 'דגים', 'עיקריות', 'תוספות', 'חלות', 'קינוחים', 'מנות בהתאמה אישית'],
     cta: 'להזמנת תפריט שבת',
     image: imageUrl('photo-1543353071-10c8ba85a904', 900),
@@ -85,6 +95,8 @@ const services: readonly Service[] = [
     subtitle: 'אירוח קטן, רושם גדול.',
     description:
       'מגשי אירוח ופינגר פוד מעוצבים לאירועים פרטיים, ימי הולדת, הרמות כוסית, ישיבות ואירוח עסקי. כל מגש נבנה כדי להיות גם טעים, גם אסתטי וגם נוח להגשה.',
+    bestFor: 'מפגשים משפחתיים, אירועים קטנים, הרמות כוסית ואירוח עסקי מוקפד.',
+    promise: 'מגשים שנפתחים יפה, נראים חגיגיים על השולחן ונוחים לאכילה בעמידה או סביב שולחן.',
     details: ['אירועים קטנים', 'בראנצ׳ים', 'מפגשים משפחתיים', 'אירוח עסקי', 'שולחנות חגיגיים'],
     cta: 'דברו איתנו על מגשי אירוח',
     image: imageUrl('photo-1555244162-803834f70033', 900),
@@ -95,6 +107,8 @@ const services: readonly Service[] = [
     subtitle: 'פינוק בוטיק שלוקחים איתכם.',
     description:
       'מארזי דרך ופיקניק מוקפדים, ארוזים יפה ונוח, עם אוכל טרי ומפנק לטיולים, נסיעות, ימי כיף ורגעים שרוצים להפוך למיוחדים.',
+    bestFor: 'נסיעות משפחתיות, ימי כיף, פיקניקים, טיולים ורגעים שמתחילים כבר בדרך.',
+    promise: 'אוכל ארוז חכם, יפה ונוח לנשיאה, כדי שהדרך עצמה תרגיש כמו חלק מהחוויה.',
     details: ['פיקניק זוגי', 'טיול משפחתי', 'יום הולדת בטבע', 'נסיעות ארוכות', 'ימי חופש'],
     cta: 'להזמנת מארז דרך',
     image: imageUrl('photo-1485963631004-f2f00b1d6606', 900),
@@ -148,19 +162,40 @@ const processSteps: readonly SimpleCard[] = [
   },
 ];
 
-const sampleMenus: readonly string[] = [
-  'מארז שבת זוגי או משפחתי',
-  'מבחר סלטים לשולחן שבת',
-  'דגים, עיקריות ותוספות חמות',
-  'שולחן פינגר פוד לאירוח קטן',
-  'מגש מלוח מעוצב',
-  'מגש מתוקים וקינוחים אישיים',
-  'מיני קישים ומאפים אישיים',
-  'בראנץ׳ בוטיק למשפחה',
-  'ערכת פיקניק זוגית',
-  'ערכת דרך משפחתית',
-  'מארז נסיעה מפנק לילדים',
-  'אירוח עסקי קטן ומוקפד',
+const menuGroups: readonly MenuGroup[] = [
+  {
+    title: 'תפריט שבת לדוגמה',
+    intro: 'כיוון קלאסי לשבת רגועה, עם אוכל שמגיע מוכן ומסודר לשולחן.',
+    items: [
+      'מבחר סלטים לשולחן',
+      'דגים לשבת',
+      'עיקריות חמות',
+      'תוספות וסירים משפחתיים',
+      'חלות וקינוחים',
+    ],
+  },
+  {
+    title: 'מגשי אירוח ופינגר פוד',
+    intro: 'פתרון לאירוח קטן, מפגש משפחתי או אירוח עסקי שרוצה להיראות מוקפד.',
+    items: [
+      'מגש מלוח מעוצב',
+      'מיני קישים ומאפים אישיים',
+      'כריכונים וביסים קטנים',
+      'בראנץ׳ בוטיק למשפחה',
+      'קינוחים אישיים',
+    ],
+  },
+  {
+    title: 'Travel nis לדרך',
+    intro: 'מארזים נוחים, יפים וטעימים לרגעים שממשיכים מחוץ לבית.',
+    items: [
+      'ערכת פיקניק זוגית',
+      'ערכת דרך משפחתית',
+      'מארז נסיעה מפנק לילדים',
+      'מארז יום כיף',
+      'פתרון מותאם לטיול או יציאה',
+    ],
+  },
 ];
 
 const storyMoments: readonly StoryMoment[] = [
@@ -243,6 +278,15 @@ const facts: readonly string[] = [
   'אפשר לדבר על העדפות והתאמות תפריט לפי הצורך.',
 ];
 
+const seoTopics: readonly string[] = [
+  'קייטרינג בוטיק בביתר עילית',
+  'תפריט שבת מוכן ומסודר',
+  'מגשי אירוח לאירועים קטנים',
+  'פינגר פוד והרמות כוסית',
+  'מארזי פיקניק ומארזי דרך',
+  'אירוח משפחתי בהתאמה אישית',
+];
+
 const trustCards: readonly SimpleCard[] = [
   {
     title: 'אסתטיקה שמגיעה מוכנה',
@@ -294,7 +338,7 @@ const buildInquiryWhatsappLink = (topic: string): string =>
 
 function App() {
   const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
-  const [leadSource, setLeadSource] = useState('תפריט שבת');
+  const [leadSource, setLeadSource] = useState('ניס בטעם של שבת');
   const topbarWhatsapp = buildWhatsappLink('שלום nis, אשמח ליצור קשר.');
   const heroWhatsapp = buildInquiryWhatsappLink('קייטרינג בוטיק לאירוח');
   const contactWhatsapp = buildWhatsappLink('שלום nis, אשמח ליצור קשר לגבי הזמנה.');
@@ -332,6 +376,7 @@ function App() {
       `עניין: ${formData.get('interest') ?? ''}`,
       `תאריך רצוי: ${formData.get('date') ?? ''}`,
       `מספר סועדים: ${formData.get('guests') ?? ''}`,
+      `אופן קבלה מועדף: ${formData.get('delivery') ?? ''}`,
       `הודעה: ${formData.get('message') ?? ''}`,
     ];
     window.location.href = buildWhatsappLink(`שלום nis,\n${lines.join('\n')}`);
@@ -368,14 +413,14 @@ function App() {
         <section id="top" className="hero" aria-labelledby="hero-title">
           <div className="hero-media" aria-hidden="true" />
           <div className="hero-content">
-            <p className="eyebrow">קייטרינג בוטיק מביתר עילית</p>
+            <p className="eyebrow">מהרובע היהודי לביתר עילית</p>
             <h1 id="hero-title">nis</h1>
             <p className="hero-brand-subtitle">Boutique Catering</p>
-            <p className="hero-kicker">להתאהב בכל פרט, להתרגש מכל ביס.</p>
+            <p className="hero-kicker">אירוח עם טעם של בית וגימור של בוטיק.</p>
             <p className="hero-text">
-              קייטרינג בוטיק מביתר עילית, עם אוכל מוקפד, אסתטיקה נקייה וחוויית
-              אירוח שנבנית אישית לכל לקוח. משבת רגועה ומפנקת, דרך מגשי אירוח
-              מעוצבים ועד מארזים מיוחדים לדרך.
+              מאחורי nis עומדת יהודית ניסטנפובר, שמביאה לשולחן זיכרון של בתים
+              פתוחים, ריח של שבת ואירוח שמרגיש אישי. היום זה הופך לקייטרינג
+              בוטיק מביתר עילית: שבתות, מגשי אירוח ומארזי דרך שנבנים סביבכם.
             </p>
             <div className="hero-actions" aria-label="פעולות ראשיות">
               <a className="button primary" href={heroWhatsapp} data-event="hero_whatsapp">
@@ -390,15 +435,15 @@ function App() {
             <dl className="hero-proof" aria-label="סוגי הזמנות מרכזיים">
               <div>
                 <dt>שבתות</dt>
-                <dd>תפריט מוכן ומסודר</dd>
+                <dd>תפריט מוכן, חם ומסודר להגשה</dd>
               </div>
               <div>
-                <dt>אירועים קטנים</dt>
-                <dd>מגשים ופינגר פוד</dd>
+                <dt>ניס בכיס</dt>
+                <dd>מגשים ופינגר פוד לאירוח קטן</dd>
               </div>
               <div>
                 <dt>Travel nis</dt>
-                <dd>מארזים לדרך</dd>
+                <dd>מארזים לדרך, פיקניק וימי כיף</dd>
               </div>
             </dl>
           </div>
@@ -435,6 +480,14 @@ function App() {
                       <h3>{service.title}</h3>
                       <p className="service-subtitle">{service.subtitle}</p>
                       <p>{service.description}</p>
+                      <div className="service-proof">
+                        <p>
+                          <strong>למי זה מתאים:</strong> {service.bestFor}
+                        </p>
+                        <p>
+                          <strong>מה מקבלים:</strong> {service.promise}
+                        </p>
+                      </div>
                       <ul>
                         {service.details.map((detail) => (
                           <li key={detail}>{detail}</li>
@@ -533,8 +586,8 @@ function App() {
         </section>
 
         <section id="samples" className="section soft-section" aria-labelledby="samples-title">
-          <div className="container split-section">
-            <div>
+          <div className="container">
+            <div className="section-heading sample-heading">
               <p className="eyebrow">תפריטים ומארזים לדוגמה</p>
               <h2 id="samples-title">רעיונות מוחשיים שמותאמים לכל אירוח.</h2>
               <p>
@@ -543,9 +596,20 @@ function App() {
                 האירוח, מספר הסועדים והתאריך.
               </p>
             </div>
-            <div className="sample-list">
-              {sampleMenus.map((sample) => (
-                <span key={sample}>{sample}</span>
+            <div className="menu-grid">
+              {menuGroups.map((group) => (
+                <article className="menu-card" key={group.title}>
+                  <h3>{group.title}</h3>
+                  <p>{group.intro}</p>
+                  <ul>
+                    {group.items.map((item) => (
+                      <li key={item}>
+                        <CheckCircle2 aria-hidden="true" />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </article>
               ))}
             </div>
           </div>
@@ -609,6 +673,28 @@ function App() {
                 </li>
               ))}
             </ul>
+          </div>
+        </section>
+
+        <section className="section seo-section" aria-labelledby="seo-title">
+          <div className="container split-section">
+            <div>
+              <p className="eyebrow">מה אפשר להזמין</p>
+              <h2 id="seo-title">קייטרינג בוטיק מביתר עילית לשבת, אירוח קטן ומארזים לדרך.</h2>
+            </div>
+            <div>
+              <p>
+                nis נותנת מענה למי שמחפש קייטרינג בוטיק בביתר עילית והסביבה:
+                תפריט שבת מוכן, מגשי אירוח לאירועים קטנים, פינגר פוד, בראנץ׳
+                משפחתי ומארזי פיקניק או דרך. כל פנייה מתחילה בשיחה קצרה כדי
+                להבין את סוג האירוח, כמות הסועדים, התאריך והתחושה שרוצים ליצור.
+              </p>
+              <div className="seo-tags" aria-label="תחומי שירות">
+                {seoTopics.map((topic) => (
+                  <span key={topic}>{topic}</span>
+                ))}
+              </div>
+            </div>
           </div>
         </section>
 
@@ -698,8 +784,8 @@ function App() {
                   value={leadSource}
                   onChange={(event) => setLeadSource(event.target.value)}
                 >
-                  <option>תפריט שבת</option>
-                  <option>מגשי אירוח</option>
+                  <option>ניס בטעם של שבת</option>
+                  <option>ניס בכיס - מגשי אירוח</option>
                   <option>Travel nis</option>
                   <option>אירוע קטן</option>
                   <option>אחר</option>
@@ -712,6 +798,14 @@ function App() {
               <label>
                 מספר סועדים
                 <input name="guests" type="number" min="1" inputMode="numeric" />
+              </label>
+              <label>
+                אופן קבלה מועדף
+                <select name="delivery">
+                  <option>נדבר ונבדוק יחד</option>
+                  <option>איסוף מביתר עילית</option>
+                  <option>משלוח בתיאום</option>
+                </select>
               </label>
               <label className="full-field">
                 הודעה קצרה
