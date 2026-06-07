@@ -1,4 +1,4 @@
-import { type FormEvent, useEffect, useMemo, useState } from 'react';
+import { type FormEvent, useEffect, useState } from 'react';
 import {
   CalendarDays,
   CheckCircle2,
@@ -263,18 +263,17 @@ const faqs: readonly Readonly<{ question: string; answer: string }>[] = [
 ];
 
 const buildWhatsappLink = (message: string): string => `${whatsappBase}?text=${encodeURIComponent(message)}`;
+const buildInquiryWhatsappLink = (topic: string): string =>
+  buildWhatsappLink(`שלום nis, אשמח לשמוע פרטים על ${topic}.`);
 
 function App() {
   const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
   const [leadSource, setLeadSource] = useState('תפריט שבת');
-
-  const defaultWhatsapp = useMemo(
-    () =>
-      buildWhatsappLink(
-        `שלום nis, אשמח לשמוע פרטים על ${leadSource}.`,
-      ),
-    [leadSource],
-  );
+  const topbarWhatsapp = buildWhatsappLink('שלום nis, אשמח ליצור קשר.');
+  const heroWhatsapp = buildInquiryWhatsappLink('קייטרינג בוטיק לאירוח');
+  const contactWhatsapp = buildWhatsappLink('שלום nis, אשמח ליצור קשר לגבי הזמנה.');
+  const footerWhatsapp = buildWhatsappLink('שלום nis, אשמח לקבל פרטים.');
+  const floatingWhatsapp = buildWhatsappLink('שלום nis, אשמח לקבל פרטים דרך האתר.');
 
   useEffect(() => {
     if (!selectedImage) {
@@ -333,7 +332,7 @@ function App() {
             </a>
           ))}
         </nav>
-        <a className="topbar-cta" href={defaultWhatsapp} data-event="topbar_whatsapp">
+        <a className="topbar-cta" href={topbarWhatsapp} data-event="topbar_whatsapp">
           <MessageCircle aria-hidden="true" size={18} />
           וואטסאפ
         </a>
@@ -352,7 +351,7 @@ function App() {
               אריזה יפה ושירות שנבנה סביבכם.
             </p>
             <div className="hero-actions" aria-label="פעולות ראשיות">
-              <a className="button primary" href={defaultWhatsapp} data-event="hero_whatsapp">
+              <a className="button primary" href={heroWhatsapp} data-event="hero_whatsapp">
                 <MessageCircle aria-hidden="true" />
                 דברו איתנו בוואטסאפ
               </a>
@@ -414,8 +413,7 @@ function App() {
                         ))}
                       </ul>
                       <a
-                        href={buildWhatsappLink(`שלום, אשמח לקבל פרטים על ${service.title}.`)}
-                        onClick={() => setLeadSource(service.title)}
+                        href={buildInquiryWhatsappLink(service.title)}
                         className="text-link"
                       >
                         {service.cta}
@@ -625,7 +623,7 @@ function App() {
                 שלכם.
               </p>
               <div className="contact-actions">
-                <a className="button primary" href={defaultWhatsapp} data-event="contact_whatsapp">
+                <a className="button primary" href={contactWhatsapp} data-event="contact_whatsapp">
                   <MessageCircle aria-hidden="true" />
                   דברו איתנו בוואטסאפ
                 </a>
@@ -701,12 +699,12 @@ function App() {
           <div className="footer-links">
             <a href={phoneHref}>{phoneDisplay}</a>
             <a href={`mailto:${email}`}>{email}</a>
-            <a href={defaultWhatsapp}>וואטסאפ</a>
+            <a href={footerWhatsapp}>וואטסאפ</a>
           </div>
         </div>
       </footer>
 
-      <a className="floating-whatsapp" href={defaultWhatsapp} aria-label="דברו איתנו בוואטסאפ">
+      <a className="floating-whatsapp" href={floatingWhatsapp} aria-label="דברו איתנו בוואטסאפ">
         <MessageCircle aria-hidden="true" />
       </a>
 
