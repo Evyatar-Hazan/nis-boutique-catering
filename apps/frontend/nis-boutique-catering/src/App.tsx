@@ -22,7 +22,7 @@ import './App.css';
 
 const phoneDisplay = '050-3502615';
 const phoneHref = 'tel:+972503502615';
-const email = 'hello@nisboutiquecatering.com';
+const email = 'nisboutiquecatering@gmail.com';
 const whatsappBase = 'https://wa.me/972503502615';
 
 const imageUrl = (id: string, width: number): string =>

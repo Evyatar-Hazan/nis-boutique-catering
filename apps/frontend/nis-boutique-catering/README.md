@@ -4,7 +4,7 @@ Hebrew RTL landing page for nis Boutique Catering.
 
 ## Temporary V1 Data
 
-- Business email: `hello@nisboutiquecatering.com`
+- Business email: `nisboutiquecatering@gmail.com`
 - Phone and WhatsApp: `050-3502615`
 - Activity area: Beitar Illit and nearby areas by coordination
 - Minimum order: decided per inquiry
