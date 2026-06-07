@@ -187,8 +187,18 @@
 }
 
 .hero h1 {
-  font-size: clamp(3.1rem, 7vw, 6.9rem);
+  font-size: clamp(4.5rem, 12vw, 10rem);
   line-height: 0.95;
+}
+
+.hero-brand-subtitle {
+  margin: 10px 0 0;
+  color: rgba(255, 255, 255, 0.9);
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(1.45rem, 3vw, 3rem);
+  font-style: italic;
+  font-weight: 600;
+  letter-spacing: 0;
 }
 
 .hero-kicker {
@@ -623,6 +633,24 @@ details p {
   color: rgba(255, 255, 255, 0.72);
 }
 
+.footer-brand {
+  display: grid;
+  gap: 2px;
+}
+
+.footer-brand strong {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.footer-brand span {
+  color: rgba(255, 255, 255, 0.76);
+  font-family: 'Playfair Display', Georgia, serif;
+  font-style: italic;
+  font-weight: 600;
+}
+
 .footer-links {
   display: flex;
   flex-wrap: wrap;
@@ -759,8 +787,12 @@ details p {
   }
 
   .hero h1 {
-    font-size: clamp(2.65rem, 16vw, 4rem);
+    font-size: clamp(4.1rem, 24vw, 6rem);
     line-height: 1;
+  }
+
+  .hero-brand-subtitle {
+    font-size: clamp(1.35rem, 7vw, 2.1rem);
   }
 
   .hero-kicker {

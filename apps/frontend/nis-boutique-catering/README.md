@@ -1,6 +1,6 @@
-# nis Boutique Catering
+# nis
 
-Hebrew RTL landing page for nis Boutique Catering.
+Hebrew RTL landing page for nis, with Boutique Catering as the service subtitle.
 
 ## Temporary V1 Data
 

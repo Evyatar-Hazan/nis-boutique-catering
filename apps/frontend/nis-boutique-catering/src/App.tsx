@@ -271,7 +271,7 @@ function App() {
   const defaultWhatsapp = useMemo(
     () =>
       buildWhatsappLink(
-        `שלום nis Boutique Catering, אשמח לשמוע פרטים על ${leadSource}.`,
+        `שלום nis, אשמח לשמוע פרטים על ${leadSource}.`,
       ),
     [leadSource],
   );
@@ -309,7 +309,7 @@ function App() {
       `מספר סועדים: ${formData.get('guests') ?? ''}`,
       `הודעה: ${formData.get('message') ?? ''}`,
     ];
-    window.location.href = buildWhatsappLink(`שלום nis Boutique Catering,\n${lines.join('\n')}`);
+    window.location.href = buildWhatsappLink(`שלום nis,\n${lines.join('\n')}`);
   };
 
   return (
@@ -319,11 +319,11 @@ function App() {
       </a>
 
       <header className="topbar" aria-label="ניווט ראשי">
-        <a className="brand" href="#top" aria-label="nis Boutique Catering">
+        <a className="brand" href="#top" aria-label="nis, Boutique Catering">
           <img
             className="brand-logo"
             src="/brand/nis-logo.svg"
-            alt="nis Boutique Catering"
+            alt="nis - Boutique Catering"
           />
         </a>
         <nav className="nav-links">
@@ -344,7 +344,8 @@ function App() {
           <div className="hero-media" aria-hidden="true" />
           <div className="hero-content">
             <p className="eyebrow">קייטרינג בוטיק מביתר עילית</p>
-            <h1 id="hero-title">nis Boutique Catering</h1>
+            <h1 id="hero-title">nis</h1>
+            <p className="hero-brand-subtitle">Boutique Catering</p>
             <p className="hero-kicker">להתאהב בכל פרט, להתרגש מכל ביס.</p>
             <p className="hero-text">
               קייטרינג בוטיק אישי לשבתות, אירועים קטנים ומארזי דרך, עם אוכל מוקפד,
@@ -476,7 +477,7 @@ function App() {
               <p className="eyebrow">הסיפור מאחורי nis</p>
               <h2 id="story-title">אוכל שיש בו נשמה, סדר, יופי וחום של בית.</h2>
               <p>
-                מאחורי nis Boutique Catering עומדת יהודית ניסטנפובר, עם אהבה עמוקה
+                מאחורי nis עומדת יהודית ניסטנפובר, עם אהבה עמוקה
                 לאירוח, לאוכל מוקפד ולרגעים הקטנים שהופכים ארוחה לחוויה.
               </p>
               <p>
@@ -692,8 +693,9 @@ function App() {
 
       <footer className="site-footer">
         <div className="container footer-grid">
-          <div>
-            <strong>nis Boutique Catering</strong>
+          <div className="footer-brand">
+            <strong>nis</strong>
+            <span>Boutique Catering</span>
             <p>אוכל של בית, גימור של בוטיק.</p>
           </div>
           <div className="footer-links">
