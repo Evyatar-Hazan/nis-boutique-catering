@@ -1,8 +1,10 @@
-import { type CSSProperties, type FormEvent, useEffect, useState } from 'react';
+import { type CSSProperties, type FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ArrowLeft,
   CalendarDays,
   Camera,
+  ChevronLeft,
+  ChevronRight,
   CheckCircle2,
   ChefHat,
   Clock,
@@ -17,7 +19,6 @@ import {
   Play,
   Send,
   Sparkles,
-  Star,
   Utensils,
   Users,
   X,
@@ -89,8 +90,11 @@ interface GalleryImage {
   readonly title: string;
   readonly alt: string;
   readonly src: string;
+  readonly category: GalleryCategory;
   readonly tall?: boolean;
 }
+
+type GalleryCategory = 'all' | 'tables' | 'trays' | 'salads' | 'coffee' | 'fish';
 
 const navItems: readonly NavItem[] = [
   { label: 'החוויות', href: '#experiences' },
@@ -98,6 +102,15 @@ const navItems: readonly NavItem[] = [
   { label: 'גלריה', href: '#gallery' },
   { label: 'שאלות', href: '#faq' },
   { label: 'יצירת קשר', href: '#contact' },
+];
+
+const galleryCategories: readonly Readonly<{ id: GalleryCategory; label: string }>[] = [
+  { id: 'all', label: 'הכל' },
+  { id: 'tables', label: 'שולחנות' },
+  { id: 'trays', label: 'מגשים' },
+  { id: 'salads', label: 'סלטים' },
+  { id: 'fish', label: 'דגים' },
+  { id: 'coffee', label: 'קפה' },
 ];
 
 const services: readonly Service[] = [
@@ -264,80 +277,94 @@ const galleryImages: readonly GalleryImage[] = [
     title: 'שולחן אירוח מוכן',
     alt: 'שולחן אירוח מסודר עם מגשי ירקות, סלטים, כריכונים וכלי הגשה',
     src: foodMedia.hostingTableOverview,
+    category: 'tables',
     tall: true,
   },
   {
     title: 'שיפודי סלמון בלימון',
     alt: 'מגש שיפודי סלמון עם פרוסות לימון על מצע ירוק',
     src: foodMedia.salmonSkewersLemon,
+    category: 'fish',
     tall: true,
   },
   {
     title: 'פוקצ׳ה ירקות צבעונית',
     alt: 'פוקצ׳ה חתוכה עם ירקות קלויים וגבינה',
     src: foodMedia.vegetableFocaccia,
+    category: 'trays',
   },
   {
     title: 'כריכונים אישיים',
     alt: 'מגש כריכונים עגולים עם חסה וסיכות במבוק',
     src: foodMedia.miniSandwiches,
+    category: 'trays',
   },
   {
     title: 'סלט קפרזה אישי',
     alt: 'קערת סלט עם עגבניות שרי, מוצרלה, רוטב ירוק ושקית בוטנים',
     src: foodMedia.capreseSaladBowl,
+    category: 'salads',
     tall: true,
   },
   {
     title: 'ירקות קלויים צבעוניים',
     alt: 'מגש ירקות קלויים עם פלפלים, ברוקולי, פטריות, בצל וחצילים',
     src: foodMedia.roastedVegetables,
+    category: 'trays',
     tall: true,
   },
   {
     title: 'מטבלים למרכז השולחן',
     alt: 'מגש מטבלים עם זיתים, סלט טונה, מטבל לבן ומטבל כתום',
     src: foodMedia.dipsTrayClose,
+    category: 'trays',
   },
   {
     title: 'מגש גבינות ומטבלים',
     alt: 'מגש מחולק עם זיתים, קוביות גבינה, מטבל עגבניות וחמאה',
     src: foodMedia.mezzeTrayClose,
+    category: 'trays',
     tall: true,
   },
   {
     title: 'סלט כרוב סגול',
     alt: 'קערת סלט כרוב סגול עם בצל ירוק, רוטב ושקית אגוזים',
     src: foodMedia.purpleCabbageSalad,
+    category: 'salads',
     tall: true,
   },
   {
     title: 'סלט זוקיני ופטריות',
     alt: 'קערת סלט עם זוקיני קלוי, פטריות, גבינה ורוטב',
     src: foodMedia.roastedZucchiniSalad,
+    category: 'salads',
     tall: true,
   },
   {
     title: 'שיפודי סלמון מקרוב',
     alt: 'תקריב של שיפודי סלמון עם עשבי תיבול ולימון',
     src: foodMedia.salmonSkewersClose,
+    category: 'fish',
     tall: true,
   },
   {
     title: 'עמדת קפה ותה',
     alt: 'עמדת קפה עם מיחם, חלב, כוסות, סכו"ם וסוכר',
     src: foodMedia.coffeeStation,
+    category: 'coffee',
   },
   {
     title: 'ערכת קפה מוקפדת',
     alt: 'קופסת תיונים, סוכר וסכו"ם לצד מיחם לשירות קפה',
     src: foodMedia.coffeeServiceClose,
+    category: 'coffee',
     tall: true,
   },
   {
     title: 'שולחן ערוך באירוע',
     alt: 'שולחן ערוך עם מפה זהובה, צלחות כחולות ומפיות תכלת',
     src: foodMedia.tableSettingBlueGold,
+    category: 'tables',
     tall: true,
   },
 ];
@@ -432,13 +459,39 @@ const buildInquiryWhatsappLink = (topic: string): string =>
   buildWhatsappLink(`שלום nis, אשמח לשמוע פרטים על ${topic}.`);
 
 function App() {
-  const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
+  const [activeGalleryCategory, setActiveGalleryCategory] = useState<GalleryCategory>('all');
   const [leadSource, setLeadSource] = useState('ניס בטעם של שבת');
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [activeExperienceIndex, setActiveExperienceIndex] = useState(0);
   const topbarWhatsapp = buildWhatsappLink('שלום nis, אשמח ליצור קשר.');
   const heroWhatsapp = buildInquiryWhatsappLink('קייטרינג בוטיק לאירוח');
   const contactWhatsapp = buildWhatsappLink('שלום nis, אשמח ליצור קשר לגבי הזמנה.');
   const footerWhatsapp = buildWhatsappLink('שלום nis, אשמח לקבל פרטים.');
   const floatingWhatsapp = buildWhatsappLink('שלום nis, אשמח לקבל פרטים דרך האתר.');
+  const filteredGalleryImages = useMemo(
+    () =>
+      activeGalleryCategory === 'all'
+        ? galleryImages
+        : galleryImages.filter((image) => image.category === activeGalleryCategory),
+    [activeGalleryCategory],
+  );
+  const selectedImage =
+    selectedImageIndex === null ? null : filteredGalleryImages[selectedImageIndex] ?? null;
+  const activeExperience = services[activeExperienceIndex] ?? services[0];
+
+  const openGalleryImage = (index: number) => setSelectedImageIndex(index);
+
+  const showAdjacentImage = useCallback((direction: 1 | -1) => {
+    setSelectedImageIndex((currentIndex) => {
+      if (currentIndex === null || filteredGalleryImages.length === 0) {
+        return currentIndex;
+      }
+
+      return (currentIndex + direction + filteredGalleryImages.length) % filteredGalleryImages.length;
+    });
+  }, [filteredGalleryImages.length]);
 
   useEffect(() => {
     const revealElements = Array.from(document.querySelectorAll<HTMLElement>('.reveal'));
@@ -466,6 +519,35 @@ function App() {
   }, []);
 
   useEffect(() => {
+    const handleScroll = () => {
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = maxScroll > 0 ? window.scrollY / maxScroll : 0;
+
+      setIsScrolled(window.scrollY > 24);
+      setScrollProgress(Math.min(1, Math.max(0, progress)));
+    };
+
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const handlePointerMove = (event: PointerEvent) => {
+      const x = `${(event.clientX / window.innerWidth) * 100}%`;
+      const y = `${(event.clientY / window.innerHeight) * 100}%`;
+
+      document.documentElement.style.setProperty('--pointer-x', x);
+      document.documentElement.style.setProperty('--pointer-y', y);
+    };
+
+    window.addEventListener('pointermove', handlePointerMove, { passive: true });
+
+    return () => window.removeEventListener('pointermove', handlePointerMove);
+  }, []);
+
+  useEffect(() => {
     if (!selectedImage) {
       return undefined;
     }
@@ -474,7 +556,15 @@ function App() {
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        setSelectedImage(null);
+        setSelectedImageIndex(null);
+      }
+
+      if (event.key === 'ArrowLeft') {
+        showAdjacentImage(1);
+      }
+
+      if (event.key === 'ArrowRight') {
+        showAdjacentImage(-1);
       }
     };
 
@@ -484,7 +574,7 @@ function App() {
       document.body.classList.remove('is-lightbox-open');
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [selectedImage]);
+  }, [selectedImage, showAdjacentImage]);
 
   const handleContactSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -503,12 +593,16 @@ function App() {
   };
 
   return (
-    <div className="site-shell">
+    <div
+      className="site-shell"
+      style={{ '--scroll-progress': scrollProgress } as CSSProperties}
+    >
       <a className="skip-link" href="#main">
         דלג לתוכן המרכזי
       </a>
+      <div className="scroll-progress" aria-hidden="true" />
 
-      <header className="topbar" aria-label="ניווט ראשי">
+      <header className={isScrolled ? 'topbar is-scrolled' : 'topbar'} aria-label="ניווט ראשי">
         <a className="brand" href="#top" aria-label="nis, Boutique Catering">
           <img
             className="brand-logo"
@@ -532,10 +626,33 @@ function App() {
       <main id="main">
         <section id="top" className="hero" aria-labelledby="hero-title">
           <div className="hero-media" aria-hidden="true" />
+          <video
+            className="hero-video"
+            aria-hidden="true"
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="metadata"
+            poster={foodMedia.hostingTableOverview}
+          >
+            <source src={foodMedia.eventVideo} type="video/mp4" />
+          </video>
+          <div className="hero-texture" aria-hidden="true" />
           <div className="hero-layout">
             <div className="hero-content reveal is-visible">
               <p className="eyebrow">מהרובע היהודי לביתר עילית</p>
-              <h1 id="hero-title">nis</h1>
+              <h1 id="hero-title" aria-label="nis">
+                {'nis'.split('').map((letter, index) => (
+                  <span
+                    aria-hidden="true"
+                    key={letter}
+                    style={{ '--letter-index': index } as CSSProperties}
+                  >
+                    {letter}
+                  </span>
+                ))}
+              </h1>
               <p className="hero-brand-subtitle">Boutique Catering</p>
               <p className="hero-kicker">אירוח שנראה כמו בוטיק, ומרגיש כמו בית.</p>
               <p className="hero-text">
@@ -556,8 +673,16 @@ function App() {
               <p className="microcopy">שיחה קצרה, התאמה אישית, והצעת מחיר לפי האירוח שלכם.</p>
               <div className="hero-badges" aria-label="נקודות אמון">
                 <span>
-                  <Star aria-hidden="true" size={16} />
-                  אירוח מותאם אישית
+                  <ChefHat aria-hidden="true" size={16} />
+                  שבתות
+                </span>
+                <span>
+                  <Utensils aria-hidden="true" size={16} />
+                  מגשי אירוח
+                </span>
+                <span>
+                  <Package aria-hidden="true" size={16} />
+                  Travel nis
                 </span>
                 <span>
                   <Clock aria-hidden="true" size={16} />
@@ -572,6 +697,12 @@ function App() {
                   </div>
                 ))}
               </dl>
+              <div className="motion-rail" aria-hidden="true">
+                <span>שולחן שנפתח יפה</span>
+                <span>אירוח מוכן להגשה</span>
+                <span>שיחה קצרה והתאמה אישית</span>
+                <span>מביתר עילית</span>
+              </div>
             </div>
             <div className="hero-showcase reveal is-visible" aria-label="תמונות אירוח של nis">
               <img className="hero-plate primary-plate" src={foodMedia.salmonSkewersLemon} alt="שיפודי סלמון עם לימון" />
@@ -596,6 +727,63 @@ function App() {
               הזמנה של מנות, אלא דרך להיכנס לשבת, לארח משפחה או לצאת לדרך עם
               תחושה שמישהו סידר עבורכם את הפרטים הקטנים.
             </p>
+          </div>
+        </section>
+
+        <section className="section experience-lab-section" aria-labelledby="experience-lab-title">
+          <div className="container experience-lab">
+            <div className="experience-copy reveal">
+              <p className="eyebrow">Experience Lab</p>
+              <h2 id="experience-lab-title">בחרו את הרגע, והאתר משנה קצב סביבו.</h2>
+              <p>
+                במקום לדפדף בתפריט רגיל, בוחרים את סוג האירוח ומקבלים תחושה מיידית
+                של מה ייפתח על השולחן: שבת רגועה, מגשי אירוח או מארז דרך.
+              </p>
+              <div className="experience-switcher" role="tablist" aria-label="בחירת חוויית אירוח">
+                {services.map((service, index) => {
+                  const Icon = service.icon;
+                  const isActive = index === activeExperienceIndex;
+
+                  return (
+                    <button
+                      aria-selected={isActive}
+                      className={isActive ? 'experience-pill is-active' : 'experience-pill'}
+                      key={service.title}
+                      onClick={() => setActiveExperienceIndex(index)}
+                      onFocus={() => setActiveExperienceIndex(index)}
+                      onMouseEnter={() => setActiveExperienceIndex(index)}
+                      role="tab"
+                      type="button"
+                    >
+                      <Icon aria-hidden="true" size={18} />
+                      <span>{service.title}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+            <div className="experience-stage reveal" aria-live="polite">
+              <div className="experience-frame">
+                <img
+                  key={activeExperience.image}
+                  src={activeExperience.image}
+                  alt=""
+                  loading="lazy"
+                />
+                <div className="experience-overlay">
+                  <span>0{activeExperienceIndex + 1}</span>
+                  <h3>{activeExperience.title}</h3>
+                  <p>{activeExperience.promise}</p>
+                  <a href={buildInquiryWhatsappLink(activeExperience.title)}>
+                    לפתוח שיחה על החוויה הזו
+                    <ArrowLeft aria-hidden="true" size={16} />
+                  </a>
+                </div>
+              </div>
+              <div className="experience-meter" aria-hidden="true">
+                <span style={{ '--meter-index': activeExperienceIndex } as CSSProperties} />
+              </div>
+            </div>
           </div>
         </section>
 
@@ -833,14 +1021,30 @@ function App() {
                 שמראים איך nis נראית כשהיא מגיעה לשולחן.
               </p>
             </div>
-            <div className="gallery-grid">
-              {galleryImages.map((image, index) => (
+            <div className="gallery-tabs reveal" aria-label="סינון גלריה לפי סוג">
+              {galleryCategories.map((category) => (
+                <button
+                  className={category.id === activeGalleryCategory ? 'gallery-tab is-active' : 'gallery-tab'}
+                  key={category.id}
+                  type="button"
+                  onClick={() => {
+                    setActiveGalleryCategory(category.id);
+                    setSelectedImageIndex(null);
+                  }}
+                  aria-pressed={category.id === activeGalleryCategory}
+                >
+                  {category.label}
+                </button>
+              ))}
+            </div>
+            <div className="gallery-grid" aria-live="polite">
+              {filteredGalleryImages.map((image, index) => (
                 <button
                   className={image.tall ? 'gallery-item tall reveal' : 'gallery-item reveal'}
                   key={image.title}
                   style={{ '--delay': `${(index % 6) * 55}ms` } as CSSProperties}
                   type="button"
-                  onClick={() => setSelectedImage(image)}
+                  onClick={() => openGalleryImage(index)}
                   aria-label={`פתח תמונה: ${image.title}`}
                 >
                   <img src={image.src} alt={image.alt} loading="lazy" />
@@ -955,6 +1159,10 @@ function App() {
                   ביתר עילית
                 </span>
               </div>
+              <div className="contact-promise" aria-label="מה קורה אחרי הפנייה">
+                <strong>מה קורה אחרי הפנייה?</strong>
+                <span>שיחה קצרה, התאמה אישית, ואז סיכום ברור של תאריך, כמות וסגנון אירוח.</span>
+              </div>
             </div>
             <form className="contact-form reveal" onSubmit={handleContactSubmit}>
               <label>
@@ -1031,22 +1239,59 @@ function App() {
         <MessageCircle aria-hidden="true" />
       </a>
 
+      <div className="mobile-sticky-cta" aria-label="פעולות מהירות ליצירת קשר">
+        <a href={floatingWhatsapp}>
+          <MessageCircle aria-hidden="true" size={18} />
+          וואטסאפ
+        </a>
+        <a href={phoneHref}>
+          <Phone aria-hidden="true" size={18} />
+          טלפון
+        </a>
+      </div>
+
       {selectedImage ? (
         <div
           className="lightbox"
           role="dialog"
           aria-modal="true"
           aria-label={selectedImage.title}
-          onClick={() => setSelectedImage(null)}
+          onClick={() => setSelectedImageIndex(null)}
         >
           <button
             className="lightbox-close"
             type="button"
-            onClick={() => setSelectedImage(null)}
+            onClick={() => setSelectedImageIndex(null)}
             aria-label="סגור תמונה"
           >
             <X aria-hidden="true" />
           </button>
+          {filteredGalleryImages.length > 1 ? (
+            <>
+              <button
+                className="lightbox-nav lightbox-next"
+                type="button"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  showAdjacentImage(1);
+                }}
+                aria-label="תמונה הבאה"
+              >
+                <ChevronLeft aria-hidden="true" />
+              </button>
+              <button
+                className="lightbox-nav lightbox-prev"
+                type="button"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  showAdjacentImage(-1);
+                }}
+                aria-label="תמונה קודמת"
+              >
+                <ChevronRight aria-hidden="true" />
+              </button>
+            </>
+          ) : null}
           <img
             src={selectedImage.src}
             alt={selectedImage.alt}
