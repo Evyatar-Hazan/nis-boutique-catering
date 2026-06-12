@@ -204,6 +204,27 @@ const boutiqueReasons: readonly SimpleCard[] = [
   },
 ];
 
+const manifestoMoments: readonly Readonly<{ label: string; title: string; text: string; image: string }>[] = [
+  {
+    label: '01',
+    title: 'שולחן שנראה מסודר עוד לפני שנוגעים בו',
+    text: 'ההגשה, הצבעים והקצב של השולחן הם חלק מהחוויה, לא רק הרקע של האוכל.',
+    image: foodMedia.hostingTableOverview,
+  },
+  {
+    label: '02',
+    title: 'אוכל שמרגיש ביתי, אבל לא יומיומי',
+    text: 'הטעם נשאר חם ומוכר, אבל ההופעה, האריזה והדיוק נותנים תחושת occasion.',
+    image: foodMedia.dipsTrayClose,
+  },
+  {
+    label: '03',
+    title: 'התאמה אישית במקום פס ייצור',
+    text: 'החוויה נבנית סביב האירוח שלכם, לא סביב קטלוג אחיד שצריך להסתדר איתו.',
+    image: foodMedia.tableSettingBlueGold,
+  },
+];
+
 const processSteps: readonly SimpleCard[] = [
   {
     title: 'יוצרים קשר',
@@ -404,6 +425,26 @@ const heroStats: readonly Readonly<{ value: string; label: string }>[] = [
   { value: 'Travel nis', label: 'מארזים חכמים לדרך ולרגעים מיוחדים' },
 ];
 
+const heroSceneNotes: readonly Readonly<{ title: string; text: string }>[] = [
+  {
+    title: 'אירוח מוכן להגשה',
+    text: 'כל מגש מגיע מסודר כך שהשולחן נראה נכון כבר מהרגע הראשון.',
+  },
+  {
+    title: 'שיחה קצרה, התאמה אישית',
+    text: 'מספר סועדים, סוג האירוח והאווירה שאתם רוצים יוצרים יחד את הכיוון.',
+  },
+];
+
+const heroMarquee: readonly string[] = [
+  'שולחן שנפתח יפה',
+  'אוכל ביתי מוקפד',
+  'מגשי אירוח אלגנטיים',
+  'Travel nis',
+  'ביתר עילית',
+  'אריזה שנראית כמו מותג',
+];
+
 const signatureMoments: readonly Readonly<{ title: string; text: string; image: string }>[]= [
   {
     title: 'שולחן שנפתח יפה',
@@ -577,6 +618,14 @@ function App() {
   }, []);
 
   useEffect(() => {
+    const timer = window.setInterval(() => {
+      setActiveExperienceIndex((current) => (current + 1) % services.length);
+    }, 4800);
+
+    return () => window.clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
     if (!selectedImage) {
       return undefined;
     }
@@ -677,7 +726,7 @@ function App() {
                 <br />
                 לשבתות ואירועים קטנים
               </h1>
-              <p className="hero-kicker">אוכל מוקפד, הגשה אסתטית ושירות אישי, כדי לארח בכבוד, ברוגע ובלי להתעסק עם כל הפרטים.</p>
+              <p className="hero-kicker">אוכל ביתי מוקפד, בהגשה של בוטיק, לאירוח קטן שמרגיש גדול.</p>
               <p className="hero-text">
                 nis מחברת בין אוכל ביתי מוקפד לבין שפה של בוטיק: שבתות עשירות,
                 אירוח קטן שמרגיש מכובד, ומארזים יפים לדרך. הכול נבנה סביב סוג
@@ -721,16 +770,34 @@ function App() {
                 ))}
               </dl>
               <div className="motion-rail" aria-hidden="true">
-                <span>שולחן שנפתח יפה</span>
-                <span>אירוח מוכן להגשה</span>
-                <span>שיחה קצרה והתאמה אישית</span>
-                <span>מביתר עילית</span>
+                {heroMarquee.map((item) => (
+                  <span key={item}>{item}</span>
+                ))}
               </div>
             </div>
             <div className="hero-showcase reveal is-visible" aria-label="תמונות אירוח של nis">
-              <img className="hero-plate primary-plate" src={foodMedia.salmonSkewersLemon} alt="שיפודי סלמון עם לימון" />
+              <div className="hero-stage-frame">
+                <img className="hero-plate primary-plate" src={foodMedia.salmonSkewersLemon} alt="שיפודי סלמון עם לימון" />
+                <div className="hero-stage-caption">
+                  <strong>שבתות, אירוח קטן ומארזים</strong>
+                  <span>אותה שפה של טעם, נראות ושקט למארח.</span>
+                </div>
+              </div>
               <img className="hero-plate side-plate" src={foodMedia.dipsTrayClose} alt="מגש מטבלים צבעוני" />
               <img className="hero-plate tall-plate" src={foodMedia.tableSettingBlueGold} alt="שולחן ערוך לאירוח" />
+              <div className="hero-scene-notes" aria-hidden="true">
+                {heroSceneNotes.map((note) => (
+                  <article key={note.title} className="hero-scene-note">
+                    <strong>{note.title}</strong>
+                    <span>{note.text}</span>
+                  </article>
+                ))}
+              </div>
+              <div className="hero-mini-proof" aria-hidden="true">
+                <span>שבתות</span>
+                <span>מגשי אירוח</span>
+                <span>Travel nis</span>
+              </div>
               <a className="video-chip" href="#gallery">
                 <Play aria-hidden="true" size={18} />
                 רגעים אמיתיים מהאירוח
@@ -751,6 +818,41 @@ function App() {
               חוט: אוכל שמרגיש חם וביתי, נראות נקייה ומכובדת, ושירות אישי שלא
               משאיר אתכם לבד עם הפרטים.
             </p>
+          </div>
+        </section>
+
+        <section className="section manifesto-section" aria-labelledby="manifesto-title">
+          <div className="container manifesto-layout">
+            <div className="manifesto-copy reveal">
+              <p className="eyebrow">השפה של nis</p>
+              <h2 id="manifesto-title">
+                לא עוד מגש.
+                <br />
+                חוויית אירוח שנראית
+                <br />
+                כמו מחשבה.
+              </h2>
+              <p>
+                כש־nis נראית נכון, זה מרגיש מיד אחרת: יותר שקט למארח, יותר
+                כבוד לשולחן, ויותר תחושה שמישהו החזיק את כל הפרטים יחד.
+              </p>
+            </div>
+            <div className="manifesto-stack">
+              {manifestoMoments.map((moment, index) => (
+                <article
+                  className="manifesto-card reveal"
+                  key={moment.title}
+                  style={{ '--delay': `${index * 80}ms` } as CSSProperties}
+                >
+                  <img src={moment.image} alt="" loading="lazy" />
+                  <div className="manifesto-card-copy">
+                    <span>{moment.label}</span>
+                    <h3>{moment.title}</h3>
+                    <p>{moment.text}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
           </div>
         </section>
 
