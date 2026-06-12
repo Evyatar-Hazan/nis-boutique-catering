@@ -535,6 +535,7 @@ function App() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [activeExperienceIndex, setActiveExperienceIndex] = useState(0);
+  const [activeNavSection, setActiveNavSection] = useState('#top');
   const topbarWhatsapp = buildWhatsappLink('שלום nis, אשמח ליצור קשר.');
   const heroWhatsapp = buildInquiryWhatsappLink('קייטרינג בוטיק לאירוח');
   const contactWhatsapp = buildWhatsappLink('שלום nis, אשמח ליצור קשר לגבי הזמנה.');
@@ -592,9 +593,17 @@ function App() {
     const handleScroll = () => {
       const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
       const progress = maxScroll > 0 ? window.scrollY / maxScroll : 0;
+      const sectionSequence = ['top', 'experiences', 'process', 'gallery', 'faq', 'contact']
+        .map((id) => document.getElementById(id))
+        .filter((section): section is HTMLElement => section instanceof HTMLElement);
+      const currentSection = sectionSequence
+        .slice()
+        .reverse()
+        .find((section) => window.scrollY >= section.offsetTop - 180);
 
       setIsScrolled(window.scrollY > 24);
       setScrollProgress(Math.min(1, Math.max(0, progress)));
+      setActiveNavSection(currentSection ? `#${currentSection.id}` : '#top');
     };
 
     handleScroll();
@@ -690,7 +699,11 @@ function App() {
         </a>
         <nav className="nav-links">
           {navItems.map((item) => (
-            <a key={item.href} href={item.href}>
+            <a
+              key={item.href}
+              href={item.href}
+              className={activeNavSection === item.href ? 'is-active' : undefined}
+            >
               {item.label}
             </a>
           ))}
