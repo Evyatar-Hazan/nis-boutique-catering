@@ -35,7 +35,7 @@ export const foodMedia = {
   saladCupsPrep: '/media/food/nis-salad-cups-prep.mp4',
   eventVideo: '/media/food/events/nis-event-table-video.mp4',
   mezzeTrayClose: '/media/food/events/mezze-tray-close.webp',
-  hostingTableOverview: '/media/food/events/hosting-table-overview.webp',
+  hostingTableOverview: '/media/food/events/quiche-tart-platter.webp',
   tableSettingBlueGold: '/media/food/events/table-setting-blue-gold.webp',
   coffeeStation: '/media/food/events/coffee-station.webp',
   eventBuffetSaladRolls: '/media/food/events/event-buffet-salad-rolls.webp',
