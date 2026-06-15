@@ -30,7 +30,7 @@ describe('nis Boutique Catering app', () => {
     render(<App />);
 
     const initialButtons = screen.getAllByRole('button', { name: /פתח תמונה:/i });
-    expect(initialButtons).toHaveLength(14);
+    expect(initialButtons).toHaveLength(15);
 
     fireEvent.click(screen.getByRole('button', { name: 'דגים' }));
 
