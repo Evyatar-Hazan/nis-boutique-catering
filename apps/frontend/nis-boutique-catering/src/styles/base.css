@@ -147,15 +147,22 @@
 .brand {
   display: inline-flex;
   align-items: center;
-  width: clamp(214px, 20vw, 292px);
-  min-height: 54px;
+  justify-content: center;
+  width: clamp(218px, 19vw, 292px);
+  height: 64px;
+  min-height: 64px;
+  overflow: visible;
 }
 
 .brand-logo {
   width: 100%;
-  height: auto;
-  max-height: 62px;
+  height: 100%;
   object-fit: contain;
+  object-position: center;
+  filter:
+    drop-shadow(0 8px 18px rgba(24, 15, 12, 0.22))
+    drop-shadow(0 1px 0 rgba(255, 255, 255, 0.28));
+  transform: scale(1.42);
 }
 
 .nav-links {
@@ -404,35 +411,17 @@ summary:focus-visible {
 }
 
 .hero-brand-lockup {
-  display: grid;
-  width: fit-content;
-  gap: 8px;
+  display: inline-flex;
+  width: min(420px, 72vw);
   margin: 0 0 20px;
-  padding-bottom: 14px;
-  color: rgba(255, 250, 242, 0.94);
-  border-bottom: 1px solid rgba(255, 236, 197, 0.32);
+  filter: drop-shadow(0 22px 46px rgba(0, 0, 0, 0.34));
 }
 
-.hero-brand-name {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: clamp(2.95rem, 5.4vw, 5.85rem);
-  font-style: italic;
-  font-weight: 700;
-  line-height: 0.84;
-  letter-spacing: 0;
-  text-shadow: 0 20px 64px rgba(0, 0, 0, 0.34);
-}
-
-.hero-brand-subtitle {
-  width: fit-content;
-  color: rgba(255, 236, 197, 0.88);
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: clamp(1rem, 1.35vw, 1.26rem);
-  font-style: italic;
-  font-weight: 700;
-  letter-spacing: 0;
-  line-height: 1;
-  text-transform: none;
+.hero-brand-logo {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
 }
 
 .hero-kicker {
@@ -2114,7 +2103,9 @@ details p {
   }
 
   .brand {
-    width: clamp(176px, 50vw, 226px);
+    width: clamp(188px, 48vw, 226px);
+    height: 54px;
+    min-height: 54px;
     min-width: 0;
   }
 
@@ -2151,14 +2142,8 @@ details p {
     line-height: 0.96;
   }
 
-  .hero-brand-subtitle {
-    max-width: 100%;
-    font-size: 1rem;
-    letter-spacing: 0;
-  }
-
-  .hero-brand-name {
-    font-size: clamp(2.85rem, 14vw, 4.35rem);
+  .hero-brand-lockup {
+    width: min(330px, 82vw);
   }
 
   .hero-kicker {

@@ -79,16 +79,7 @@
 }
 
 .hero-brand-lockup {
-  color: rgba(255, 247, 235, 0.94);
-  text-shadow: 0 12px 40px rgba(0, 0, 0, 0.26);
-}
-
-.hero-brand-name {
-  color: rgba(255, 247, 235, 0.98);
-}
-
-.hero-brand-subtitle {
-  color: var(--champagne);
+  filter: drop-shadow(0 26px 54px rgba(0, 0, 0, 0.44));
 }
 
 .hero h1 {

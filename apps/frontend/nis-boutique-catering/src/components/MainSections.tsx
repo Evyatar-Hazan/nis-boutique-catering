@@ -64,8 +64,12 @@ export const HeroSection = ({ heroWhatsapp }: { readonly heroWhatsapp: string })
     <div className="hero-layout">
       <div className="hero-content reveal is-visible">
         <div className="hero-brand-lockup" aria-label="Nis, boutique catering">
-          <span className="hero-brand-name">Nis</span>
-          <span className="hero-brand-subtitle">boutique catering</span>
+          <img
+            className="hero-brand-logo"
+            src="/brand/nis-logo.svg"
+            alt="Nis boutique catering"
+            decoding="async"
+          />
         </div>
         <p className="eyebrow">מהרובע היהודי לביתר עילית</p>
         <h1 id="hero-title">

@@ -11,7 +11,12 @@ interface TopbarProps {
 export const Topbar = ({ activeNavSection, isScrolled, topbarWhatsapp }: TopbarProps) => (
   <header className={isScrolled ? 'topbar is-scrolled' : 'topbar'} aria-label="ניווט ראשי">
     <a className="brand" href="#top" aria-label="Nis, boutique catering">
-      <img className="brand-logo" src="/brand/nis-logo.svg" alt="Nis - boutique catering" decoding="async" />
+      <img
+        className="brand-logo"
+        src="/brand/nis-logo.svg"
+        alt="Nis - boutique catering"
+        decoding="async"
+      />
     </a>
     <nav className="nav-links">
       {navItems.map((item) => (
