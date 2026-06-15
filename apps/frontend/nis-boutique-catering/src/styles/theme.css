@@ -78,15 +78,23 @@
   max-width: 760px;
 }
 
-.hero-brand-subtitle {
+.hero-brand-lockup {
   color: rgba(255, 247, 235, 0.94);
   text-shadow: 0 12px 40px rgba(0, 0, 0, 0.26);
 }
 
+.hero-brand-name {
+  color: rgba(255, 247, 235, 0.98);
+}
+
+.hero-brand-subtitle {
+  color: var(--champagne);
+}
+
 .hero h1 {
-  font-size: clamp(3.7rem, 7vw, 7.4rem);
-  line-height: 0.88;
-  max-width: 9.5ch;
+  font-size: clamp(3.25rem, 5.9vw, 6.25rem);
+  line-height: 0.91;
+  max-width: 10.2ch;
 }
 
 .hero-kicker {
@@ -1041,7 +1049,7 @@
 
   .hero h1 {
     max-width: none;
-    font-size: clamp(3rem, 13vw, 4.8rem);
+    font-size: clamp(2.7rem, 10.8vw, 3.9rem);
   }
 
   .hero-showcase {

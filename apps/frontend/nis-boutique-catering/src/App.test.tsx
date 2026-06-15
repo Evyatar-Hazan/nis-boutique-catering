@@ -11,7 +11,7 @@ afterEach(() => {
   });
 });
 
-describe('nis Boutique Catering app', () => {
+describe('Nis boutique catering app', () => {
   it('renders the main navigation and hero content', () => {
     render(<App />);
 
@@ -91,7 +91,7 @@ describe('nis Boutique Catering app', () => {
     fireEvent.change(screen.getByLabelText('טלפון'), { target: { value: '0501234567' } });
     fireEvent.change(screen.getByLabelText('מייל'), { target: { value: 'sara@example.com' } });
     fireEvent.change(screen.getByLabelText('במה אתם מתעניינים?'), {
-      target: { value: 'Travel nis' },
+      target: { value: 'Travel Nis' },
     });
     fireEvent.change(screen.getByLabelText('מספר סועדים'), { target: { value: '12' } });
     fireEvent.change(screen.getByLabelText('הודעה קצרה'), {
@@ -102,7 +102,7 @@ describe('nis Boutique Catering app', () => {
 
     expect(window.location.href).toContain('https://wa.me/972503502615?text=');
     expect(decodeURIComponent(window.location.href)).toContain('שם: שרה כהן');
-    expect(decodeURIComponent(window.location.href)).toContain('עניין: Travel nis');
+    expect(decodeURIComponent(window.location.href)).toContain('עניין: Travel Nis');
     expect(decodeURIComponent(window.location.href)).toContain('הודעה: נשמח למארז לדרך');
   });
 

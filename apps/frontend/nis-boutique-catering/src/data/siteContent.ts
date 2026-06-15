@@ -143,7 +143,7 @@ export const services: readonly Service[] = [
     icon: Utensils,
   },
   {
-    title: 'Travel nis',
+    title: 'Travel Nis',
     subtitle: 'פינוק בוטיק שלוקחים איתכם.',
     description:
       'מארזי דרך ופיקניק מוקפדים, ארוזים יפה ונוח, עם אוכל טרי ומפנק לטיולים, נסיעות, ימי כיף ורגעים שרוצים להפוך למיוחדים.',
@@ -173,7 +173,7 @@ export const editorialCards: readonly EditorialCard[] = [
   },
   {
     label: 'מארזים ודרך',
-    title: 'Travel nis לפינוקים שלוקחים אתכם הלאה',
+    title: 'Travel Nis לפינוקים שלוקחים אתכם הלאה',
     text: 'מארזים נוחים, חכמים ויפים לנסיעות, טיולים וימי כיף, כך שהחוויה מתחילה כבר בדרך.',
     icon: Gift,
     image: foodMedia.miniSandwiches,
@@ -277,7 +277,7 @@ export const menuGroups: readonly MenuGroup[] = [
     items: ['מגש מלוח מעוצב', 'מיני קישים ומאפים אישיים', 'כריכונים וביסים קטנים', 'בראנץ׳ בוטיק למשפחה', 'קינוחים אישיים'],
   },
   {
-    title: 'Travel nis לדרך',
+    title: 'Travel Nis לדרך',
     intro: 'מארזים יפים ונוחים לרגעים מיוחדים שמתחילים כבר ביציאה מהבית.',
     items: ['ערכת פיקניק זוגית', 'ערכת דרך משפחתית', 'מארז נסיעה מפנק לילדים', 'מארז יום כיף', 'פתרון מותאם לטיול או יציאה'],
   },
@@ -289,7 +289,7 @@ export const storyMoments: readonly StoryMoment[] = [
     text: 'שנים של סמטאות אבן, בתים פתוחים וריח של שבת בנו אצל יהודית שפה של אירוח שיש בו נשמה, סדר וחום.',
   },
   {
-    title: 'אל המטבח של nis',
+    title: 'אל המטבח של Nis',
     text: 'הזיכרון הזה הופך למטבח מוקפד: חומרי גלם טריים, טעמים מדויקים, אריזה יפה ותחושה שמישהו חשב עליכם באמת.',
   },
   {
@@ -428,7 +428,7 @@ export const galleryImages: readonly GalleryImage[] = [
 export const heroStats: readonly Readonly<{ value: string; label: string }>[] = [
   { value: 'שבתות', label: 'אוכל ביתי מוקפד, מוכן להגשה' },
   { value: 'אירוח קטן', label: 'מגשים ושולחנות שנראים כמו בוטיק' },
-  { value: 'Travel nis', label: 'מארזים חכמים לדרך ולרגעים מיוחדים' },
+  { value: 'Travel Nis', label: 'מארזים חכמים לדרך ולרגעים מיוחדים' },
 ];
 
 export const heroSceneNotes: readonly Readonly<{ title: string; text: string }>[] = [
@@ -446,7 +446,7 @@ export const heroMarquee: readonly string[] = [
   'שולחן שנפתח יפה',
   'אוכל ביתי מוקפד',
   'מגשי אירוח אלגנטיים',
-  'Travel nis',
+  'Travel Nis',
   'ביתר עילית',
   'אריזה שנראית כמו מותג',
 ];
@@ -526,7 +526,7 @@ export const faqs: readonly Readonly<{ question: string; answer: string }>[] = [
   },
   {
     question: 'האם אפשר להזמין לאירועים עסקיים?',
-    answer: 'כן. nis בכיס מתאימה גם להרמות כוסית, ישיבות, אירוח עסקי ושולחנות קטנים ומוקפדים.',
+    answer: 'כן. Nis בכיס מתאימה גם להרמות כוסית, ישיבות, אירוח עסקי ושולחנות קטנים ומוקפדים.',
   },
   {
     question: 'האם יש מינימום הזמנה?',

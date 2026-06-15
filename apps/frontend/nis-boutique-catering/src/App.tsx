@@ -60,11 +60,11 @@ function App() {
     onPrevious: () => showAdjacentImage(-1),
   });
 
-  const topbarWhatsapp = buildWhatsappLink('שלום nis, אשמח ליצור קשר.');
+  const topbarWhatsapp = buildWhatsappLink('שלום Nis, אשמח ליצור קשר.');
   const heroWhatsapp = buildInquiryWhatsappLink('קייטרינג בוטיק לאירוח');
-  const contactWhatsapp = buildWhatsappLink('שלום nis, אשמח ליצור קשר לגבי הזמנה.');
-  const footerWhatsapp = buildWhatsappLink('שלום nis, אשמח לקבל פרטים.');
-  const floatingWhatsapp = buildWhatsappLink('שלום nis, אשמח לקבל פרטים דרך האתר.');
+  const contactWhatsapp = buildWhatsappLink('שלום Nis, אשמח ליצור קשר לגבי הזמנה.');
+  const footerWhatsapp = buildWhatsappLink('שלום Nis, אשמח לקבל פרטים.');
+  const floatingWhatsapp = buildWhatsappLink('שלום Nis, אשמח לקבל פרטים דרך האתר.');
 
   const handleContactSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -80,7 +80,7 @@ function App() {
       `הודעה: ${formData.get('message') ?? ''}`,
     ];
 
-    window.location.href = buildWhatsappLink(`שלום nis,\n${lines.join('\n')}`);
+    window.location.href = buildWhatsappLink(`שלום Nis,\n${lines.join('\n')}`);
   };
 
   return (

@@ -1,6 +1,6 @@
-# nis Boutique Catering
+# Nis boutique catering
 
-Monorepo dedicated to the nis Boutique Catering website.
+Monorepo dedicated to the Nis boutique catering website.
 
 ## Structure
 

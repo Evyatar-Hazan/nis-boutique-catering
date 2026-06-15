@@ -63,8 +63,11 @@ export const HeroSection = ({ heroWhatsapp }: { readonly heroWhatsapp: string })
     <div className="hero-texture" aria-hidden="true" />
     <div className="hero-layout">
       <div className="hero-content reveal is-visible">
+        <div className="hero-brand-lockup" aria-label="Nis, boutique catering">
+          <span className="hero-brand-name">Nis</span>
+          <span className="hero-brand-subtitle">boutique catering</span>
+        </div>
         <p className="eyebrow">מהרובע היהודי לביתר עילית</p>
-        <p className="hero-brand-subtitle">nis Boutique Catering</p>
         <h1 id="hero-title">
           קייטרינג בוטיק ביתי
           <br />
@@ -74,7 +77,7 @@ export const HeroSection = ({ heroWhatsapp }: { readonly heroWhatsapp: string })
           קייטרינג בוטיק ביתי לשבתות, אירועים קטנים ומארזים, עם אוכל מוקפד, הגשה אסתטית ושירות אישי.
         </p>
         <p className="hero-text">
-          nis מחברת בין טעם של בית לבין הגשה של בוטיק: שבתות עשירות, אירועים קטנים ומארזים
+          Nis מחברת בין טעם של בית לבין הגשה של בוטיק: שבתות עשירות, אירועים קטנים ומארזים
           יפים לדרך. הכול נבנה סביב סוג האירוח שלכם, מהשיחה הראשונה ועד הרגע שהשולחן מוכן.
         </p>
         <div className="hero-actions" aria-label="פעולות ראשיות">
@@ -99,7 +102,7 @@ export const HeroSection = ({ heroWhatsapp }: { readonly heroWhatsapp: string })
           </span>
           <span>
             <Package aria-hidden="true" size={16} />
-            Travel nis
+            Travel Nis
           </span>
           <span>
             <Clock aria-hidden="true" size={16} />
@@ -120,7 +123,7 @@ export const HeroSection = ({ heroWhatsapp }: { readonly heroWhatsapp: string })
           ))}
         </div>
       </div>
-      <div className="hero-showcase reveal is-visible" aria-label="תמונות אירוח של nis">
+      <div className="hero-showcase reveal is-visible" aria-label="תמונות אירוח של Nis">
         <div className="hero-stage-frame">
           <img
             className="hero-plate primary-plate"
@@ -164,7 +167,7 @@ export const HeroSection = ({ heroWhatsapp }: { readonly heroWhatsapp: string })
         <div className="hero-mini-proof" aria-hidden="true">
           <span>שבתות</span>
           <span>מגשי אירוח</span>
-          <span>Travel nis</span>
+          <span>Travel Nis</span>
         </div>
         <a className="video-chip" href="#gallery">
           <Play aria-hidden="true" size={18} />
@@ -183,7 +186,7 @@ export const IntroBandSection = () => (
         <h2>אוכל ביתי מוקפד, בהגשה של בוטיק, לאירוח קטן שמרגיש גדול.</h2>
       </div>
       <p>
-        במקום לנסות להיות הכול, nis בנויה סביב שלוש חוויות ברורות: שבתות, אירועים קטנים
+        במקום לנסות להיות הכול, Nis בנויה סביב שלוש חוויות ברורות: שבתות, אירועים קטנים
         ומארזים לדרך. החוט שמחבר ביניהן הוא אותו חוט: אוכל שמרגיש חם וביתי, נראות נקייה
         ומכובדת, ושירות אישי שלא משאיר אתכם לבד עם הפרטים.
       </p>
@@ -195,7 +198,7 @@ export const ManifestoSection = () => (
   <section className="section manifesto-section" aria-labelledby="manifesto-title">
     <div className="container manifesto-layout">
       <div className="manifesto-copy reveal">
-        <p className="eyebrow">השפה של nis</p>
+        <p className="eyebrow">השפה של Nis</p>
         <h2 id="manifesto-title">
           לא עוד מגש.
           <br />
@@ -204,7 +207,7 @@ export const ManifestoSection = () => (
           כמו מחשבה.
         </h2>
         <p>
-          כש־nis נראית נכון, זה מרגיש מיד אחרת: יותר שקט למארח, יותר כבוד לשולחן, ויותר
+          כש־Nis נראית נכון, זה מרגיש מיד אחרת: יותר שקט למארח, יותר כבוד לשולחן, ויותר
           תחושה שמישהו החזיק את כל הפרטים יחד.
         </p>
       </div>
@@ -262,7 +265,7 @@ export const AudienceSection = () => (
     <div className="container">
       <SectionHeading eyebrow="למי זה מתאים" title="כשרוצים לארח יפה, טעים ומכובד בלי לסחוב הכול לבד." id="audience-title">
         <p>
-          nis מתאימה למי שרוצה לזהות את עצמו מהר: שבת רגועה יותר, אירוע קטן שנראה נכון, או
+          Nis מתאימה למי שרוצה לזהות את עצמו מהר: שבת רגועה יותר, אירוע קטן שנראה נכון, או
           מארז יפה שלוקחים לדרך או שולחים הלאה.
         </p>
       </SectionHeading>
@@ -320,7 +323,7 @@ export const ExperienceLabSection = ({
           <p className="eyebrow">בחרו את החוויה</p>
           <h2 id="experience-lab-title">מהרגע שבוחרים כיוון, כל האתר מתחיל להרגיש יותר מדויק.</h2>
           <p>
-            במקום לקרוא רשימה יבשה, בוחרים את סוג האירוח ורואים מיד איך nis מדמיינת אותו:
+            במקום לקרוא רשימה יבשה, בוחרים את סוג האירוח ורואים מיד איך Nis מדמיינת אותו:
             מה נפתח על השולחן, מה מקבלים, ואיך זה מרגיש בפועל.
           </p>
           <div className="experience-switcher" role="tablist" aria-label="בחירת חוויית אירוח">
@@ -419,9 +422,9 @@ export const BoutiqueSection = () => (
     <div className="container boutique-layout">
       <div className="boutique-copy reveal">
         <p className="eyebrow">מה הופך אותנו לבוטיק</p>
-        <h2 id="boutique-title">בוטיק אצל nis הוא לא רק מילה יפה. הוא הוכחה בטעם, בנראות וביחס.</h2>
+        <h2 id="boutique-title">בוטיק אצל Nis הוא לא רק מילה יפה. הוא הוכחה בטעם, בנראות וביחס.</h2>
         <p>
-          מאחורי nis עומדת מחשבה על כל רגע שהאורחים פוגשים: מהמראה של השולחן, דרך האריזה, ועד
+          מאחורי Nis עומדת מחשבה על כל רגע שהאורחים פוגשים: מהמראה של השולחן, דרך האריזה, ועד
           תחושת השקט של מי שמארח. בדיוק שם המילה Boutique מקבלת הוכחה אמיתית.
         </p>
       </div>
@@ -448,7 +451,7 @@ export const BoutiqueSection = () => (
 export const ServicesSection = () => (
   <section id="experiences" className="section" aria-labelledby="experiences-title">
     <div className="container">
-      <SectionHeading eyebrow="שלוש החוויות של nis" title="כל אירוח מקבל את הקצב, הטעם והאריזה שלו." id="experiences-title" />
+      <SectionHeading eyebrow="שלוש החוויות של Nis" title="כל אירוח מקבל את הקצב, הטעם והאריזה שלו." id="experiences-title" />
       <div className="service-grid">
         {services.map((service) => {
           const Icon = service.icon;
@@ -512,11 +515,11 @@ export const StorySection = () => (
     <div className="container story-grid">
       <div className="story-copy reveal">
         <p className="eyebrow">הסיפור של המותג</p>
-        <h2 id="story-title">nis נולדה מתוך אהבה לאירוח יפה, אוכל ביתי מדויק ותשומת לב לפרטים הקטנים.</h2>
-        <p>מאחורי nis עומדת יהודית ניסטנפובר, עם אהבה עמוקה לאירוח, לאוכל מוקפד ולרגעים הקטנים שהופכים ארוחה לחוויה.</p>
-        <p>אחרי שנים של חיים ברובע היהודי, בין סמטאות אבן, בתים מלאי ריח של שבת ושולחנות שנפתחים לאנשים שאוהבים, יהודית מביאה למטבח של nis חיבור בין ביתיות, אסתטיקה ושירות אישי.</p>
+        <h2 id="story-title">Nis נולדה מתוך אהבה לאירוח יפה, אוכל ביתי מדויק ותשומת לב לפרטים הקטנים.</h2>
+        <p>מאחורי Nis עומדת יהודית ניסטנפובר, עם אהבה עמוקה לאירוח, לאוכל מוקפד ולרגעים הקטנים שהופכים ארוחה לחוויה.</p>
+        <p>אחרי שנים של חיים ברובע היהודי, בין סמטאות אבן, בתים מלאי ריח של שבת ושולחנות שנפתחים לאנשים שאוהבים, יהודית מביאה למטבח של Nis חיבור בין ביתיות, אסתטיקה ושירות אישי.</p>
         <p>כל הזמנה נבנית מתוך תשומת לב לפרטים הקטנים: חומרי גלם טריים, טעמים מדויקים, אריזה אסתטית ותחושה שמישהו חשב עליכם באמת.</p>
-        <div className="story-moments" aria-label="הדרך של nis">
+        <div className="story-moments" aria-label="הדרך של Nis">
           {storyMoments.map((moment) => (
             <article key={moment.title}>
               <h3>{moment.title}</h3>
@@ -597,8 +600,8 @@ export const RealMediaSection = () => (
         <p className="eyebrow">וידאו אמיתי</p>
         <h2 id="real-media-title">ככה נראית תשומת לב לפני שהאירוח בכלל פוגש את האורחים.</h2>
         <p>
-          מנות אישיות, אריזה נקייה, מדבקת nis ופרטים קטנים שמסדרים את החוויה עוד לפני הביס
-          הראשון. התמונות והווידאו כאן הם מהכנות אמיתיות של nis.
+          מנות אישיות, אריזה נקייה, מדבקת Nis ופרטים קטנים שמסדרים את החוויה עוד לפני הביס
+          הראשון. התמונות והווידאו כאן הם מהכנות אמיתיות של Nis.
         </p>
       </div>
       <video className="reveal" controls muted playsInline preload="none" poster={foodMedia.hostingTableOverview}>
@@ -625,7 +628,7 @@ export const GallerySection = ({
     <div className="container">
       <SectionHeading eyebrow="גלריה" title="אם זו חוויית בוטיק, היא צריכה להוכיח את עצמה בתמונה הראשונה." id="gallery-title" className="section-heading gallery-heading reveal">
         <p>
-          גלריה אמיתית מהאירוח: שולחנות, מגשים, סלטים, קפה ופרטים קטנים שמראים איך nis נראית
+          גלריה אמיתית מהאירוח: שולחנות, מגשים, סלטים, קפה ופרטים קטנים שמראים איך Nis נראית
           כשהיא מגיעה לשולחן.
         </p>
       </SectionHeading>
@@ -689,7 +692,7 @@ export const SeoSection = () => (
       </div>
       <div className="reveal">
         <p>
-          nis נותנת מענה למי שמחפש קייטרינג בוטיק בביתר עילית והסביבה: תפריט שבת מוכן, מגשי
+          Nis נותנת מענה למי שמחפש קייטרינג בוטיק בביתר עילית והסביבה: תפריט שבת מוכן, מגשי
           אירוח לאירועים קטנים, פינגר פוד, בראנץ׳ משפחתי ומארזי פיקניק או דרך. כל פנייה מתחילה
           בשיחה קצרה כדי להבין את סוג האירוח, כמות הסועדים, התאריך והתחושה שרוצים ליצור.
         </p>
@@ -811,7 +814,7 @@ export const ContactSection = ({
           >
             <option>ניס בטעם של שבת</option>
             <option>ניס בכיס - מגשי אירוח</option>
-            <option>Travel nis</option>
+            <option>Travel Nis</option>
             <option>אירוע קטן</option>
             <option>אחר</option>
           </select>

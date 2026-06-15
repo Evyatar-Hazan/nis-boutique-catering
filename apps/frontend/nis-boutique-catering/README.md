@@ -1,6 +1,6 @@
-# nis
+# Nis
 
-Hebrew RTL landing page for nis, with Boutique Catering as the service subtitle.
+Hebrew RTL landing page for Nis, with boutique catering as the service subtitle.
 
 ## Structure
 
@@ -28,7 +28,7 @@ src/
 - Activity area: Beitar Illit and nearby areas by coordination
 - Minimum order: decided per inquiry
 - Lead time: contact as early as possible
-- Images: local nis food and hosting media under `public/media/food`
+- Images: local Nis food and hosting media under `public/media/food`
 - Analytics: placeholders only, not connected yet
 
 ## Commands

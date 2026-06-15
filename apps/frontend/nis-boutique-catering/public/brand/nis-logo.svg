@@ -1,6 +1,6 @@
 <svg width="680" height="170" viewBox="0 0 680 170" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
-  <title id="title">nis</title>
-  <desc id="desc">nis logo with Boutique Catering subtitle</desc>
+  <title id="title">Nis</title>
+  <desc id="desc">Nis logo with boutique catering subtitle</desc>
   <defs>
     <linearGradient id="nis-gold" x1="298" y1="27" x2="635" y2="145" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#E8C77D"/>
@@ -23,18 +23,18 @@
     font-size="91"
     font-style="italic"
     font-weight="600"
-    letter-spacing="1"
-  >nis</text>
+    letter-spacing="0"
+  >Nis</text>
 
   <text
     x="24"
     y="95"
     fill="#171310"
     font-family="'Playfair Display', Georgia, serif"
-    font-size="43"
+    font-size="39"
     font-style="italic"
     font-weight="500"
-    letter-spacing="1"
+    letter-spacing="0"
     aria-hidden="true"
-  >Boutique Catering</text>
+  >boutique catering</text>
 </svg>

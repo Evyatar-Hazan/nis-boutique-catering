@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
-  <title id="title">nis favicon</title>
-  <desc id="desc">Square favicon for nis Boutique Catering</desc>
+  <title id="title">Nis favicon</title>
+  <desc id="desc">Square favicon for Nis boutique catering</desc>
   <defs>
     <linearGradient id="gold" x1="126" y1="94" x2="384" y2="378" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#F2D493"/>
@@ -30,6 +30,6 @@
     font-size="146"
     font-style="italic"
     font-weight="600"
-    letter-spacing="1"
-  >nis</text>
+    letter-spacing="0"
+  >Nis</text>
 </svg>
