@@ -22,7 +22,7 @@ describe('Nis boutique catering app', () => {
       }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('link', { name: /קבלו תפריט מותאם בוואטסאפ/i }),
+      screen.getAllByRole('link', { name: /דברו איתנו בוואטסאפ/i })[0],
     ).toBeInTheDocument();
   });
 
@@ -30,7 +30,7 @@ describe('Nis boutique catering app', () => {
     render(<App />);
 
     const initialButtons = screen.getAllByRole('button', { name: /פתח תמונה:/i });
-    expect(initialButtons).toHaveLength(15);
+    expect(initialButtons).toHaveLength(6);
 
     fireEvent.click(screen.getByRole('button', { name: 'דגים' }));
 
@@ -59,19 +59,12 @@ describe('Nis boutique catering app', () => {
     expect(triggerButton).toHaveFocus();
   });
 
-  it('supports keyboard navigation for the experience tabs', () => {
+  it('gives equal weight to the three services', () => {
     render(<App />);
 
-    const shabbatTab = screen.getByRole('tab', { name: 'ניס בטעם של שבת' });
-    const hostingTab = screen.getByRole('tab', { name: 'ניס בכיס' });
-
-    expect(shabbatTab).toHaveAttribute('aria-selected', 'true');
-    expect(hostingTab).toHaveAttribute('aria-selected', 'false');
-
-    fireEvent.keyDown(shabbatTab, { key: 'ArrowLeft' });
-
-    expect(hostingTab).toHaveAttribute('aria-selected', 'true');
-    expect(screen.getByRole('tabpanel', { hidden: false })).toHaveTextContent('ניס בכיס');
+    expect(screen.getByRole('heading', { name: 'ניס בטעם של שבת' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'ניס בכיס' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Travel Nis' })).toBeInTheDocument();
   });
 
   it('builds a whatsapp inquiry from the contact form submit', () => {

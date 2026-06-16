@@ -560,7 +560,7 @@ summary:focus-visible {
 
 .hero-showcase {
   position: relative;
-  min-height: min(620px, calc(100dvh - 150px));
+  min-height: min(560px, calc(100dvh - 150px));
 }
 
 .hero-plate {
@@ -634,7 +634,7 @@ summary:focus-visible {
 }
 
 .section {
-  padding: clamp(76px, 9vw, 126px) 0;
+  padding: clamp(56px, 7vw, 92px) 0;
 }
 
 .intro-band,
@@ -828,7 +828,8 @@ summary:focus-visible {
 .split-section,
 .story-grid,
 .contact-grid,
-.faq-grid {
+.faq-grid,
+.booking-basics-grid {
   display: grid;
   grid-template-columns: minmax(0, 0.86fr) minmax(0, 1.14fr);
   gap: clamp(28px, 5vw, 72px);
@@ -838,7 +839,8 @@ summary:focus-visible {
 .intro-grid p,
 .split-section p,
 .story-copy p,
-.contact-copy p {
+.contact-copy p,
+.booking-basics-grid > div:first-child p {
   margin: 0;
   color: var(--muted);
   font-size: 1.08rem;
@@ -1246,6 +1248,19 @@ details p {
   width: 4px;
   height: 100%;
   background: linear-gradient(180deg, var(--gold), var(--rose));
+}
+
+.booking-basics-content {
+  display: grid;
+  gap: 20px;
+}
+
+.booking-facts {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.booking-faq {
+  grid-template-columns: 1fr;
 }
 
 .process-list {
@@ -2057,6 +2072,7 @@ details p {
   .story-grid,
   .contact-grid,
   .faq-grid,
+  .booking-basics-grid,
   .real-media-grid,
   .service-grid,
   .editorial-grid,
@@ -2200,7 +2216,43 @@ details p {
   }
 
   .section {
-    padding: 58px 0;
+    padding: 46px 0;
+  }
+
+  .service-card img {
+    aspect-ratio: 16 / 9;
+  }
+
+  .service-body,
+  .menu-card,
+  .compact-card,
+  .process-step,
+  .contact-form {
+    padding: 18px;
+  }
+
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-count: auto;
+    columns: auto;
+    gap: 10px;
+  }
+
+  .gallery-item {
+    margin: 0;
+  }
+
+  .gallery-item span {
+    inset-inline: 8px;
+    inset-block-end: 8px;
+    padding: 7px 9px;
+    font-size: 0.82rem;
+  }
+
+  .gallery-item img,
+  .gallery-item.tall img {
+    aspect-ratio: 1 / 1;
   }
 
   .experience-switcher {

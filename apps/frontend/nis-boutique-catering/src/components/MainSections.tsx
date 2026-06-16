@@ -9,9 +9,7 @@ import {
   faqs,
   foodMedia,
   galleryCategories,
-  heroMarquee,
   heroSceneNotes,
-  heroStats,
   manifestoMoments,
   menuGroups,
   processSteps,
@@ -78,23 +76,23 @@ export const HeroSection = ({ heroWhatsapp }: { readonly heroWhatsapp: string })
           לשבתות ואירועים קטנים
         </h1>
         <p className="hero-kicker">
-          קייטרינג בוטיק ביתי לשבתות, אירועים קטנים ומארזים, עם אוכל מוקפד, הגשה אסתטית ושירות אישי.
+          שבתות, מגשי אירוח ו־Travel Nis, עם אוכל מוקפד, נראות יפה ושיחה קצרה שסוגרת כיוון.
         </p>
         <p className="hero-text">
-          Nis מחברת בין טעם של בית לבין הגשה של בוטיק: שבתות עשירות, אירועים קטנים ומארזים
-          יפים לדרך. הכול נבנה סביב סוג האירוח שלכם, מהשיחה הראשונה ועד הרגע שהשולחן מוכן.
+          רואים את הסגנון, בוחרים את סוג ההזמנה, ומשאירים פנייה מסודרת. Nis כבר תהפוך את זה
+          לתפריט, מגשים או מארז שמתאימים לאירוח שלכם.
         </p>
         <div className="hero-actions" aria-label="פעולות ראשיות">
           <a className="button primary" href={heroWhatsapp} data-event="hero_whatsapp">
             <MessageCircle aria-hidden="true" />
-            קבלו תפריט מותאם בוואטסאפ
+            דברו איתנו בוואטסאפ
           </a>
-          <a className="button secondary" href="#experiences">
+          <a className="button secondary" href="#gallery">
             <Camera aria-hidden="true" />
-            צפו באפשרויות הזמנה
+            ראו איך זה נראה
           </a>
         </div>
-        <p className="microcopy">שיחה קצרה, התאמה אישית, והכוונה ברורה לפי האירוח, הכמות והתאריך.</p>
+        <p className="microcopy">אפשר גם למלא את הטופס בסוף האתר ולשלוח פנייה מסודרת לוואטסאפ.</p>
         <div className="hero-badges" aria-label="נקודות אמון">
           <span>
             <ChefHat aria-hidden="true" size={16} />
@@ -112,19 +110,6 @@ export const HeroSection = ({ heroWhatsapp }: { readonly heroWhatsapp: string })
             <Clock aria-hidden="true" size={16} />
             מומלץ לפנות מוקדם
           </span>
-        </div>
-        <dl className="hero-proof" aria-label="סוגי הזמנות מרכזיים">
-          {heroStats.map((stat) => (
-            <div key={stat.label}>
-              <dt>{stat.value}</dt>
-              <dd>{stat.label}</dd>
-            </div>
-          ))}
-        </dl>
-        <div className="motion-rail" aria-hidden="true">
-          {heroMarquee.map((item) => (
-            <span key={item}>{item}</span>
-          ))}
         </div>
       </div>
       <div className="hero-showcase reveal is-visible" aria-label="תמונות אירוח של Nis">
@@ -425,11 +410,11 @@ export const BoutiqueSection = () => (
   <section className="section boutique-section" aria-labelledby="boutique-title">
     <div className="container boutique-layout">
       <div className="boutique-copy reveal">
-        <p className="eyebrow">מה הופך אותנו לבוטיק</p>
-        <h2 id="boutique-title">בוטיק אצל Nis הוא לא רק מילה יפה. הוא הוכחה בטעם, בנראות וביחס.</h2>
+        <p className="eyebrow">למה זה מרגיש בוטיק</p>
+        <h2 id="boutique-title">הפרטים הקטנים שעוזרים להחליט מהר יותר.</h2>
         <p>
-          מאחורי Nis עומדת מחשבה על כל רגע שהאורחים פוגשים: מהמראה של השולחן, דרך האריזה, ועד
-          תחושת השקט של מי שמארח. בדיוק שם המילה Boutique מקבלת הוכחה אמיתית.
+          במקום עוד הבטחות, הנה מה שבאמת משנה לפני שפונים: התאמה אישית, נראות מוכנה לשולחן,
+          יחס אנושי וטעם שמרגיש ביתי אבל חגיגי.
         </p>
       </div>
       <div className="boutique-grid">
@@ -455,7 +440,12 @@ export const BoutiqueSection = () => (
 export const ServicesSection = () => (
   <section id="experiences" className="section" aria-labelledby="experiences-title">
     <div className="container">
-      <SectionHeading eyebrow="שלוש החוויות של Nis" title="כל אירוח מקבל את הקצב, הטעם והאריזה שלו." id="experiences-title" />
+      <SectionHeading eyebrow="מה אפשר להזמין" title="שלוש אפשרויות ברורות. בוחרים כיוון וממשיכים לפנייה." id="experiences-title">
+        <p>
+          שבת, אירוח קטן או דרך: שלושת השירותים מקבלים משקל שווה, וכל אחד מהם נבנה לפי כמות,
+          תאריך והתחושה שרוצים ליצור.
+        </p>
+      </SectionHeading>
       <div className="service-grid">
         {services.map((service) => {
           const Icon = service.icon;
@@ -467,16 +457,8 @@ export const ServicesSection = () => (
                 <h3>{service.title}</h3>
                 <p className="service-subtitle">{service.subtitle}</p>
                 <p>{service.description}</p>
-                <div className="service-proof">
-                  <p>
-                    <strong>למי זה מתאים:</strong> {service.bestFor}
-                  </p>
-                  <p>
-                    <strong>מה מקבלים:</strong> {service.promise}
-                  </p>
-                </div>
                 <ul>
-                  {service.details.map((detail) => (
+                  {service.details.slice(0, 4).map((detail) => (
                     <li key={detail}>{detail}</li>
                   ))}
                 </ul>
@@ -496,7 +478,7 @@ export const ServicesSection = () => (
 export const ProcessSection = () => (
   <section id="process" className="section" aria-labelledby="process-title">
     <div className="container">
-      <SectionHeading eyebrow="איך זה עובד" title="המסלול ברור: רואים אוכל, מבינים התאמה, ואז פונים בלי היסוס." id="process-title" />
+      <SectionHeading eyebrow="איך זה עובד" title="ארבעה צעדים קצרים מהרעיון ועד אוכל שמוכן להגשה." id="process-title" />
       <div className="process-list">
         {processSteps.map((step, index) => {
           const Icon = step.icon;
@@ -563,7 +545,7 @@ export const SamplesSection = () => (
             <h3>{group.title}</h3>
             <p>{group.intro}</p>
             <ul>
-              {group.items.map((item) => (
+              {group.items.slice(0, 3).map((item) => (
                 <li key={item}>
                   <CheckCircle2 aria-hidden="true" />
                   <span>{item}</span>
@@ -627,46 +609,49 @@ export const GallerySection = ({
   images,
   onFilterChange,
   onOpenImage,
-}: GallerySectionProps) => (
-  <section id="gallery" className="section" aria-labelledby="gallery-title">
-    <div className="container">
-      <SectionHeading eyebrow="גלריה" title="אם זו חוויית בוטיק, היא צריכה להוכיח את עצמה בתמונה הראשונה." id="gallery-title" className="section-heading gallery-heading reveal">
-        <p>
-          גלריה אמיתית מהאירוח: שולחנות, מגשים, סלטים, קפה ופרטים קטנים שמראים איך Nis נראית
-          כשהיא מגיעה לשולחן.
-        </p>
-      </SectionHeading>
-      <div className="gallery-tabs reveal" aria-label="סינון גלריה לפי סוג">
-        {galleryCategories.map((category) => (
-          <button
-            className={category.id === activeCategory ? 'gallery-tab is-active' : 'gallery-tab'}
-            key={category.id}
-            type="button"
-            onClick={() => onFilterChange(category.id)}
-            aria-pressed={category.id === activeCategory}
-          >
-            {category.label}
-          </button>
-        ))}
+}: GallerySectionProps) => {
+  const visibleImages = activeCategory === 'all' ? images.slice(0, 6) : images;
+
+  return (
+    <section id="gallery" className="section" aria-labelledby="gallery-title">
+      <div className="container">
+        <SectionHeading eyebrow="גלריה" title="קודם רואים. אחר כך הרבה יותר קל לפנות." id="gallery-title" className="section-heading gallery-heading reveal">
+          <p>
+            שולחנות, מגשים, סלטים, קפה ופרטים קטנים שמראים את הסגנון לפני שמתחילים לדבר על תפריט.
+          </p>
+        </SectionHeading>
+        <div className="gallery-tabs reveal" aria-label="סינון גלריה לפי סוג">
+          {galleryCategories.map((category) => (
+            <button
+              className={category.id === activeCategory ? 'gallery-tab is-active' : 'gallery-tab'}
+              key={category.id}
+              type="button"
+              onClick={() => onFilterChange(category.id)}
+              aria-pressed={category.id === activeCategory}
+            >
+              {category.label}
+            </button>
+          ))}
+        </div>
+        <div className="gallery-grid" aria-live="polite">
+          {visibleImages.map((image, index) => (
+            <button
+              className={image.tall ? 'gallery-item tall reveal' : 'gallery-item reveal'}
+              key={image.title}
+              style={{ '--delay': `${(index % 6) * 55}ms` } as CSSProperties}
+              type="button"
+              onClick={() => onOpenImage(index)}
+              aria-label={`פתח תמונה: ${image.title}`}
+            >
+              <img src={image.src} alt={image.alt} loading="lazy" decoding="async" />
+              <span>{image.title}</span>
+            </button>
+          ))}
+        </div>
       </div>
-      <div className="gallery-grid" aria-live="polite">
-        {images.map((image, index) => (
-          <button
-            className={image.tall ? 'gallery-item tall reveal' : 'gallery-item reveal'}
-            key={image.title}
-            style={{ '--delay': `${(index % 6) * 55}ms` } as CSSProperties}
-            type="button"
-            onClick={() => onOpenImage(index)}
-            aria-label={`פתח תמונה: ${image.title}`}
-          >
-            <img src={image.src} alt={image.alt} loading="lazy" decoding="async" />
-            <span>{image.title}</span>
-          </button>
-        ))}
-      </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 export const DetailsSection = () => (
   <section className="section details-section" aria-labelledby="details-title">
@@ -683,6 +668,43 @@ export const DetailsSection = () => (
           </li>
         ))}
       </ul>
+    </div>
+  </section>
+);
+
+export const BookingBasicsSection = () => (
+  <section className="section booking-basics-section soft-section" aria-labelledby="booking-basics-title">
+    <div className="container booking-basics-grid">
+      <div className="reveal">
+        <p className="eyebrow">לפני שפונים</p>
+        <h2 id="booking-basics-title">כל מה שצריך לדעת כדי לשלוח פנייה בלי להתלבט.</h2>
+        <p>
+          אין צורך להגיע מוכנים עם תפריט סגור. מספיק לדעת מה סוג האירוח, בערך כמה סועדים,
+          ומה התאריך הרצוי, ומשם אפשר לדייק יחד.
+        </p>
+      </div>
+      <div className="booking-basics-content">
+        <div className="compact-grid booking-facts">
+          {coordinationCards.map((card) => {
+            const Icon = card.icon;
+            return (
+              <article className="compact-card reveal" key={card.title}>
+                <Icon aria-hidden="true" className="card-icon" />
+                <h3>{card.title}</h3>
+                <p>{card.text}</p>
+              </article>
+            );
+          })}
+        </div>
+        <div className="faq-list booking-faq reveal">
+          {faqs.slice(0, 3).map((faq) => (
+            <details key={faq.question}>
+              <summary>{faq.question}</summary>
+              <p>{faq.answer}</p>
+            </details>
+          ))}
+        </div>
+      </div>
     </div>
   </section>
 );
@@ -768,10 +790,10 @@ export const ContactSection = ({
     <div className="container contact-grid">
       <div className="contact-copy reveal">
         <p className="eyebrow">יצירת קשר</p>
-        <h2 id="contact-title">רוצים לארח יפה בלי לעבוד קשה? מכאן ממשיכים לוואטסאפ.</h2>
+        <h2 id="contact-title">אהבתם את הסגנון? שלחו פנייה מסודרת לוואטסאפ.</h2>
         <p>
-          ספרו לנו אם מדובר בשבת, אירוע קטן או מארזים לדרך, ונרכיב יחד כיוון שמתאים לאופי
-          האירוח שלכם.
+          הטופס נשאר קצר ומעשי: סוג הזמנה, תאריך, כמות והערה. אחרי השליחה נפתחת הודעת וואטסאפ
+          מוכנה, כדי שיהיה קל להמשיך לשיחה אישית.
         </p>
         <div className="contact-actions">
           <a className="button primary" href={contactWhatsapp} data-event="contact_whatsapp">

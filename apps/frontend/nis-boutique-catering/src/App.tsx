@@ -1,8 +1,7 @@
 import { type CSSProperties, type FormEvent, useCallback, useMemo, useState } from 'react';
-import { AudienceSection, ContactSection, CoordinationSection, DetailsSection, EditorialSection, ExperienceLabSection, FaqSection, GallerySection, HeroSection, IntroBandSection, ManifestoSection, ProcessSection, RealMediaSection, SamplesSection, SeoSection, ServicesSection, SignatureSection, StorySection, TrustSection, BoutiqueSection } from './components/MainSections';
+import { BookingBasicsSection, ContactSection, GallerySection, HeroSection, ProcessSection, SamplesSection, ServicesSection, BoutiqueSection } from './components/MainSections';
 import { FloatingActions, Footer, LightboxDialog, Topbar } from './components/SiteChrome';
-import { email, galleryImages, sectionIds, services, siteVersion, type GalleryCategory } from './data/siteContent';
-import { useAutoRotate } from './hooks/useAutoRotate';
+import { email, galleryImages, sectionIds, siteVersion, type GalleryCategory } from './data/siteContent';
 import { useLightboxDialog } from './hooks/useLightboxDialog';
 import { usePointerGlow } from './hooks/usePointerGlow';
 import { useRevealOnScroll } from './hooks/useRevealOnScroll';
@@ -14,20 +13,11 @@ function App() {
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
   const [activeGalleryCategory, setActiveGalleryCategory] = useState<GalleryCategory>('all');
   const [leadSource, setLeadSource] = useState('ניס בטעם של שבת');
-  const [activeExperienceIndex, setActiveExperienceIndex] = useState(0);
 
   useRevealOnScroll();
   usePointerGlow();
 
   const { isScrolled, scrollProgress, activeNavSection } = useScrollState(sectionIds);
-
-  useAutoRotate(
-    services.length,
-    4800,
-    useCallback(() => {
-      setActiveExperienceIndex((current) => (current + 1) % services.length);
-    }, []),
-  );
 
   const filteredGalleryImages = useMemo(
     () =>
@@ -98,22 +88,8 @@ function App() {
 
       <main id="main">
         <HeroSection heroWhatsapp={heroWhatsapp} />
-        <IntroBandSection />
-        <ManifestoSection />
-        <EditorialSection />
-        <AudienceSection />
-        <ExperienceLabSection
-          activeExperienceIndex={activeExperienceIndex}
-          onChangeExperience={setActiveExperienceIndex}
-        />
-        <SignatureSection />
-        <BoutiqueSection />
         <ServicesSection />
-        <ProcessSection />
-        <StorySection />
-        <SamplesSection />
-        <CoordinationSection />
-        <RealMediaSection />
+        <BoutiqueSection />
         <GallerySection
           activeCategory={activeGalleryCategory}
           images={filteredGalleryImages}
@@ -123,10 +99,9 @@ function App() {
           }}
           onOpenImage={setSelectedImageIndex}
         />
-        <DetailsSection />
-        <SeoSection />
-        <TrustSection />
-        <FaqSection />
+        <ProcessSection />
+        <SamplesSection />
+        <BookingBasicsSection />
         <ContactSection
           contactWhatsapp={contactWhatsapp}
           email={email}
