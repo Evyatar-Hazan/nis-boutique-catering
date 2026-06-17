@@ -20,6 +20,7 @@ import {
   Users,
   type LucideIcon,
 } from 'lucide-react';
+import { contentSnapshot } from '../generated/siteContent.generated';
 
 export const phoneDisplay = '050-3502615';
 export const phoneHref = 'tel:+972503502615';
@@ -451,7 +452,7 @@ export const coordinationCards: readonly SimpleCard[] = [
   },
 ];
 
-export const galleryImages: readonly GalleryImage[] = [
+const fallbackGalleryImages: readonly GalleryImage[] = [
   {
     title: 'שולחן אירוח מוכן',
     alt: 'שולחן אירוח מסודר עם מגשי ירקות, סלטים, כריכונים וכלי הגשה',
@@ -555,6 +556,31 @@ export const galleryImages: readonly GalleryImage[] = [
     tall: true,
   },
 ];
+
+const generatedMediaById = new Map(contentSnapshot.media.map((asset) => [asset.id, asset]));
+
+const generatedGalleryImages = contentSnapshot.gallery
+  .filter((item) => item.active)
+  .sort((left, right) => left.order - right.order)
+  .map((item): GalleryImage | undefined => {
+    const image = generatedMediaById.get(item.mediaId);
+
+    if (!image) {
+      return undefined;
+    }
+
+    return {
+      title: item.title,
+      alt: item.alt,
+      image,
+      category: item.category as GalleryCategory,
+      tall: item.tall,
+    };
+  })
+  .filter((item): item is GalleryImage => Boolean(item));
+
+export const galleryImages: readonly GalleryImage[] =
+  generatedGalleryImages.length > 0 ? generatedGalleryImages : fallbackGalleryImages;
 
 export const heroStats: readonly Readonly<{ value: string; label: string }>[] = [
   { value: 'שבתות', label: 'אוכל ביתי מוקפד, מוכן להגשה' },

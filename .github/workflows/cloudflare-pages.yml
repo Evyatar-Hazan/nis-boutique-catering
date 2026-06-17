@@ -1,0 +1,74 @@
+name: Deploy to Cloudflare Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  PNPM_VERSION: 9.15.9
+  NODE_VERSION: '20'
+  CLOUDFLARE_ACCOUNT_ID: 9b3262d42898067352168901679a4936
+  PUBLIC_SITE_PROJECT: nis-boutique-catering
+  ADMIN_STUDIO_PROJECT: nis-content-studio
+  GOOGLE_SHEET_ID: 101lO26iC3FzIJ7LdsGPCt1oJDR6RBHIkmeqcJ_Peyzk
+  VITE_GOOGLE_SHEET_ID: 101lO26iC3FzIJ7LdsGPCt1oJDR6RBHIkmeqcJ_Peyzk
+  VITE_GOOGLE_DRIVE_FOLDER_ID: 1HSTXq2aJkRj4CrPcNeNDx4EpAHQsUWDv
+  VITE_ALLOWED_EDITORS: evyatarhazan3.14@gmail.com
+
+jobs:
+  deploy:
+    name: Build and deploy Pages projects
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Validate workspace
+        run: pnpm validate
+
+      - name: Build public site
+        run: pnpm cloudflare:build:site
+        env:
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+
+      - name: Build admin studio
+        run: pnpm cloudflare:build:admin
+        env:
+          VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
+          VITE_GOOGLE_API_KEY: ${{ secrets.VITE_GOOGLE_API_KEY }}
+
+      - name: Deploy public site to Cloudflare Pages
+        run: |
+          npx wrangler@3 pages deploy apps/frontend/nis-boutique-catering/dist \
+            --project-name="${PUBLIC_SITE_PROJECT}" \
+            --branch=main \
+            --commit-dirty=true
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Deploy admin studio to Cloudflare Pages
+        run: |
+          npx wrangler@3 pages deploy apps/admin/nis-content-studio/dist \
+            --project-name="${ADMIN_STUDIO_PROJECT}" \
+            --branch=main \
+            --commit-dirty=true
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ env.CLOUDFLARE_ACCOUNT_ID }}

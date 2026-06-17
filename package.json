@@ -10,20 +10,29 @@
   },
   "scripts": {
     "dev": "turbo run dev --filter @monorepo/nis-boutique-catering",
+    "admin:dev": "turbo run dev --filter @monorepo/nis-content-studio",
+    "admin:build": "turbo run build --filter @monorepo/nis-content-studio",
     "build": "turbo run build",
+    "cloudflare:build:admin": "pnpm --filter @monorepo/nis-content-studio build",
+    "cloudflare:build:site": "pnpm content:sync && pnpm --filter @monorepo/nis-boutique-catering build",
     "lint": "turbo run lint",
+    "content:check": "pnpm --filter @monorepo/nis-boutique-catering content:check",
+    "content:sync": "pnpm --filter @monorepo/nis-boutique-catering content:sync",
     "media:check": "pnpm --filter @monorepo/nis-boutique-catering media:check",
     "media:optimize": "pnpm --filter @monorepo/nis-boutique-catering media:optimize",
     "perf:lighthouse": "pnpm --filter @monorepo/nis-boutique-catering perf:lighthouse",
     "format": "turbo run format",
     "test": "turbo run test",
     "clean": "turbo run clean && rm -rf node_modules",
-    "type-check": "turbo run type-check"
+    "type-check": "turbo run type-check",
+    "validate": "pnpm content:check && turbo run lint test type-check build"
   },
   "devDependencies": {
     "turbo": "^2.0.0"
   },
   "workspaces": [
-    "apps/frontend/nis-boutique-catering"
+    "packages/*",
+    "apps/frontend/nis-boutique-catering",
+    "apps/admin/nis-content-studio"
   ]
 }
