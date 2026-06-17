@@ -14,6 +14,9 @@ if (!accessToken) {
   throw new Error('GOOGLE_SERVICE_ACCOUNT_JSON is required.');
 }
 
+const serviceAccountEmail = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON).client_email;
+console.log(`Seeding with service account: ${serviceAccountEmail}`);
+
 const normalizeForCms = (snapshot) => ({
   ...snapshot,
   version: `seed-${new Date().toISOString()}`,
