@@ -789,6 +789,8 @@ const PreviewPanel = ({
 
 const DrivePreviewImage = ({ media, accessToken }: { readonly media?: ImageAssetRecord; readonly accessToken: string }) => {
   const [preview, setPreview] = useState<{ readonly fileId: string; readonly objectUrl: string; readonly failed: boolean } | null>(null);
+  const [failedFallbackSrc, setFailedFallbackSrc] = useState('');
+  const fallbackSrc = media?.src ? publicAssetSrcFor(media.src) : '';
 
   useEffect(() => {
     if (!media?.driveFileId) {
@@ -827,8 +829,9 @@ const DrivePreviewImage = ({ media, accessToken }: { readonly media?: ImageAsset
   }, [accessToken, media?.driveFileId]);
 
   const drivePreview = media?.driveFileId && preview?.fileId === media.driveFileId ? preview : null;
-  const src = drivePreview?.objectUrl || (media?.driveFileId ? '' : media?.src ? publicAssetSrcFor(media.src) : '');
-  const failed = Boolean(drivePreview?.failed);
+  const fallbackFailed = Boolean(fallbackSrc && failedFallbackSrc === fallbackSrc);
+  const src = drivePreview?.objectUrl || (fallbackFailed ? '' : fallbackSrc);
+  const failed = Boolean(drivePreview?.failed && (!fallbackSrc || fallbackFailed));
 
   return (
     <div className="media-preview">
@@ -837,17 +840,24 @@ const DrivePreviewImage = ({ media, accessToken }: { readonly media?: ImageAsset
           src={src}
           alt=""
           loading="lazy"
-          onError={() => setPreview(media?.driveFileId ? { fileId: media.driveFileId, objectUrl: '', failed: true } : null)}
+          onError={() => {
+            if (drivePreview?.objectUrl && fallbackSrc) {
+              setPreview(media?.driveFileId ? { fileId: media.driveFileId, objectUrl: '', failed: true } : null);
+              return;
+            }
+            setFailedFallbackSrc(fallbackSrc);
+            setPreview(media?.driveFileId ? { fileId: media.driveFileId, objectUrl: '', failed: true } : null);
+          }}
         />
       ) : (
         <div className="empty-preview">
           <Eye aria-hidden="true" />
-          <span>{media ? 'אין תצוגה מקדימה. בחרו מקור מדרייב.' : 'לא נבחרה תמונה'}</span>
+          <span>{media ? 'אין תצוגה מקדימה. בחרו מקור מדרייב או פרסמו את התמונה לאתר.' : 'לא נבחרה תמונה'}</span>
         </div>
       )}
       {media && (
-        <span className={media.driveFileId ? 'source-pill is-drive' : 'source-pill'}>
-          {media.driveFileId ? 'מקור בדרייב' : 'asset קיים באתר'}
+        <span className={drivePreview?.objectUrl ? 'source-pill is-drive' : 'source-pill'}>
+          {drivePreview?.objectUrl ? 'מקור בדרייב' : 'תצוגה מהאתר'}
         </span>
       )}
     </div>
