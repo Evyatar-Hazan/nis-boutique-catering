@@ -65,20 +65,42 @@ jobs:
 
       - name: Deploy public site to Cloudflare Pages
         run: |
-          npx wrangler@3 pages deploy apps/frontend/nis-boutique-catering/dist \
-            --project-name="${PUBLIC_SITE_PROJECT}" \
-            --branch=main \
-            --commit-dirty=true
+          deploy_pages() {
+            local attempt=1
+            until npx wrangler@3 pages deploy "$1" \
+              --project-name="$2" \
+              --branch=main \
+              --commit-dirty=true; do
+              if [ "$attempt" -ge 3 ]; then
+                return 1
+              fi
+              sleep $((attempt * 10))
+              attempt=$((attempt + 1))
+            done
+          }
+
+          deploy_pages apps/frontend/nis-boutique-catering/dist "${PUBLIC_SITE_PROJECT}"
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
 
       - name: Deploy admin studio to Cloudflare Pages
         run: |
-          npx wrangler@3 pages deploy apps/admin/nis-content-studio/dist \
-            --project-name="${ADMIN_STUDIO_PROJECT}" \
-            --branch=main \
-            --commit-dirty=true
+          deploy_pages() {
+            local attempt=1
+            until npx wrangler@3 pages deploy "$1" \
+              --project-name="$2" \
+              --branch=main \
+              --commit-dirty=true; do
+              if [ "$attempt" -ge 3 ]; then
+                return 1
+              fi
+              sleep $((attempt * 10))
+              attempt=$((attempt + 1))
+            done
+          }
+
+          deploy_pages apps/admin/nis-content-studio/dist "${ADMIN_STUDIO_PROJECT}"
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
