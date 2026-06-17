@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { App } from './App';
 import '@testing-library/jest-dom/vitest';
@@ -6,24 +6,19 @@ import '@testing-library/jest-dom/vitest';
 describe('Content Studio', () => {
   afterEach(() => cleanup());
 
-  it('renders the admin shell in demo mode', () => {
+  it('shows only the private login gate before authentication', () => {
     render(<App />);
-    expect(screen.getByText('Content Studio')).toBeInTheDocument();
-    expect(screen.getAllByText('גלריה')).toHaveLength(2);
-    expect(screen.getByDisplayValue('מיני לחמניות אישיות')).toBeInTheDocument();
+
+    expect(screen.getByRole('heading', { name: 'Content Studio' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'כניסה עם Google' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'גלריה' })).not.toBeInTheDocument();
+    expect(screen.queryByDisplayValue('מיני לחמניות אישיות')).not.toBeInTheDocument();
   });
 
-  it('opens section editing for site-wide content blocks', () => {
+  it('explains that the studio is private', () => {
     render(<App />);
-    fireEvent.click(screen.getByRole('button', { name: 'מקטעים' }));
-    expect(screen.getByText('מקטעי תוכן')).toBeInTheDocument();
-    expect(screen.getByDisplayValue('קייטרינג בוטיק ביתי לשבתות ואירועים קטנים')).toBeInTheDocument();
-  });
 
-  it('opens settings editing for contact and SEO fields', () => {
-    render(<App />);
-    fireEvent.click(screen.getByRole('button', { name: 'הגדרות' }));
-    expect(screen.getByDisplayValue('050-3502615')).toBeInTheDocument();
-    expect(screen.getByDisplayValue('Nis Boutique Catering')).toBeInTheDocument();
+    expect(screen.getByText('כניסה למורשים בלבד')).toBeInTheDocument();
+    expect(screen.getByText(/רק משתמשים שאושרו מראש/)).toBeInTheDocument();
   });
 });

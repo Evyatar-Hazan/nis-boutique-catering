@@ -77,6 +77,47 @@ export type ServiceRecord = z.infer<typeof serviceSchema>;
 export type SectionBlockRecord = z.infer<typeof sectionBlockSchema>;
 export type ContentSnapshot = z.infer<typeof contentSnapshotSchema>;
 
+export const contentFieldHelp = {
+  settings: {
+    phoneDisplay: {
+      label: 'טלפון שמוצג באתר',
+      help: 'מופיע בכפתורי יצירת קשר ובאזור הסיום.',
+    },
+    phoneHref: {
+      label: 'קישור טלפון',
+      help: 'הקישור שלחיצה עליו פותחת שיחה במובייל.',
+    },
+    whatsappBase: {
+      label: 'קישור WhatsApp',
+      help: 'כל כפתורי הוואטסאפ באתר משתמשים בכתובת הזו.',
+    },
+  },
+  media: {
+    driveFileId: {
+      label: 'מקור בדרייב',
+      help: 'קובץ המקור שממנו נוצרות תמונות האתר בזמן פרסום.',
+    },
+    src: {
+      label: 'כתובת באתר אחרי פרסום',
+      help: 'כתובת סטטית מהירה שנוצרת מתוך Drive בזמן build.',
+    },
+  },
+  gallery: {
+    active: {
+      label: 'מוצג באתר',
+      help: 'אם כבוי, התמונה נשמרת בסטודיו אבל לא מופיעה בגלריה.',
+    },
+    tall: {
+      label: 'תמונה גבוהה',
+      help: 'נותן לתמונה מקום אנכי גדול יותר בגלריה.',
+    },
+    mediaId: {
+      label: 'תמונה מחוברת',
+      help: 'איזה קובץ מדיה יוצג בפריט הגלריה.',
+    },
+  },
+} as const;
+
 export const parseBoolean = (value: unknown, defaultValue = false) => {
   if (typeof value === 'boolean') {
     return value;
@@ -101,3 +142,22 @@ export const parseBoolean = (value: unknown, defaultValue = false) => {
 
 export const sortActiveGallery = (items: readonly GalleryItemRecord[]) =>
   [...items].filter((item) => item.active).sort((left, right) => left.order - right.order);
+
+export const validateContentReferences = (snapshot: ContentSnapshot) => {
+  const issues: string[] = [];
+  const mediaIds = new Set(snapshot.media.map((media) => media.id));
+
+  for (const item of snapshot.gallery) {
+    if (!mediaIds.has(item.mediaId)) {
+      issues.push(`פריט הגלריה "${item.title}" מצביע לתמונה שלא קיימת: ${item.mediaId}`);
+    }
+  }
+
+  for (const service of snapshot.services) {
+    if (!mediaIds.has(service.mediaId)) {
+      issues.push(`השירות "${service.title}" מצביע לתמונה שלא קיימת: ${service.mediaId}`);
+    }
+  }
+
+  return issues;
+};

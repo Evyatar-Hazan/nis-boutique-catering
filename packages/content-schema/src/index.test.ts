@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { contentSnapshotSchema, parseBoolean, sortActiveGallery } from './index';
+import { contentSnapshotSchema, parseBoolean, sortActiveGallery, validateContentReferences } from './index';
 
 const snapshot = {
   version: '1',
@@ -52,5 +52,32 @@ describe('content schema', () => {
         { ...snapshot.gallery[0], id: 'a', order: 1, active: false },
       ]).map((item) => item.id),
     ).toEqual(['b']);
+  });
+
+  it('reports gallery and service references to missing media', () => {
+    expect(
+      validateContentReferences({
+        ...snapshot,
+        gallery: [{ ...snapshot.gallery[0], mediaId: 'missing' }],
+        services: [
+          {
+            id: 'events',
+            title: 'אירועים',
+            subtitle: 'בוטיק',
+            description: 'תיאור',
+            bestFor: 'אירוח',
+            promise: 'רגוע',
+            details: ['פרט'],
+            cta: 'דברו איתנו',
+            mediaId: 'missing-service',
+            icon: 'Camera',
+          },
+        ],
+        sections: [],
+      }),
+    ).toEqual([
+      'פריט הגלריה "מגש אירוח" מצביע לתמונה שלא קיימת: missing',
+      'השירות "אירועים" מצביע לתמונה שלא קיימת: missing-service',
+    ]);
   });
 });
