@@ -66,6 +66,7 @@ For Cloudflare Pages / GitHub Actions build-time sync:
 ```sh
 GOOGLE_SHEET_ID=
 GOOGLE_SERVICE_ACCOUNT_JSON=
+CONTENT_SYNC_REQUIRE_REMOTE=true
 ```
 
 `GOOGLE_SERVICE_ACCOUNT_JSON` should be the full service-account JSON string. Share the Google Sheet and Drive media folder with the service account email.
@@ -76,7 +77,9 @@ Build command for the public site should run:
 npx pnpm@9.15.9 cloudflare:build:site
 ```
 
-If Google env is missing, `content:sync` falls back to the committed fallback content so builds stay stable.
+Local development can omit Google env and `content:sync` will fall back to committed content. The production Cloudflare workflow sets `CONTENT_SYNC_REQUIRE_REMOTE=true`, so production deploys fail instead of silently publishing stale fallback content.
+
+When remote sync succeeds, `public/media/cms` is rebuilt from Drive. Source images are downloaded into a temporary `_source` folder and converted into static WebP variants, so the public site does not serve Drive URLs or original image metadata.
 
 ## Cloudflare Pages
 
@@ -98,19 +101,15 @@ Required GitHub secret:
 
 ```txt
 CLOUDFLARE_API_TOKEN
-```
-
-Required GitHub variables or secrets:
-
-```txt
 GOOGLE_SERVICE_ACCOUNT_JSON
-```
-
-Admin build-time values are currently non-secret browser config, but keep them in GitHub secrets/variables if possible:
-
-```txt
 VITE_GOOGLE_CLIENT_ID
 VITE_GOOGLE_API_KEY
+VITE_GOOGLE_APPS_SCRIPT_PUBLISH_URL
+```
+
+Required build env values, currently committed in the workflow because they are project IDs:
+
+```txt
 VITE_GOOGLE_SHEET_ID
 VITE_GOOGLE_DRIVE_FOLDER_ID
 VITE_ALLOWED_EDITORS
@@ -118,27 +117,34 @@ VITE_ALLOWED_EDITORS
 
 ## Apps Script Publish Proxy
 
-The publish button can later trigger a GitHub `workflow_dispatch` or Cloudflare deploy hook. If using a deploy hook, store it server-side in Apps Script, not in the browser.
+The publish button triggers `tools/google-apps-script/publish-proxy.gs`. Create an Apps Script Web App, paste that file, deploy as a Web App, and store its URL in GitHub Secret `VITE_GOOGLE_APPS_SCRIPT_PUBLISH_URL`.
 
-```js
-const ALLOWED_EDITORS = ['owner@example.com'];
-const CLOUDFLARE_DEPLOY_HOOK_URL = 'https://api.cloudflare.com/client/v4/...';
+Set these Apps Script properties:
 
-function doPost(e) {
-  const email = Session.getActiveUser().getEmail().toLowerCase();
-
-  if (!ALLOWED_EDITORS.includes(email)) {
-    return ContentService.createTextOutput(JSON.stringify({ ok: false, error: 'forbidden' }))
-      .setMimeType(ContentService.MimeType.JSON);
-  }
-
-  const response = UrlFetchApp.fetch(CLOUDFLARE_DEPLOY_HOOK_URL, { method: 'post', muteHttpExceptions: true });
-
-  return ContentService.createTextOutput(JSON.stringify({
-    ok: response.getResponseCode() >= 200 && response.getResponseCode() < 300,
-    status: response.getResponseCode(),
-  })).setMimeType(ContentService.MimeType.JSON);
-}
+```txt
+ALLOWED_EDITORS=evyatarhazan3.14@gmail.com
+GITHUB_TOKEN=<classic PAT or fine-grained token with Actions: write for this repo>
 ```
 
-Treat the Web App URL like a secret. If it leaks, redeploy the script and rotate the deploy hook.
+Optional overrides, already defaulted in the script:
+
+```txt
+GITHUB_OWNER=Evyatar-Hazan
+GITHUB_REPO=nis-boutique-catering
+GITHUB_WORKFLOW_FILE=cloudflare-pages.yml
+```
+
+The browser sends its short-lived Google OAuth access token to the Apps Script. The script verifies the user email with Google, checks `ALLOWED_EDITORS`, then calls GitHub `workflow_dispatch` on `main`.
+
+Treat the Web App URL and GitHub token like secrets. If either leaks, rotate the GitHub token and redeploy the Web App.
+
+## Service Account Setup
+
+Create a Google Cloud service account in the same project used by the OAuth client, then create a JSON key for it. Share both resources with the service account email as Viewer:
+
+```txt
+Google Sheet: 101lO26iC3FzIJ7LdsGPCt1oJDR6RBHIkmeqcJ_Peyzk
+Drive media folder: 1HSTXq2aJkRj4CrPcNeNDx4EpAHQsUWDv
+```
+
+Save the full downloaded JSON into GitHub Secret `GOOGLE_SERVICE_ACCOUNT_JSON`.

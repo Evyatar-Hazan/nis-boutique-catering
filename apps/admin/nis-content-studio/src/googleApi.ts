@@ -281,15 +281,17 @@ export const triggerPublish = async (accessToken: string) => {
 
   const response = await fetch(studioConfig.publishUrl, {
     method: 'POST',
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ source: 'nis-content-studio', at: new Date().toISOString() }),
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify({
+      accessToken,
+      source: 'nis-content-studio',
+      at: new Date().toISOString(),
+    }),
   });
 
-  if (!response.ok) {
-    throw new Error('Publish hook failed');
+  const payload = (await response.json().catch(() => null)) as { ok?: boolean; error?: string } | null;
+  if (!response.ok || !payload?.ok) {
+    throw new Error(payload?.error ?? 'Publish hook failed');
   }
 };
 

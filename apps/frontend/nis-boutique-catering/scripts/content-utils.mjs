@@ -1,5 +1,5 @@
 import { createSign } from 'node:crypto';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, extname, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
 
@@ -8,6 +8,8 @@ export const fallbackPath = resolve(appRoot, 'content/fallback-content.json');
 export const generatedJsonPath = resolve(appRoot, 'src/generated/siteContent.generated.json');
 export const generatedTsPath = resolve(appRoot, 'src/generated/siteContent.generated.ts');
 export const publicRoot = resolve(appRoot, 'public');
+export const cmsMediaRoot = resolve(publicRoot, 'media/cms');
+export const cmsSourceRoot = resolve(cmsMediaRoot, '_source');
 
 export const readJson = (path) => JSON.parse(readFileSync(path, 'utf8'));
 
@@ -66,13 +68,38 @@ const run = (command, args) => {
   }
 };
 
-export const optimizeCmsMedia = (media) => {
-  const sourcePath = pathFromPublicSrc(media.src);
+export const clearCmsMedia = () => {
+  rmSync(cmsMediaRoot, { force: true, recursive: true });
+  mkdirSync(cmsSourceRoot, { recursive: true });
+};
+
+const ensurePrimaryWebp = (sourcePath, media) => {
+  const targetPath = pathFromPublicSrc(media.src);
+  mkdirSync(dirname(targetPath), { recursive: true });
+
+  if (media.src.endsWith('.webp') && commandExists('cwebp')) {
+    run('cwebp', ['-quiet', '-q', '84', sourcePath, '-o', targetPath]);
+    return;
+  }
+
+  if (extname(sourcePath).toLowerCase() === extname(targetPath).toLowerCase()) {
+    copyFileSync(sourcePath, targetPath);
+    return;
+  }
+
+  throw new Error(`Cannot create primary CMS image ${media.src}. Install cwebp or use a matching source format.`);
+};
+
+export const optimizeCmsMedia = (media, sourcePath = pathFromPublicSrc(media.src)) => {
   const hasCwebp = commandExists('cwebp');
   const hasSips = commandExists('sips');
 
   if (!existsSync(sourcePath)) {
     return;
+  }
+
+  if (sourcePath !== pathFromPublicSrc(media.src)) {
+    ensurePrimaryWebp(sourcePath, media);
   }
 
   for (const width of getResponsiveWidths(Number(media.width))) {

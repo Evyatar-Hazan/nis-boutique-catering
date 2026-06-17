@@ -4,6 +4,11 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      source:
+        description: What triggered this deploy
+        required: false
+        default: manual
 
 env:
   PNPM_VERSION: 9.15.9
@@ -36,6 +41,9 @@ jobs:
         with:
           version: ${{ env.PNPM_VERSION }}
 
+      - name: Install media tooling
+        run: sudo apt-get update && sudo apt-get install -y webp
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
@@ -46,12 +54,14 @@ jobs:
         run: pnpm cloudflare:build:site
         env:
           GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          CONTENT_SYNC_REQUIRE_REMOTE: true
 
       - name: Build admin studio
         run: pnpm cloudflare:build:admin
         env:
           VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
           VITE_GOOGLE_API_KEY: ${{ secrets.VITE_GOOGLE_API_KEY }}
+          VITE_GOOGLE_APPS_SCRIPT_PUBLISH_URL: ${{ secrets.VITE_GOOGLE_APPS_SCRIPT_PUBLISH_URL }}
 
       - name: Deploy public site to Cloudflare Pages
         run: |

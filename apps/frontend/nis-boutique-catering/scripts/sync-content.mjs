@@ -1,6 +1,8 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname } from 'node:path';
 import {
+  clearCmsMedia,
+  cmsSourceRoot,
   extensionForMimeType,
   fallbackPath,
   getServiceAccountAccessToken,
@@ -15,6 +17,7 @@ const sheetsBaseUrl = 'https://sheets.googleapis.com/v4/spreadsheets';
 const driveBaseUrl = 'https://www.googleapis.com/drive/v3';
 
 const sheetId = process.env.GOOGLE_SHEET_ID || process.env.VITE_GOOGLE_SHEET_ID;
+const requireRemote = process.env.CONTENT_SYNC_REQUIRE_REMOTE === 'true';
 
 const rowsToObjects = (rows) => {
   const [headers = [], ...body] = rows;
@@ -129,7 +132,7 @@ const downloadDriveMedia = async (accessToken, media) => {
     throw new Error(`Could not download Drive media for ${media.id}`);
   }
 
-  const sourcePath = pathFromPublicSrc(media.src);
+  const sourcePath = `${cmsSourceRoot}/${media.id}${extensionForMimeType(metadata.mimeType)}`;
   mkdirSync(dirname(sourcePath), { recursive: true });
   writeFileSync(sourcePath, Buffer.from(await mediaResponse.arrayBuffer()));
 
@@ -140,13 +143,18 @@ const downloadDriveMedia = async (accessToken, media) => {
     media.height = Number(metadata.imageMediaMetadata.height);
   }
   if (!media.src.match(/\.[^.]+$/)) {
-    media.src = `${media.src}${extensionForMimeType(metadata.mimeType)}`;
+    media.src = `${media.src}.webp`;
   }
 
-  optimizeCmsMedia(media);
+  optimizeCmsMedia(media, sourcePath);
 };
 
 const accessToken = await getServiceAccountAccessToken();
+
+if (requireRemote && (!accessToken || !sheetId)) {
+  throw new Error('Remote content sync is required, but GOOGLE_SERVICE_ACCOUNT_JSON or GOOGLE_SHEET_ID is missing.');
+}
+
 const snapshot = accessToken && sheetId ? await readRemoteSnapshot(accessToken) : readJson(fallbackPath);
 
 const errors = validateContentShape(snapshot);
@@ -156,6 +164,7 @@ if (errors.length > 0) {
 }
 
 if (accessToken) {
+  clearCmsMedia();
   for (const media of snapshot.media) {
     await downloadDriveMedia(accessToken, media);
   }

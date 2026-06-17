@@ -87,7 +87,7 @@ export const App = () => {
     if (!session || !validation.success) {
       return;
     }
-    void runTask('מפעיל פרסום ב-Vercel', async () => {
+    void runTask('מפעיל פרסום ל-Cloudflare Pages', async () => {
       await triggerPublish(session.accessToken);
     });
   };
