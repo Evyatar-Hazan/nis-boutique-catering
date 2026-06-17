@@ -1128,9 +1128,14 @@ details {
 
 .service-card img {
   width: 100%;
-  aspect-ratio: 4 / 3.25;
+  height: 100%;
   object-fit: cover;
   transition: transform 0.55s var(--ease);
+}
+
+.service-card .optimized-picture {
+  aspect-ratio: 4 / 3.25;
+  overflow: hidden;
 }
 
 .service-card:hover img {
@@ -1528,22 +1533,27 @@ details p {
   transition: opacity 0.3s var(--ease);
 }
 
+.gallery-item .optimized-picture {
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+}
+
 .gallery-item img {
   display: block;
   width: 100%;
-  aspect-ratio: 4 / 3;
+  height: 100%;
   object-fit: cover;
   transition:
     transform 0.55s var(--ease),
     filter 0.55s var(--ease);
 }
 
-.gallery-item.tall img {
+.gallery-item.tall .optimized-picture {
   aspect-ratio: 3 / 4;
 }
 
-.gallery-item:nth-child(1) img,
-.gallery-item:nth-child(2) img {
+.gallery-item:nth-child(1) .optimized-picture,
+.gallery-item:nth-child(2) .optimized-picture {
   aspect-ratio: 4 / 5;
 }
 
@@ -2250,8 +2260,8 @@ details p {
     font-size: 0.82rem;
   }
 
-  .gallery-item img,
-  .gallery-item.tall img {
+  .gallery-item .optimized-picture,
+  .gallery-item.tall .optimized-picture {
     aspect-ratio: 1 / 1;
   }
 

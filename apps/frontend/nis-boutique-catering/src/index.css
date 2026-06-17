@@ -42,7 +42,13 @@ img {
 }
 
 .optimized-picture {
-  display: contents;
+  display: block;
+  width: 100%;
+}
+
+.optimized-picture > img {
+  width: 100%;
+  height: auto;
 }
 
 :focus-visible {

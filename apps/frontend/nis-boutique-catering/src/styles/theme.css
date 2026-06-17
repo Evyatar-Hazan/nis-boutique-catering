@@ -1195,8 +1195,8 @@
     font-size: 0.82rem;
   }
 
-  .gallery-item img,
-  .gallery-item.tall img {
+  .gallery-item .optimized-picture,
+  .gallery-item.tall .optimized-picture {
     aspect-ratio: 1 / 1;
   }
 }
