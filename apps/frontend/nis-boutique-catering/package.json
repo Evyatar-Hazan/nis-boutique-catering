@@ -11,6 +11,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "content:check": "node scripts/check-content.mjs",
+    "content:seed": "node scripts/seed-content.mjs",
     "content:sync": "node scripts/sync-content.mjs",
     "lint": "eslint .",
     "media:check": "node scripts/check-media.mjs",

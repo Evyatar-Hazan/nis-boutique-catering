@@ -1,0 +1,39 @@
+name: Seed Google Content
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: Type SEED to overwrite the managed Google Sheet tabs from fallback content
+        required: true
+
+env:
+  PNPM_VERSION: 9.15.9
+  NODE_VERSION: '20'
+  GOOGLE_SHEET_ID: 101lO26iC3FzIJ7LdsGPCt1oJDR6RBHIkmeqcJ_Peyzk
+
+jobs:
+  seed:
+    name: Seed content sheets
+    runs-on: ubuntu-latest
+    if: inputs.confirm == 'SEED'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Seed Google Sheets content
+        run: pnpm content:seed
+        env:
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}

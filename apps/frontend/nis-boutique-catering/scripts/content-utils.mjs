@@ -47,6 +47,21 @@ export const validateContentShape = (snapshot) => {
     }
   }
 
+  for (const service of snapshot.services ?? []) {
+    if (!service.id || !service.title || !service.mediaId || !service.icon) {
+      errors.push(`service row is incomplete: ${JSON.stringify(service)}`);
+    }
+    if (service.mediaId && !mediaIds.has(service.mediaId)) {
+      errors.push(`service ${service.id} references missing media ${service.mediaId}`);
+    }
+  }
+
+  for (const section of snapshot.sections ?? []) {
+    if (!section.id || !section.group) {
+      errors.push(`section row is incomplete: ${JSON.stringify(section)}`);
+    }
+  }
+
   return errors;
 };
 
@@ -119,7 +134,9 @@ export const optimizeCmsMedia = (media, sourcePath = pathFromPublicSrc(media.src
 
 const base64url = (input) => Buffer.from(input).toString('base64url');
 
-export const getServiceAccountAccessToken = async () => {
+export const getServiceAccountAccessToken = async (
+  scope = 'https://www.googleapis.com/auth/spreadsheets.readonly https://www.googleapis.com/auth/drive.readonly',
+) => {
   const raw = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
   if (!raw) {
     return '';
@@ -129,7 +146,7 @@ export const getServiceAccountAccessToken = async () => {
   const now = Math.floor(Date.now() / 1000);
   const claim = {
     iss: serviceAccount.client_email,
-    scope: 'https://www.googleapis.com/auth/spreadsheets.readonly https://www.googleapis.com/auth/drive.readonly',
+    scope,
     aud: 'https://oauth2.googleapis.com/token',
     exp: now + 3600,
     iat: now,

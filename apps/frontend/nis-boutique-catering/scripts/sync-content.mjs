@@ -52,7 +52,7 @@ const readRemoteSnapshot = async (accessToken) => {
     fetchSheetValues(accessToken, 'site_settings!A:B'),
     fetchSheetValues(accessToken, 'media!A:H'),
     fetchSheetValues(accessToken, 'gallery!A:J'),
-    fetchSheetValues(accessToken, 'services!A:I'),
+    fetchSheetValues(accessToken, 'services!A:J'),
     fetchSheetValues(accessToken, 'sections!A:F'),
   ]);
   const settings = Object.fromEntries(settingsRows.filter((row) => row[0]).map(([key, value]) => [key, value ?? '']));

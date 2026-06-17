@@ -91,7 +91,7 @@ export const readContentFromSheets = async (accessToken: string): Promise<Conten
     fetchSheetValues(accessToken, 'site_settings!A:B'),
     fetchSheetValues(accessToken, 'media!A:H'),
     fetchSheetValues(accessToken, 'gallery!A:J'),
-    fetchSheetValues(accessToken, 'services!A:I'),
+    fetchSheetValues(accessToken, 'services!A:J'),
     fetchSheetValues(accessToken, 'sections!A:F'),
   ]);
 

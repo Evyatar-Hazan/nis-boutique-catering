@@ -45,7 +45,7 @@ The public site currently consumes generated content from these Sheet areas:
 - `site_settings`: phone, email, WhatsApp, SEO title/description, and footer version.
 - `media` + `gallery`: gallery images, active state, ordering, layout, alt text, and static CMS assets.
 - `services`: service cards when the sheet has valid rows; otherwise the committed fallback services are used.
-- `sections`: `id=hero` controls the hero eyebrow/title/kicker/text. Rows with `group=faq` become FAQ items. Other groups are stored and editable for gradual rollout.
+- `sections`: `id=hero` controls the hero eyebrow/title/kicker/text. Rows with `group=faq` become FAQ items. `id=facts` controls the short facts shown near the contact area. Other groups are stored and editable for gradual rollout.
 
 For Drive-backed media, the production build normalizes `src` to `/media/cms/<asset-id>.webp` and generates static files from the Drive source.
 
@@ -91,6 +91,18 @@ npx pnpm@9.15.9 cloudflare:build:site
 Local development can omit Google env and `content:sync` will fall back to committed content. The production Cloudflare workflow sets `CONTENT_SYNC_REQUIRE_REMOTE=true`, so production deploys fail instead of silently publishing stale fallback content.
 
 When remote sync succeeds, `public/media/cms` is rebuilt from Drive. Source images are downloaded into a temporary `_source` folder and converted into static WebP variants, so the public site does not serve Drive URLs or original image metadata.
+
+## Seeding Sheets
+
+The committed fallback content can be used to initialize or reset the managed Sheet tabs:
+
+```sh
+npx pnpm@9.15.9 content:seed
+```
+
+This requires `GOOGLE_SHEET_ID` and `GOOGLE_SERVICE_ACCOUNT_JSON` with Sheets write access. It clears and rewrites only the managed tabs listed above, normalizes Drive-backed media to `/media/cms/<asset-id>.webp`, and keeps the public site on static optimized assets.
+
+For production setup, use the manual GitHub Action `.github/workflows/seed-google-content.yml` with input `SEED`. It runs with the existing GitHub secret instead of exposing the service-account JSON locally.
 
 ## Cloudflare Pages
 
@@ -151,7 +163,10 @@ Treat the Web App URL and GitHub token like secrets. If either leaks, rotate the
 
 ## Service Account Setup
 
-Create a Google Cloud service account in the same project used by the OAuth client, then create a JSON key for it. Share both resources with the service account email as Viewer:
+Create a Google Cloud service account in the same project used by the OAuth client, then create a JSON key for it. Share the resources with the service account email:
+
+- Google Sheet: Editor, required for the `content:seed` workflow and read by production builds.
+- Drive media folder: Viewer, required for production builds to download source images.
 
 ```txt
 Google Sheet: 101lO26iC3FzIJ7LdsGPCt1oJDR6RBHIkmeqcJ_Peyzk

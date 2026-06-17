@@ -689,7 +689,11 @@ export const signatureMoments: readonly Readonly<{ title: string; text: string; 
   },
 ];
 
-export const facts: readonly string[] = [
+const factsSection = getGeneratedSection('facts');
+
+export const facts: readonly string[] = factsSection?.items.length
+  ? factsSection.items
+  : [
   'אזור פעילות זמני: ביתר עילית והסביבה, בתיאום מול הלקוח.',
   'להזמנות שבת ואירועים מומלץ לפנות מוקדם ככל האפשר.',
   'לא מוצגים מחירים באתר; כל הזמנה מקבלת הצעה מותאמת לאחר שיחה קצרה.',
