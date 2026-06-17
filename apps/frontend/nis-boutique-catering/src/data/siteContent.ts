@@ -122,9 +122,9 @@ export const foodMedia = {
     responsive: true,
   },
   miniSandwiches: {
-    src: '/media/food/events/mini-sandwiches.webp',
-    width: 2000,
-    height: 1500,
+    src: '/media/food/events/mini-burger-trays.webp',
+    width: 899,
+    height: 1599,
     sizes: '(max-width: 720px) 100vw, 33vw',
     responsive: true,
   },
@@ -480,10 +480,11 @@ export const galleryImages: readonly GalleryImage[] = [
     category: 'trays',
   },
   {
-    title: 'כריכונים אישיים',
-    alt: 'מגש כריכונים עגולים עם חסה וסיכות במבוק',
+    title: 'מיני לחמניות אישיות',
+    alt: 'מגשים שחורים עם מיני לחמניות אישיות, שומשום, ירקות וסיכות במבוק',
     image: foodMedia.miniSandwiches,
     category: 'trays',
+    tall: true,
   },
   {
     title: 'סלט קפרזה אישי',
