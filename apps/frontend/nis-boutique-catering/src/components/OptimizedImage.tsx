@@ -15,10 +15,13 @@ export const OptimizedImage = ({ alt, image, ...imgProps }: OptimizedImageProps)
     return <img {...getImageProps(image)} {...imgProps} alt={alt} />;
   }
 
+  const avifSrcSet = getImageSrcSet(image, 'avif');
+  const webpSrcSet = getImageSrcSet(image, 'webp');
+
   return (
     <picture className="optimized-picture">
-      <source type="image/avif" srcSet={getImageSrcSet(image, 'avif')} sizes={image.sizes} />
-      <source type="image/webp" srcSet={getImageSrcSet(image, 'webp')} sizes={image.sizes} />
+      {avifSrcSet ? <source type="image/avif" srcSet={avifSrcSet} sizes={image.sizes} /> : null}
+      {webpSrcSet ? <source type="image/webp" srcSet={webpSrcSet} sizes={image.sizes} /> : null}
       <img {...getImageProps(image)} {...imgProps} alt={alt} />
     </picture>
   );

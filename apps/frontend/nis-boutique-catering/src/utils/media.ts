@@ -9,8 +9,18 @@ const getResponsiveWidths = (image: ImageAsset) => [
 const getResponsiveVariantSrc = (src: string, width: number, format: 'avif' | 'webp') =>
   src.replace(/\.[^.]+$/, `-${width}w.${format}`);
 
+const hasFormatVariants = (image: ImageAsset, format: 'avif' | 'webp') => {
+  if (format === 'webp') {
+    return true;
+  }
+
+  // CMS images are generated from Drive during the Linux Cloudflare build.
+  // The current build toolchain creates WebP variants there, but not AVIF.
+  return !image.src.startsWith('/media/cms/');
+};
+
 export const getImageSrcSet = (image: ImageAsset, format: 'avif' | 'webp') => {
-  if (!image.responsive) {
+  if (!image.responsive || !hasFormatVariants(image, format)) {
     return undefined;
   }
 
