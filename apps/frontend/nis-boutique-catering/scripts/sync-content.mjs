@@ -113,10 +113,19 @@ const readRemoteSnapshot = async (accessToken) => {
   };
 };
 
+const getCmsMediaSrc = (media) => `/media/cms/${media.id}.webp`;
+
+const normalizeRemoteMediaPaths = (snapshot) => ({
+  ...snapshot,
+  media: snapshot.media.map((media) => (media.driveFileId ? { ...media, src: getCmsMediaSrc(media) } : media)),
+});
+
 const downloadDriveMedia = async (accessToken, media) => {
-  if (!media.driveFileId || !media.src.startsWith('/media/cms/')) {
+  if (!media.driveFileId) {
     return;
   }
+
+  media.src = getCmsMediaSrc(media);
 
   const metadataResponse = await fetch(`${driveBaseUrl}/files/${media.driveFileId}?fields=id,name,mimeType,imageMediaMetadata`, {
     headers: { Authorization: `Bearer ${accessToken}` },
@@ -142,9 +151,6 @@ const downloadDriveMedia = async (accessToken, media) => {
   if (!media.height && metadata.imageMediaMetadata?.height) {
     media.height = Number(metadata.imageMediaMetadata.height);
   }
-  if (!media.src.match(/\.[^.]+$/)) {
-    media.src = `${media.src}.webp`;
-  }
 
   optimizeCmsMedia(media, sourcePath);
 };
@@ -155,7 +161,7 @@ if (requireRemote && (!accessToken || !sheetId)) {
   throw new Error('Remote content sync is required, but GOOGLE_SERVICE_ACCOUNT_JSON or GOOGLE_SHEET_ID is missing.');
 }
 
-const snapshot = accessToken && sheetId ? await readRemoteSnapshot(accessToken) : readJson(fallbackPath);
+const snapshot = accessToken && sheetId ? normalizeRemoteMediaPaths(await readRemoteSnapshot(accessToken)) : readJson(fallbackPath);
 
 const errors = validateContentShape(snapshot);
 if (errors.length > 0) {
