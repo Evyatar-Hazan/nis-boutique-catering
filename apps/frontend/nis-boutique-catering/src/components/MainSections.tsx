@@ -10,6 +10,7 @@ import {
   faqs,
   foodMedia,
   galleryCategories,
+  heroContent,
   heroSceneNotes,
   manifestoMoments,
   menuGroups,
@@ -77,18 +78,20 @@ export const HeroSection = ({ heroWhatsapp }: { readonly heroWhatsapp: string })
             decoding="async"
           />
         </div>
-        <p className="eyebrow">מהרובע היהודי לביתר עילית</p>
+        <p className="eyebrow">{heroContent.eyebrow}</p>
         <h1 id="hero-title">
-          קייטרינג בוטיק ביתי
-          <br />
-          לשבתות ואירועים קטנים
+          {heroContent.title.split('\n').map((line) => (
+            <span key={line}>
+              {line}
+              <br />
+            </span>
+          ))}
         </h1>
         <p className="hero-kicker">
-          שבתות, מגשי אירוח ו־Travel Nis, עם אוכל מוקפד, נראות יפה ושיחה קצרה שסוגרת כיוון.
+          {heroContent.kicker}
         </p>
         <p className="hero-text">
-          רואים את הסגנון, בוחרים את סוג ההזמנה, ומשאירים פנייה מסודרת. Nis כבר תהפוך את זה
-          לתפריט, מגשים או מארז שמתאימים לאירוח שלכם.
+          {heroContent.text}
         </p>
         <div className="hero-actions" aria-label="פעולות ראשיות">
           <a className="button primary" href={heroWhatsapp} data-event="hero_whatsapp">

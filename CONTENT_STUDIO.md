@@ -38,6 +38,17 @@ id | group | title | text | items | active
 
 Use `|` inside `details` and `items` cells for multiple values.
 
+## Public Site Mapping
+
+The public site currently consumes generated content from these Sheet areas:
+
+- `site_settings`: phone, email, WhatsApp, SEO title/description, and footer version.
+- `media` + `gallery`: gallery images, active state, ordering, layout, alt text, and static CMS assets.
+- `services`: service cards when the sheet has valid rows; otherwise the committed fallback services are used.
+- `sections`: `id=hero` controls the hero eyebrow/title/kicker/text. Rows with `group=faq` become FAQ items. Other groups are stored and editable for gradual rollout.
+
+For Drive-backed media, the production build normalizes `src` to `/media/cms/<asset-id>.webp` and generates static files from the Drive source.
+
 ## Admin Env
 
 Set these for `apps/admin/nis-content-studio`:

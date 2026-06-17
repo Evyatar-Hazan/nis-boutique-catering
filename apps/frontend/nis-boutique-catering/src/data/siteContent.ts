@@ -20,13 +20,18 @@ import {
   Users,
   type LucideIcon,
 } from 'lucide-react';
-import { contentSnapshot } from '../generated/siteContent.generated';
+import type { ContentSnapshot } from '@monorepo/content-schema';
+import { contentSnapshot as generatedContentSnapshot } from '../generated/siteContent.generated';
 
-export const phoneDisplay = '050-3502615';
-export const phoneHref = 'tel:+972503502615';
-export const email = 'nisboutiquecatering@gmail.com';
-export const whatsappBase = 'https://wa.me/972503502615';
-export const siteVersion = 'v0.1.1';
+const contentSnapshot = generatedContentSnapshot as unknown as ContentSnapshot;
+
+const generatedSettings = contentSnapshot.settings;
+
+export const phoneDisplay = generatedSettings.phoneDisplay || '050-3502615';
+export const phoneHref = generatedSettings.phoneHref || 'tel:+972503502615';
+export const email = generatedSettings.email || 'nisboutiquecatering@gmail.com';
+export const whatsappBase = generatedSettings.whatsappBase || 'https://wa.me/972503502615';
+export const siteVersion = generatedSettings.siteVersion || 'v0.1.1';
 
 export const sectionIds = ['top', 'experiences', 'gallery', 'process', 'contact'] as const;
 
@@ -243,7 +248,30 @@ export const galleryCategories: readonly Readonly<{ id: GalleryCategory; label: 
   { id: 'coffee', label: 'קפה' },
 ];
 
-export const services: readonly Service[] = [
+const generatedMediaById = new Map(contentSnapshot.media.map((asset) => [asset.id, asset]));
+
+const iconByName: Readonly<Record<string, LucideIcon>> = {
+  CalendarDays,
+  Camera,
+  CheckCircle2,
+  ChefHat,
+  Clock,
+  ClipboardList,
+  Gift,
+  HeartHandshake,
+  Mail,
+  MapPin,
+  MessageCircle,
+  Package,
+  Phone,
+  Play,
+  Send,
+  Sparkles,
+  Utensils,
+  Users,
+};
+
+const fallbackServices: readonly Service[] = [
   {
     title: 'ניס בטעם של שבת',
     subtitle: 'להכניס את השבת ברוגע, להתענג על הטעם.',
@@ -281,6 +309,29 @@ export const services: readonly Service[] = [
     icon: Package,
   },
 ];
+
+const generatedServices = contentSnapshot.services
+  .map((service): Service | undefined => {
+    const image = generatedMediaById.get(service.mediaId);
+    if (!image) {
+      return undefined;
+    }
+
+    return {
+      title: service.title,
+      subtitle: service.subtitle,
+      description: service.description,
+      bestFor: service.bestFor,
+      promise: service.promise,
+      details: service.details,
+      cta: service.cta,
+      image,
+      icon: iconByName[service.icon] ?? Sparkles,
+    };
+  })
+  .filter((service): service is Service => Boolean(service));
+
+export const services: readonly Service[] = generatedServices.length > 0 ? generatedServices : fallbackServices;
 
 export const editorialCards: readonly EditorialCard[] = [
   {
@@ -557,8 +608,6 @@ const fallbackGalleryImages: readonly GalleryImage[] = [
   },
 ];
 
-const generatedMediaById = new Map(contentSnapshot.media.map((asset) => [asset.id, asset]));
-
 const generatedGalleryImages = contentSnapshot.gallery
   .filter((item) => item.active)
   .sort((left, right) => left.order - right.order)
@@ -581,6 +630,20 @@ const generatedGalleryImages = contentSnapshot.gallery
 
 export const galleryImages: readonly GalleryImage[] =
   generatedGalleryImages.length > 0 ? generatedGalleryImages : fallbackGalleryImages;
+
+const activeGeneratedSections = contentSnapshot.sections.filter((section) => section.active);
+const getGeneratedSection = (id: string) => activeGeneratedSections.find((section) => section.id === id);
+
+const heroSection = getGeneratedSection('hero');
+
+export const heroContent = {
+  eyebrow: heroSection?.items[0] || 'מהרובע היהודי לביתר עילית',
+  title: heroSection?.title || 'קייטרינג בוטיק ביתי\nלשבתות ואירועים קטנים',
+  kicker: heroSection?.items[1] || 'שבתות, מגשי אירוח ו־Travel Nis, עם אוכל מוקפד, נראות יפה ושיחה קצרה שסוגרת כיוון.',
+  text:
+    heroSection?.text ||
+    'רואים את הסגנון, בוחרים את סוג ההזמנה, ומשאירים פנייה מסודרת. Nis כבר תהפוך את זה לתפריט, מגשים או מארז שמתאימים לאירוח שלכם.',
+} as const;
 
 export const heroStats: readonly Readonly<{ value: string; label: string }>[] = [
   { value: 'שבתות', label: 'אוכל ביתי מוקפד, מוכן להגשה' },
@@ -660,7 +723,7 @@ export const trustCards: readonly SimpleCard[] = [
   },
 ];
 
-export const faqs: readonly Readonly<{ question: string; answer: string }>[] = [
+const fallbackFaqs: readonly Readonly<{ question: string; answer: string }>[] = [
   {
     question: 'כמה זמן מראש צריך להזמין?',
     answer: 'מומלץ לפנות כמה שיותר מוקדם, במיוחד לפני שבתות, חגים ואירועים עם מספר סועדים גדול.',
@@ -686,6 +749,13 @@ export const faqs: readonly Readonly<{ question: string; answer: string }>[] = [
     answer: 'מינימום הזמנה ייקבע בשיחה לפי סוג השירות, התאריך והיקף האירוח.',
   },
 ];
+
+const generatedFaqs = activeGeneratedSections
+  .filter((section) => section.group === 'faq' && section.title && section.text)
+  .map((section) => ({ question: section.title ?? '', answer: section.text ?? '' }));
+
+export const faqs: readonly Readonly<{ question: string; answer: string }>[] =
+  generatedFaqs.length > 0 ? generatedFaqs : fallbackFaqs;
 
 export const iconSet = {
   ArrowLeft,

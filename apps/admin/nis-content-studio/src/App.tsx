@@ -1,11 +1,11 @@
 import { useMemo, useState, type ChangeEvent, type ReactNode } from 'react';
-import { CheckCircle2, Cloud, ImagePlus, Lock, LogIn, RefreshCw, Rocket, Save, Search, ShieldCheck, Upload } from 'lucide-react';
-import { contentSnapshotSchema, galleryCategoryIds, type ContentSnapshot, type GalleryItemRecord, type ImageAssetRecord, type ServiceRecord } from '@monorepo/content-schema';
+import { ArrowDown, ArrowUp, CheckCircle2, Cloud, ImagePlus, Lock, LogIn, RefreshCw, Rocket, Save, Search, ShieldCheck, Upload, Wand2 } from 'lucide-react';
+import { contentSnapshotSchema, galleryCategoryIds, type ContentSnapshot, type GalleryItemRecord, type ImageAssetRecord, type SectionBlockRecord, type ServiceRecord } from '@monorepo/content-schema';
 import { isGoogleConfigured, studioConfig } from './config';
 import { demoContent } from './demoContent';
 import { fetchGoogleUserEmail, openDrivePicker, readContentFromSheets, requestGoogleAccessToken, saveContentToSheets, triggerPublish, uploadImageToDrive } from './googleApi';
 
-type ActiveView = 'gallery' | 'media' | 'services' | 'settings';
+type ActiveView = 'gallery' | 'media' | 'services' | 'sections' | 'settings';
 
 type Session = {
   readonly accessToken: string;
@@ -13,11 +13,17 @@ type Session = {
 };
 
 const editableCategories = galleryCategoryIds.filter((category) => category !== 'all');
+const publicSiteOrigin = 'https://nisboutiquecatering.com';
 
 const formatError = (error: unknown) => (error instanceof Error ? error.message : 'פעולה נכשלה');
 
 const updateById = <T extends { id: string }>(items: readonly T[], id: string, patch: Partial<T>) =>
   items.map((item) => (item.id === id ? { ...item, ...patch } : item));
+
+const splitPipeList = (value: string) => value.split('|').map((item) => item.trim()).filter(Boolean);
+const joinPipeList = (items: readonly string[]) => items.join(' | ');
+const cmsSrcFor = (id: string) => `/media/cms/${id}.webp`;
+const previewSrcFor = (src: string) => (src.startsWith('http') ? src : `${publicSiteOrigin}${src}`);
 
 export const App = () => {
   const [session, setSession] = useState<Session | null>(null);
@@ -100,8 +106,55 @@ export const App = () => {
     setContent((current) => ({ ...current, media: updateById(current.media, id, patch) }));
   };
 
+  const renameMedia = (id: string, nextId: string) => {
+    const cleanId = nextId.trim();
+    if (!cleanId) {
+      return;
+    }
+    setContent((current) => ({
+      ...current,
+      media: current.media.map((media) => (media.id === id ? { ...media, id: cleanId, src: media.driveFileId ? cmsSrcFor(cleanId) : media.src } : media)),
+      gallery: current.gallery.map((item) => (item.mediaId === id ? { ...item, mediaId: cleanId } : item)),
+      services: current.services.map((service) => (service.mediaId === id ? { ...service, mediaId: cleanId } : service)),
+    }));
+  };
+
   const updateService = (id: string, patch: Partial<ServiceRecord>) => {
     setContent((current) => ({ ...current, services: updateById(current.services, id, patch) }));
+  };
+
+  const updateSection = (id: string, patch: Partial<SectionBlockRecord>) => {
+    setContent((current) => ({ ...current, sections: updateById(current.sections, id, patch) }));
+  };
+
+  const moveGalleryItem = (id: string, direction: -1 | 1) => {
+    setContent((current) => {
+      const sorted = [...current.gallery].sort((left, right) => left.order - right.order);
+      const index = sorted.findIndex((item) => item.id === id);
+      const nextIndex = index + direction;
+      if (index < 0 || nextIndex < 0 || nextIndex >= sorted.length) {
+        return current;
+      }
+      const currentItem = sorted[index];
+      const nextItem = sorted[nextIndex];
+      return {
+        ...current,
+        gallery: current.gallery.map((item) => {
+          if (item.id === currentItem.id) return { ...item, order: nextItem.order };
+          if (item.id === nextItem.id) return { ...item, order: currentItem.order };
+          return item;
+        }),
+      };
+    });
+  };
+
+  const normalizeCmsMetadata = () => {
+    setContent((current) => ({
+      ...current,
+      media: current.media.map((media) => (media.driveFileId ? { ...media, src: cmsSrcFor(media.id), responsive: true } : media)),
+      gallery: current.gallery.map((item, index) => ({ ...item, order: index + 1, driveFileId: undefined })),
+    }));
+    setStatus('נתיבי המדיה נוקו ל-/media/cms. צריך לשמור כדי לעדכן את Google Sheets.');
   };
 
   const addGalleryItem = () => {
@@ -119,6 +172,24 @@ export const App = () => {
           active: false,
           tall: false,
           mediaId: current.media[0]?.id ?? '',
+        },
+      ],
+    }));
+  };
+
+  const addSection = () => {
+    const id = `section-${Date.now()}`;
+    setContent((current) => ({
+      ...current,
+      sections: [
+        ...current.sections,
+        {
+          id,
+          group: 'general',
+          title: 'מקטע חדש',
+          text: 'טקסט לעריכה',
+          items: [],
+          active: false,
         },
       ],
     }));
@@ -178,6 +249,7 @@ export const App = () => {
             ['gallery', 'גלריה'],
             ['media', 'מדיה'],
             ['services', 'שירותים'],
+            ['sections', 'מקטעים'],
             ['settings', 'הגדרות'],
           ].map(([id, label]) => (
             <button key={id} className={activeView === id ? 'is-active' : ''} onClick={() => setActiveView(id as ActiveView)}>
@@ -229,10 +301,16 @@ export const App = () => {
               title="גלריה"
               text="שם, alt, קטגוריה, סדר ותמונה מקורית לכל פריט."
               action={
-                <button className="compact-button" onClick={addGalleryItem}>
-                  <ImagePlus aria-hidden="true" />
-                  הוספת פריט
-                </button>
+                <div className="action-row">
+                  <button className="compact-button" onClick={normalizeCmsMetadata}>
+                    <Wand2 aria-hidden="true" />
+                    ניקוי CMS
+                  </button>
+                  <button className="compact-button" onClick={addGalleryItem}>
+                    <ImagePlus aria-hidden="true" />
+                    הוספת פריט
+                  </button>
+                </div>
               }
             />
             <label className="search-box">
@@ -250,6 +328,7 @@ export const App = () => {
                     <th>מדיה</th>
                     <th>פעיל</th>
                     <th>גבוה</th>
+                    <th>סידור</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -270,6 +349,16 @@ export const App = () => {
                       </td>
                       <td><input type="checkbox" checked={item.active} onChange={(event) => updateGallery(item.id, { active: event.target.checked })} /></td>
                       <td><input type="checkbox" checked={item.tall} onChange={(event) => updateGallery(item.id, { tall: event.target.checked })} /></td>
+                      <td>
+                        <div className="row-actions">
+                          <button type="button" className="icon-button" onClick={() => moveGalleryItem(item.id, -1)} aria-label="העלאה למעלה">
+                            <ArrowUp aria-hidden="true" />
+                          </button>
+                          <button type="button" className="icon-button" onClick={() => moveGalleryItem(item.id, 1)} aria-label="הורדה למטה">
+                            <ArrowDown aria-hidden="true" />
+                          </button>
+                        </div>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -295,11 +384,18 @@ export const App = () => {
               {content.media.map((media) => (
                 <article className="media-card" key={media.id}>
                   <div className="media-thumb">
-                    <Cloud aria-hidden="true" />
-                    <span>{media.width}x{media.height}</span>
+                    <img src={previewSrcFor(media.src)} alt="" loading="lazy" onError={(event) => { event.currentTarget.hidden = true; }} />
+                    <div>
+                      <Cloud aria-hidden="true" />
+                      <span>{media.width}x{media.height}</span>
+                    </div>
                   </div>
-                  <TextInput value={media.id} onChange={(value) => updateMedia(media.id, { id: value })} />
+                  <TextInput value={media.id} onChange={(value) => renameMedia(media.id, value)} />
                   <TextInput value={media.src} onChange={(value) => updateMedia(media.id, { src: value })} />
+                  <div className="inline-grid">
+                    <NumberInput value={media.width} onChange={(value) => updateMedia(media.id, { width: value })} />
+                    <NumberInput value={media.height} onChange={(value) => updateMedia(media.id, { height: value })} />
+                  </div>
                   <TextInput value={media.driveFileId ?? ''} onChange={(value) => updateMedia(media.id, { driveFileId: value || undefined })} placeholder="Drive file id" />
                   <TextInput value={media.usageNotes ?? ''} onChange={(value) => updateMedia(media.id, { usageNotes: value })} placeholder="שימושים באתר" />
                   <button className="ghost-button" onClick={() => handlePickDriveFile(media.id)} disabled={!canUseGoogle}>בחירה מ-Drive</button>
@@ -315,10 +411,52 @@ export const App = () => {
             <div className="cards-list">
               {content.services.map((service) => (
                 <article className="edit-card" key={service.id}>
+                  <TextInput value={service.id} onChange={(value) => updateService(service.id, { id: value })} placeholder="id" />
                   <TextInput value={service.title} onChange={(value) => updateService(service.id, { title: value })} />
                   <TextInput value={service.subtitle} onChange={(value) => updateService(service.id, { subtitle: value })} />
                   <textarea value={service.description} onChange={(event) => updateService(service.id, { description: event.target.value })} />
+                  <TextInput value={service.bestFor} onChange={(value) => updateService(service.id, { bestFor: value })} placeholder="מתאים ל..." />
+                  <TextInput value={service.promise} onChange={(value) => updateService(service.id, { promise: value })} placeholder="הבטחה" />
+                  <TextInput value={joinPipeList(service.details)} onChange={(value) => updateService(service.id, { details: splitPipeList(value) })} placeholder="פרטים מופרדים ב-| " />
                   <TextInput value={service.cta} onChange={(value) => updateService(service.id, { cta: value })} />
+                  <div className="inline-grid">
+                    <select value={service.mediaId} onChange={(event) => updateService(service.id, { mediaId: event.target.value })}>
+                      {content.media.map((media) => <option key={media.id} value={media.id}>{media.id}</option>)}
+                    </select>
+                    <TextInput value={service.icon} onChange={(value) => updateService(service.id, { icon: value })} placeholder="Icon" />
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {activeView === 'sections' && (
+          <section className="workspace-panel">
+            <PanelHeader
+              title="מקטעי תוכן"
+              text="Hero, FAQ, trust, facts וכל בלוק טקסטואלי שמגיע מה-Sheet."
+              action={
+                <button className="compact-button" onClick={addSection}>
+                  <ImagePlus aria-hidden="true" />
+                  הוספת מקטע
+                </button>
+              }
+            />
+            <div className="cards-list">
+              {content.sections.map((section) => (
+                <article className="edit-card" key={section.id}>
+                  <div className="inline-grid">
+                    <TextInput value={section.id} onChange={(value) => updateSection(section.id, { id: value })} placeholder="id" />
+                    <TextInput value={section.group} onChange={(value) => updateSection(section.id, { group: value })} placeholder="group" />
+                  </div>
+                  <TextInput value={section.title ?? ''} onChange={(value) => updateSection(section.id, { title: value || undefined })} placeholder="כותרת" />
+                  <textarea value={section.text ?? ''} onChange={(event) => updateSection(section.id, { text: event.target.value || undefined })} placeholder="טקסט" />
+                  <TextInput value={joinPipeList(section.items)} onChange={(value) => updateSection(section.id, { items: splitPipeList(value) })} placeholder="פריטים מופרדים ב-| " />
+                  <label className="check-row">
+                    <input type="checkbox" checked={section.active} onChange={(event) => updateSection(section.id, { active: event.target.checked })} />
+                    פעיל באתר
+                  </label>
                 </article>
               ))}
             </div>
@@ -329,8 +467,10 @@ export const App = () => {
           <section className="workspace-panel settings-grid">
             <PanelHeader title="הגדרות אתר" text="פרטי קשר ו-SEO בסיסי." />
             <TextInput value={content.settings.phoneDisplay} onChange={(value) => setContent((current) => ({ ...current, settings: { ...current.settings, phoneDisplay: value } }))} placeholder="טלפון לתצוגה" />
+            <TextInput value={content.settings.phoneHref} onChange={(value) => setContent((current) => ({ ...current, settings: { ...current.settings, phoneHref: value } }))} placeholder="טלפון כקישור tel:" />
             <TextInput value={content.settings.email} onChange={(value) => setContent((current) => ({ ...current, settings: { ...current.settings, email: value } }))} placeholder="אימייל" />
             <TextInput value={content.settings.whatsappBase} onChange={(value) => setContent((current) => ({ ...current, settings: { ...current.settings, whatsappBase: value } }))} placeholder="WhatsApp URL" />
+            <TextInput value={content.settings.siteVersion} onChange={(value) => setContent((current) => ({ ...current, settings: { ...current.settings, siteVersion: value } }))} placeholder="גרסת תוכן" />
             <TextInput value={content.settings.seoTitle ?? ''} onChange={(value) => setContent((current) => ({ ...current, settings: { ...current.settings, seoTitle: value } }))} placeholder="SEO title" />
             <textarea value={content.settings.seoDescription ?? ''} onChange={(event) => setContent((current) => ({ ...current, settings: { ...current.settings, seoDescription: event.target.value } }))} placeholder="SEO description" />
           </section>
