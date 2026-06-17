@@ -41,6 +41,10 @@ img {
   max-width: 100%;
 }
 
+.optimized-picture {
+  display: contents;
+}
+
 :focus-visible {
   outline: 3px solid #b98a2f;
   outline-offset: 4px;

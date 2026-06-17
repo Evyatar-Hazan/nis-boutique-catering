@@ -29,26 +29,152 @@ export const siteVersion = 'v0.1.1';
 
 export const sectionIds = ['top', 'experiences', 'gallery', 'process', 'contact'] as const;
 
+export interface ImageAsset {
+  readonly src: string;
+  readonly width: number;
+  readonly height: number;
+  readonly sizes?: string;
+  readonly responsive?: boolean;
+}
+
+export const brandMedia = {
+  logo: {
+    src: '/brand/nis-logo.svg',
+    width: 1060,
+    height: 610,
+  },
+  socialCard: {
+    src: '/brand/nis-logo-card.jpg',
+    width: 945,
+    height: 630,
+  },
+} as const satisfies Record<string, ImageAsset>;
+
 export const foodMedia = {
-  saladCupsClose: '/media/food/nis-salad-cups-close.jpeg',
-  saladCupsBranded: '/media/food/nis-salad-cups-branded.jpeg',
+  saladCupsClose: {
+    src: '/media/food/nis-salad-cups-close.jpeg',
+    width: 1080,
+    height: 1920,
+    sizes: '(max-width: 720px) 100vw, 50vw',
+    responsive: true,
+  },
+  saladCupsBranded: {
+    src: '/media/food/nis-salad-cups-branded.jpeg',
+    width: 1080,
+    height: 1920,
+    sizes: '(max-width: 720px) 100vw, 50vw',
+    responsive: true,
+  },
+  mezzeTrayClose: {
+    src: '/media/food/events/mezze-tray-close.webp',
+    width: 1500,
+    height: 2000,
+    sizes: '(max-width: 720px) 100vw, 33vw',
+    responsive: true,
+  },
+  hostingTableOverview: {
+    src: '/media/food/events/quiche-tart-clean.webp',
+    width: 721,
+    height: 1280,
+    sizes: '(max-width: 720px) 100vw, 50vw',
+    responsive: true,
+  },
+  tableSettingBlueGold: {
+    src: '/media/food/events/table-setting-blue-gold.webp',
+    width: 1500,
+    height: 2000,
+    sizes: '(max-width: 720px) 100vw, 33vw',
+    responsive: true,
+  },
+  coffeeStation: {
+    src: '/media/food/events/coffee-station.webp',
+    width: 2000,
+    height: 1500,
+    sizes: '(max-width: 720px) 100vw, 33vw',
+    responsive: true,
+  },
+  eventBuffetSaladRolls: {
+    src: '/media/food/events/event-buffet-salad-rolls.webp',
+    width: 1200,
+    height: 1600,
+    sizes: '(max-width: 720px) 100vw, 33vw',
+    responsive: true,
+  },
+  dipsTrayClose: {
+    src: '/media/food/events/dips-tray-close.webp',
+    width: 1500,
+    height: 2000,
+    sizes: '(max-width: 720px) 100vw, 33vw',
+    responsive: true,
+  },
+  salmonSkewersLemon: {
+    src: '/media/food/events/salmon-skewers-lemon.webp',
+    width: 1500,
+    height: 2000,
+    sizes: '(max-width: 720px) 100vw, 45vw',
+    responsive: true,
+  },
+  vegetableFocaccia: {
+    src: '/media/food/events/vegetable-focaccia.webp',
+    width: 2000,
+    height: 1500,
+    sizes: '(max-width: 720px) 100vw, 33vw',
+    responsive: true,
+  },
+  miniSandwiches: {
+    src: '/media/food/events/mini-sandwiches.webp',
+    width: 2000,
+    height: 1500,
+    sizes: '(max-width: 720px) 100vw, 33vw',
+    responsive: true,
+  },
+  roastedVegetables: {
+    src: '/media/food/events/roasted-vegetables.webp',
+    width: 1500,
+    height: 2000,
+    sizes: '(max-width: 720px) 100vw, 33vw',
+    responsive: true,
+  },
+  salmonSkewersClose: {
+    src: '/media/food/events/salmon-skewers-close.webp',
+    width: 1500,
+    height: 2000,
+    sizes: '(max-width: 720px) 100vw, 33vw',
+    responsive: true,
+  },
+  purpleCabbageSalad: {
+    src: '/media/food/events/purple-cabbage-salad.webp',
+    width: 1500,
+    height: 2000,
+    sizes: '(max-width: 720px) 100vw, 33vw',
+    responsive: true,
+  },
+  coffeeServiceClose: {
+    src: '/media/food/events/coffee-service-close.webp',
+    width: 1500,
+    height: 2000,
+    sizes: '(max-width: 720px) 100vw, 33vw',
+    responsive: true,
+  },
+  capreseSaladBowl: {
+    src: '/media/food/events/caprese-salad-bowl.webp',
+    width: 1500,
+    height: 2000,
+    sizes: '(max-width: 720px) 100vw, 33vw',
+    responsive: true,
+  },
+  roastedZucchiniSalad: {
+    src: '/media/food/events/roasted-zucchini-salad.webp',
+    width: 1500,
+    height: 2000,
+    sizes: '(max-width: 720px) 100vw, 33vw',
+    responsive: true,
+  },
+} as const;
+
+export const videoMedia = {
   saladCupsPrep: '/media/food/nis-salad-cups-prep.mp4',
   eventVideo: '/media/food/events/nis-event-table-video.mp4',
-  mezzeTrayClose: '/media/food/events/mezze-tray-close.webp',
-  hostingTableOverview: '/media/food/events/quiche-tart-clean.webp',
-  tableSettingBlueGold: '/media/food/events/table-setting-blue-gold.webp',
-  coffeeStation: '/media/food/events/coffee-station.webp',
-  eventBuffetSaladRolls: '/media/food/events/event-buffet-salad-rolls.webp',
-  dipsTrayClose: '/media/food/events/dips-tray-close.webp',
-  salmonSkewersLemon: '/media/food/events/salmon-skewers-lemon.webp',
-  vegetableFocaccia: '/media/food/events/vegetable-focaccia.webp',
-  miniSandwiches: '/media/food/events/mini-sandwiches.webp',
-  roastedVegetables: '/media/food/events/roasted-vegetables.webp',
-  salmonSkewersClose: '/media/food/events/salmon-skewers-close.webp',
-  purpleCabbageSalad: '/media/food/events/purple-cabbage-salad.webp',
-  coffeeServiceClose: '/media/food/events/coffee-service-close.webp',
-  capreseSaladBowl: '/media/food/events/caprese-salad-bowl.webp',
-  roastedZucchiniSalad: '/media/food/events/roasted-zucchini-salad.webp',
 } as const;
 
 export interface NavItem {
@@ -64,7 +190,7 @@ export interface Service {
   readonly promise: string;
   readonly details: readonly string[];
   readonly cta: string;
-  readonly image: string;
+  readonly image: ImageAsset;
   readonly icon: LucideIcon;
 }
 
@@ -76,7 +202,7 @@ export interface SimpleCard {
 
 export interface EditorialCard extends SimpleCard {
   readonly label: string;
-  readonly image: string;
+  readonly image: ImageAsset;
 }
 
 export interface StoryMoment {
@@ -95,7 +221,7 @@ export type GalleryCategory = 'all' | 'tables' | 'trays' | 'salads' | 'coffee' |
 export interface GalleryImage {
   readonly title: string;
   readonly alt: string;
-  readonly src: string;
+  readonly image: ImageAsset;
   readonly category: GalleryCategory;
   readonly tall?: boolean;
 }
@@ -220,7 +346,12 @@ export const boutiqueReasons: readonly SimpleCard[] = [
   },
 ];
 
-export const manifestoMoments: readonly Readonly<{ label: string; title: string; text: string; image: string }>[] = [
+export const manifestoMoments: readonly Readonly<{
+  label: string;
+  title: string;
+  text: string;
+  image: ImageAsset;
+}>[] = [
   {
     label: '01',
     title: 'שולחן שנראה מסודר עוד לפני שנוגעים בו',
@@ -324,101 +455,101 @@ export const galleryImages: readonly GalleryImage[] = [
   {
     title: 'שולחן אירוח מוכן',
     alt: 'שולחן אירוח מסודר עם מגשי ירקות, סלטים, כריכונים וכלי הגשה',
-    src: foodMedia.hostingTableOverview,
+    image: foodMedia.hostingTableOverview,
     category: 'tables',
     tall: true,
   },
   {
     title: 'בופה אירוח חגיגי',
     alt: 'שולחן בופה עם סלטים אישיים, רולים, מאפים ומנות אירוח מוגשות על סטנדים',
-    src: foodMedia.eventBuffetSaladRolls,
+    image: foodMedia.eventBuffetSaladRolls,
     category: 'tables',
     tall: true,
   },
   {
     title: 'שיפודי סלמון בלימון',
     alt: 'מגש שיפודי סלמון עם פרוסות לימון על מצע ירוק',
-    src: foodMedia.salmonSkewersLemon,
+    image: foodMedia.salmonSkewersLemon,
     category: 'fish',
     tall: true,
   },
   {
     title: 'פוקצ׳ה ירקות צבעונית',
     alt: 'פוקצ׳ה חתוכה עם ירקות קלויים וגבינה',
-    src: foodMedia.vegetableFocaccia,
+    image: foodMedia.vegetableFocaccia,
     category: 'trays',
   },
   {
     title: 'כריכונים אישיים',
     alt: 'מגש כריכונים עגולים עם חסה וסיכות במבוק',
-    src: foodMedia.miniSandwiches,
+    image: foodMedia.miniSandwiches,
     category: 'trays',
   },
   {
     title: 'סלט קפרזה אישי',
     alt: 'קערת סלט עם עגבניות שרי, מוצרלה, רוטב ירוק ושקית בוטנים',
-    src: foodMedia.capreseSaladBowl,
+    image: foodMedia.capreseSaladBowl,
     category: 'salads',
     tall: true,
   },
   {
     title: 'ירקות קלויים צבעוניים',
     alt: 'מגש ירקות קלויים עם פלפלים, ברוקולי, פטריות, בצל וחצילים',
-    src: foodMedia.roastedVegetables,
+    image: foodMedia.roastedVegetables,
     category: 'trays',
     tall: true,
   },
   {
     title: 'מטבלים למרכז השולחן',
     alt: 'מגש מטבלים עם זיתים, סלט טונה, מטבל לבן ומטבל כתום',
-    src: foodMedia.dipsTrayClose,
+    image: foodMedia.dipsTrayClose,
     category: 'trays',
   },
   {
     title: 'מגש גבינות ומטבלים',
     alt: 'מגש מחולק עם זיתים, קוביות גבינה, מטבל עגבניות וחמאה',
-    src: foodMedia.mezzeTrayClose,
+    image: foodMedia.mezzeTrayClose,
     category: 'trays',
     tall: true,
   },
   {
     title: 'סלט כרוב סגול',
     alt: 'קערת סלט כרוב סגול עם בצל ירוק, רוטב ושקית אגוזים',
-    src: foodMedia.purpleCabbageSalad,
+    image: foodMedia.purpleCabbageSalad,
     category: 'salads',
     tall: true,
   },
   {
     title: 'סלט זוקיני ופטריות',
     alt: 'קערת סלט עם זוקיני קלוי, פטריות, גבינה ורוטב',
-    src: foodMedia.roastedZucchiniSalad,
+    image: foodMedia.roastedZucchiniSalad,
     category: 'salads',
     tall: true,
   },
   {
     title: 'שיפודי סלמון מקרוב',
     alt: 'תקריב של שיפודי סלמון עם עשבי תיבול ולימון',
-    src: foodMedia.salmonSkewersClose,
+    image: foodMedia.salmonSkewersClose,
     category: 'fish',
     tall: true,
   },
   {
     title: 'עמדת קפה ותה',
     alt: 'עמדת קפה עם מיחם, חלב, כוסות, סכו"ם וסוכר',
-    src: foodMedia.coffeeStation,
+    image: foodMedia.coffeeStation,
     category: 'coffee',
   },
   {
     title: 'ערכת קפה מוקפדת',
     alt: 'קופסת תיונים, סוכר וסכו"ם לצד מיחם לשירות קפה',
-    src: foodMedia.coffeeServiceClose,
+    image: foodMedia.coffeeServiceClose,
     category: 'coffee',
     tall: true,
   },
   {
     title: 'שולחן ערוך באירוע',
     alt: 'שולחן ערוך עם מפה זהובה, צלחות כחולות ומפיות תכלת',
-    src: foodMedia.tableSettingBlueGold,
+    image: foodMedia.tableSettingBlueGold,
     category: 'tables',
     tall: true,
   },
@@ -450,7 +581,7 @@ export const heroMarquee: readonly string[] = [
   'אריזה שנראית כמו מותג',
 ];
 
-export const signatureMoments: readonly Readonly<{ title: string; text: string; image: string }>[] = [
+export const signatureMoments: readonly Readonly<{ title: string; text: string; image: ImageAsset }>[] = [
   {
     title: 'שולחן שנפתח יפה',
     text: 'מגשים, צבעים וכלי הגשה שמרגישים מוכנים לאורחים כבר מהרגע הראשון.',

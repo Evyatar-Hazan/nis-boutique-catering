@@ -32,6 +32,8 @@ pnpm install
 pnpm dev
 pnpm type-check
 pnpm lint
+pnpm media:check
+pnpm media:optimize
 pnpm test
 pnpm build
 ```
@@ -44,5 +46,7 @@ To run commands directly for the app:
 
 ```bash
 pnpm --filter @monorepo/nis-boutique-catering dev
+pnpm --filter @monorepo/nis-boutique-catering media:optimize
 pnpm --filter @monorepo/nis-boutique-catering validate
+pnpm --filter @monorepo/nis-boutique-catering perf:lighthouse
 ```

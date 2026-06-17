@@ -2,6 +2,7 @@ import { type CSSProperties, type FormEventHandler, type KeyboardEvent as ReactK
 import { ArrowLeft, Camera, CheckCircle2, ChefHat, Clock, Mail, MapPin, MessageCircle, Package, Phone, Play, Send, Utensils } from 'lucide-react';
 import {
   audienceCards,
+  brandMedia,
   boutiqueReasons,
   coordinationCards,
   editorialCards,
@@ -18,10 +19,12 @@ import {
   signatureMoments,
   storyMoments,
   trustCards,
+  videoMedia,
   type GalleryCategory,
   type GalleryImage,
 } from '../data/siteContent';
 import { buildInquiryWhatsappLink } from '../utils/contact';
+import { OptimizedImage } from './OptimizedImage';
 
 const SectionHeading = ({
   eyebrow,
@@ -44,7 +47,12 @@ const SectionHeading = ({
 );
 
 export const HeroSection = ({ heroWhatsapp }: { readonly heroWhatsapp: string }) => (
-  <section id="top" className="hero" aria-labelledby="hero-title">
+  <section
+    id="top"
+    className="hero"
+    aria-labelledby="hero-title"
+    style={{ '--hero-media-image': `url('${foodMedia.hostingTableOverview.src}')` } as CSSProperties}
+  >
     <div className="hero-media" aria-hidden="true" />
     <video
       className="hero-video"
@@ -54,17 +62,17 @@ export const HeroSection = ({ heroWhatsapp }: { readonly heroWhatsapp: string })
       muted
       playsInline
       preload="none"
-      poster={foodMedia.hostingTableOverview}
+      poster={foodMedia.hostingTableOverview.src}
     >
-      <source src={foodMedia.eventVideo} type="video/mp4" />
+      <source src={videoMedia.eventVideo} type="video/mp4" />
     </video>
     <div className="hero-texture" aria-hidden="true" />
     <div className="hero-layout">
       <div className="hero-content reveal is-visible">
         <div className="hero-brand-lockup" aria-label="Nis, boutique catering">
-          <img
+          <OptimizedImage
             className="hero-brand-logo"
-            src="/brand/nis-logo.svg"
+            image={brandMedia.logo}
             alt="Nis boutique catering"
             decoding="async"
           />
@@ -114,36 +122,30 @@ export const HeroSection = ({ heroWhatsapp }: { readonly heroWhatsapp: string })
       </div>
       <div className="hero-showcase reveal is-visible" aria-label="תמונות אירוח של Nis">
         <div className="hero-stage-frame">
-          <img
+          <OptimizedImage
             className="hero-plate primary-plate"
-            src={foodMedia.salmonSkewersLemon}
+            image={foodMedia.salmonSkewersLemon}
             alt="שיפודי סלמון עם לימון"
             loading="eager"
             fetchPriority="high"
             decoding="async"
-            width={1500}
-            height={2000}
           />
           <div className="hero-stage-caption">
             <strong>שבתות, אירוח קטן ומארזים</strong>
             <span>אותה שפה של טעם, נראות ושקט למארח.</span>
           </div>
         </div>
-        <img
+        <OptimizedImage
           className="hero-plate side-plate"
-          src={foodMedia.dipsTrayClose}
+          image={foodMedia.dipsTrayClose}
           alt="מגש מטבלים צבעוני"
           decoding="async"
-          width={2000}
-          height={1500}
         />
-        <img
+        <OptimizedImage
           className="hero-plate tall-plate"
-          src={foodMedia.tableSettingBlueGold}
+          image={foodMedia.tableSettingBlueGold}
           alt="שולחן ערוך לאירוח"
           decoding="async"
-          width={1500}
-          height={2000}
         />
         <div className="hero-scene-notes" aria-hidden="true">
           {heroSceneNotes.map((note) => (
@@ -207,7 +209,7 @@ export const ManifestoSection = () => (
             key={moment.title}
             style={{ '--delay': `${index * 80}ms` } as CSSProperties}
           >
-            <img src={moment.image} alt="" loading="lazy" decoding="async" />
+            <OptimizedImage image={moment.image} alt="" loading="lazy" decoding="async" />
             <div className="manifesto-card-copy">
               <span>{moment.label}</span>
               <h3>{moment.title}</h3>
@@ -234,7 +236,7 @@ export const EditorialSection = () => (
               key={card.title}
               style={{ '--delay': `${index * 70}ms` } as CSSProperties}
             >
-              <img src={card.image} alt="" loading="lazy" decoding="async" />
+              <OptimizedImage image={card.image} alt="" loading="lazy" decoding="async" />
               <div className="editorial-copy">
                 <span>{card.label}</span>
                 <Icon aria-hidden="true" className="card-icon" />
@@ -306,7 +308,11 @@ export const ExperienceLabSection = ({
   };
 
   return (
-    <section className="section experience-lab-section" aria-labelledby="experience-lab-title">
+    <section
+      className="section experience-lab-section"
+      aria-labelledby="experience-lab-title"
+      style={{ '--experience-media-image': `url('${foodMedia.dipsTrayClose.src}')` } as CSSProperties}
+    >
       <div className="container experience-lab">
         <div className="experience-copy reveal">
           <p className="eyebrow">בחרו את החוויה</p>
@@ -359,7 +365,7 @@ export const ExperienceLabSection = ({
                 hidden={!isActive}
               >
                 <div className="experience-frame">
-                  <img src={service.image} alt="" loading="lazy" decoding="async" />
+                  <OptimizedImage image={service.image} alt="" loading="lazy" decoding="async" />
                   <div className="experience-overlay">
                     <span>0{index + 1}</span>
                     <h3>{service.title}</h3>
@@ -393,7 +399,7 @@ export const SignatureSection = () => (
             key={moment.title}
             style={{ '--delay': `${index * 80}ms` } as CSSProperties}
           >
-            <img src={moment.image} alt="" loading="lazy" decoding="async" />
+            <OptimizedImage image={moment.image} alt="" loading="lazy" decoding="async" />
             <div>
               <span>0{index + 1}</span>
               <h3>{moment.title}</h3>
@@ -451,7 +457,7 @@ export const ServicesSection = () => (
           const Icon = service.icon;
           return (
             <article className="service-card reveal" key={service.title}>
-              <img src={service.image} alt="" loading="lazy" decoding="async" />
+              <OptimizedImage image={service.image} alt="" loading="lazy" decoding="async" />
               <div className="service-body">
                 <Icon aria-hidden="true" className="card-icon" />
                 <h3>{service.title}</h3>
@@ -514,9 +520,9 @@ export const StorySection = () => (
           ))}
         </div>
       </div>
-      <img
+      <OptimizedImage
         className="reveal"
-        src={foodMedia.tableSettingBlueGold}
+        image={foodMedia.tableSettingBlueGold}
         alt="שולחן אירוח ערוך ומוכן לאורחים"
         loading="lazy"
         decoding="async"
@@ -590,8 +596,8 @@ export const RealMediaSection = () => (
           הראשון. התמונות והווידאו כאן הם מהכנות אמיתיות של Nis.
         </p>
       </div>
-      <video className="reveal" controls muted playsInline preload="none" poster={foodMedia.hostingTableOverview}>
-        <source src={foodMedia.eventVideo} type="video/mp4" />
+      <video className="reveal" controls muted playsInline preload="none" poster={foodMedia.hostingTableOverview.src}>
+        <source src={videoMedia.eventVideo} type="video/mp4" />
       </video>
     </div>
   </section>
@@ -643,7 +649,7 @@ export const GallerySection = ({
               onClick={() => onOpenImage(index)}
               aria-label={`פתח תמונה: ${image.title}`}
             >
-              <img src={image.src} alt={image.alt} loading="lazy" decoding="async" />
+              <OptimizedImage image={image.image} alt={image.alt} loading="lazy" decoding="async" />
               <span>{image.title}</span>
             </button>
           ))}
@@ -786,7 +792,12 @@ export const ContactSection = ({
   onLeadSourceChange,
   onSubmit,
 }: ContactSectionProps) => (
-  <section id="contact" className="section contact-section" aria-labelledby="contact-title">
+  <section
+    id="contact"
+    className="section contact-section"
+    aria-labelledby="contact-title"
+    style={{ '--contact-media-image': `url('${foodMedia.tableSettingBlueGold.src}')` } as CSSProperties}
+  >
     <div className="container contact-grid">
       <div className="contact-copy reveal">
         <p className="eyebrow">יצירת קשר</p>

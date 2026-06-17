@@ -1,6 +1,7 @@
 import { type RefObject } from 'react';
 import { ChevronLeft, ChevronRight, MessageCircle, Phone, X } from 'lucide-react';
-import { navItems, phoneDisplay, phoneHref } from '../data/siteContent';
+import { brandMedia, navItems, phoneDisplay, phoneHref, type ImageAsset } from '../data/siteContent';
+import { OptimizedImage } from './OptimizedImage';
 
 interface TopbarProps {
   readonly activeNavSection: string;
@@ -11,9 +12,9 @@ interface TopbarProps {
 export const Topbar = ({ activeNavSection, isScrolled, topbarWhatsapp }: TopbarProps) => (
   <header className={isScrolled ? 'topbar is-scrolled' : 'topbar'} aria-label="ניווט ראשי">
     <a className="brand" href="#top" aria-label="Nis, boutique catering">
-      <img
+      <OptimizedImage
         className="brand-logo"
-        src="/brand/nis-logo.svg"
+        image={brandMedia.logo}
         alt="Nis - boutique catering"
         decoding="async"
       />
@@ -85,7 +86,7 @@ interface LightboxDialogProps {
   readonly dialogRef: RefObject<HTMLDivElement | null>;
   readonly image: {
     readonly alt: string;
-    readonly src: string;
+    readonly image: ImageAsset;
     readonly title: string;
   } | null;
   readonly imageCount: number;
@@ -156,7 +157,7 @@ export const LightboxDialog = ({
           </button>
         </>
       ) : null}
-      <img src={image.src} alt={image.alt} decoding="async" />
+      <OptimizedImage image={image.image} alt={image.alt} decoding="async" />
       <p id="lightbox-caption" className="lightbox-caption">
         {image.title}
       </p>
