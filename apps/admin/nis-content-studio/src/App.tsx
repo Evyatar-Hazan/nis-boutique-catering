@@ -1005,6 +1005,15 @@ export const App = () => {
       return;
     }
 
+    const activeUsages = getMediaUsage(mediaId, content).filter((usage) => usage.active);
+    if (activeUsages.length > 0) {
+      const ok = window.confirm(`התמונה הזאת מוצגת עכשיו באתר ב-${activeUsages.length} מקום/ות:\n${formatMediaUsage(activeUsages)}\n\nלהחליף את מקור ה-Drive שלה בכל זאת?`);
+      if (!ok) {
+        setStatus('החלפת מקור Drive בוטלה. קודם החליפו את התמונה באזורים שבהם היא בשימוש, או אשרו את ההחלפה.');
+        return;
+      }
+    }
+
     void runTask('בוחרים תמונה מ-Google Drive', async () => {
       const accessToken = await getFreshAccessToken();
       const file = await openDrivePicker(accessToken);
