@@ -1307,6 +1307,17 @@ export const App = () => {
               <Search aria-hidden="true" />
               <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="חיפוש לפי שם, תיאור או קטגוריה" />
             </label>
+            <div className="subsection-heading gallery-area-heading is-site-gallery">
+              <div>
+                <p className="kicker">גלריה באתר</p>
+                <h3>התמונות שהלקוח רואה בפועל</h3>
+                <p>כל פריט כאן הוא מקום בגלריה הציבורית. אפשר לשנות סדר, שם, קטגוריה, תיאור ותמונה מחוברת.</p>
+              </div>
+              <div className="area-status-pill">
+                <Images aria-hidden="true" />
+                <span>{filteredGallery.length} פריטים לעריכה</span>
+              </div>
+            </div>
             <div className="gallery-editor-grid">
               {filteredGallery.map((item) => {
                 const media = mediaById.get(item.mediaId);
@@ -1364,17 +1375,23 @@ export const App = () => {
                 );
               })}
             </div>
-            <div className="subsection-heading">
+            <div className="subsection-heading gallery-area-heading is-media-library">
               <div>
-                <p className="kicker">מאגר התמונות</p>
-                <h3>כל התמונות בדרייב, גם כאלה שלא מוצגות בגלריה</h3>
-                <p>כאן רואים איפה כל תמונה משמשת באתר. כדי להציג תמונה באתר, חברו אותה לפריט גלריה והדליקו “מוצג באתר”.</p>
+                <p className="kicker">ספריית תמונות</p>
+                <h3>כל מקורות התמונות, גם כאלה שלא מוצגים בגלריה</h3>
+                <p>כאן מנהלים את מקור התמונה בדרייב ואת מפת השימושים. כדי להציג תמונה באתר, חברו אותה לפריט באזור “גלריה באתר”.</p>
               </div>
-              <label className="compact-button file-button">
-                <Upload aria-hidden="true" />
-                העלאה ל-Drive
-                <input type="file" accept="image/*" onChange={handleUpload} disabled={!canUseGoogle} />
-              </label>
+              <div className="area-heading-actions">
+                <div className="area-status-pill">
+                  <Cloud aria-hidden="true" />
+                  <span>{content.media.filter((media) => !media.deletedAt).length} תמונות בספרייה</span>
+                </div>
+                <label className="compact-button file-button">
+                  <Upload aria-hidden="true" />
+                  העלאה ל-Drive
+                  <input type="file" accept="image/*" onChange={handleUpload} disabled={!canUseGoogle} />
+                </label>
+              </div>
             </div>
             <div className="media-grid compact-media-grid">
               {content.media.map((media) => {
