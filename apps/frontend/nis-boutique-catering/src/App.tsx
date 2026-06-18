@@ -23,7 +23,7 @@ import {
   ServicesSection,
 } from './components/MainSections';
 import { FloatingActions, Footer, LightboxDialog, Topbar } from './components/SiteChrome';
-import { email, galleryImages, sectionIds, siteVersion, type GalleryCategory } from './data/siteContent';
+import { contactInterestOptions, email, galleryImages, sectionIds, siteMicrocopy, siteVersion, type GalleryCategory } from './data/siteContent';
 import { useLightboxDialog } from './hooks/useLightboxDialog';
 import { usePointerGlow } from './hooks/usePointerGlow';
 import { useRevealOnScroll } from './hooks/useRevealOnScroll';
@@ -35,7 +35,7 @@ function App() {
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
   const [activeGalleryCategory, setActiveGalleryCategory] = useState<GalleryCategory>('all');
   const [activeExperienceIndex, setActiveExperienceIndex] = useState(0);
-  const [leadSource, setLeadSource] = useState('ניס בטעם של שבת');
+  const [leadSource, setLeadSource] = useState(contactInterestOptions[0] ?? 'ניס בטעם של שבת');
 
   useRevealOnScroll();
   usePointerGlow();
@@ -73,24 +73,24 @@ function App() {
     onPrevious: () => showAdjacentImage(-1),
   });
 
-  const topbarWhatsapp = buildWhatsappLink('שלום Nis, אשמח ליצור קשר.');
-  const heroWhatsapp = buildInquiryWhatsappLink('קייטרינג בוטיק לאירוח');
-  const contactWhatsapp = buildWhatsappLink('שלום Nis, אשמח ליצור קשר לגבי הזמנה.');
-  const footerWhatsapp = buildWhatsappLink('שלום Nis, אשמח לקבל פרטים.');
-  const floatingWhatsapp = buildWhatsappLink('שלום Nis, אשמח לקבל פרטים דרך האתר.');
+  const topbarWhatsapp = buildWhatsappLink(siteMicrocopy.whatsappTopbarMessage);
+  const heroWhatsapp = buildInquiryWhatsappLink(siteMicrocopy.whatsappHeroTopic);
+  const contactWhatsapp = buildWhatsappLink(siteMicrocopy.whatsappContactMessage);
+  const footerWhatsapp = buildWhatsappLink(siteMicrocopy.whatsappFooterMessage);
+  const floatingWhatsapp = buildWhatsappLink(siteMicrocopy.whatsappFloatingMessage);
 
   const handleContactSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const lines = [
-      `שם: ${formData.get('name') ?? ''}`,
-      `טלפון: ${formData.get('phone') ?? ''}`,
-      `מייל: ${formData.get('email') ?? ''}`,
-      `עניין: ${formData.get('interest') ?? ''}`,
-      `תאריך רצוי: ${formData.get('date') ?? ''}`,
-      `מספר סועדים: ${formData.get('guests') ?? ''}`,
-      `אופן קבלה מועדף: ${formData.get('delivery') ?? ''}`,
-      `הודעה: ${formData.get('message') ?? ''}`,
+      `${siteMicrocopy.formNameLabel}: ${formData.get('name') ?? ''}`,
+      `${siteMicrocopy.formPhoneLabel}: ${formData.get('phone') ?? ''}`,
+      `${siteMicrocopy.formEmailLabel}: ${formData.get('email') ?? ''}`,
+      `${siteMicrocopy.formInterestLabel}: ${formData.get('interest') ?? ''}`,
+      `${siteMicrocopy.formDateLabel}: ${formData.get('date') ?? ''}`,
+      `${siteMicrocopy.formGuestsLabel}: ${formData.get('guests') ?? ''}`,
+      `${siteMicrocopy.formDeliveryLabel}: ${formData.get('delivery') ?? ''}`,
+      `${siteMicrocopy.formMessageLabel}: ${formData.get('message') ?? ''}`,
     ];
 
     window.location.href = buildWhatsappLink(`שלום Nis,\n${lines.join('\n')}`);

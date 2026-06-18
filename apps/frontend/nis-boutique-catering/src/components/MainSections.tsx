@@ -4,6 +4,8 @@ import {
   audienceCards,
   brandMedia,
   boutiqueReasons,
+  contactDeliveryOptions,
+  contactInterestOptions,
   coordinationCards,
   editorialCards,
   facts,
@@ -14,8 +16,10 @@ import {
   heroSceneNotes,
   manifestoMoments,
   menuGroups,
+  phoneHref,
   processSteps,
   sectionCopy,
+  siteMicrocopy,
   seoTopics,
   services,
   signatureMoments,
@@ -126,14 +130,14 @@ export const HeroSection = ({ heroWhatsapp }: { readonly heroWhatsapp: string })
         <div className="hero-actions" aria-label="פעולות ראשיות">
           <a className="button primary" href={heroWhatsapp} data-event="hero_whatsapp">
             <MessageCircle aria-hidden="true" />
-            דברו איתנו בוואטסאפ
+            {siteMicrocopy.heroPrimaryCta}
           </a>
           <a className="button secondary" href="#gallery">
             <Camera aria-hidden="true" />
-            ראו איך זה נראה
+            {siteMicrocopy.heroSecondaryCta}
           </a>
         </div>
-        <p className="microcopy">אפשר גם למלא את הטופס בסוף האתר ולשלוח פנייה מסודרת לוואטסאפ.</p>
+        <p className="microcopy">{siteMicrocopy.heroMicrocopy}</p>
         <div className="hero-badges" aria-label="נקודות אמון">
           <span>
             <ChefHat aria-hidden="true" size={16} />
@@ -164,8 +168,8 @@ export const HeroSection = ({ heroWhatsapp }: { readonly heroWhatsapp: string })
             decoding="async"
           />
           <div className="hero-stage-caption">
-            <strong>שבתות, אירוח קטן ומארזים</strong>
-            <span>אותה שפה של טעם, נראות ושקט למארח.</span>
+            <strong>{siteMicrocopy.heroShowcaseTitle}</strong>
+            <span>{siteMicrocopy.heroShowcaseText}</span>
           </div>
         </div>
         <OptimizedImage
@@ -195,7 +199,7 @@ export const HeroSection = ({ heroWhatsapp }: { readonly heroWhatsapp: string })
         </div>
         <a className="video-chip" href="#gallery">
           <Play aria-hidden="true" size={18} />
-          רגעים אמיתיים מהאירוח
+          {siteMicrocopy.heroVideoChip}
         </a>
       </div>
     </div>
@@ -387,7 +391,7 @@ export const ExperienceLabSection = ({
                     <h3>{service.title}</h3>
                     <p>{service.promise}</p>
                     <a href={buildInquiryWhatsappLink(service.title)}>
-                      לפתוח שיחה על החוויה הזו
+                      {siteMicrocopy.experienceCta}
                       <ArrowLeft aria-hidden="true" size={16} />
                     </a>
                   </div>
@@ -800,11 +804,11 @@ export const ContactSection = ({
         <div className="contact-actions">
           <a className="button primary" href={contactWhatsapp} data-event="contact_whatsapp">
             <MessageCircle aria-hidden="true" />
-            קבלו הצעה מותאמת בוואטסאפ
+            {siteMicrocopy.contactPrimaryCta}
           </a>
-          <a className="button secondary" href="tel:+972503502615">
+          <a className="button secondary" href={phoneHref}>
             <Phone aria-hidden="true" />
-            התקשרו עכשיו
+            {siteMicrocopy.contactPhoneCta}
           </a>
           <a className="contact-line" href={`mailto:${email}`}>
             <Mail aria-hidden="true" />
@@ -812,64 +816,62 @@ export const ContactSection = ({
           </a>
           <span className="contact-line">
             <MapPin aria-hidden="true" />
-            ביתר עילית
+            {siteMicrocopy.contactLocation}
           </span>
         </div>
-        <div className="contact-promise" aria-label="מה קורה אחרי הפנייה">
-          <strong>מה קורה אחרי הפנייה?</strong>
+        <div className="contact-promise" aria-label={siteMicrocopy.contactPromiseHeading}>
+          <strong>{siteMicrocopy.contactPromiseHeading}</strong>
           <span>{sectionCopy.contact.extraText}</span>
         </div>
       </div>
       <form className="contact-form reveal" onSubmit={onSubmit}>
         <label>
-          שם מלא
+          {siteMicrocopy.formNameLabel}
           <input name="name" autoComplete="name" required />
         </label>
         <label>
-          טלפון
+          {siteMicrocopy.formPhoneLabel}
           <input name="phone" type="tel" autoComplete="tel" required />
         </label>
         <label>
-          מייל
+          {siteMicrocopy.formEmailLabel}
           <input name="email" type="email" autoComplete="email" />
         </label>
         <label>
-          במה אתם מתעניינים?
+          {siteMicrocopy.formInterestLabel}
           <select
             name="interest"
             value={leadSource}
             onChange={(event) => onLeadSourceChange(event.target.value)}
           >
-            <option>ניס בטעם של שבת</option>
-            <option>ניס בכיס - מגשי אירוח</option>
-            <option>Travel Nis</option>
-            <option>אירוע קטן</option>
-            <option>אחר</option>
+            {contactInterestOptions.map((option) => (
+              <option key={option}>{option}</option>
+            ))}
           </select>
         </label>
         <label>
-          תאריך רצוי
+          {siteMicrocopy.formDateLabel}
           <input name="date" type="date" />
         </label>
         <label>
-          מספר סועדים
+          {siteMicrocopy.formGuestsLabel}
           <input name="guests" type="number" min="1" inputMode="numeric" />
         </label>
         <label>
-          אופן קבלה מועדף
+          {siteMicrocopy.formDeliveryLabel}
           <select name="delivery">
-            <option>נדבר ונבדוק יחד</option>
-            <option>איסוף מביתר עילית</option>
-            <option>משלוח בתיאום</option>
+            {contactDeliveryOptions.map((option) => (
+              <option key={option}>{option}</option>
+            ))}
           </select>
         </label>
         <label className="full-field">
-          הודעה קצרה
+          {siteMicrocopy.formMessageLabel}
           <textarea name="message" rows={5} />
         </label>
         <button className="button primary full-field" type="submit">
           <Send aria-hidden="true" />
-          שלחו פנייה בוואטסאפ
+          {siteMicrocopy.formSubmitLabel}
         </button>
       </form>
     </div>

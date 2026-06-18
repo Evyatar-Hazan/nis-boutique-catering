@@ -229,6 +229,42 @@ export interface SectionCopy {
   readonly extraText?: string;
 }
 
+export interface SiteMicrocopy {
+  readonly topbarWhatsappLabel: string;
+  readonly footerTagline: string;
+  readonly footerWhatsappLabel: string;
+  readonly studioLoginLabel: string;
+  readonly floatingWhatsappAria: string;
+  readonly mobileActionsAria: string;
+  readonly mobileWhatsappLabel: string;
+  readonly mobilePhoneLabel: string;
+  readonly heroPrimaryCta: string;
+  readonly heroSecondaryCta: string;
+  readonly heroMicrocopy: string;
+  readonly heroShowcaseTitle: string;
+  readonly heroShowcaseText: string;
+  readonly heroVideoChip: string;
+  readonly experienceCta: string;
+  readonly contactPrimaryCta: string;
+  readonly contactPhoneCta: string;
+  readonly contactLocation: string;
+  readonly contactPromiseHeading: string;
+  readonly formNameLabel: string;
+  readonly formPhoneLabel: string;
+  readonly formEmailLabel: string;
+  readonly formInterestLabel: string;
+  readonly formDateLabel: string;
+  readonly formGuestsLabel: string;
+  readonly formDeliveryLabel: string;
+  readonly formMessageLabel: string;
+  readonly formSubmitLabel: string;
+  readonly whatsappTopbarMessage: string;
+  readonly whatsappHeroTopic: string;
+  readonly whatsappContactMessage: string;
+  readonly whatsappFooterMessage: string;
+  readonly whatsappFloatingMessage: string;
+}
+
 export type GalleryCategory = 'all' | 'tables' | 'trays' | 'salads' | 'coffee' | 'fish';
 
 export interface GalleryImage {
@@ -308,6 +344,16 @@ const getGeneratedSectionCopy = (id: string, fallback: SectionCopy): SectionCopy
     text: section.text ?? fallback.text,
     extraText: section.items[1] ?? fallback.extraText,
   };
+};
+
+const getGeneratedMicrocopy = (id: string, fallback: string) => {
+  const section = getGeneratedSection(`microcopy-${id}`);
+  return section?.text ?? section?.title ?? section?.items[0] ?? fallback;
+};
+
+const getGeneratedMicrocopyList = (id: string, fallback: readonly string[]) => {
+  const section = getGeneratedSection(`microcopy-${id}`);
+  return section?.items.length ? section.items : fallback;
 };
 
 const mergeGeneratedSimpleCards = <T extends SimpleCard>(
@@ -799,6 +845,56 @@ export const heroContent = {
     heroSection?.text ||
     'רואים את הסגנון, בוחרים את סוג ההזמנה, ומשאירים פנייה מסודרת. Nis כבר תהפוך את זה לתפריט, מגשים או מארז שמתאימים לאירוח שלכם.',
 } as const;
+
+export const siteMicrocopy: SiteMicrocopy = {
+  topbarWhatsappLabel: getGeneratedMicrocopy('topbar-whatsapp-label', 'וואטסאפ'),
+  footerTagline: getGeneratedMicrocopy('footer-tagline', 'אוכל של בית, גימור של בוטיק.'),
+  footerWhatsappLabel: getGeneratedMicrocopy('footer-whatsapp-label', 'וואטסאפ'),
+  studioLoginLabel: getGeneratedMicrocopy('studio-login-label', 'כניסת ניהול'),
+  floatingWhatsappAria: getGeneratedMicrocopy('floating-whatsapp-aria', 'דברו איתנו בוואטסאפ'),
+  mobileActionsAria: getGeneratedMicrocopy('mobile-actions-aria', 'פעולות מהירות ליצירת קשר'),
+  mobileWhatsappLabel: getGeneratedMicrocopy('mobile-whatsapp-label', 'וואטסאפ'),
+  mobilePhoneLabel: getGeneratedMicrocopy('mobile-phone-label', 'טלפון'),
+  heroPrimaryCta: getGeneratedMicrocopy('hero-primary-cta', 'דברו איתנו בוואטסאפ'),
+  heroSecondaryCta: getGeneratedMicrocopy('hero-secondary-cta', 'ראו איך זה נראה'),
+  heroMicrocopy: getGeneratedMicrocopy('hero-microcopy', 'אפשר גם למלא את הטופס בסוף האתר ולשלוח פנייה מסודרת לוואטסאפ.'),
+  heroShowcaseTitle: getGeneratedMicrocopy('hero-showcase-title', 'שבתות, אירוח קטן ומארזים'),
+  heroShowcaseText: getGeneratedMicrocopy('hero-showcase-text', 'אותה שפה של טעם, נראות ושקט למארח.'),
+  heroVideoChip: getGeneratedMicrocopy('hero-video-chip', 'רגעים אמיתיים מהאירוח'),
+  experienceCta: getGeneratedMicrocopy('experience-cta', 'לפתוח שיחה על החוויה הזו'),
+  contactPrimaryCta: getGeneratedMicrocopy('contact-primary-cta', 'קבלו הצעה מותאמת בוואטסאפ'),
+  contactPhoneCta: getGeneratedMicrocopy('contact-phone-cta', 'התקשרו עכשיו'),
+  contactLocation: getGeneratedMicrocopy('contact-location', 'ביתר עילית'),
+  contactPromiseHeading: getGeneratedMicrocopy('contact-promise-heading', 'מה קורה אחרי הפנייה?'),
+  formNameLabel: getGeneratedMicrocopy('form-name-label', 'שם מלא'),
+  formPhoneLabel: getGeneratedMicrocopy('form-phone-label', 'טלפון'),
+  formEmailLabel: getGeneratedMicrocopy('form-email-label', 'מייל'),
+  formInterestLabel: getGeneratedMicrocopy('form-interest-label', 'במה אתם מתעניינים?'),
+  formDateLabel: getGeneratedMicrocopy('form-date-label', 'תאריך רצוי'),
+  formGuestsLabel: getGeneratedMicrocopy('form-guests-label', 'מספר סועדים'),
+  formDeliveryLabel: getGeneratedMicrocopy('form-delivery-label', 'אופן קבלה מועדף'),
+  formMessageLabel: getGeneratedMicrocopy('form-message-label', 'הודעה קצרה'),
+  formSubmitLabel: getGeneratedMicrocopy('form-submit-label', 'שלחו פנייה בוואטסאפ'),
+  whatsappTopbarMessage: getGeneratedMicrocopy('whatsapp-topbar-message', 'שלום Nis, אשמח ליצור קשר.'),
+  whatsappHeroTopic: getGeneratedMicrocopy('whatsapp-hero-topic', 'קייטרינג בוטיק לאירוח'),
+  whatsappContactMessage: getGeneratedMicrocopy('whatsapp-contact-message', 'שלום Nis, אשמח ליצור קשר לגבי הזמנה.'),
+  whatsappFooterMessage: getGeneratedMicrocopy('whatsapp-footer-message', 'שלום Nis, אשמח לקבל פרטים.'),
+  whatsappFloatingMessage: getGeneratedMicrocopy('whatsapp-floating-message', 'שלום Nis, אשמח לקבל פרטים דרך האתר.'),
+};
+
+export const contactInterestOptions: readonly string[] = getGeneratedMicrocopyList('contact-interest-options', [
+  'ניס בטעם של שבת',
+  'ניס בכיס - מגשי אירוח',
+  'Travel Nis',
+  'אירוע קטן',
+  'אחר',
+]);
+
+export const contactDeliveryOptions: readonly string[] = getGeneratedMicrocopyList('contact-delivery-options', [
+  'נדבר ונבדוק יחד',
+  'איסוף מביתר עילית',
+  'משלוח בתיאום',
+]);
 
 export const sectionCopy = {
   introBand: getGeneratedSectionCopy('intro-band', {

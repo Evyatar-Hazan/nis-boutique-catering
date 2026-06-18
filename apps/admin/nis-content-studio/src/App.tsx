@@ -65,6 +65,7 @@ type ActiveView =
   | 'manifesto'
   | 'services'
   | 'site-copy'
+  | 'site-microcopy'
   | 'audience'
   | 'boutique'
   | 'signature'
@@ -186,6 +187,7 @@ const sectionGroupLabels: Readonly<Record<string, string>> = {
   audience: 'למי זה מתאים',
   intro: 'פתיח',
   'site-copy': 'טקסטי מעטפת',
+  'site-microcopy': 'טקסטים קטנים',
   editorial: 'מה מזמינים אצלנו',
   manifesto: 'השפה של Nis',
   process: 'איך זה עובד',
@@ -210,6 +212,14 @@ const makeCopySection = (
   order: number,
   extraText?: string,
 ) => makeSection(`copy-${id}`, 'site-copy', title, text, extraText ? [eyebrow, extraText] : [eyebrow], order);
+
+const makeMicrocopySection = (
+  id: string,
+  title: string,
+  text: string | undefined,
+  order: number,
+  items: readonly string[] = [],
+) => makeSection(`microcopy-${id}`, 'site-microcopy', title, text, items, order);
 
 const makeSection = (
   id: string,
@@ -249,6 +259,41 @@ const managedSectionDefaults: readonly SectionBlockRecord[] = [
   makeCopySection('trust', 'פחות סימני שאלה, יותר תחושה שיש עם מי לדבר.', undefined, 'מה מרגיע לפני שסוגרים', 18),
   makeCopySection('faq', 'התשובות שמקלות על הפנייה הראשונה.', undefined, 'שאלות נפוצות', 19),
   makeCopySection('contact', 'אהבתם את הסגנון? שלחו פנייה מסודרת לוואטסאפ.', 'הטופס נשאר קצר ומעשי: סוג הזמנה, תאריך, כמות והערה. אחרי השליחה נפתחת הודעת וואטסאפ מוכנה, כדי שיהיה קל להמשיך לשיחה אישית.', 'יצירת קשר', 20, 'שיחה קצרה, התאמה אישית, ואז סיכום ברור של תאריך, כמות וסגנון אירוח.'),
+  makeMicrocopySection('topbar-whatsapp-label', 'כפתור וואטסאפ בתפריט העליון', 'וואטסאפ', 1),
+  makeMicrocopySection('footer-tagline', 'משפט קצר בפוטר', 'אוכל של בית, גימור של בוטיק.', 2),
+  makeMicrocopySection('footer-whatsapp-label', 'קישור וואטסאפ בפוטר', 'וואטסאפ', 3),
+  makeMicrocopySection('studio-login-label', 'קישור כניסה לסטודיו בפוטר', 'כניסת ניהול', 4),
+  makeMicrocopySection('floating-whatsapp-aria', 'תיאור נגישות לכפתור וואטסאפ צף', 'דברו איתנו בוואטסאפ', 5),
+  makeMicrocopySection('mobile-actions-aria', 'תיאור נגישות לפעולות מובייל', 'פעולות מהירות ליצירת קשר', 6),
+  makeMicrocopySection('mobile-whatsapp-label', 'כפתור וואטסאפ במובייל', 'וואטסאפ', 7),
+  makeMicrocopySection('mobile-phone-label', 'כפתור טלפון במובייל', 'טלפון', 8),
+  makeMicrocopySection('hero-primary-cta', 'כפתור ראשי במסך הפתיחה', 'דברו איתנו בוואטסאפ', 9),
+  makeMicrocopySection('hero-secondary-cta', 'כפתור משני במסך הפתיחה', 'ראו איך זה נראה', 10),
+  makeMicrocopySection('hero-microcopy', 'משפט קטן מתחת לכפתורי Hero', 'אפשר גם למלא את הטופס בסוף האתר ולשלוח פנייה מסודרת לוואטסאפ.', 11),
+  makeMicrocopySection('hero-showcase-title', 'כותרת קטנה בתמונת Hero', 'שבתות, אירוח קטן ומארזים', 12),
+  makeMicrocopySection('hero-showcase-text', 'טקסט קטן בתמונת Hero', 'אותה שפה של טעם, נראות ושקט למארח.', 13),
+  makeMicrocopySection('hero-video-chip', 'כפתור וידאו במסך הפתיחה', 'רגעים אמיתיים מהאירוח', 14),
+  makeMicrocopySection('experience-cta', 'קישור בתוך בחירת חוויה', 'לפתוח שיחה על החוויה הזו', 15),
+  makeMicrocopySection('contact-primary-cta', 'כפתור וואטסאפ באזור יצירת קשר', 'קבלו הצעה מותאמת בוואטסאפ', 16),
+  makeMicrocopySection('contact-phone-cta', 'כפתור טלפון באזור יצירת קשר', 'התקשרו עכשיו', 17),
+  makeMicrocopySection('contact-location', 'מיקום שמוצג באזור יצירת קשר', 'ביתר עילית', 18),
+  makeMicrocopySection('contact-promise-heading', 'כותרת הבטחה באזור יצירת קשר', 'מה קורה אחרי הפנייה?', 19),
+  makeMicrocopySection('form-name-label', 'תווית שדה שם', 'שם מלא', 20),
+  makeMicrocopySection('form-phone-label', 'תווית שדה טלפון', 'טלפון', 21),
+  makeMicrocopySection('form-email-label', 'תווית שדה מייל', 'מייל', 22),
+  makeMicrocopySection('form-interest-label', 'תווית שדה סוג הזמנה', 'במה אתם מתעניינים?', 23),
+  makeMicrocopySection('form-date-label', 'תווית שדה תאריך', 'תאריך רצוי', 24),
+  makeMicrocopySection('form-guests-label', 'תווית שדה מספר סועדים', 'מספר סועדים', 25),
+  makeMicrocopySection('form-delivery-label', 'תווית שדה אופן קבלה', 'אופן קבלה מועדף', 26),
+  makeMicrocopySection('form-message-label', 'תווית שדה הודעה', 'הודעה קצרה', 27),
+  makeMicrocopySection('form-submit-label', 'כפתור שליחת הטופס', 'שלחו פנייה בוואטסאפ', 28),
+  makeMicrocopySection('whatsapp-topbar-message', 'הודעת וואטסאפ מהתפריט העליון', 'שלום Nis, אשמח ליצור קשר.', 29),
+  makeMicrocopySection('whatsapp-hero-topic', 'נושא הודעת וואטסאפ מה-Hero', 'קייטרינג בוטיק לאירוח', 30),
+  makeMicrocopySection('whatsapp-contact-message', 'הודעת וואטסאפ מאזור יצירת קשר', 'שלום Nis, אשמח ליצור קשר לגבי הזמנה.', 31),
+  makeMicrocopySection('whatsapp-footer-message', 'הודעת וואטסאפ מהפוטר', 'שלום Nis, אשמח לקבל פרטים.', 32),
+  makeMicrocopySection('whatsapp-floating-message', 'הודעת וואטסאפ מהכפתור הצף', 'שלום Nis, אשמח לקבל פרטים דרך האתר.', 33),
+  makeMicrocopySection('contact-interest-options', 'אפשרויות שדה סוג הזמנה', undefined, 34, ['ניס בטעם של שבת', 'ניס בכיס - מגשי אירוח', 'Travel Nis', 'אירוע קטן', 'אחר']),
+  makeMicrocopySection('contact-delivery-options', 'אפשרויות שדה אופן קבלה', undefined, 35, ['נדבר ונבדוק יחד', 'איסוף מביתר עילית', 'משלוח בתיאום']),
   makeSection('facts', 'facts', 'פרטים שחשוב לדעת', undefined, ['אזור פעילות: ביתר עילית והסביבה, בתיאום לפי תאריך ומיקום.', 'להזמנות שבת ואירועים מומלץ לפנות מוקדם ככל האפשר.', 'כל הזמנה מקבלת הצעה מותאמת אחרי שיחה קצרה והבנת הצורך.', 'אפשר לדבר על העדפות, רגישויות והתאמות תפריט לפי הצורך.'], 1),
   makeSection('editorial-shabbat', 'editorial', 'אוכל ביתי מוקפד לשבת שנכנסת ברוגע', 'תפריטי שבת עשירים, מסודרים ויפים להגשה, כדי שהבית ירגיש מלא בלי שכל העומס יישב עליכם.', ['שבתות', 'ChefHat'], 1),
   makeSection('editorial-events', 'editorial', 'שולחן שנפתח יפה ומייצר רושם כבר בדקה הראשונה', 'מגשי אירוח, פינגר פוד ושולחנות קטנים עם הגשה אסתטית שמתאימה למשפחה, מפגש או אירוח עסקי.', ['אירועים קטנים', 'Sparkles'], 2),
@@ -345,6 +390,13 @@ const areaDefinitions: readonly {
     location: 'כותרות ופתיחים של כל אזורי האתר',
     help: 'כאן עורכים את הכותרת, התווית והטקסט שמלווים כל אזור באתר.',
     icon: <FileText aria-hidden="true" />,
+  },
+  {
+    id: 'site-microcopy',
+    title: 'טקסטים קטנים',
+    location: 'כפתורים, טופס, הודעות וואטסאפ וטקסטי עזר',
+    help: 'מילים קצרות שהלקוח רואה ולוחץ עליהן, בלי להיכנס לקוד.',
+    icon: <Tag aria-hidden="true" />,
   },
   {
     id: 'editorial',
@@ -1348,6 +1400,22 @@ export const App = () => {
           />
         )}
 
+        {activeView === 'site-microcopy' && (
+          <SectionGroupEditor
+            title="טקסטים קטנים"
+            text="כפתורים, תוויות בטופס, הודעות וואטסאפ וטקסטי עזר קצרים. השם הפנימי עוזר להבין איפה הטקסט מופיע; השדה טקסט הוא מה שהלקוח יראה."
+            group="site-microcopy"
+            sections={content.sections}
+            updateSection={updateSection}
+            addSection={addSection}
+            duplicateSection={duplicateSection}
+            archiveSection={archiveSection}
+            restoreSection={restoreSection}
+            previewDevice={previewDevice}
+            onPreviewDeviceChange={setPreviewDevice}
+          />
+        )}
+
         {activeView === 'manifesto' && (
           <SectionGroupEditor
             title="השפה של Nis"
@@ -2064,13 +2132,22 @@ const SectionGroupEditor = ({
                 />
               </div>
               <Toggle checked={section.active && !section.deletedAt} label="מוצג באתר" onChange={(checked) => updateSection(section.id, { active: checked })} />
-              <Field label={group === 'faq' ? 'השאלה שמופיעה באתר' : 'כותרת שמופיעה באתר'} help={group === 'site-copy' ? 'זו הכותרת הגדולה של האזור באתר.' : 'זו הכותרת שהלקוח יראה באזור הזה.'}>
+              <Field
+                label={group === 'site-microcopy' ? 'שם פנימי ברור' : group === 'faq' ? 'השאלה שמופיעה באתר' : 'כותרת שמופיעה באתר'}
+                help={group === 'site-microcopy' ? 'שם שעוזר להבין איפה הטקסט מופיע. בדרך כלל לא מוצג באתר.' : group === 'site-copy' ? 'זו הכותרת הגדולה של האזור באתר.' : 'זו הכותרת שהלקוח יראה באזור הזה.'}
+              >
                 <TextInput value={section.title ?? ''} onChange={(value) => updateSection(section.id, { title: value || undefined })} />
               </Field>
-              <Field label={group === 'faq' ? 'התשובה' : 'טקסט מתחת לכותרת'} help={group === 'site-copy' ? 'הפתיח או פסקת ההסבר של האזור. אפשר להשאיר ריק אם באזור אין פסקה.' : 'טקסט קצר וברור, בלי ניסוחים טכניים.'}>
+              <Field
+                label={group === 'site-microcopy' ? 'הטקסט שמופיע באתר' : group === 'faq' ? 'התשובה' : 'טקסט מתחת לכותרת'}
+                help={group === 'site-microcopy' ? 'זה הטקסט הקצר שהלקוח יראה בכפתור, בטופס או בהודעת וואטסאפ.' : group === 'site-copy' ? 'הפתיח או פסקת ההסבר של האזור. אפשר להשאיר ריק אם באזור אין פסקה.' : 'טקסט קצר וברור, בלי ניסוחים טכניים.'}
+              >
                 <textarea value={section.text ?? ''} onChange={(event) => updateSection(section.id, { text: event.target.value || undefined })} />
               </Field>
-              <Field label={group === 'site-copy' ? 'תווית קטנה ועוד פסקאות' : 'נקודות נוספות'} help={group === 'site-copy' ? 'הנקודה הראשונה היא התווית שמעל הכותרת. נקודה שנייה יכולה להכיל עוד פסקאות, מופרדות עם |.' : 'אם צריך רשימה קצרה, מפרידים נקודות עם |'}>
+              <Field
+                label={group === 'site-copy' ? 'תווית קטנה ועוד פסקאות' : group === 'site-microcopy' ? 'אפשרויות לרשימות קצרות' : 'נקודות נוספות'}
+                help={group === 'site-copy' ? 'הנקודה הראשונה היא התווית שמעל הכותרת. נקודה שנייה יכולה להכיל עוד פסקאות, מופרדות עם |.' : group === 'site-microcopy' ? 'משמש לשדות בחירה כמו סוג הזמנה או אופן קבלה. מפרידים אפשרויות עם |.' : 'אם צריך רשימה קצרה, מפרידים נקודות עם |'}
+              >
                 <TextInput value={joinPipeList(section.items)} onChange={(value) => updateSection(section.id, { items: splitPipeList(value) })} />
               </Field>
               <details className="technical-details">
@@ -2174,6 +2251,20 @@ const SectionPreviewBody = ({ group, sections }: { readonly group: string; reado
     );
   }
 
+  if (group === 'site-microcopy') {
+    return (
+      <div className="preview-content-grid">
+        {sections.slice(0, 8).map((section) => (
+          <article key={section.id}>
+            <Tag aria-hidden="true" />
+            <h3>{section.title}</h3>
+            <p>{section.text || section.items.join(' | ')}</p>
+          </article>
+        ))}
+      </div>
+    );
+  }
+
   const isTrust = group === 'trust';
 
   return (
@@ -2209,6 +2300,11 @@ const sectionPreviewCopy: Readonly<Record<string, { readonly eyebrow: string; re
     eyebrow: 'טקסטי מעטפת',
     title: 'הכותרות והפתיחים שמחזיקים את כל האתר.',
     text: 'כל כרטיס כאן משפיע על אזור אחר באתר: תווית קטנה, כותרת ראשית וטקסט הסבר.',
+  },
+  'site-microcopy': {
+    eyebrow: 'טקסטים קטנים',
+    title: 'הכפתורים, הטופס והודעות הוואטסאפ בלי קוד.',
+    text: 'כאן עורכים מילים קצרות שמופיעות בלחיצות, בטופס ובפעולות יצירת קשר.',
   },
   manifesto: {
     eyebrow: 'השפה של Nis',

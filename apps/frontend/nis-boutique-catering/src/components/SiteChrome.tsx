@@ -1,6 +1,6 @@
 import { type RefObject } from 'react';
 import { ChevronLeft, ChevronRight, MessageCircle, Phone, X } from 'lucide-react';
-import { brandMedia, navItems, phoneDisplay, phoneHref, type ImageAsset } from '../data/siteContent';
+import { brandMedia, navItems, phoneDisplay, phoneHref, siteMicrocopy, type ImageAsset } from '../data/siteContent';
 import { OptimizedImage } from './OptimizedImage';
 
 interface TopbarProps {
@@ -32,7 +32,7 @@ export const Topbar = ({ activeNavSection, isScrolled, topbarWhatsapp }: TopbarP
     </nav>
     <a className="topbar-cta" href={topbarWhatsapp} data-event="topbar_whatsapp">
       <MessageCircle aria-hidden="true" size={18} />
-      וואטסאפ
+      {siteMicrocopy.topbarWhatsappLabel}
     </a>
   </header>
 );
@@ -51,7 +51,7 @@ export const Footer = ({
       <div className="footer-brand">
         <strong>Nis</strong>
         <span>boutique catering</span>
-        <p>אוכל של בית, גימור של בוטיק.</p>
+        <p>{siteMicrocopy.footerTagline}</p>
         <small className="footer-version">Version {version}</small>
         <a className="creator-credit" href="https://EvyatarHazan.com" target="_blank" rel="noreferrer">
           נבנה באהבה על ידי EvyatarHazan.com
@@ -60,8 +60,8 @@ export const Footer = ({
       <div className="footer-links">
         <a href={phoneHref}>{phoneDisplay}</a>
         <a href={`mailto:${email}`}>{email}</a>
-        <a href={footerWhatsapp}>וואטסאפ</a>
-        <a className="studio-footer-link" href="https://studio.nisboutiquecatering.com/" target="_blank" rel="noreferrer">כניסת ניהול</a>
+        <a href={footerWhatsapp}>{siteMicrocopy.footerWhatsappLabel}</a>
+        <a className="studio-footer-link" href="https://studio.nisboutiquecatering.com/" target="_blank" rel="noreferrer">{siteMicrocopy.studioLoginLabel}</a>
       </div>
     </div>
   </footer>
@@ -69,18 +69,18 @@ export const Footer = ({
 
 export const FloatingActions = ({ floatingWhatsapp }: { readonly floatingWhatsapp: string }) => (
   <>
-    <a className="floating-whatsapp" href={floatingWhatsapp} aria-label="דברו איתנו בוואטסאפ">
+    <a className="floating-whatsapp" href={floatingWhatsapp} aria-label={siteMicrocopy.floatingWhatsappAria}>
       <MessageCircle aria-hidden="true" />
     </a>
 
-    <div className="mobile-sticky-cta" aria-label="פעולות מהירות ליצירת קשר">
+    <div className="mobile-sticky-cta" aria-label={siteMicrocopy.mobileActionsAria}>
       <a href={floatingWhatsapp}>
         <MessageCircle aria-hidden="true" size={18} />
-        וואטסאפ
+        {siteMicrocopy.mobileWhatsappLabel}
       </a>
       <a href={phoneHref}>
         <Phone aria-hidden="true" size={18} />
-        טלפון
+        {siteMicrocopy.mobilePhoneLabel}
       </a>
     </div>
   </>

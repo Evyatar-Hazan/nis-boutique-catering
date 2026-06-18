@@ -101,9 +101,9 @@ describe('Nis boutique catering app', () => {
     fireEvent.submit(screen.getByRole('button', { name: 'שלחו פנייה בוואטסאפ' }).closest('form')!);
 
     expect(window.location.href).toContain('https://wa.me/972503502615?text=');
-    expect(decodeURIComponent(window.location.href)).toContain('שם: שרה כהן');
-    expect(decodeURIComponent(window.location.href)).toContain('עניין: Travel Nis');
-    expect(decodeURIComponent(window.location.href)).toContain('הודעה: נשמח למארז לדרך');
+    expect(decodeURIComponent(window.location.href)).toContain('שם מלא: שרה כהן');
+    expect(decodeURIComponent(window.location.href)).toContain('במה אתם מתעניינים?: Travel Nis');
+    expect(decodeURIComponent(window.location.href)).toContain('הודעה קצרה: נשמח למארז לדרך');
   });
 
   it('renders the mobile sticky CTA with whatsapp and phone actions', () => {
