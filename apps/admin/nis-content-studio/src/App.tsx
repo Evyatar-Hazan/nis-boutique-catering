@@ -1014,7 +1014,13 @@ export const App = () => {
               </Field>
             </div>
             <div className="preview-column">
-              <ContactPreview content={content} />
+              <PreviewHeader
+                title="תצוגה מקדימה כמו באתר"
+                text="כך אזור יצירת הקשר ופרטי ה-SEO ירגישו ללקוח במחשב או במובייל."
+                device={previewDevice}
+                onDeviceChange={setPreviewDevice}
+              />
+              <ContactPreview content={content} device={previewDevice} />
               <PublishPanel
                 content={content}
                 hasErrors={hasErrors}
@@ -1266,6 +1272,8 @@ export const App = () => {
             duplicateSection={duplicateSection}
             archiveSection={archiveSection}
             restoreSection={restoreSection}
+            previewDevice={previewDevice}
+            onPreviewDeviceChange={setPreviewDevice}
           />
         )}
 
@@ -1280,6 +1288,8 @@ export const App = () => {
             duplicateSection={duplicateSection}
             archiveSection={archiveSection}
             restoreSection={restoreSection}
+            previewDevice={previewDevice}
+            onPreviewDeviceChange={setPreviewDevice}
           />
         )}
 
@@ -1294,6 +1304,8 @@ export const App = () => {
             duplicateSection={duplicateSection}
             archiveSection={archiveSection}
             restoreSection={restoreSection}
+            previewDevice={previewDevice}
+            onPreviewDeviceChange={setPreviewDevice}
           />
         )}
 
@@ -1308,6 +1320,8 @@ export const App = () => {
             duplicateSection={duplicateSection}
             archiveSection={archiveSection}
             restoreSection={restoreSection}
+            previewDevice={previewDevice}
+            onPreviewDeviceChange={setPreviewDevice}
           />
         )}
 
@@ -1322,6 +1336,8 @@ export const App = () => {
             duplicateSection={duplicateSection}
             archiveSection={archiveSection}
             restoreSection={restoreSection}
+            previewDevice={previewDevice}
+            onPreviewDeviceChange={setPreviewDevice}
           />
         )}
 
@@ -1336,6 +1352,8 @@ export const App = () => {
             duplicateSection={duplicateSection}
             archiveSection={archiveSection}
             restoreSection={restoreSection}
+            previewDevice={previewDevice}
+            onPreviewDeviceChange={setPreviewDevice}
           />
         )}
 
@@ -1350,6 +1368,8 @@ export const App = () => {
             duplicateSection={duplicateSection}
             archiveSection={archiveSection}
             restoreSection={restoreSection}
+            previewDevice={previewDevice}
+            onPreviewDeviceChange={setPreviewDevice}
           />
         )}
 
@@ -1364,6 +1384,8 @@ export const App = () => {
             duplicateSection={duplicateSection}
             archiveSection={archiveSection}
             restoreSection={restoreSection}
+            previewDevice={previewDevice}
+            onPreviewDeviceChange={setPreviewDevice}
           />
         )}
 
@@ -1378,6 +1400,8 @@ export const App = () => {
             duplicateSection={duplicateSection}
             archiveSection={archiveSection}
             restoreSection={restoreSection}
+            previewDevice={previewDevice}
+            onPreviewDeviceChange={setPreviewDevice}
           />
         )}
 
@@ -1392,6 +1416,8 @@ export const App = () => {
             duplicateSection={duplicateSection}
             archiveSection={archiveSection}
             restoreSection={restoreSection}
+            previewDevice={previewDevice}
+            onPreviewDeviceChange={setPreviewDevice}
           />
         )}
 
@@ -1406,6 +1432,8 @@ export const App = () => {
             duplicateSection={duplicateSection}
             archiveSection={archiveSection}
             restoreSection={restoreSection}
+            previewDevice={previewDevice}
+            onPreviewDeviceChange={setPreviewDevice}
           />
         )}
 
@@ -1836,22 +1864,37 @@ const PreviewBrowserBar = ({ device }: { readonly device: PreviewDevice }) => (
   </div>
 );
 
-const ContactPreview = ({ content }: { readonly content: ContentSnapshot }) => (
-  <div className="site-section-preview">
-    <p className="kicker">תצוגה מקדימה באתר</p>
-    <h3>יצירת קשר</h3>
-    <p>כך פרטי ההתקשרות והגרסה יופיעו באתר אחרי פרסום.</p>
-    <div className="contact-preview-card">
-      <a href={content.settings.whatsappBase} target="_blank" rel="noreferrer">
-        <MessageCircle aria-hidden="true" />
-        וואטסאפ: {content.settings.phoneDisplay}
-      </a>
-      <a href={content.settings.phoneHref}>
-        <Phone aria-hidden="true" />
-        טלפון
-      </a>
-      <span>{content.settings.email}</span>
-      <small>גרסה: {content.settings.siteVersion}</small>
+const ContactPreview = ({ content, device }: { readonly content: ContentSnapshot; readonly device: PreviewDevice }) => (
+  <div className={device === 'mobile' ? 'preview-frame is-mobile' : 'preview-frame is-desktop'}>
+    <PreviewBrowserBar device={device} />
+    <div className="site-section-preview site-section-preview-frame contact-section-preview">
+      <div className="contact-preview-copy">
+        <p className="kicker">יצירת קשר</p>
+        <h3>אהבתם את הסגנון? שלחו פנייה מסודרת לוואטסאפ.</h3>
+        <p>הטופס נשאר קצר ומעשי: סוג הזמנה, תאריך, כמות והערה. אחרי השליחה נפתחת הודעת וואטסאפ מוכנה.</p>
+        <div className="contact-preview-actions">
+          <a className="preview-primary-cta" href={content.settings.whatsappBase} target="_blank" rel="noreferrer">
+            <MessageCircle aria-hidden="true" />
+            קבלו הצעה מותאמת בוואטסאפ
+          </a>
+          <a className="preview-secondary-cta" href={content.settings.phoneHref}>
+            <Phone aria-hidden="true" />
+            {content.settings.phoneDisplay}
+          </a>
+          <span className="contact-preview-line">{content.settings.email}</span>
+        </div>
+        <div className="contact-preview-promise">
+          <strong>מה קורה אחרי הפנייה?</strong>
+          <span>שיחה קצרה, התאמה אישית, ואז סיכום ברור של תאריך, כמות וסגנון אירוח.</span>
+        </div>
+      </div>
+      <div className="metadata-preview-card">
+        <p className="kicker">SEO ושיתוף קישור</p>
+        <h4>{content.settings.seoTitle || 'Nis Boutique Catering'}</h4>
+        <p>{content.settings.seoDescription || 'תיאור קצר שיופיע במנועי חיפוש ובשיתוף קישורים.'}</p>
+        <span>{publicSiteOrigin.replace('https://', '')}</span>
+        <small>גרסת תוכן: {content.settings.siteVersion}</small>
+      </div>
     </div>
   </div>
 );
@@ -1918,6 +1961,8 @@ const SectionGroupEditor = ({
   duplicateSection,
   archiveSection,
   restoreSection,
+  previewDevice,
+  onPreviewDeviceChange,
 }: {
   readonly title: string;
   readonly text: string;
@@ -1928,6 +1973,8 @@ const SectionGroupEditor = ({
   readonly duplicateSection: (section: SectionBlockRecord) => void;
   readonly archiveSection: (id: string) => void;
   readonly restoreSection: (id: string) => void;
+  readonly previewDevice: PreviewDevice;
+  readonly onPreviewDeviceChange: (device: PreviewDevice) => void;
 }) => {
   const groupSections = sections
     .filter((section) => section.group === group)
@@ -1990,19 +2037,164 @@ const SectionGroupEditor = ({
         </div>
       </div>
       <div className="preview-column">
-        <p className="kicker">תצוגה מקדימה</p>
-        <div className="preview-faq">
-          {groupSections.filter((section) => section.active && !section.deletedAt).map((section) => (
-            <article key={section.id}>
-              <h3>{section.title}</h3>
-              <p>{section.text}</p>
-              {section.items.length > 0 && <span>{section.items.join(' · ')}</span>}
-            </article>
-          ))}
-        </div>
+        <PreviewHeader
+          title="תצוגה מקדימה כמו באתר"
+          text="אפשר לעבור בין מחשב למובייל ולבדוק איך הטקסטים ייראו אחרי פרסום."
+          device={previewDevice}
+          onDeviceChange={onPreviewDeviceChange}
+        />
+        <SectionGroupSitePreview group={group} title={title} sections={groupSections} device={previewDevice} />
       </div>
     </section>
   );
+};
+
+const SectionGroupSitePreview = ({
+  group,
+  title,
+  sections,
+  device,
+}: {
+  readonly group: string;
+  readonly title: string;
+  readonly sections: readonly SectionBlockRecord[];
+  readonly device: PreviewDevice;
+}) => {
+  const activeSections = sections.filter((section) => section.active && !section.deletedAt);
+  const copy = sectionPreviewCopy[group] ?? {
+    eyebrow: sectionGroupLabels[group] ?? title,
+    title,
+    text: 'כך האזור הזה יופיע באתר אחרי פרסום.',
+  };
+
+  return (
+    <div className={device === 'mobile' ? 'preview-frame is-mobile' : 'preview-frame is-desktop'}>
+      <PreviewBrowserBar device={device} />
+      <div className={`site-section-preview site-section-preview-frame section-group-preview section-group-preview-${group}`}>
+        <p className="kicker">{copy.eyebrow}</p>
+        <h3>{copy.title}</h3>
+        <p>{copy.text}</p>
+        <SectionPreviewBody group={group} sections={activeSections} />
+      </div>
+    </div>
+  );
+};
+
+const SectionPreviewBody = ({ group, sections }: { readonly group: string; readonly sections: readonly SectionBlockRecord[] }) => {
+  if (sections.length === 0) {
+    return (
+      <div className="empty-state">
+        <FileText aria-hidden="true" />
+        <strong>אין פריטים פעילים באזור הזה</strong>
+        <span>הדליקו פריט אחד לפחות כדי שיופיע באתר.</span>
+      </div>
+    );
+  }
+
+  if (group === 'process') {
+    return (
+      <div className="preview-process-list">
+        {sections.map((section, index) => (
+          <article key={section.id}>
+            <span>{index + 1}</span>
+            <CheckCircle2 aria-hidden="true" />
+            <h3>{section.title}</h3>
+            <p>{section.text}</p>
+          </article>
+        ))}
+      </div>
+    );
+  }
+
+  if (group === 'faq') {
+    return (
+      <div className="preview-faq-list">
+        {sections.map((section, index) => (
+          <details key={section.id} open={index === 0}>
+            <summary>{section.title}</summary>
+            <p>{section.text}</p>
+          </details>
+        ))}
+      </div>
+    );
+  }
+
+  const isTrust = group === 'trust';
+
+  return (
+    <div className={isTrust ? 'preview-trust-grid' : 'preview-content-grid'}>
+      {sections.map((section) => (
+        <article key={section.id}>
+          {isTrust ? <ShieldCheck aria-hidden="true" /> : <Sparkles aria-hidden="true" />}
+          <h3>{section.title}</h3>
+          <p>{section.text}</p>
+          {section.items.length > 0 && (
+            <div className="preview-mini-tags">
+              {section.items.slice(0, 3).map((item) => <span key={item}>{item}</span>)}
+            </div>
+          )}
+        </article>
+      ))}
+    </div>
+  );
+};
+
+const sectionPreviewCopy: Readonly<Record<string, { readonly eyebrow: string; readonly title: string; readonly text: string }>> = {
+  audience: {
+    eyebrow: 'למי זה מתאים',
+    title: 'מבינים מהר אם Nis מתאימה לאירוח שלכם.',
+    text: 'כרטיסים קצרים שעוזרים ללקוח לזהות את עצמו לפני פנייה.',
+  },
+  editorial: {
+    eyebrow: 'מה מזמינים אצלנו',
+    title: 'שלוש כניסות ברורות לעולם של Nis.',
+    text: 'פתיח קצר לקטגוריות המרכזיות באתר.',
+  },
+  manifesto: {
+    eyebrow: 'השפה של Nis',
+    title: 'בוטיק, ביתיות ותשומת לב לפרטים.',
+    text: 'האזור שמסביר את התחושה והאופי לפני שמגיעים להזמנה.',
+  },
+  boutique: {
+    eyebrow: 'למה זה בוטיק',
+    title: 'כל הזמנה מקבלת יחס אישי ושפה נקייה.',
+    text: 'נקודות הערך שהופכות את השירות למדויק יותר ממדף קבוע.',
+  },
+  signature: {
+    eyebrow: 'רגעי בוטיק',
+    title: 'פרטים קטנים שמרגישים על השולחן.',
+    text: 'טקסטים שמלווים את התמונות ומחזקים את החוויה.',
+  },
+  process: {
+    eyebrow: 'איך זה עובד',
+    title: 'ארבעה צעדים קצרים מהרעיון ועד אוכל שמוכן להגשה.',
+    text: 'כך הלקוח יבין את הדרך מהפנייה הראשונה ועד הסיכום.',
+  },
+  story: {
+    eyebrow: 'הסיפור של המותג',
+    title: 'Nis נולדה מתוך אהבה לאירוח יפה ואוכל ביתי מדויק.',
+    text: 'תחנות קצרות שמסבירות מאיפה המותג בא ומה הוא מביא לשולחן.',
+  },
+  samples: {
+    eyebrow: 'כיוונים להזמנה',
+    title: 'כיווני תפריט שעוזרים להתחיל שיחה.',
+    text: 'כל כרטיס נותן ללקוח רעיון ברור למה אפשר להזמין.',
+  },
+  coordination: {
+    eyebrow: 'תיאום וזמינות',
+    title: 'פרטים מעשיים שמורידים חיכוך לפני פנייה.',
+    text: 'מידע קצר שמסביר זמינות, אזור פעילות ואיך סוגרים פרטים.',
+  },
+  trust: {
+    eyebrow: 'מה מרגיע לפני שסוגרים',
+    title: 'פחות סימני שאלה, יותר תחושה שיש עם מי לדבר.',
+    text: 'כרטיסי אמון שמופיעים לקראת סוף האתר ומחזקים את הפנייה.',
+  },
+  faq: {
+    eyebrow: 'שאלות נפוצות',
+    title: 'התשובות שמקלות על הפנייה הראשונה.',
+    text: 'שאלות ותשובות כפי שהן יופיעו באתר.',
+  },
 };
 
 const PublishPanel = ({
