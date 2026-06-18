@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState, type ChangeEvent, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useState, type ChangeEvent, type CSSProperties, type ReactNode } from 'react';
 import {
   ArrowDown,
   ArrowUp,
@@ -78,6 +78,7 @@ type ActiveView =
   | 'publish';
 type AuthState = 'signed-out' | 'loading' | 'authorized' | 'denied';
 type PublishState = 'clean' | 'draft' | 'saving' | 'publishing' | 'published' | 'error';
+type PreviewDevice = 'desktop' | 'mobile';
 
 type Session = {
   readonly accessToken: string;
@@ -107,6 +108,10 @@ const archiveDate = () => new Date().toISOString();
 const creatorUrl = 'https://EvyatarHazan.com';
 const rememberedSessionKey = 'nis-content-studio-session-v1';
 const tokenRefreshWindowMs = 60_000;
+const heroBackgroundImage = '/media/food/events/quiche-tart-clean.webp';
+const heroPrimaryImage = '/media/food/events/salmon-skewers-lemon.webp';
+const heroSideImage = '/media/food/events/dips-tray-close.webp';
+const heroTallImage = '/media/food/events/table-setting-blue-gold.webp';
 
 const isSessionShape = (value: unknown): value is Session => {
   if (!value || typeof value !== 'object') {
@@ -420,6 +425,7 @@ export const App = () => {
   const [content, setContent] = useState<ContentSnapshot>(emptyContent);
   const [activeView, setActiveView] = useState<ActiveView>('site-map');
   const [isSidebarHidden, setIsSidebarHidden] = useState(false);
+  const [previewDevice, setPreviewDevice] = useState<PreviewDevice>('desktop');
   const [publishState, setPublishState] = useState<PublishState>('clean');
   const [status, setStatus] = useState('התחברו כדי לנהל את התוכן האמיתי של האתר.');
   const [isBusy, setIsBusy] = useState(false);
@@ -930,6 +936,12 @@ export const App = () => {
             <p className="topbar-help">כל שינוי מקבל גרסה חדשה ונשמר כטיוטה. רק הכפתור "עדכן אתר" מפרסם לאתר החי.</p>
           </div>
           <div className="topbar-actions">
+            {activeView !== 'site-map' && (
+              <button className="ghost-button" onClick={() => setActiveView('site-map')}>
+                <Home aria-hidden="true" />
+                חזרה לניהול אתר
+              </button>
+            )}
             <button className="ghost-button" onClick={handleRefresh} disabled={isBusy || !canUseGoogle}>
               <RefreshCw aria-hidden="true" />
               רענון מה-Sheets
@@ -968,6 +980,8 @@ export const App = () => {
             content={content}
             mediaById={mediaById}
             accessToken={session.accessToken}
+            previewDevice={previewDevice}
+            onPreviewDeviceChange={setPreviewDevice}
             updateSection={updateSection}
             addSection={addSection}
           />
@@ -1540,17 +1554,20 @@ const HeroEditor = ({
   content,
   mediaById,
   accessToken,
+  previewDevice,
+  onPreviewDeviceChange,
   updateSection,
   addSection,
 }: {
   readonly content: ContentSnapshot;
   readonly mediaById: ReadonlyMap<string, ImageAssetRecord>;
   readonly accessToken: string;
+  readonly previewDevice: PreviewDevice;
+  readonly onPreviewDeviceChange: (device: PreviewDevice) => void;
   readonly updateSection: (id: string, patch: Partial<SectionBlockRecord>) => void;
   readonly addSection: (group?: string) => void;
 }) => {
   const hero = content.sections.find((section) => section.id === 'hero') ?? content.sections.find((section) => section.group === 'hero');
-  const serviceMedia = content.services[0] ? mediaById.get(content.services[0].mediaId) : undefined;
 
   if (!hero) {
     return (
@@ -1580,19 +1597,129 @@ const HeroEditor = ({
         </Field>
       </div>
       <div className="preview-column">
-        <p className="kicker">כך זה ירגיש באתר</p>
-        <div className="site-preview-hero">
-          <p className="kicker">{hero.items[0] ?? 'טקסט עליון קטן'}</p>
-          <h3>{hero.title ?? 'כותרת ראשית באתר'}</h3>
-          <p>{hero.text ?? 'טקסט הפתיחה יופיע כאן.'}</p>
-          <a href={content.settings.whatsappBase} target="_blank" rel="noreferrer">
-            <MessageCircle aria-hidden="true" />
-            וואטסאפ: {content.settings.phoneDisplay}
-          </a>
-        </div>
-        {serviceMedia && <DrivePreviewImage media={serviceMedia} accessToken={accessToken} />}
+        <PreviewHeader
+          title="תצוגה מקדימה כמו באתר"
+          text="אפשר לעבור בין מחשב למובייל ולראות איך מסך הפתיחה ירגיש ללקוח."
+          device={previewDevice}
+          onDeviceChange={onPreviewDeviceChange}
+        />
+        <HeroSitePreview content={content} hero={hero} device={previewDevice} accessToken={accessToken} mediaById={mediaById} />
       </div>
     </section>
+  );
+};
+
+const PreviewHeader = ({
+  title,
+  text,
+  device,
+  onDeviceChange,
+}: {
+  readonly title: string;
+  readonly text: string;
+  readonly device: PreviewDevice;
+  readonly onDeviceChange: (device: PreviewDevice) => void;
+}) => (
+  <div className="preview-header">
+    <div>
+      <p className="kicker">{title}</p>
+      <p>{text}</p>
+    </div>
+    <div className="preview-device-switch" aria-label="בחירת תצוגה מקדימה">
+      <button type="button" className={device === 'desktop' ? 'is-active' : ''} onClick={() => onDeviceChange('desktop')} aria-pressed={device === 'desktop'}>
+        <MonitorCheck aria-hidden="true" />
+        מחשב
+      </button>
+      <button type="button" className={device === 'mobile' ? 'is-active' : ''} onClick={() => onDeviceChange('mobile')} aria-pressed={device === 'mobile'}>
+        <Phone aria-hidden="true" />
+        מובייל
+      </button>
+    </div>
+  </div>
+);
+
+const HeroSitePreview = ({
+  content,
+  hero,
+  device,
+  accessToken,
+  mediaById,
+}: {
+  readonly content: ContentSnapshot;
+  readonly hero: SectionBlockRecord;
+  readonly device: PreviewDevice;
+  readonly accessToken: string;
+  readonly mediaById: ReadonlyMap<string, ImageAssetRecord>;
+}) => {
+  const heroNotes = content.sections
+    .filter((section) => section.group === 'hero-notes' && section.active && !section.deletedAt)
+    .sort((left, right) => left.order - right.order)
+    .slice(0, 2);
+  const primaryServiceMedia = content.services[0] ? mediaById.get(content.services[0].mediaId) : undefined;
+  const title = hero.title ?? 'קייטרינג בוטיק ביתי\nלשבתות ואירועים קטנים';
+  const kicker = hero.items[1] ?? 'שבתות, מגשי אירוח ו־Travel Nis, עם אוכל מוקפד, נראות יפה ושיחה קצרה שסוגרת כיוון.';
+  const text = hero.text ?? 'רואים את הסגנון, בוחרים את סוג ההזמנה, ומשאירים פנייה מסודרת. Nis כבר תהפוך את זה לתפריט, מגשים או מארז שמתאימים לאירוח שלכם.';
+
+  return (
+    <div className={device === 'mobile' ? 'preview-frame is-mobile' : 'preview-frame is-desktop'}>
+      <div className="preview-browser-bar">
+        <span>{device === 'mobile' ? '390px מובייל' : 'אתר במחשב'}</span>
+        <strong>nisboutiquecatering.com</strong>
+      </div>
+      <section className="hero-site-preview" style={{ '--hero-preview-bg': `url('${publicAssetSrcFor(heroBackgroundImage)}')` } as CSSProperties}>
+        <div className="hero-preview-media" aria-hidden="true" />
+        <div className="hero-preview-texture" aria-hidden="true" />
+        <div className="hero-preview-layout">
+          <div className="hero-preview-content">
+            <img className="hero-preview-logo" src={publicAssetSrcFor('/brand/nis-logo.svg')} alt="Nis boutique catering" />
+            <p className="hero-preview-eyebrow">{hero.items[0] ?? 'מהרובע היהודי לביתר עילית'}</p>
+            <h3>
+              {title.split('\n').map((line, index) => (
+                <span key={`${line}-${index}`}>{line}</span>
+              ))}
+            </h3>
+            <p className="hero-preview-kicker">{kicker}</p>
+            <p className="hero-preview-text">{text}</p>
+            <div className="hero-preview-actions">
+              <span>
+                <MessageCircle aria-hidden="true" />
+                דברו איתנו בוואטסאפ
+              </span>
+              <span>
+                <Eye aria-hidden="true" />
+                ראו איך זה נראה
+              </span>
+            </div>
+            <div className="hero-preview-badges" aria-label="נקודות Hero">
+              {['שבתות', 'מגשי אירוח', 'Travel Nis', 'מומלץ לפנות מוקדם'].map((badge) => <span key={badge}>{badge}</span>)}
+            </div>
+          </div>
+          <div className="hero-preview-showcase" aria-label="תמונות Hero">
+            <div className="hero-preview-stage">
+              {primaryServiceMedia?.driveFileId ? (
+                <DrivePreviewImage media={primaryServiceMedia} accessToken={accessToken} />
+              ) : (
+                <img className="hero-preview-plate primary-plate" src={publicAssetSrcFor(heroPrimaryImage)} alt="" />
+              )}
+              <div className="hero-preview-caption">
+                <strong>שבתות, אירוח קטן ומארזים</strong>
+                <span>אותה שפה של טעם, נראות ושקט למארח.</span>
+              </div>
+            </div>
+            <img className="hero-preview-plate side-plate" src={publicAssetSrcFor(heroSideImage)} alt="" />
+            <img className="hero-preview-plate tall-plate" src={publicAssetSrcFor(heroTallImage)} alt="" />
+            <div className="hero-preview-notes">
+              {heroNotes.map((note) => (
+                <article key={note.id}>
+                  <strong>{note.title}</strong>
+                  <span>{note.text}</span>
+                </article>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
   );
 };
 
