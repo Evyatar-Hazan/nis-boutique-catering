@@ -1101,7 +1101,13 @@ export const App = () => {
               </div>
             </div>
             <div className="preview-column">
-              <ServicesPreview content={content} mediaById={mediaById} accessToken={session.accessToken} />
+              <PreviewHeader
+                title="תצוגה מקדימה כמו באתר"
+                text="אפשר לעבור בין מחשב למובייל ולראות איך כרטיסי השירות ירגישו ללקוח."
+                device={previewDevice}
+                onDeviceChange={setPreviewDevice}
+              />
+              <ServicesPreview content={content} mediaById={mediaById} accessToken={session.accessToken} device={previewDevice} />
             </div>
           </section>
         )}
@@ -1124,7 +1130,13 @@ export const App = () => {
                 </div>
               }
             />
-            <GallerySitePreview content={content} mediaById={mediaById} accessToken={session.accessToken} />
+            <PreviewHeader
+              title="תצוגה מקדימה כמו באתר"
+              text="כך התמונות הראשונות בגלריה יופיעו במחשב או במובייל אחרי פרסום."
+              device={previewDevice}
+              onDeviceChange={setPreviewDevice}
+            />
+            <GallerySitePreview content={content} mediaById={mediaById} accessToken={session.accessToken} device={previewDevice} />
             <label className="search-box">
               <Search aria-hidden="true" />
               <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="חיפוש לפי שם, תיאור או קטגוריה" />
@@ -1727,37 +1739,47 @@ const ServicesPreview = ({
   content,
   mediaById,
   accessToken,
+  device,
 }: {
   readonly content: ContentSnapshot;
   readonly mediaById: ReadonlyMap<string, ImageAssetRecord>;
   readonly accessToken: string;
+  readonly device: PreviewDevice;
 }) => {
   const services = [...content.services]
     .filter((service) => service.active && !service.deletedAt)
     .sort((left, right) => left.order - right.order);
 
   return (
-    <div className="site-section-preview">
-      <p className="kicker">תצוגה מקדימה באתר</p>
-      <h3>מה אפשר להזמין</h3>
-      <p>כך כרטיסי השירות יופיעו ללקוח אחרי פרסום.</p>
-      <div className="preview-services">
-        {services.map((service) => (
-          <article key={service.id}>
-            <DrivePreviewImage media={mediaById.get(service.mediaId)} accessToken={accessToken} />
-            <h3>{service.title}</h3>
-            <strong>{service.subtitle}</strong>
-            <p>{service.description}</p>
-            <span className="preview-chip">{service.cta}</span>
-          </article>
-        ))}
-        {services.length === 0 && (
-          <div className="empty-state">
-            <Sparkles aria-hidden="true" />
-            <strong>אין שירותים פעילים</strong>
-            <span>הדליקו שירות אחד לפחות כדי שיופיע באתר.</span>
-          </div>
-        )}
+    <div className={device === 'mobile' ? 'preview-frame is-mobile' : 'preview-frame is-desktop'}>
+      <PreviewBrowserBar device={device} />
+      <div className="site-section-preview site-section-preview-frame services-section-preview">
+        <p className="kicker">מה מזמינים אצלנו</p>
+        <h3>שלוש קטגוריות ברורות. שפה אחת של אירוח.</h3>
+        <p>כך כרטיסי השירות יופיעו ללקוח אחרי פרסום.</p>
+        <div className="preview-services">
+          {services.map((service) => (
+            <article key={service.id}>
+              <DrivePreviewImage media={mediaById.get(service.mediaId)} accessToken={accessToken} />
+              <span className="preview-service-subtitle">{service.subtitle}</span>
+              <h3>{service.title}</h3>
+              <p>{service.description}</p>
+              {service.details.length > 0 && (
+                <ul>
+                  {service.details.slice(0, 3).map((detail) => <li key={detail}>{detail}</li>)}
+                </ul>
+              )}
+              <span className="preview-chip">{service.cta}</span>
+            </article>
+          ))}
+          {services.length === 0 && (
+            <div className="empty-state">
+              <Sparkles aria-hidden="true" />
+              <strong>אין שירותים פעילים</strong>
+              <span>הדליקו שירות אחד לפחות כדי שיופיע באתר.</span>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -1767,10 +1789,12 @@ const GallerySitePreview = ({
   content,
   mediaById,
   accessToken,
+  device,
 }: {
   readonly content: ContentSnapshot;
   readonly mediaById: ReadonlyMap<string, ImageAssetRecord>;
   readonly accessToken: string;
+  readonly device: PreviewDevice;
 }) => {
   const activeItems = [...content.gallery]
     .filter((item) => item.active && !item.deletedAt)
@@ -1778,22 +1802,39 @@ const GallerySitePreview = ({
     .slice(0, 6);
 
   return (
-    <div className="site-section-preview">
-      <p className="kicker">תצוגה מקדימה באתר</p>
-      <h3>גלריה</h3>
-      <p>אלה התמונות הראשונות שהלקוח יראה בגלריה. תמונה כבויה נשארת במאגר אבל לא מופיעה באתר.</p>
-      <div className="preview-gallery">
-        {activeItems.map((item) => (
-          <article className={item.tall ? 'is-tall' : undefined} key={item.id}>
-            <DrivePreviewImage media={mediaById.get(item.mediaId)} accessToken={accessToken} />
-            <h3>{item.title}</h3>
-            <span>{categoryLabels[item.category]}</span>
-          </article>
-        ))}
+    <div className={device === 'mobile' ? 'preview-frame is-mobile' : 'preview-frame is-desktop'}>
+      <PreviewBrowserBar device={device} />
+      <div className="site-section-preview site-section-preview-frame gallery-section-preview">
+        <p className="kicker">גלריה</p>
+        <h3>רגעים אמיתיים מהשולחן</h3>
+        <p>אלה התמונות הראשונות שהלקוח יראה בגלריה. תמונה כבויה נשארת במאגר אבל לא מופיעה באתר.</p>
+        <div className="preview-gallery">
+          {activeItems.map((item) => (
+            <article className={item.tall ? 'is-tall' : undefined} key={item.id}>
+              <DrivePreviewImage media={mediaById.get(item.mediaId)} accessToken={accessToken} />
+              <h3>{item.title}</h3>
+              <span>{categoryLabels[item.category]}</span>
+            </article>
+          ))}
+          {activeItems.length === 0 && (
+            <div className="empty-state">
+              <Images aria-hidden="true" />
+              <strong>אין תמונות פעילות בגלריה</strong>
+              <span>הדליקו תמונות כדי שיופיעו באתר.</span>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
 };
+
+const PreviewBrowserBar = ({ device }: { readonly device: PreviewDevice }) => (
+  <div className="preview-browser-bar">
+    <span>{device === 'mobile' ? '390px מובייל' : 'אתר במחשב'}</span>
+    <strong>nisboutiquecatering.com</strong>
+  </div>
+);
 
 const ContactPreview = ({ content }: { readonly content: ContentSnapshot }) => (
   <div className="site-section-preview">
