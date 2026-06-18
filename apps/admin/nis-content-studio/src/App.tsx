@@ -88,6 +88,7 @@ type PublishState = 'clean' | 'draft' | 'saving' | 'publishing' | 'checking' | '
 type PreviewDevice = 'desktop' | 'mobile';
 type MediaUsageKind = 'gallery' | 'service';
 type PublishStepState = 'done' | 'active' | 'pending' | 'blocked' | 'error';
+type GalleryPreviewCategory = GalleryItemRecord['category'] | 'all';
 
 type MediaUsageEntry = {
   readonly kind: MediaUsageKind;
@@ -2115,31 +2116,60 @@ const GallerySitePreview = ({
   readonly accessToken: string;
   readonly device: PreviewDevice;
 }) => {
+  const [activeCategory, setActiveCategory] = useState<GalleryPreviewCategory>('all');
   const activeItems = [...content.gallery]
     .filter((item) => item.active && !item.deletedAt)
-    .sort((left, right) => left.order - right.order)
-    .slice(0, 6);
+    .sort((left, right) => left.order - right.order);
+  const visibleItems = (activeCategory === 'all' ? activeItems.slice(0, 6) : activeItems.filter((item) => item.category === activeCategory));
+  const galleryCopy = content.sections.find((section) => section.id === 'copy-gallery' && section.active && !section.deletedAt);
+  const eyebrow = galleryCopy?.items[0] ?? 'גלריה';
+  const title = galleryCopy?.title ?? 'קודם רואים. אחר כך הרבה יותר קל לפנות.';
+  const text = galleryCopy?.text ?? 'שולחנות, מגשים, סלטים, קפה ופרטים קטנים שמראים את הסגנון לפני שמתחילים לדבר על תפריט.';
+  const previewCategories: readonly { readonly id: GalleryPreviewCategory; readonly label: string; readonly count: number }[] = [
+    { id: 'all', label: 'הכול', count: activeItems.length },
+    ...editableCategories.map((category) => ({
+      id: category,
+      label: categoryLabels[category],
+      count: activeItems.filter((item) => item.category === category).length,
+    })),
+  ];
 
   return (
     <div className={device === 'mobile' ? 'preview-frame is-mobile' : 'preview-frame is-desktop'}>
       <PreviewBrowserBar device={device} />
       <div className="site-section-preview site-section-preview-frame gallery-section-preview">
-        <p className="kicker">גלריה</p>
-        <h3>רגעים אמיתיים מהשולחן</h3>
-        <p>אלה התמונות הראשונות שהלקוח יראה בגלריה. תמונה כבויה נשארת במאגר אבל לא מופיעה באתר.</p>
+        <p className="kicker">{eyebrow}</p>
+        <h3>{title}</h3>
+        {text && <p>{text}</p>}
+        <div className="gallery-preview-tabs" aria-label="סינון תצוגת גלריה">
+          {previewCategories.map((category) => (
+            <button
+              type="button"
+              className={category.id === activeCategory ? 'gallery-preview-tab is-active' : 'gallery-preview-tab'}
+              key={category.id}
+              onClick={() => setActiveCategory(category.id)}
+              aria-pressed={category.id === activeCategory}
+            >
+              <span>{category.label}</span>
+              <small>{category.count}</small>
+            </button>
+          ))}
+        </div>
         <div className="preview-gallery">
-          {activeItems.map((item) => (
-            <article className={item.tall ? 'is-tall' : undefined} key={item.id}>
+          {visibleItems.map((item) => (
+            <article className={item.tall ? 'preview-gallery-item is-tall' : 'preview-gallery-item'} key={item.id}>
               <DrivePreviewImage media={mediaById.get(item.mediaId)} accessToken={accessToken} />
-              <h3>{item.title}</h3>
-              <span>{categoryLabels[item.category]}</span>
+              <div className="preview-gallery-caption">
+                <strong>{item.title}</strong>
+                <span>{categoryLabels[item.category]}</span>
+              </div>
             </article>
           ))}
-          {activeItems.length === 0 && (
+          {visibleItems.length === 0 && (
             <div className="empty-state">
               <Images aria-hidden="true" />
-              <strong>אין תמונות פעילות בגלריה</strong>
-              <span>הדליקו תמונות כדי שיופיעו באתר.</span>
+              <strong>{activeItems.length === 0 ? 'אין תמונות פעילות בגלריה' : 'אין תמונות בפילטר הזה'}</strong>
+              <span>{activeItems.length === 0 ? 'הדליקו תמונות כדי שיופיעו באתר.' : 'בחרו קטגוריה אחרת או חברו תמונה פעילה לקטגוריה הזאת.'}</span>
             </div>
           )}
         </div>
