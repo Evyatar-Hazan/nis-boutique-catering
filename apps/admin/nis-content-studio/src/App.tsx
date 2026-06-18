@@ -1247,6 +1247,13 @@ export const App = () => {
                         {visibleMedia.map((media) => <option key={media.id} value={media.id}>{mediaLabel(media, content)}</option>)}
                       </select>
                     </Field>
+                    <MediaQuickPicker
+                      label="בחירה מהירה לתמונת השירות"
+                      mediaItems={visibleMedia}
+                      selectedMediaId={service.mediaId}
+                      content={content}
+                      onSelect={(mediaId) => updateService(service.id, { mediaId })}
+                    />
                     <MediaSelectionUsageNotice
                       mediaId={service.mediaId}
                       content={content}
@@ -1362,6 +1369,13 @@ export const App = () => {
                         </select>
                       </Field>
                     </div>
+                    <MediaQuickPicker
+                      label="בחירה מהירה לתמונת הגלריה"
+                      mediaItems={visibleMedia}
+                      selectedMediaId={item.mediaId}
+                      content={content}
+                      onSelect={(mediaId) => updateGallery(item.id, { mediaId })}
+                    />
                     <MediaSelectionUsageNotice
                       mediaId={item.mediaId}
                       content={content}
@@ -2674,6 +2688,46 @@ const Metric = ({ label, value }: { readonly label: string; readonly value: stri
     <span>{label}</span>
     <strong>{value}</strong>
   </article>
+);
+
+const MediaQuickPicker = ({
+  label,
+  mediaItems,
+  selectedMediaId,
+  content,
+  onSelect,
+}: {
+  readonly label: string;
+  readonly mediaItems: readonly ImageAssetRecord[];
+  readonly selectedMediaId: string;
+  readonly content: ContentSnapshot;
+  readonly onSelect: (mediaId: string) => void;
+}) => (
+  <div className="media-quick-picker" aria-label={label}>
+    <div className="media-quick-picker-heading">
+      <strong>{label}</strong>
+      <span>לחיצה אחת מחליפה את התמונה באזור הזה.</span>
+    </div>
+    <div className="media-choice-list">
+      {mediaItems.map((media) => {
+        const selected = media.id === selectedMediaId;
+        const src = media.src ? publicAssetSrcFor(media.src) : '';
+        return (
+          <button
+            type="button"
+            className={selected ? 'media-choice is-selected' : 'media-choice'}
+            key={media.id}
+            onClick={() => onSelect(media.id)}
+            aria-pressed={selected}
+            title={mediaLabel(media, content)}
+          >
+            {src ? <img src={src} alt="" loading="lazy" /> : <span className="media-choice-empty">אין תמונה</span>}
+            <span>{mediaLabel(media, content)}</span>
+          </button>
+        );
+      })}
+    </div>
+  </div>
 );
 
 const MediaUsageList = ({ mediaId, content }: { readonly mediaId: string; readonly content: ContentSnapshot }) => {
