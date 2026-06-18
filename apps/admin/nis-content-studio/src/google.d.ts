@@ -1,10 +1,11 @@
 interface GoogleTokenResponse {
   access_token?: string;
+  expires_in?: number | string;
   error?: string;
 }
 
 interface GoogleTokenClient {
-  requestAccessToken: (options?: { prompt?: string }) => void;
+  requestAccessToken: (options?: { prompt?: 'consent' | '' }) => void;
 }
 
 interface GoogleAccountsOauth2 {

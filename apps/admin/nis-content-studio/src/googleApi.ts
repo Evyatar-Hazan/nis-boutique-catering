@@ -3,6 +3,13 @@ import { googleScopes, studioConfig } from './config';
 
 const sheetsBaseUrl = 'https://sheets.googleapis.com/v4/spreadsheets';
 const driveBaseUrl = 'https://www.googleapis.com/drive/v3';
+const defaultAccessTokenTtlMs = 50 * 60 * 1000;
+const tokenExpirySafetyMs = 2 * 60 * 1000;
+
+export interface GoogleAccessToken {
+  readonly accessToken: string;
+  readonly expiresAt: number;
+}
 
 const loadScript = (src: string) =>
   new Promise<void>((resolve, reject) => {
@@ -21,14 +28,14 @@ const loadScript = (src: string) =>
     document.head.append(script);
   });
 
-export const requestGoogleAccessToken = async () => {
+export const requestGoogleAccessToken = async (options: { readonly prompt?: 'consent' | '' } = {}): Promise<GoogleAccessToken> => {
   if (!studioConfig.clientId) {
     throw new Error('Missing VITE_GOOGLE_CLIENT_ID');
   }
 
   await loadScript('https://accounts.google.com/gsi/client');
 
-  return new Promise<string>((resolve, reject) => {
+  return new Promise<GoogleAccessToken>((resolve, reject) => {
     const tokenClient = window.google?.accounts?.oauth2?.initTokenClient({
       client_id: studioConfig.clientId,
       scope: googleScopes,
@@ -37,7 +44,12 @@ export const requestGoogleAccessToken = async () => {
           reject(new Error(response.error ?? 'Google login failed'));
           return;
         }
-        resolve(response.access_token);
+        const expiresInSeconds = Number(response.expires_in);
+        const ttl = Number.isFinite(expiresInSeconds) && expiresInSeconds > 0 ? expiresInSeconds * 1000 : defaultAccessTokenTtlMs;
+        resolve({
+          accessToken: response.access_token,
+          expiresAt: Date.now() + Math.max(60_000, ttl - tokenExpirySafetyMs),
+        });
       },
     });
 
@@ -46,7 +58,7 @@ export const requestGoogleAccessToken = async () => {
       return;
     }
 
-    tokenClient.requestAccessToken({ prompt: 'consent' });
+    tokenClient.requestAccessToken({ prompt: options.prompt ?? 'consent' });
   });
 };
 

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ChangeEvent, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useState, type ChangeEvent, type ReactNode } from 'react';
 import {
   ArrowDown,
   ArrowUp,
@@ -54,6 +54,7 @@ import {
   saveContentToSheets,
   triggerPublish,
   uploadImageToDrive,
+  type GoogleAccessToken,
 } from './googleApi';
 
 type ActiveView =
@@ -81,6 +82,7 @@ type PublishState = 'clean' | 'draft' | 'saving' | 'publishing' | 'published' | 
 type Session = {
   readonly accessToken: string;
   readonly email: string;
+  readonly expiresAt: number;
 };
 
 const emptyContent: ContentSnapshot = {
@@ -103,6 +105,53 @@ const editableCategories = galleryCategoryIds.filter((category) => category !== 
 const publicSiteOrigin = 'https://nisboutiquecatering.com';
 const archiveDate = () => new Date().toISOString();
 const creatorUrl = 'https://EvyatarHazan.com';
+const rememberedSessionKey = 'nis-content-studio-session-v1';
+const tokenRefreshWindowMs = 60_000;
+
+const isSessionShape = (value: unknown): value is Session => {
+  if (!value || typeof value !== 'object') {
+    return false;
+  }
+
+  const candidate = value as Partial<Record<keyof Session, unknown>>;
+  return (
+    typeof candidate.accessToken === 'string'
+    && typeof candidate.email === 'string'
+    && typeof candidate.expiresAt === 'number'
+  );
+};
+
+const clearRememberedSession = () => {
+  try {
+    window.localStorage.removeItem(rememberedSessionKey);
+  } catch {
+    // Browser storage can be disabled; login should still work for the current tab.
+  }
+};
+
+const readRememberedSession = () => {
+  try {
+    const raw = window.localStorage.getItem(rememberedSessionKey);
+    const parsed = raw ? JSON.parse(raw) as unknown : null;
+    if (!isSessionShape(parsed) || parsed.expiresAt <= Date.now() + tokenRefreshWindowMs) {
+      clearRememberedSession();
+      return null;
+    }
+
+    return parsed;
+  } catch {
+    clearRememberedSession();
+    return null;
+  }
+};
+
+const rememberSession = (session: Session) => {
+  try {
+    window.localStorage.setItem(rememberedSessionKey, JSON.stringify(session));
+  } catch {
+    // Non-blocking: a private browsing policy should not prevent editing in this tab.
+  }
+};
 
 const nextContentVersion = () => {
   const now = new Date();
@@ -421,6 +470,99 @@ export const App = () => {
     markDraft();
   };
 
+  const loadAuthorizedSession = useCallback(async (token: GoogleAccessToken, knownEmail?: string) => {
+    const email = knownEmail ?? await fetchGoogleUserEmail(token.accessToken);
+    const allowed = studioConfig.allowedEditors.length === 0 || studioConfig.allowedEditors.includes(email);
+
+    if (!allowed) {
+      clearRememberedSession();
+      setSession(null);
+      setAuthState('denied');
+      throw new Error('אין למשתמש הזה הרשאה לנהל את האתר.');
+    }
+
+    const remoteContent = ensureManagedSections(await readContentFromSheets(token.accessToken));
+    const nextSession = { accessToken: token.accessToken, email, expiresAt: token.expiresAt };
+    setSession(nextSession);
+    rememberSession(nextSession);
+    setContent(remoteContent);
+    setAuthState('authorized');
+    setPublishState('clean');
+    setStatus('התוכן נטען מה-Sheets. אפשר לערוך וללחוץ "עדכן אתר" כדי לפרסם.');
+    return nextSession;
+  }, []);
+
+  const getFreshAccessToken = useCallback(async () => {
+    if (!session) {
+      throw new Error('צריך להתחבר לפני שמירה.');
+    }
+
+    if (session.expiresAt > Date.now() + tokenRefreshWindowMs) {
+      return session.accessToken;
+    }
+
+    const token = await requestGoogleAccessToken({ prompt: '' });
+    const email = await fetchGoogleUserEmail(token.accessToken);
+    if (email !== session.email) {
+      clearRememberedSession();
+      setSession(null);
+      setAuthState('signed-out');
+      throw new Error('התחברת עם משתמש אחר. צריך להתחבר שוב כדי להמשיך.');
+    }
+
+    const nextSession = { accessToken: token.accessToken, email, expiresAt: token.expiresAt };
+    setSession(nextSession);
+    rememberSession(nextSession);
+    return token.accessToken;
+  }, [session]);
+
+  useEffect(() => {
+    if (!isGoogleConfigured) {
+      return;
+    }
+
+    const remembered = readRememberedSession();
+    if (!remembered) {
+      return;
+    }
+
+    let cancelled = false;
+
+    const restore = async () => {
+      setAuthState('loading');
+      setIsBusy(true);
+      setStatus('מחזירים אותך לסטודיו...');
+
+      try {
+        if (remembered.expiresAt <= Date.now() + tokenRefreshWindowMs) {
+          throw new Error('Saved Google session expired');
+        }
+        const token = { accessToken: remembered.accessToken, expiresAt: remembered.expiresAt };
+        await loadAuthorizedSession(token, remembered.email);
+        if (!cancelled) {
+          setStatus('החיבור הקודם נטען. אפשר להמשיך לעבוד.');
+        }
+      } catch {
+        clearRememberedSession();
+        if (!cancelled) {
+          setSession(null);
+          setAuthState('signed-out');
+          setStatus('ההתחברות הקודמת פגה. צריך להתחבר שוב עם Google.');
+        }
+      } finally {
+        if (!cancelled) {
+          setIsBusy(false);
+        }
+      }
+    };
+
+    void restore();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [loadAuthorizedSession]);
+
   const runTask = async (label: string, task: () => Promise<void>) => {
     setIsBusy(true);
     setStatus(`${label}...`);
@@ -441,22 +583,8 @@ export const App = () => {
       }
 
       setAuthState('loading');
-      const accessToken = await requestGoogleAccessToken();
-      const email = await fetchGoogleUserEmail(accessToken);
-      const allowed = studioConfig.allowedEditors.length === 0 || studioConfig.allowedEditors.includes(email);
-
-      if (!allowed) {
-        setSession(null);
-        setAuthState('denied');
-        throw new Error('אין למשתמש הזה הרשאה לנהל את האתר.');
-      }
-
-      const remoteContent = ensureManagedSections(await readContentFromSheets(accessToken));
-      setSession({ accessToken, email });
-      setContent(remoteContent);
-      setAuthState('authorized');
-      setPublishState('clean');
-      setStatus('התוכן נטען מה-Sheets. אפשר לערוך וללחוץ "עדכן אתר" כדי לפרסם.');
+      const token = await requestGoogleAccessToken({ prompt: 'consent' });
+      await loadAuthorizedSession(token);
     });
 
   const handleRefresh = () => {
@@ -464,7 +592,8 @@ export const App = () => {
       return;
     }
     void runTask('מרעננים תוכן מ-Google Sheets', async () => {
-      setContent(ensureManagedSections(await readContentFromSheets(session.accessToken)));
+      const accessToken = await getFreshAccessToken();
+      setContent(ensureManagedSections(await readContentFromSheets(accessToken)));
       setPublishState('clean');
       setStatus('התוכן רוענן מה-Sheets.');
     });
@@ -479,7 +608,8 @@ export const App = () => {
     }
 
     setPublishState('saving');
-    await saveContentToSheets(session.accessToken, { ...content, updatedAt: new Date().toISOString() });
+    const accessToken = await getFreshAccessToken();
+    await saveContentToSheets(accessToken, { ...content, updatedAt: new Date().toISOString() });
     setPublishState('draft');
     setStatus('נשמר כטיוטה ב-Google Sheets. האתר החי עדיין לא השתנה.');
   };
@@ -496,10 +626,20 @@ export const App = () => {
       await saveDraft();
       setPublishState('publishing');
       setStatus('הטיוטה נשמרה. מפעילים בנייה ופרסום ב-Cloudflare.');
-      await triggerPublish(session.accessToken);
+      const accessToken = await getFreshAccessToken();
+      await triggerPublish(accessToken);
       setPublishState('published');
       setStatus('הפרסום נשלח. Cloudflare בונה את האתר; בדקות הקרובות השינוי יופיע באתר החי.');
     });
+  };
+
+  const handleLogout = () => {
+    clearRememberedSession();
+    setSession(null);
+    setAuthState('signed-out');
+    setPublishState('clean');
+    setContent(emptyContent);
+    setStatus('התנתקת מהסטודיו. אפשר להתחבר שוב עם Google.');
   };
 
   const updateGallery = (id: string, patch: Partial<GalleryItemRecord>) => {
@@ -685,7 +825,8 @@ export const App = () => {
     }
 
     void runTask('מעלים תמונה ל-Google Drive', async () => {
-      const uploaded = await uploadImageToDrive(session.accessToken, file);
+      const accessToken = await getFreshAccessToken();
+      const uploaded = await uploadImageToDrive(accessToken, file);
       const id = normalizeMediaId(uploaded.name);
       updateContent((current) => ({
         ...current,
@@ -713,7 +854,8 @@ export const App = () => {
     }
 
     void runTask('בוחרים תמונה מ-Google Drive', async () => {
-      const file = await openDrivePicker(session.accessToken);
+      const accessToken = await getFreshAccessToken();
+      const file = await openDrivePicker(accessToken);
       updateMedia(mediaId, { driveFileId: file.id, src: cmsSrcFor(mediaId), usageNotes: `מקור בדרייב: ${file.name}` });
       setStatus('נבחר מקור חדש מדרייב. לחצו "עדכן אתר" כדי ליצור ממנו תמונה מהירה באתר.');
     });
@@ -771,6 +913,9 @@ export const App = () => {
           <ShieldCheck aria-hidden="true" />
           <strong>{session.email}</strong>
           <span>מחובר ל-Google Sheets + Drive</span>
+          <button type="button" className="logout-button" onClick={handleLogout}>
+            התנתק
+          </button>
         </div>
         <a className="creator-credit studio-credit" href={creatorUrl} target="_blank" rel="noreferrer">
           נבנה באהבה על ידי EvyatarHazan.com
