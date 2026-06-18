@@ -33,7 +33,7 @@ export const email = generatedSettings.email || 'nisboutiquecatering@gmail.com';
 export const whatsappBase = generatedSettings.whatsappBase || 'https://wa.me/972503502615';
 export const siteVersion = generatedSettings.siteVersion || 'v0.1.1';
 
-export const sectionIds = ['top', 'experiences', 'gallery', 'process', 'contact'] as const;
+export const sectionIds = ['top', 'experiences', 'gallery', 'process', 'samples', 'faq', 'contact'] as const;
 
 export interface ImageAsset {
   readonly src: string;
@@ -243,6 +243,8 @@ export const navItems: readonly NavItem[] = [
   { label: 'מה מזמינים', href: '#experiences' },
   { label: 'גלריה', href: '#gallery' },
   { label: 'איך זה עובד', href: '#process' },
+  { label: 'דוגמאות', href: '#samples' },
+  { label: 'שאלות', href: '#faq' },
   { label: 'יצירת קשר', href: '#contact' },
 ];
 

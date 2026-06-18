@@ -62,9 +62,16 @@ describe('Nis boutique catering app', () => {
   it('gives equal weight to the three services', () => {
     render(<App />);
 
-    expect(screen.getByRole('heading', { name: 'ניס בטעם של שבת' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'ניס בכיס' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Travel Nis' })).toBeInTheDocument();
+    const servicesSection = screen.getByRole('heading', { name: /שלוש אפשרויות ברורות/i }).closest('section');
+    expect(servicesSection).not.toBeNull();
+    if (!servicesSection) {
+      throw new Error('Services section was not found');
+    }
+
+    const serviceCards = within(servicesSection);
+    expect(serviceCards.getByRole('heading', { name: 'ניס בטעם של שבת' })).toBeInTheDocument();
+    expect(serviceCards.getByRole('heading', { name: 'ניס בכיס' })).toBeInTheDocument();
+    expect(serviceCards.getByRole('heading', { name: 'Travel Nis' })).toBeInTheDocument();
   });
 
   it('builds a whatsapp inquiry from the contact form submit', () => {
