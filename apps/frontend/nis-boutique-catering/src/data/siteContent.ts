@@ -271,6 +271,19 @@ const iconByName: Readonly<Record<string, LucideIcon>> = {
   Users,
 };
 
+const activeGeneratedSections = contentSnapshot.sections
+  .filter((section) => (section.active ?? true) && !section.deletedAt)
+  .sort((left, right) => (left.order ?? 0) - (right.order ?? 0));
+const getGeneratedSection = (id: string) => activeGeneratedSections.find((section) => section.id === id);
+const getGeneratedCardsByGroup = (group: string, fallbackIcon: LucideIcon): readonly SimpleCard[] =>
+  activeGeneratedSections
+    .filter((section) => section.group === group && section.title && section.text)
+    .map((section) => ({
+      title: section.title ?? '',
+      text: section.text ?? '',
+      icon: section.items[0] ? (iconByName[section.items[0]] ?? fallbackIcon) : fallbackIcon,
+    }));
+
 const fallbackServices: readonly Service[] = [
   {
     title: 'ניס בטעם של שבת',
@@ -311,6 +324,8 @@ const fallbackServices: readonly Service[] = [
 ];
 
 const generatedServices = contentSnapshot.services
+  .filter((service) => (service.active ?? true) && !service.deletedAt)
+  .sort((left, right) => (left.order ?? 0) - (right.order ?? 0))
   .map((service): Service | undefined => {
     const image = generatedMediaById.get(service.mediaId);
     if (!image) {
@@ -357,7 +372,7 @@ export const editorialCards: readonly EditorialCard[] = [
   },
 ];
 
-export const audienceCards: readonly SimpleCard[] = [
+const fallbackAudienceCards: readonly SimpleCard[] = [
   {
     title: 'למשפחות שמארחות שבת',
     text: 'למי שרוצה שולחן מכובד, מלא ויפה בלי לעמוד שעות במטבח ובלי להיכנס ללחץ לפני שבת.',
@@ -374,6 +389,9 @@ export const audienceCards: readonly SimpleCard[] = [
     icon: Gift,
   },
 ];
+
+const generatedAudienceCards = getGeneratedCardsByGroup('audience', Users);
+export const audienceCards: readonly SimpleCard[] = generatedAudienceCards.length > 0 ? generatedAudienceCards : fallbackAudienceCards;
 
 export const boutiqueReasons: readonly SimpleCard[] = [
   {
@@ -424,7 +442,7 @@ export const manifestoMoments: readonly Readonly<{
   },
 ];
 
-export const processSteps: readonly SimpleCard[] = [
+const fallbackProcessSteps: readonly SimpleCard[] = [
   {
     title: 'שולחים הודעה בוואטסאפ',
     text: 'אפשר ללחוץ על וואטסאפ או לשלוח את הטופס המסודר בתחתית האתר.',
@@ -446,6 +464,9 @@ export const processSteps: readonly SimpleCard[] = [
     icon: CheckCircle2,
   },
 ];
+
+const generatedProcessSteps = getGeneratedCardsByGroup('process', CheckCircle2);
+export const processSteps: readonly SimpleCard[] = generatedProcessSteps.length > 0 ? generatedProcessSteps : fallbackProcessSteps;
 
 export const menuGroups: readonly MenuGroup[] = [
   {
@@ -609,7 +630,7 @@ const fallbackGalleryImages: readonly GalleryImage[] = [
 ];
 
 const generatedGalleryImages = contentSnapshot.gallery
-  .filter((item) => item.active)
+  .filter((item) => (item.active ?? true) && !item.deletedAt)
   .sort((left, right) => left.order - right.order)
   .map((item): GalleryImage | undefined => {
     const image = generatedMediaById.get(item.mediaId);
@@ -630,9 +651,6 @@ const generatedGalleryImages = contentSnapshot.gallery
 
 export const galleryImages: readonly GalleryImage[] =
   generatedGalleryImages.length > 0 ? generatedGalleryImages : fallbackGalleryImages;
-
-const activeGeneratedSections = contentSnapshot.sections.filter((section) => section.active);
-const getGeneratedSection = (id: string) => activeGeneratedSections.find((section) => section.id === id);
 
 const heroSection = getGeneratedSection('hero');
 
@@ -709,7 +727,7 @@ export const seoTopics: readonly string[] = [
   'אירוח משפחתי בהתאמה אישית',
 ];
 
-export const trustCards: readonly SimpleCard[] = [
+const fallbackTrustCards: readonly SimpleCard[] = [
   {
     title: 'אסתטיקה שמגיעה מוכנה',
     text: 'המנות נארזות ומסודרות כך שהשולחן נראה מוקפד בלי עבודה מיותרת מצדכם.',
@@ -726,6 +744,9 @@ export const trustCards: readonly SimpleCard[] = [
     icon: HeartHandshake,
   },
 ];
+
+const generatedTrustCards = getGeneratedCardsByGroup('trust', Sparkles);
+export const trustCards: readonly SimpleCard[] = generatedTrustCards.length > 0 ? generatedTrustCards : fallbackTrustCards;
 
 const fallbackFaqs: readonly Readonly<{ question: string; answer: string }>[] = [
   {

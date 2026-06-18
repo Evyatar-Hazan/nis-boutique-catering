@@ -29,6 +29,9 @@ export const validateContentShape = (snapshot) => {
   }
 
   for (const media of snapshot.media ?? []) {
+    if (media.deletedAt) {
+      continue;
+    }
     if (!media.id || !media.src || !media.width || !media.height) {
       errors.push(`media row is incomplete: ${JSON.stringify(media)}`);
     }
@@ -39,6 +42,9 @@ export const validateContentShape = (snapshot) => {
   }
 
   for (const item of snapshot.gallery ?? []) {
+    if (item.deletedAt) {
+      continue;
+    }
     if (!item.id || !item.title || !item.alt || !item.mediaId) {
       errors.push(`gallery row is incomplete: ${JSON.stringify(item)}`);
     }
@@ -48,6 +54,9 @@ export const validateContentShape = (snapshot) => {
   }
 
   for (const service of snapshot.services ?? []) {
+    if (service.deletedAt) {
+      continue;
+    }
     if (!service.id || !service.title || !service.mediaId || !service.icon) {
       errors.push(`service row is incomplete: ${JSON.stringify(service)}`);
     }
@@ -57,6 +66,9 @@ export const validateContentShape = (snapshot) => {
   }
 
   for (const section of snapshot.sections ?? []) {
+    if (section.deletedAt) {
+      continue;
+    }
     if (!section.id || !section.group) {
       errors.push(`section row is incomplete: ${JSON.stringify(section)}`);
     }

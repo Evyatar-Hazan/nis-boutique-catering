@@ -68,7 +68,7 @@ const putSheetValues = (range, values) =>
 await requestSheets('/values:batchClear', {
   method: 'POST',
   body: JSON.stringify({
-    ranges: ['site_settings!A:B', 'media!A:H', 'gallery!A:J', 'services!A:J', 'sections!A:F'],
+    ranges: ['site_settings!A:B', 'media!A:I', 'gallery!A:K', 'services!A:M', 'sections!A:H'],
   }),
 });
 
@@ -84,8 +84,8 @@ await Promise.all([
     ['seoTitle', snapshot.settings.seoTitle ?? ''],
     ['seoDescription', snapshot.settings.seoDescription ?? ''],
   ]),
-  putSheetValues('media!A:H', [
-    ['id', 'src', 'width', 'height', 'sizes', 'responsive', 'driveFileId', 'usageNotes'],
+  putSheetValues('media!A:I', [
+    ['id', 'src', 'width', 'height', 'sizes', 'responsive', 'driveFileId', 'usageNotes', 'deletedAt'],
     ...snapshot.media.map((item) => [
       item.id,
       item.src,
@@ -95,10 +95,11 @@ await Promise.all([
       item.responsive,
       item.driveFileId ?? '',
       item.usageNotes ?? '',
+      item.deletedAt ?? '',
     ]),
   ]),
-  putSheetValues('gallery!A:J', [
-    ['id', 'title', 'alt', 'category', 'order', 'active', 'tall', 'mediaId', 'driveFileId', 'notes'],
+  putSheetValues('gallery!A:K', [
+    ['id', 'title', 'alt', 'category', 'order', 'active', 'tall', 'mediaId', 'driveFileId', 'notes', 'deletedAt'],
     ...snapshot.gallery.map((item) => [
       item.id,
       item.title,
@@ -110,10 +111,11 @@ await Promise.all([
       item.mediaId,
       item.driveFileId ?? '',
       '',
+      item.deletedAt ?? '',
     ]),
   ]),
-  putSheetValues('services!A:J', [
-    ['id', 'title', 'subtitle', 'description', 'bestFor', 'promise', 'details', 'cta', 'mediaId', 'icon'],
+  putSheetValues('services!A:M', [
+    ['id', 'title', 'subtitle', 'description', 'bestFor', 'promise', 'details', 'cta', 'mediaId', 'icon', 'active', 'order', 'deletedAt'],
     ...snapshot.services.map((item) => [
       item.id,
       item.title,
@@ -125,10 +127,13 @@ await Promise.all([
       item.cta,
       item.mediaId,
       item.icon,
+      item.active ?? true,
+      item.order ?? 0,
+      item.deletedAt ?? '',
     ]),
   ]),
-  putSheetValues('sections!A:F', [
-    ['id', 'group', 'title', 'text', 'items', 'active'],
+  putSheetValues('sections!A:H', [
+    ['id', 'group', 'title', 'text', 'items', 'active', 'order', 'deletedAt'],
     ...snapshot.sections.map((item) => [
       item.id,
       item.group,
@@ -136,6 +141,8 @@ await Promise.all([
       item.text ?? '',
       item.items.join('|'),
       item.active,
+      item.order ?? 0,
+      item.deletedAt ?? '',
     ]),
   ]),
 ]);

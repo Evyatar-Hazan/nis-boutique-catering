@@ -4,19 +4,33 @@ import {
   ArrowUp,
   CheckCircle2,
   Cloud,
+  Copy,
   Eye,
+  FileText,
+  HelpCircle,
+  Home,
   ImagePlus,
+  Images,
+  ListChecks,
   Lock,
   LogIn,
+  Map as MapIcon,
   MessageCircle,
   MonitorCheck,
+  Phone,
+  Plus,
   RefreshCw,
+  RotateCcw,
   Rocket,
   Save,
   Search,
+  Send,
   ShieldAlert,
   ShieldCheck,
+  Sparkles,
+  Trash2,
   Upload,
+  Users,
   Wand2,
 } from 'lucide-react';
 import {
@@ -41,7 +55,18 @@ import {
   uploadImageToDrive,
 } from './googleApi';
 
-type ActiveView = 'preview' | 'settings' | 'services' | 'gallery' | 'sections' | 'media';
+type ActiveView =
+  | 'site-map'
+  | 'hero'
+  | 'contact'
+  | 'services'
+  | 'audience'
+  | 'process'
+  | 'gallery'
+  | 'trust'
+  | 'faq'
+  | 'media'
+  | 'publish';
 type AuthState = 'signed-out' | 'loading' | 'authorized' | 'denied';
 type PublishState = 'clean' | 'draft' | 'saving' | 'publishing' | 'published' | 'error';
 
@@ -68,6 +93,7 @@ const emptyContent: ContentSnapshot = {
 
 const editableCategories = galleryCategoryIds.filter((category) => category !== 'all');
 const publicSiteOrigin = 'https://nisboutiquecatering.com';
+const archiveDate = () => new Date().toISOString();
 
 const categoryLabels: Readonly<Record<GalleryItemRecord['category'], string>> = {
   tables: 'שולחנות',
@@ -79,6 +105,7 @@ const categoryLabels: Readonly<Record<GalleryItemRecord['category'], string>> = 
 
 const sectionGroupLabels: Readonly<Record<string, string>> = {
   hero: 'מסך פתיחה',
+  audience: 'למי זה מתאים',
   intro: 'פתיח',
   process: 'איך זה עובד',
   faq: 'שאלות ותשובות',
@@ -98,13 +125,92 @@ const cmsSrcFor = (id: string) => `/media/cms/${id}.webp`;
 const publicAssetSrcFor = (src: string) => (src.startsWith('http') ? src : `${publicSiteOrigin}${src}`);
 
 const normalizeMediaId = (value: string) =>
-  value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || `media-${Date.now()}`;
+  value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'media-new';
+
+const areaDefinitions: readonly {
+  readonly id: ActiveView;
+  readonly title: string;
+  readonly location: string;
+  readonly help: string;
+  readonly icon: ReactNode;
+}[] = [
+  {
+    id: 'hero',
+    title: 'מסך פתיחה',
+    location: 'החלק הראשון באתר, מעל כל התוכן',
+    help: 'כותרת גדולה, משפט הסבר וכפתור וואטסאפ ראשי.',
+    icon: <Home aria-hidden="true" />,
+  },
+  {
+    id: 'contact',
+    title: 'תפריט עליון ויצירת קשר',
+    location: 'כפתורי וואטסאפ, טלפון, אימייל ופרטי קשר',
+    help: 'כל שינוי כאן משפיע על דרכי הפנייה באתר.',
+    icon: <Phone aria-hidden="true" />,
+  },
+  {
+    id: 'services',
+    title: 'מה מזמינים',
+    location: 'כרטיסי השירות המרכזיים בעמוד',
+    help: 'שבת, אירועים, Travel Nis וכל שירות נוסף שתוסיפו.',
+    icon: <Sparkles aria-hidden="true" />,
+  },
+  {
+    id: 'audience',
+    title: 'למי זה מתאים',
+    location: 'כרטיסי קהל יעד והסברים קצרים',
+    help: 'מי אמור להבין מיד שהשירות מתאים לו.',
+    icon: <Users aria-hidden="true" />,
+  },
+  {
+    id: 'process',
+    title: 'איך זה עובד',
+    location: 'רשימת השלבים מהפנייה ועד קבלת האוכל',
+    help: 'אפשר להוסיף, לכבות ולסדר שלבים.',
+    icon: <ListChecks aria-hidden="true" />,
+  },
+  {
+    id: 'gallery',
+    title: 'גלריה',
+    location: 'תמונות האוכל והאירוח באתר',
+    help: 'סדר, קטגוריות, תמונות גבוהות וכיבוי תמונות.',
+    icon: <Images aria-hidden="true" />,
+  },
+  {
+    id: 'trust',
+    title: 'אמון ועובדות',
+    location: 'נקודות שמרגיעות לפני פנייה',
+    help: 'כרטיסי אמון, עובדות קצרות והבטחות שירות.',
+    icon: <ShieldCheck aria-hidden="true" />,
+  },
+  {
+    id: 'faq',
+    title: 'שאלות ותשובות',
+    location: 'אזור השאלות בתחתית האתר',
+    help: 'כל שאלה היא כרטיס שאפשר להוסיף, לכבות או לארכב.',
+    icon: <HelpCircle aria-hidden="true" />,
+  },
+  {
+    id: 'media',
+    title: 'ספריית תמונות',
+    location: 'Google Drive ותמונות האתר המהירות',
+    help: 'ניהול כל התמונות והיכן הן משמשות באתר.',
+    icon: <Images aria-hidden="true" />,
+  },
+  {
+    id: 'publish',
+    title: 'פרסום ושינויים',
+    location: 'בדיקה אחרונה לפני עדכון האתר',
+    help: 'רואים מה לא פורסם ולוחצים עדכן אתר.',
+    icon: <Send aria-hidden="true" />,
+  },
+];
 
 export const App = () => {
   const [authState, setAuthState] = useState<AuthState>('signed-out');
   const [session, setSession] = useState<Session | null>(null);
   const [content, setContent] = useState<ContentSnapshot>(emptyContent);
-  const [activeView, setActiveView] = useState<ActiveView>('preview');
+  const [activeView, setActiveView] = useState<ActiveView>('site-map');
   const [publishState, setPublishState] = useState<PublishState>('clean');
   const [status, setStatus] = useState('התחברו כדי לנהל את התוכן האמיתי של האתר.');
   const [isBusy, setIsBusy] = useState(false);
@@ -115,8 +221,15 @@ export const App = () => {
   const referenceIssues = useMemo(() => validateContentReferences(content), [content]);
   const canUseGoogle = Boolean(session && isGoogleConfigured);
   const hasErrors = !validation.success || referenceIssues.length > 0;
-  const activeGalleryCount = content.gallery.filter((item) => item.active).length;
-  const driveMediaCount = content.media.filter((media) => media.driveFileId).length;
+  const visibleMedia = content.media.filter((media) => !media.deletedAt);
+  const activeGalleryCount = content.gallery.filter((item) => item.active && !item.deletedAt).length;
+  const archivedCount = [
+    ...content.gallery,
+    ...content.services,
+    ...content.sections,
+    ...content.media,
+  ].filter((item) => item.deletedAt).length;
+  const driveMediaCount = visibleMedia.filter((media) => media.driveFileId).length;
   const filteredGallery = useMemo(
     () =>
       content.gallery
@@ -244,6 +357,15 @@ export const App = () => {
     updateContent((current) => ({ ...current, sections: updateById(current.sections, id, patch) }));
   };
 
+  const archiveGalleryItem = (id: string) => updateGallery(id, { active: false, deletedAt: archiveDate() });
+  const restoreGalleryItem = (id: string) => updateGallery(id, { deletedAt: undefined });
+  const archiveService = (id: string) => updateService(id, { active: false, deletedAt: archiveDate() });
+  const restoreService = (id: string) => updateService(id, { deletedAt: undefined });
+  const archiveSection = (id: string) => updateSection(id, { active: false, deletedAt: archiveDate() });
+  const restoreSection = (id: string) => updateSection(id, { deletedAt: undefined });
+  const archiveMedia = (id: string) => updateMedia(id, { deletedAt: archiveDate() });
+  const restoreMedia = (id: string) => updateMedia(id, { deletedAt: undefined });
+
   const moveGalleryItem = (id: string, direction: -1 | 1) => {
     updateContent((current) => {
       const sorted = [...current.gallery].sort((left, right) => left.order - right.order);
@@ -275,13 +397,12 @@ export const App = () => {
   };
 
   const addGalleryItem = () => {
-    const id = `gallery-${Date.now()}`;
     updateContent((current) => ({
       ...current,
       gallery: [
         ...current.gallery,
         {
-          id,
+          id: `gallery-${current.gallery.length + 1}`,
           title: 'תמונה חדשה',
           alt: 'תיאור נגיש לתמונה חדשה',
           category: 'trays',
@@ -294,19 +415,93 @@ export const App = () => {
     }));
   };
 
-  const addSection = () => {
-    const id = `section-${Date.now()}`;
+  const duplicateGalleryItem = (item: GalleryItemRecord) => {
+    updateContent((current) => ({
+      ...current,
+      gallery: [
+        ...current.gallery,
+        {
+          ...item,
+          id: `${item.id}-copy-${current.gallery.length + 1}`,
+          title: `${item.title} - עותק`,
+          order: current.gallery.length + 1,
+          active: false,
+          deletedAt: undefined,
+        },
+      ],
+    }));
+  };
+
+  const addService = () => {
+    updateContent((current) => ({
+      ...current,
+      services: [
+        ...current.services,
+        {
+          id: `service-${current.services.length + 1}`,
+          title: 'שירות חדש',
+          subtitle: 'משפט קצר שמסביר את השירות',
+          description: 'כאן כותבים מה הלקוח מקבל בשירות הזה.',
+          bestFor: 'למי זה מתאים',
+          promise: 'מה מבטיחים ללקוח',
+          details: ['פרט ראשון', 'פרט שני'],
+          cta: 'דברו איתנו',
+          mediaId: current.media.find((media) => !media.deletedAt)?.id ?? '',
+          icon: 'Sparkles',
+          active: false,
+          order: current.services.length + 1,
+        },
+      ],
+    }));
+  };
+
+  const duplicateService = (service: ServiceRecord) => {
+    updateContent((current) => ({
+      ...current,
+      services: [
+        ...current.services,
+        {
+          ...service,
+          id: `${service.id}-copy-${current.services.length + 1}`,
+          title: `${service.title} - עותק`,
+          active: false,
+          order: current.services.length + 1,
+          deletedAt: undefined,
+        },
+      ],
+    }));
+  };
+
+  const addSection = (group = 'general') => {
     updateContent((current) => ({
       ...current,
       sections: [
         ...current.sections,
         {
-          id,
-          group: 'general',
+          id: `${group}-${current.sections.filter((section) => section.group === group).length + 1}`,
+          group,
           title: 'מקטע חדש',
           text: 'טקסט לעריכה',
           items: [],
           active: false,
+          order: current.sections.filter((section) => section.group === group).length + 1,
+        },
+      ],
+    }));
+  };
+
+  const duplicateSection = (section: SectionBlockRecord) => {
+    updateContent((current) => ({
+      ...current,
+      sections: [
+        ...current.sections,
+        {
+          ...section,
+          id: `${section.id}-copy-${current.sections.filter((item) => item.group === section.group).length + 1}`,
+          title: `${section.title ?? 'מקטע'} - עותק`,
+          active: false,
+          order: current.sections.filter((item) => item.group === section.group).length + 1,
+          deletedAt: undefined,
         },
       ],
     }));
@@ -376,16 +571,14 @@ export const App = () => {
           </div>
         </div>
         <nav className="nav-stack">
-          {[
-            ['preview', 'תצוגה לפני פרסום'],
-            ['settings', 'יצירת קשר'],
-            ['services', 'שירותים'],
-            ['gallery', 'גלריה'],
-            ['sections', 'מקטעי אתר'],
-            ['media', 'תמונות בדרייב'],
-          ].map(([id, label]) => (
-            <button key={id} className={activeView === id ? 'is-active' : ''} onClick={() => setActiveView(id as ActiveView)}>
-              {label}
+          <button className={activeView === 'site-map' ? 'is-active' : ''} onClick={() => setActiveView('site-map')}>
+            <MapIcon aria-hidden="true" />
+            מפת האתר
+          </button>
+          {areaDefinitions.map((area) => (
+            <button key={area.id} className={activeView === area.id ? 'is-active' : ''} onClick={() => setActiveView(area.id)}>
+              {area.icon}
+              {area.title}
             </button>
           ))}
         </nav>
@@ -400,8 +593,8 @@ export const App = () => {
         <header className="topbar">
           <div>
             <p className="kicker">ניהול אתר Nis</p>
-            <h2>תוכן האתר במקום אחד</h2>
-            <p className="topbar-help">שינוי נשמר קודם כטיוטה. הכפתור "עדכן אתר" מפרסם אותו לאתר החי.</p>
+            <h2>{activeView === 'site-map' ? 'מה תרצו לשנות באתר?' : areaDefinitions.find((area) => area.id === activeView)?.title ?? 'תוכן האתר'}</h2>
+            <p className="topbar-help">כל שינוי נשמר קודם כטיוטה. רק הכפתור "עדכן אתר" מפרסם אותו לאתר החי.</p>
           </div>
           <div className="topbar-actions">
             <button className="ghost-button" onClick={handleRefresh} disabled={isBusy || !canUseGoogle}>
@@ -428,15 +621,26 @@ export const App = () => {
         <section className="overview-strip" aria-label="מצב התוכן">
           <Metric label="תמונות פעילות בגלריה" value={String(activeGalleryCount)} />
           <Metric label="תמונות מחוברות ל-Drive" value={String(driveMediaCount)} />
-          <Metric label="שירותים באתר" value={String(content.services.length)} />
+          <Metric label="שירותים באתר" value={String(content.services.filter((service) => !service.deletedAt).length)} />
+          <Metric label="פריטים בארכיון" value={String(archivedCount)} />
           <Metric label="גרסת תוכן" value={content.settings.siteVersion || content.version} />
         </section>
 
-        {activeView === 'preview' && (
-          <PreviewPanel content={content} mediaById={mediaById} accessToken={session.accessToken} />
+        {activeView === 'site-map' && (
+          <SiteMapPanel content={content} mediaById={mediaById} onOpen={setActiveView} />
         )}
 
-        {activeView === 'settings' && (
+        {activeView === 'hero' && (
+          <HeroEditor
+            content={content}
+            mediaById={mediaById}
+            accessToken={session.accessToken}
+            updateSection={updateSection}
+            addSection={addSection}
+          />
+        )}
+
+        {activeView === 'contact' && (
           <section className="workspace-panel settings-grid">
             <PanelHeader title="יצירת קשר ו-SEO" text="כאן משנים את פרטי ההתקשרות שמופיעים בכפתורים ובאזור יצירת הקשר באתר." />
             <Field label="טלפון שמוצג באתר" help="מופיע בכפתורי יצירת קשר ובאזור הסיום.">
@@ -465,11 +669,35 @@ export const App = () => {
 
         {activeView === 'services' && (
           <section className="workspace-panel">
-            <PanelHeader title="שירותים" text="שלושת הכרטיסים המרכזיים באזור 'מה מזמינים' באתר." />
+            <PanelHeader
+              title="מה מזמינים"
+              text="כל כרטיס כאן הוא שירות שמופיע באזור המרכזי באתר. אפשר לכבות, לשכפל, להוסיף או להעביר לארכיון."
+              action={
+                <button className="compact-button" onClick={addService}>
+                  <Plus aria-hidden="true" />
+                  הוסף שירות
+                </button>
+              }
+            />
             <div className="cards-list">
-              {content.services.map((service) => (
-                <article className="edit-card service-card" key={service.id}>
+              {[...content.services].sort((left, right) => left.order - right.order).map((service) => (
+                <article className={service.deletedAt ? 'edit-card service-card is-archived' : 'edit-card service-card'} key={service.id}>
                   <DrivePreviewImage media={mediaById.get(service.mediaId)} accessToken={session.accessToken} />
+                  <div className="card-heading">
+                    <div>
+                      <p className="kicker">כרטיס שירות באתר</p>
+                      <h3>{service.title}</h3>
+                    </div>
+                    <ItemActions
+                      isArchived={Boolean(service.deletedAt)}
+                      onDuplicate={() => duplicateService(service)}
+                      onArchive={() => archiveService(service.id)}
+                      onRestore={() => restoreService(service.id)}
+                    />
+                  </div>
+                  <div className="toggle-row">
+                    <Toggle checked={service.active && !service.deletedAt} label="מוצג באתר" onChange={(checked) => updateService(service.id, { active: checked })} />
+                  </div>
                   <Field label="שם השירות" help="הכותרת הראשית של כרטיס השירות.">
                     <TextInput value={service.title} onChange={(value) => updateService(service.id, { title: value })} />
                   </Field>
@@ -493,7 +721,7 @@ export const App = () => {
                   <div className="inline-grid">
                     <Field label="תמונה לשירות" help="איזו תמונה תופיע בכרטיס.">
                       <select value={service.mediaId} onChange={(event) => updateService(service.id, { mediaId: event.target.value })}>
-                        {content.media.map((media) => <option key={media.id} value={media.id}>{mediaLabel(media, content)}</option>)}
+                        {visibleMedia.map((media) => <option key={media.id} value={media.id}>{mediaLabel(media, content)}</option>)}
                       </select>
                     </Field>
                     <Field label="טקסט כפתור" help="כפתור הפעולה בכרטיס.">
@@ -504,6 +732,7 @@ export const App = () => {
                     <summary>הגדרות טכניות</summary>
                     <TextInput value={service.id} onChange={(value) => updateService(service.id, { id: value })} />
                     <TextInput value={service.icon} onChange={(value) => updateService(service.id, { icon: value })} />
+                    <NumberInput value={service.order} onChange={(value) => updateService(service.id, { order: value })} />
                   </details>
                 </article>
               ))}
@@ -515,7 +744,7 @@ export const App = () => {
           <section className="workspace-panel">
             <PanelHeader
               title="גלריה"
-              text="כל כרטיס כאן הוא תמונה באתר. אפשר להחליט אם היא מוצגת, באיזו קטגוריה ובאיזה סדר."
+              text="כל כרטיס כאן הוא תמונה באתר. כיבוי מסתיר מהאתר, ארכיון שומר לשחזור, והסדר קובע את ההופעה."
               action={
                 <div className="action-row">
                   <button className="compact-button" onClick={normalizeCmsMetadata}>
@@ -537,7 +766,7 @@ export const App = () => {
               {filteredGallery.map((item) => {
                 const media = mediaById.get(item.mediaId);
                 return (
-                  <article className={item.active ? 'gallery-edit-card' : 'gallery-edit-card is-muted'} key={item.id}>
+                  <article className={item.deletedAt ? 'gallery-edit-card is-archived' : item.active ? 'gallery-edit-card' : 'gallery-edit-card is-muted'} key={item.id}>
                     <DrivePreviewImage media={media} accessToken={session.accessToken} />
                     <div className="card-heading">
                       <div>
@@ -551,6 +780,12 @@ export const App = () => {
                         <button type="button" className="icon-button" onClick={() => moveGalleryItem(item.id, 1)} aria-label="הורדה למטה">
                           <ArrowDown aria-hidden="true" />
                         </button>
+                        <ItemActions
+                          isArchived={Boolean(item.deletedAt)}
+                          onDuplicate={() => duplicateGalleryItem(item)}
+                          onArchive={() => archiveGalleryItem(item.id)}
+                          onRestore={() => restoreGalleryItem(item.id)}
+                        />
                       </div>
                     </div>
                     <Field label="שם פנימי לתמונה" help="עוזר לזהות את התמונה בסטודיו.">
@@ -567,7 +802,7 @@ export const App = () => {
                       </Field>
                       <Field label="תמונה מחוברת" help="איזה מקור מדיה ישמש לפריט הזה.">
                         <select value={item.mediaId} onChange={(event) => updateGallery(item.id, { mediaId: event.target.value })}>
-                          {content.media.map((mediaItem) => <option key={mediaItem.id} value={mediaItem.id}>{mediaLabel(mediaItem, content)}</option>)}
+                          {visibleMedia.map((mediaItem) => <option key={mediaItem.id} value={mediaItem.id}>{mediaLabel(mediaItem, content)}</option>)}
                         </select>
                       </Field>
                     </div>
@@ -582,55 +817,79 @@ export const App = () => {
           </section>
         )}
 
-        {activeView === 'sections' && (
-          <section className="workspace-panel">
-            <PanelHeader
-              title="מקטעי אתר"
-              text="טקסטים קצרים שמזינים אזורים כמו מסך פתיחה, שאלות ותשובות ואמון."
-              action={
-                <button className="compact-button" onClick={addSection}>
-                  <ImagePlus aria-hidden="true" />
-                  הוספת מקטע
-                </button>
-              }
-            />
-            <div className="cards-list">
-              {content.sections.map((section) => (
-                <article className="edit-card" key={section.id}>
-                  <div className="card-heading">
-                    <div>
-                      <p className="kicker">{sectionGroupLabels[section.group] ?? section.group}</p>
-                      <h3>{section.title || section.id}</h3>
-                    </div>
-                    <Toggle checked={section.active} label="מוצג באתר" onChange={(checked) => updateSection(section.id, { active: checked })} />
-                  </div>
-                  <Field label="כותרת" help="הכותרת שתופיע באזור הזה באתר.">
-                    <TextInput value={section.title ?? ''} onChange={(value) => updateSection(section.id, { title: value || undefined })} />
-                  </Field>
-                  <Field label="טקסט" help="הפסקה המרכזית של המקטע.">
-                    <textarea value={section.text ?? ''} onChange={(event) => updateSection(section.id, { text: event.target.value || undefined })} />
-                  </Field>
-                  <Field label="פריטים" help="רשימה מופרדת בסימן |">
-                    <TextInput value={joinPipeList(section.items)} onChange={(value) => updateSection(section.id, { items: splitPipeList(value) })} />
-                  </Field>
-                  <details className="technical-details">
-                    <summary>הגדרות טכניות</summary>
-                    <div className="inline-grid">
-                      <TextInput value={section.id} onChange={(value) => updateSection(section.id, { id: value })} />
-                      <TextInput value={section.group} onChange={(value) => updateSection(section.id, { group: value })} />
-                    </div>
-                  </details>
-                </article>
-              ))}
-            </div>
-          </section>
+        {activeView === 'audience' && (
+          <SectionGroupEditor
+            title="למי זה מתאים"
+            text="כרטיסים שמסבירים למבקר באתר אם השירות מתאים לו. אם עדיין אין כאלה ב-Sheets, אפשר להוסיף כאן."
+            group="audience"
+            sections={content.sections}
+            updateSection={updateSection}
+            addSection={addSection}
+            duplicateSection={duplicateSection}
+            archiveSection={archiveSection}
+            restoreSection={restoreSection}
+          />
+        )}
+
+        {activeView === 'process' && (
+          <SectionGroupEditor
+            title="איך זה עובד"
+            text="שלבים פשוטים שמסבירים ללקוח מה קורה מהרגע שהוא פונה ועד שהאוכל מוכן."
+            group="process"
+            sections={content.sections}
+            updateSection={updateSection}
+            addSection={addSection}
+            duplicateSection={duplicateSection}
+            archiveSection={archiveSection}
+            restoreSection={restoreSection}
+          />
+        )}
+
+        {activeView === 'trust' && (
+          <SectionGroupEditor
+            title="אמון ועובדות"
+            text="נקודות שמרגיעות לקוח לפני שהוא פונה: זמינות, התאמה אישית, אזור פעילות ועוד."
+            group="trust"
+            sections={content.sections}
+            updateSection={updateSection}
+            addSection={addSection}
+            duplicateSection={duplicateSection}
+            archiveSection={archiveSection}
+            restoreSection={restoreSection}
+          />
+        )}
+
+        {activeView === 'faq' && (
+          <SectionGroupEditor
+            title="שאלות ותשובות"
+            text="כל כרטיס הוא שאלה באתר. הכותרת היא השאלה, והטקסט הוא התשובה."
+            group="faq"
+            sections={content.sections}
+            updateSection={updateSection}
+            addSection={addSection}
+            duplicateSection={duplicateSection}
+            archiveSection={archiveSection}
+            restoreSection={restoreSection}
+          />
+        )}
+
+        {activeView === 'publish' && (
+          <PublishPanel
+            content={content}
+            hasErrors={hasErrors}
+            status={hasErrors ? validationErrorText(validation, referenceIssues) : status}
+            publishState={publishState}
+            onSaveDraft={handleSaveDraft}
+            onPublish={handleUpdateSite}
+            disabled={isBusy || !canUseGoogle || hasErrors}
+          />
         )}
 
         {activeView === 'media' && (
           <section className="workspace-panel">
             <PanelHeader
               title="תמונות בדרייב"
-              text="Drive הוא מקור העריכה. האתר יקבל ממנו קבצי WebP מהירים רק אחרי עדכון האתר."
+              text="Drive הוא מקור העריכה. כאן רואים כל תמונה, איפה היא משמשת, ומה יקרה לה אחרי עדכון האתר."
               action={
                 <label className="compact-button file-button">
                   <Upload aria-hidden="true" />
@@ -641,8 +900,20 @@ export const App = () => {
             />
             <div className="media-grid">
               {content.media.map((media) => (
-                <article className="media-card" key={media.id}>
+                <article className={media.deletedAt ? 'media-card is-archived' : 'media-card'} key={media.id}>
                   <DrivePreviewImage media={media} accessToken={session.accessToken} />
+                  <div className="card-heading">
+                    <div>
+                      <p className="kicker">{mediaStatus(media, content)}</p>
+                      <h3>{mediaLabel(media, content)}</h3>
+                    </div>
+                    <ItemActions
+                      isArchived={Boolean(media.deletedAt)}
+                      onDuplicate={undefined}
+                      onArchive={() => archiveMedia(media.id)}
+                      onRestore={() => restoreMedia(media.id)}
+                    />
+                  </div>
                   <Field label="שם תמונה בסטודיו" help="שם קצר באנגלית שמזהה את התמונה במערכת.">
                     <TextInput value={media.id} onChange={(value) => renameMedia(media.id, value)} />
                   </Field>
@@ -678,6 +949,140 @@ export const App = () => {
         )}
       </section>
     </main>
+  );
+};
+
+const SiteMapPanel = ({
+  content,
+  mediaById,
+  onOpen,
+}: {
+  readonly content: ContentSnapshot;
+  readonly mediaById: ReadonlyMap<string, ImageAssetRecord>;
+  readonly onOpen: (view: ActiveView) => void;
+}) => (
+  <section className="workspace-panel">
+    <PanelHeader title="מפת האתר" text="בחרו אזור באתר. כל כרטיס מסביר איפה השינוי יופיע ומה אפשר לעשות שם." />
+    <div className="site-map-grid">
+      {areaDefinitions.map((area) => (
+        <article className="site-area-card" key={area.id}>
+          <div className="site-area-icon">{area.icon}</div>
+          <div>
+            <p className="kicker">{area.location}</p>
+            <h3>{area.title}</h3>
+            <p>{area.help}</p>
+          </div>
+          <AreaMiniPreview area={area.id} content={content} mediaById={mediaById} />
+          <div className="area-status-row">
+            <span>{areaStatus(area.id, content)}</span>
+            <button className="compact-button" onClick={() => onOpen(area.id)}>עריכה</button>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+);
+
+const AreaMiniPreview = ({
+  area,
+  content,
+  mediaById,
+}: {
+  readonly area: ActiveView;
+  readonly content: ContentSnapshot;
+  readonly mediaById: ReadonlyMap<string, ImageAssetRecord>;
+}) => {
+  if (area === 'gallery') {
+    const item = content.gallery.find((galleryItem) => galleryItem.active && !galleryItem.deletedAt);
+    const media = item ? mediaById.get(item.mediaId) : undefined;
+    return <div className="area-mini-preview">{media ? <img src={publicAssetSrcFor(media.src)} alt="" /> : <span>עדיין אין תמונה פעילה</span>}</div>;
+  }
+
+  if (area === 'services') {
+    const service = content.services.find((item) => item.active && !item.deletedAt);
+    return (
+      <div className="area-mini-preview text-preview">
+        <strong>{service?.title ?? 'אין שירות פעיל'}</strong>
+        <span>{service?.description ?? 'הוסיפו או הפעילו שירות כדי שיופיע באתר.'}</span>
+      </div>
+    );
+  }
+
+  if (area === 'hero') {
+    const hero = content.sections.find((section) => section.id === 'hero' && !section.deletedAt);
+    return (
+      <div className="area-mini-preview text-preview">
+        <strong>{hero?.title ?? 'כותרת מסך פתיחה'}</strong>
+        <span>{hero?.text ?? 'הטקסט הראשון שהלקוח רואה באתר.'}</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="area-mini-preview text-preview">
+      <strong>{areaStatus(area, content)}</strong>
+      <span>לחצו עריכה כדי לראות ולשנות את האזור.</span>
+    </div>
+  );
+};
+
+const HeroEditor = ({
+  content,
+  mediaById,
+  accessToken,
+  updateSection,
+  addSection,
+}: {
+  readonly content: ContentSnapshot;
+  readonly mediaById: ReadonlyMap<string, ImageAssetRecord>;
+  readonly accessToken: string;
+  readonly updateSection: (id: string, patch: Partial<SectionBlockRecord>) => void;
+  readonly addSection: (group?: string) => void;
+}) => {
+  const hero = content.sections.find((section) => section.id === 'hero') ?? content.sections.find((section) => section.group === 'hero');
+  const serviceMedia = content.services[0] ? mediaById.get(content.services[0].mediaId) : undefined;
+
+  if (!hero) {
+    return (
+      <section className="workspace-panel">
+        <PanelHeader title="מסך פתיחה" text="עדיין אין רשומת Hero ב-Sheets." />
+        <button className="compact-button" onClick={() => addSection('hero')}>
+          <Plus aria-hidden="true" />
+          צור מסך פתיחה
+        </button>
+      </section>
+    );
+  }
+
+  return (
+    <section className="workspace-panel split-editor">
+      <div className="editor-column">
+        <PanelHeader title="מסך פתיחה" text="זה הדבר הראשון שרואים באתר. כתבו כותרת פשוטה וברורה." />
+        <Toggle checked={hero.active && !hero.deletedAt} label="מסך הפתיחה פעיל" onChange={(checked) => updateSection(hero.id, { active: checked })} />
+        <Field label="כותרת גדולה" help="מופיעה במרכז המסך הראשון. אפשר לרדת שורה עם Enter.">
+          <textarea value={hero.title ?? ''} onChange={(event) => updateSection(hero.id, { title: event.target.value || undefined })} />
+        </Field>
+        <Field label="טקסט מתחת לכותרת" help="משפט שמסביר למה לפנות ומה מקבלים.">
+          <textarea value={hero.text ?? ''} onChange={(event) => updateSection(hero.id, { text: event.target.value || undefined })} />
+        </Field>
+        <Field label="שורות קטנות במסך הפתיחה" help="הפריט הראשון הוא טקסט מעל הכותרת. השני הוא משפט מודגש קצר. מפרידים עם |">
+          <TextInput value={joinPipeList(hero.items)} onChange={(value) => updateSection(hero.id, { items: splitPipeList(value) })} />
+        </Field>
+      </div>
+      <div className="preview-column">
+        <p className="kicker">כך זה ירגיש באתר</p>
+        <div className="site-preview-hero">
+          <p className="kicker">{hero.items[0] ?? 'טקסט עליון קטן'}</p>
+          <h3>{hero.title ?? 'כותרת ראשית באתר'}</h3>
+          <p>{hero.text ?? 'טקסט הפתיחה יופיע כאן.'}</p>
+          <a href={content.settings.whatsappBase} target="_blank" rel="noreferrer">
+            <MessageCircle aria-hidden="true" />
+            וואטסאפ: {content.settings.phoneDisplay}
+          </a>
+        </div>
+        {serviceMedia && <DrivePreviewImage media={serviceMedia} accessToken={accessToken} />}
+      </div>
+    </section>
   );
 };
 
@@ -730,62 +1135,191 @@ const StatusPanel = ({ publishState, status, hasErrors }: { readonly publishStat
   );
 };
 
-const PreviewPanel = ({
-  content,
-  mediaById,
-  accessToken,
+const SectionGroupEditor = ({
+  title,
+  text,
+  group,
+  sections,
+  updateSection,
+  addSection,
+  duplicateSection,
+  archiveSection,
+  restoreSection,
 }: {
-  readonly content: ContentSnapshot;
-  readonly mediaById: ReadonlyMap<string, ImageAssetRecord>;
-  readonly accessToken: string;
+  readonly title: string;
+  readonly text: string;
+  readonly group: string;
+  readonly sections: readonly SectionBlockRecord[];
+  readonly updateSection: (id: string, patch: Partial<SectionBlockRecord>) => void;
+  readonly addSection: (group?: string) => void;
+  readonly duplicateSection: (section: SectionBlockRecord) => void;
+  readonly archiveSection: (id: string) => void;
+  readonly restoreSection: (id: string) => void;
 }) => {
-  const heroSection = content.sections.find((section) => section.group === 'hero' && section.active);
-  const faqSections = content.sections.filter((section) => section.group === 'faq' && section.active).slice(0, 3);
-  const galleryItems = content.gallery.filter((item) => item.active).sort((left, right) => left.order - right.order).slice(0, 6);
+  const groupSections = sections
+    .filter((section) => section.group === group)
+    .sort((left, right) => left.order - right.order);
 
   return (
-    <section className="workspace-panel preview-panel">
-      <PanelHeader title="תצוגה לפני פרסום" text="כך התוכן ייראה בערך באתר אחרי לחיצה על עדכן אתר." />
-      <div className="site-preview-hero">
-        <p className="kicker">מסך פתיחה</p>
-        <h3>{heroSection?.title ?? 'כותרת ראשית באתר'}</h3>
-        <p>{heroSection?.text ?? 'טקסט הפתיחה יופיע כאן.'}</p>
-        <a href={content.settings.whatsappBase} target="_blank" rel="noreferrer">
-          <MessageCircle aria-hidden="true" />
-          וואטסאפ: {content.settings.phoneDisplay}
-        </a>
+    <section className="workspace-panel split-editor">
+      <div className="editor-column">
+        <PanelHeader
+          title={title}
+          text={text}
+          action={
+            <button className="compact-button" onClick={() => addSection(group)}>
+              <Plus aria-hidden="true" />
+              הוסף פריט
+            </button>
+          }
+        />
+        <div className="cards-list">
+          {groupSections.map((section) => (
+            <article className={section.deletedAt ? 'edit-card is-archived' : 'edit-card'} key={section.id}>
+              <div className="card-heading">
+                <div>
+                  <p className="kicker">{sectionGroupLabels[section.group] ?? section.group}</p>
+                  <h3>{section.title || 'פריט ללא כותרת'}</h3>
+                </div>
+                <ItemActions
+                  isArchived={Boolean(section.deletedAt)}
+                  onDuplicate={() => duplicateSection(section)}
+                  onArchive={() => archiveSection(section.id)}
+                  onRestore={() => restoreSection(section.id)}
+                />
+              </div>
+              <Toggle checked={section.active && !section.deletedAt} label="מוצג באתר" onChange={(checked) => updateSection(section.id, { active: checked })} />
+              <Field label={group === 'faq' ? 'השאלה שמופיעה באתר' : 'כותרת שמופיעה באתר'} help="זו הכותרת שהלקוח יראה באזור הזה.">
+                <TextInput value={section.title ?? ''} onChange={(value) => updateSection(section.id, { title: value || undefined })} />
+              </Field>
+              <Field label={group === 'faq' ? 'התשובה' : 'טקסט מתחת לכותרת'} help="טקסט קצר וברור, בלי ניסוחים טכניים.">
+                <textarea value={section.text ?? ''} onChange={(event) => updateSection(section.id, { text: event.target.value || undefined })} />
+              </Field>
+              <Field label="נקודות נוספות" help="אם צריך רשימה קצרה, מפרידים נקודות עם |">
+                <TextInput value={joinPipeList(section.items)} onChange={(value) => updateSection(section.id, { items: splitPipeList(value) })} />
+              </Field>
+              <details className="technical-details">
+                <summary>פרטים מתקדמים</summary>
+                <div className="inline-grid">
+                  <NumberInput value={section.order} onChange={(value) => updateSection(section.id, { order: value })} />
+                  <TextInput value={section.id} onChange={(value) => updateSection(section.id, { id: value })} />
+                </div>
+              </details>
+            </article>
+          ))}
+          {groupSections.length === 0 && (
+            <div className="empty-state">
+              <FileText aria-hidden="true" />
+              <strong>עדיין אין פריטים באזור הזה</strong>
+              <span>לחצו “הוסף פריט” כדי להתחיל לנהל אותו מהסטודיו.</span>
+            </div>
+          )}
+        </div>
       </div>
-      <div className="preview-services">
-        {content.services.map((service) => (
-          <article key={service.id}>
-            <DrivePreviewImage media={mediaById.get(service.mediaId)} accessToken={accessToken} />
-            <h3>{service.title}</h3>
-            <p>{service.description}</p>
-          </article>
-        ))}
-      </div>
-      <div className="preview-gallery">
-        {galleryItems.map((item) => (
-          <article key={item.id} className={item.tall ? 'is-tall' : ''}>
-            <DrivePreviewImage media={mediaById.get(item.mediaId)} accessToken={accessToken} />
-            <strong>{item.title}</strong>
-            <span>{categoryLabels[item.category]}</span>
-          </article>
-        ))}
-      </div>
-      {faqSections.length > 0 && (
+      <div className="preview-column">
+        <p className="kicker">תצוגה מקדימה</p>
         <div className="preview-faq">
-          {faqSections.map((section) => (
+          {groupSections.filter((section) => section.active && !section.deletedAt).map((section) => (
             <article key={section.id}>
               <h3>{section.title}</h3>
               <p>{section.text}</p>
+              {section.items.length > 0 && <span>{section.items.join(' · ')}</span>}
             </article>
           ))}
         </div>
-      )}
+      </div>
     </section>
   );
 };
+
+const PublishPanel = ({
+  content,
+  hasErrors,
+  status,
+  publishState,
+  onSaveDraft,
+  onPublish,
+  disabled,
+}: {
+  readonly content: ContentSnapshot;
+  readonly hasErrors: boolean;
+  readonly status: string;
+  readonly publishState: PublishState;
+  readonly onSaveDraft: () => void;
+  readonly onPublish: () => void;
+  readonly disabled: boolean;
+}) => (
+  <section className="workspace-panel publish-panel-detail">
+    <PanelHeader title="פרסום ושינויים" text="כאן עושים בדיקה אחרונה. שמירה לבד לא משנה את האתר; עדכון אתר מפרסם את הכל." />
+    <div className="publish-flow">
+      {[
+        ['1', 'בדיקת שגיאות', hasErrors ? 'צריך לתקן לפני פרסום' : 'תקין'],
+        ['2', 'שמירה ל-Google Sheets', publishState === 'saving' ? 'נשמר עכשיו' : 'מוכן'],
+        ['3', 'הפעלת Cloudflare', publishState === 'publishing' ? 'נשלח לפרסום' : 'יחכה ללחיצה'],
+        ['4', 'האתר החי', publishState === 'published' ? 'הפרסום נשלח' : 'יתעדכן אחרי build'],
+      ].map(([step, title, text]) => (
+        <article key={step}>
+          <strong>{step}</strong>
+          <div>
+            <h3>{title}</h3>
+            <p>{text}</p>
+          </div>
+        </article>
+      ))}
+    </div>
+    <div className={hasErrors ? 'publish-summary is-error' : 'publish-summary'}>
+      <ShieldAlert aria-hidden="true" />
+      <span>{status}</span>
+    </div>
+    <div className="overview-strip">
+      <Metric label="שירותים לא בארכיון" value={String(content.services.filter((item) => !item.deletedAt).length)} />
+      <Metric label="שאלות FAQ פעילות" value={String(content.sections.filter((item) => item.group === 'faq' && item.active && !item.deletedAt).length)} />
+      <Metric label="תמונות פעילות" value={String(content.gallery.filter((item) => item.active && !item.deletedAt).length)} />
+    </div>
+    <div className="topbar-actions">
+      <button className="ghost-button" onClick={onSaveDraft} disabled={disabled}>
+        <Save aria-hidden="true" />
+        שמור כטיוטה
+      </button>
+      <button className="publish-button" onClick={onPublish} disabled={disabled}>
+        <Rocket aria-hidden="true" />
+        עדכן אתר
+      </button>
+      <a className="ghost-link" href={publicSiteOrigin} target="_blank" rel="noreferrer">פתיחת האתר החי</a>
+    </div>
+  </section>
+);
+
+const ItemActions = ({
+  isArchived,
+  onDuplicate,
+  onArchive,
+  onRestore,
+}: {
+  readonly isArchived: boolean;
+  readonly onDuplicate?: () => void;
+  readonly onArchive: () => void;
+  readonly onRestore: () => void;
+}) => (
+  <div className="item-actions">
+    {isArchived ? (
+      <button type="button" className="icon-button" onClick={onRestore} aria-label="שחזור מהארכיון">
+        <RotateCcw aria-hidden="true" />
+      </button>
+    ) : (
+      <>
+        {onDuplicate && (
+          <button type="button" className="icon-button" onClick={onDuplicate} aria-label="שכפול">
+            <Copy aria-hidden="true" />
+          </button>
+        )}
+        <button type="button" className="icon-button danger" onClick={onArchive} aria-label="העברה לארכיון">
+          <Trash2 aria-hidden="true" />
+        </button>
+      </>
+    )}
+  </div>
+);
 
 const DrivePreviewImage = ({ media, accessToken }: { readonly media?: ImageAssetRecord; readonly accessToken: string }) => {
   const [preview, setPreview] = useState<{ readonly fileId: string; readonly objectUrl: string; readonly failed: boolean } | null>(null);
@@ -916,14 +1450,55 @@ const validationErrorText = (
 
 const mediaUsage = (mediaId: string, content: ContentSnapshot) => {
   const usage = [
-    ...content.gallery.filter((item) => item.mediaId === mediaId).map((item) => `גלריה: ${item.title}`),
-    ...content.services.filter((service) => service.mediaId === mediaId).map((service) => `שירות: ${service.title}`),
+    ...content.gallery.filter((item) => item.mediaId === mediaId && !item.deletedAt).map((item) => `גלריה: ${item.title}`),
+    ...content.services.filter((service) => service.mediaId === mediaId && !service.deletedAt).map((service) => `שירות: ${service.title}`),
   ];
   return usage.join(' | ');
 };
 
 const mediaLabel = (media: ImageAssetRecord, content: ContentSnapshot) => {
-  const firstGallery = content.gallery.find((item) => item.mediaId === media.id);
-  const firstService = content.services.find((service) => service.mediaId === media.id);
+  const firstGallery = content.gallery.find((item) => item.mediaId === media.id && !item.deletedAt);
+  const firstService = content.services.find((service) => service.mediaId === media.id && !service.deletedAt);
   return firstGallery?.title ?? firstService?.title ?? media.id;
+};
+
+const mediaStatus = (media: ImageAssetRecord, content: ContentSnapshot) => {
+  if (media.deletedAt) {
+    return 'בארכיון';
+  }
+  if (!media.driveFileId) {
+    return 'חסר מקור בדרייב';
+  }
+  if (!mediaUsage(media.id, content)) {
+    return 'לא בשימוש באתר';
+  }
+  if (media.src.startsWith('/media/cms/')) {
+    return 'תמונה תקינה';
+  }
+  return 'תיווצר באתר אחרי עדכון אתר';
+};
+
+const areaStatus = (area: ActiveView, content: ContentSnapshot) => {
+  if (area === 'hero') {
+    const hero = content.sections.find((section) => section.id === 'hero' || section.group === 'hero');
+    return hero?.active && !hero.deletedAt ? 'פעיל באתר' : 'כבוי או חסר';
+  }
+  if (area === 'services') {
+    return `${content.services.filter((service) => service.active && !service.deletedAt).length} שירותים פעילים`;
+  }
+  if (area === 'gallery') {
+    return `${content.gallery.filter((item) => item.active && !item.deletedAt).length} תמונות פעילות`;
+  }
+  if (area === 'media') {
+    return `${content.media.filter((media) => !media.deletedAt).length} תמונות בספרייה`;
+  }
+  if (area === 'contact') {
+    return content.settings.phoneDisplay ? `וואטסאפ ${content.settings.phoneDisplay}` : 'חסר טלפון';
+  }
+  if (area === 'publish') {
+    return 'מוכן לבדיקה ופרסום';
+  }
+  const group = area;
+  const activeCount = content.sections.filter((section) => section.group === group && section.active && !section.deletedAt).length;
+  return activeCount > 0 ? `${activeCount} פריטים פעילים` : 'עדיין לא מנוהל מהסטודיו';
 };

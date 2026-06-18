@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { contentSnapshotSchema, parseBoolean, sortActiveGallery, validateContentReferences } from './index';
+import { contentSnapshotSchema, parseBoolean, sortActiveGallery, sortActiveServices, validateContentReferences } from './index';
 
 const snapshot = {
   version: '1',
@@ -71,6 +71,8 @@ describe('content schema', () => {
             cta: 'דברו איתנו',
             mediaId: 'missing-service',
             icon: 'Camera',
+            active: true,
+            order: 1,
           },
         ],
         sections: [],
@@ -79,5 +81,48 @@ describe('content schema', () => {
       'פריט הגלריה "מגש אירוח" מצביע לתמונה שלא קיימת: missing',
       'השירות "אירועים" מצביע לתמונה שלא קיימת: missing-service',
     ]);
+  });
+
+  it('ignores archived references and sorts active services', () => {
+    const services = [
+      {
+        id: 'b',
+        title: 'שירות שני',
+        subtitle: 'בוטיק',
+        description: 'תיאור',
+        bestFor: 'אירוח',
+        promise: 'רגוע',
+        details: ['פרט'],
+        cta: 'דברו איתנו',
+        mediaId: 'tray',
+        icon: 'Camera',
+        active: true,
+        order: 2,
+      },
+      {
+        id: 'a',
+        title: 'שירות ראשון',
+        subtitle: 'בוטיק',
+        description: 'תיאור',
+        bestFor: 'אירוח',
+        promise: 'רגוע',
+        details: ['פרט'],
+        cta: 'דברו איתנו',
+        mediaId: 'tray',
+        icon: 'Camera',
+        active: true,
+        order: 1,
+      },
+    ];
+
+    expect(sortActiveServices(services).map((service) => service.id)).toEqual(['a', 'b']);
+    expect(
+      validateContentReferences({
+        ...snapshot,
+        gallery: [{ ...snapshot.gallery[0], mediaId: 'missing', deletedAt: '2026-06-18T00:00:00.000Z' }],
+        services: [{ ...services[0], mediaId: 'missing', deletedAt: '2026-06-18T00:00:00.000Z' }],
+        sections: [],
+      }),
+    ).toEqual([]);
   });
 });

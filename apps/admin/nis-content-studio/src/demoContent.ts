@@ -66,6 +66,8 @@ export const demoContent: ContentSnapshot = {
       cta: 'להזמנת תפריט שבת',
       mediaId: 'hosting-table-overview',
       icon: 'ChefHat',
+      active: true,
+      order: 1,
     },
   ],
   sections: [
@@ -76,6 +78,7 @@ export const demoContent: ContentSnapshot = {
       text: 'שבתות, מגשי אירוח ו-Travel Nis, עם אוכל מוקפד ונראות יפה.',
       items: [],
       active: true,
+      order: 1,
     },
   ],
 };

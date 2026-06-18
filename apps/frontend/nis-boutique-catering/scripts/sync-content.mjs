@@ -50,10 +50,10 @@ const fetchSheetValues = async (accessToken, range) => {
 const readRemoteSnapshot = async (accessToken) => {
   const [settingsRows, mediaRows, galleryRows, servicesRows, sectionsRows] = await Promise.all([
     fetchSheetValues(accessToken, 'site_settings!A:B'),
-    fetchSheetValues(accessToken, 'media!A:H'),
-    fetchSheetValues(accessToken, 'gallery!A:J'),
-    fetchSheetValues(accessToken, 'services!A:J'),
-    fetchSheetValues(accessToken, 'sections!A:F'),
+    fetchSheetValues(accessToken, 'media!A:I'),
+    fetchSheetValues(accessToken, 'gallery!A:K'),
+    fetchSheetValues(accessToken, 'services!A:M'),
+    fetchSheetValues(accessToken, 'sections!A:H'),
   ]);
   const settings = Object.fromEntries(settingsRows.filter((row) => row[0]).map(([key, value]) => [key, value ?? '']));
 
@@ -78,6 +78,7 @@ const readRemoteSnapshot = async (accessToken) => {
       responsive: parseBool(row.responsive, true),
       driveFileId: row.driveFileId || undefined,
       usageNotes: row.usageNotes || undefined,
+      deletedAt: row.deletedAt || undefined,
     })),
     gallery: rowsToObjects(galleryRows).map((row) => ({
       id: row.id,
@@ -89,8 +90,9 @@ const readRemoteSnapshot = async (accessToken) => {
       tall: parseBool(row.tall),
       mediaId: row.mediaId,
       driveFileId: row.driveFileId || undefined,
+      deletedAt: row.deletedAt || undefined,
     })),
-    services: rowsToObjects(servicesRows).map((row) => ({
+    services: rowsToObjects(servicesRows).map((row, index) => ({
       id: row.id,
       title: row.title,
       subtitle: row.subtitle,
@@ -101,14 +103,19 @@ const readRemoteSnapshot = async (accessToken) => {
       cta: row.cta,
       mediaId: row.mediaId,
       icon: row.icon,
+      active: parseBool(row.active, true),
+      order: Number(row.order || index + 1),
+      deletedAt: row.deletedAt || undefined,
     })),
-    sections: rowsToObjects(sectionsRows).map((row) => ({
+    sections: rowsToObjects(sectionsRows).map((row, index) => ({
       id: row.id,
       group: row.group,
       title: row.title || undefined,
       text: row.text || undefined,
       items: String(row.items ?? '').split('|').map((item) => item.trim()).filter(Boolean),
       active: parseBool(row.active, true),
+      order: Number(row.order || index + 1),
+      deletedAt: row.deletedAt || undefined,
     })),
   };
 };
@@ -171,7 +178,10 @@ if (errors.length > 0) {
 
 if (accessToken) {
   clearCmsMedia();
-  for (const media of snapshot.media) {
+for (const media of snapshot.media) {
+    if (media.deletedAt) {
+      continue;
+    }
     await downloadDriveMedia(accessToken, media);
   }
 }

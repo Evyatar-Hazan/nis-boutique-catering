@@ -89,10 +89,10 @@ const rowsToObjects = (rows: string[][]) => {
 export const readContentFromSheets = async (accessToken: string): Promise<ContentSnapshot> => {
   const [settingsRows, mediaRows, galleryRows, servicesRows, sectionsRows] = await Promise.all([
     fetchSheetValues(accessToken, 'site_settings!A:B'),
-    fetchSheetValues(accessToken, 'media!A:H'),
-    fetchSheetValues(accessToken, 'gallery!A:J'),
-    fetchSheetValues(accessToken, 'services!A:J'),
-    fetchSheetValues(accessToken, 'sections!A:F'),
+    fetchSheetValues(accessToken, 'media!A:I'),
+    fetchSheetValues(accessToken, 'gallery!A:K'),
+    fetchSheetValues(accessToken, 'services!A:M'),
+    fetchSheetValues(accessToken, 'sections!A:H'),
   ]);
 
   const settings = Object.fromEntries(settingsRows.filter((row) => row[0]).map(([key, value]) => [key, value ?? '']));
@@ -105,6 +105,7 @@ export const readContentFromSheets = async (accessToken: string): Promise<Conten
     responsive: parseBoolean(row.responsive, true),
     driveFileId: row.driveFileId || undefined,
     usageNotes: row.usageNotes || undefined,
+    deletedAt: row.deletedAt || undefined,
   }));
   const gallery = rowsToObjects(galleryRows).map((row): GalleryItemRecord => ({
     id: row.id,
@@ -116,8 +117,9 @@ export const readContentFromSheets = async (accessToken: string): Promise<Conten
     tall: parseBoolean(row.tall),
     mediaId: row.mediaId,
     driveFileId: row.driveFileId || undefined,
+    deletedAt: row.deletedAt || undefined,
   }));
-  const services = rowsToObjects(servicesRows).map((row): ServiceRecord => ({
+  const services = rowsToObjects(servicesRows).map((row, index): ServiceRecord => ({
     id: row.id,
     title: row.title,
     subtitle: row.subtitle,
@@ -128,14 +130,19 @@ export const readContentFromSheets = async (accessToken: string): Promise<Conten
     cta: row.cta,
     mediaId: row.mediaId,
     icon: row.icon,
+    active: parseBoolean(row.active, true),
+    order: Number(row.order || index + 1),
+    deletedAt: row.deletedAt || undefined,
   }));
-  const sections = rowsToObjects(sectionsRows).map((row) => ({
+  const sections = rowsToObjects(sectionsRows).map((row, index) => ({
     id: row.id,
     group: row.group,
     title: row.title || undefined,
     text: row.text || undefined,
     items: row.items.split('|').map((item) => item.trim()).filter(Boolean),
     active: parseBoolean(row.active, true),
+    order: Number(row.order || index + 1),
+    deletedAt: row.deletedAt || undefined,
   }));
 
   return contentSnapshotSchema.parse({
@@ -187,21 +194,21 @@ export const saveContentToSheets = async (accessToken: string, snapshot: Content
       ['seoTitle', valid.settings.seoTitle ?? ''],
       ['seoDescription', valid.settings.seoDescription ?? ''],
     ]),
-    putSheetValues(accessToken, 'media!A:H', [
-      ['id', 'src', 'width', 'height', 'sizes', 'responsive', 'driveFileId', 'usageNotes'],
-      ...valid.media.map((item) => [item.id, item.src, item.width, item.height, item.sizes ?? '', item.responsive, item.driveFileId ?? '', item.usageNotes ?? '']),
+    putSheetValues(accessToken, 'media!A:I', [
+      ['id', 'src', 'width', 'height', 'sizes', 'responsive', 'driveFileId', 'usageNotes', 'deletedAt'],
+      ...valid.media.map((item) => [item.id, item.src, item.width, item.height, item.sizes ?? '', item.responsive, item.driveFileId ?? '', item.usageNotes ?? '', item.deletedAt ?? '']),
     ]),
-    putSheetValues(accessToken, 'gallery!A:J', [
-      ['id', 'title', 'alt', 'category', 'order', 'active', 'tall', 'mediaId', 'driveFileId', 'notes'],
-      ...valid.gallery.map((item) => [item.id, item.title, item.alt, item.category, item.order, item.active, item.tall, item.mediaId, item.driveFileId ?? '', '']),
+    putSheetValues(accessToken, 'gallery!A:K', [
+      ['id', 'title', 'alt', 'category', 'order', 'active', 'tall', 'mediaId', 'driveFileId', 'notes', 'deletedAt'],
+      ...valid.gallery.map((item) => [item.id, item.title, item.alt, item.category, item.order, item.active, item.tall, item.mediaId, item.driveFileId ?? '', '', item.deletedAt ?? '']),
     ]),
-    putSheetValues(accessToken, 'services!A:J', [
-      ['id', 'title', 'subtitle', 'description', 'bestFor', 'promise', 'details', 'cta', 'mediaId', 'icon'],
-      ...valid.services.map((item) => [item.id, item.title, item.subtitle, item.description, item.bestFor, item.promise, item.details.join('|'), item.cta, item.mediaId, item.icon]),
+    putSheetValues(accessToken, 'services!A:M', [
+      ['id', 'title', 'subtitle', 'description', 'bestFor', 'promise', 'details', 'cta', 'mediaId', 'icon', 'active', 'order', 'deletedAt'],
+      ...valid.services.map((item) => [item.id, item.title, item.subtitle, item.description, item.bestFor, item.promise, item.details.join('|'), item.cta, item.mediaId, item.icon, item.active, item.order, item.deletedAt ?? '']),
     ]),
-    putSheetValues(accessToken, 'sections!A:F', [
-      ['id', 'group', 'title', 'text', 'items', 'active'],
-      ...valid.sections.map((item) => [item.id, item.group, item.title ?? '', item.text ?? '', item.items.join('|'), item.active]),
+    putSheetValues(accessToken, 'sections!A:H', [
+      ['id', 'group', 'title', 'text', 'items', 'active', 'order', 'deletedAt'],
+      ...valid.sections.map((item) => [item.id, item.group, item.title ?? '', item.text ?? '', item.items.join('|'), item.active, item.order, item.deletedAt ?? '']),
     ]),
   ]);
 };

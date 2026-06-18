@@ -13,6 +13,7 @@ export const imageAssetSchema = z.object({
   responsive: z.coerce.boolean().default(true),
   driveFileId: z.string().optional(),
   usageNotes: z.string().optional(),
+  deletedAt: z.string().optional(),
 });
 
 export const galleryItemSchema = z.object({
@@ -25,6 +26,7 @@ export const galleryItemSchema = z.object({
   tall: z.coerce.boolean().default(false),
   mediaId: z.string().min(1),
   driveFileId: z.string().optional(),
+  deletedAt: z.string().optional(),
 });
 
 export const siteSettingsSchema = z.object({
@@ -48,6 +50,9 @@ export const serviceSchema = z.object({
   cta: z.string().min(1),
   mediaId: z.string().min(1),
   icon: z.string().min(1),
+  active: z.coerce.boolean().default(true),
+  order: z.coerce.number().int().nonnegative().default(0),
+  deletedAt: z.string().optional(),
 });
 
 export const sectionBlockSchema = z.object({
@@ -57,6 +62,8 @@ export const sectionBlockSchema = z.object({
   text: z.string().min(1).optional(),
   items: z.array(z.string().min(1)).default([]),
   active: z.coerce.boolean().default(true),
+  order: z.coerce.number().int().nonnegative().default(0),
+  deletedAt: z.string().optional(),
 });
 
 export const contentSnapshotSchema = z.object({
@@ -78,6 +85,24 @@ export type SectionBlockRecord = z.infer<typeof sectionBlockSchema>;
 export type ContentSnapshot = z.infer<typeof contentSnapshotSchema>;
 
 export const contentFieldHelp = {
+  siteAreas: {
+    hero: {
+      label: 'מסך פתיחה',
+      help: 'הדבר הראשון שרואים באתר: כותרת גדולה, טקסט וכפתור וואטסאפ.',
+    },
+    services: {
+      label: 'מה מזמינים',
+      help: 'כרטיסי השירות המרכזיים שמסבירים מה אפשר להזמין.',
+    },
+    gallery: {
+      label: 'גלריה',
+      help: 'התמונות שמופיעות בגלריה הציבורית, כולל סדר וקטגוריות.',
+    },
+    media: {
+      label: 'ספריית תמונות',
+      help: 'תמונות המקור בדרייב ומה שנוצר מהן לאתר.',
+    },
+  },
   settings: {
     phoneDisplay: {
       label: 'טלפון שמוצג באתר',
@@ -141,19 +166,35 @@ export const parseBoolean = (value: unknown, defaultValue = false) => {
 };
 
 export const sortActiveGallery = (items: readonly GalleryItemRecord[]) =>
-  [...items].filter((item) => item.active).sort((left, right) => left.order - right.order);
+  [...items].filter((item) => item.active && !item.deletedAt).sort((left, right) => left.order - right.order);
+
+export const sortActiveServices = (items: readonly ServiceRecord[]) =>
+  [...items]
+    .filter((item) => item.active && !item.deletedAt)
+    .sort((left, right) => left.order - right.order);
+
+export const sortActiveSections = (items: readonly SectionBlockRecord[], group?: string) =>
+  [...items]
+    .filter((item) => item.active && !item.deletedAt && (!group || item.group === group))
+    .sort((left, right) => left.order - right.order);
 
 export const validateContentReferences = (snapshot: ContentSnapshot) => {
   const issues: string[] = [];
-  const mediaIds = new Set(snapshot.media.map((media) => media.id));
+  const mediaIds = new Set(snapshot.media.filter((media) => !media.deletedAt).map((media) => media.id));
 
   for (const item of snapshot.gallery) {
+    if (item.deletedAt) {
+      continue;
+    }
     if (!mediaIds.has(item.mediaId)) {
       issues.push(`פריט הגלריה "${item.title}" מצביע לתמונה שלא קיימת: ${item.mediaId}`);
     }
   }
 
   for (const service of snapshot.services) {
+    if (service.deletedAt) {
+      continue;
+    }
     if (!mediaIds.has(service.mediaId)) {
       issues.push(`השירות "${service.title}" מצביע לתמונה שלא קיימת: ${service.mediaId}`);
     }
