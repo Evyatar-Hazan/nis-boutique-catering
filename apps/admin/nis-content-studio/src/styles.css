@@ -884,10 +884,26 @@ input[type="checkbox"] {
   text-align: center;
 }
 
-.source-pill {
+.empty-preview svg {
+  width: 22px;
+  height: 22px;
+}
+
+.preview-source-bar {
   position: absolute;
   inset-inline-start: 10px;
   bottom: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  max-width: calc(100% - 20px);
+}
+
+.source-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
   padding: 5px 9px;
   border-radius: 999px;
   color: #fffdf8;
@@ -898,6 +914,35 @@ input[type="checkbox"] {
 
 .source-pill.is-drive {
   background: rgba(57, 101, 72, 0.88);
+}
+
+.source-pill.is-warning {
+  color: #4d2f05;
+  background: rgba(255, 230, 166, 0.94);
+}
+
+.preview-retry-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 28px;
+  padding: 5px 9px;
+  border: 1px solid rgba(255, 253, 248, 0.34);
+  border-radius: 999px;
+  color: #fffdf8;
+  background: rgba(31, 37, 35, 0.72);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.preview-retry-button:hover {
+  background: rgba(31, 37, 35, 0.88);
+}
+
+.preview-retry-button svg {
+  width: 14px;
+  height: 14px;
 }
 
 .toggle-control {

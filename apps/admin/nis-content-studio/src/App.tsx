@@ -2584,6 +2584,7 @@ const ItemActions = ({
 const DrivePreviewImage = ({ media, accessToken }: { readonly media?: ImageAssetRecord; readonly accessToken: string }) => {
   const [preview, setPreview] = useState<{ readonly fileId: string; readonly objectUrl: string; readonly failed: boolean } | null>(null);
   const [failedFallbackSrc, setFailedFallbackSrc] = useState('');
+  const [retryKey, setRetryKey] = useState(0);
   const fallbackSrc = media?.src ? publicAssetSrcFor(media.src) : '';
 
   useEffect(() => {
@@ -2620,12 +2621,22 @@ const DrivePreviewImage = ({ media, accessToken }: { readonly media?: ImageAsset
         URL.revokeObjectURL(nextObjectUrl);
       }
     };
-  }, [accessToken, media?.driveFileId]);
+  }, [accessToken, media?.driveFileId, retryKey]);
 
   const drivePreview = media?.driveFileId && preview?.fileId === media.driveFileId ? preview : null;
   const fallbackFailed = Boolean(fallbackSrc && failedFallbackSrc === fallbackSrc);
   const src = drivePreview?.objectUrl || (fallbackFailed ? '' : fallbackSrc);
   const failed = Boolean(drivePreview?.failed && (!fallbackSrc || fallbackFailed));
+  const isLoadingDrive = Boolean(media?.driveFileId && !drivePreview);
+  const isShowingDrive = Boolean(drivePreview?.objectUrl);
+  const isShowingFallbackAfterDriveFailure = Boolean(drivePreview?.failed && src && !isShowingDrive);
+  const statusLabel = isShowingDrive
+    ? 'מקור בדרייב'
+    : isShowingFallbackAfterDriveFailure
+      ? 'Drive לא נטען - מוצג מהאתר'
+      : media?.driveFileId
+        ? 'טוען מדרייב'
+        : 'תצוגה מהאתר';
 
   return (
     <div className="media-preview">
@@ -2645,14 +2656,35 @@ const DrivePreviewImage = ({ media, accessToken }: { readonly media?: ImageAsset
         />
       ) : (
         <div className="empty-preview">
-          <Eye aria-hidden="true" />
-          <span>{media ? 'אין תצוגה מקדימה. בחרו מקור מדרייב או פרסמו את התמונה לאתר.' : 'לא נבחרה תמונה'}</span>
+          {isLoadingDrive ? <RefreshCw aria-hidden="true" /> : <Eye aria-hidden="true" />}
+          <span>
+            {media
+              ? isLoadingDrive
+                ? 'טוען תצוגה מקדימה ישירות מדרייב...'
+                : 'אין תצוגה מקדימה. בחרו מקור מדרייב או פרסמו את התמונה לאתר.'
+              : 'לא נבחרה תמונה'}
+          </span>
         </div>
       )}
       {media && (
-        <span className={drivePreview?.objectUrl ? 'source-pill is-drive' : 'source-pill'}>
-          {drivePreview?.objectUrl ? 'מקור בדרייב' : 'תצוגה מהאתר'}
-        </span>
+        <div className="preview-source-bar">
+          <span className={isShowingDrive ? 'source-pill is-drive' : isShowingFallbackAfterDriveFailure ? 'source-pill is-warning' : 'source-pill'}>
+            {statusLabel}
+          </span>
+          {drivePreview?.failed && media.driveFileId && (
+            <button
+              type="button"
+              className="preview-retry-button"
+              onClick={() => {
+                setPreview(null);
+                setRetryKey((current) => current + 1);
+              }}
+            >
+              <RefreshCw aria-hidden="true" />
+              נסה שוב
+            </button>
+          )}
+        </div>
       )}
     </div>
   );
