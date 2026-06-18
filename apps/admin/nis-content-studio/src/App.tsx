@@ -2379,7 +2379,7 @@ const SectionGroupEditor = ({
           device={previewDevice}
           onDeviceChange={onPreviewDeviceChange}
         />
-        <SectionGroupSitePreview group={group} title={title} sections={groupSections} device={previewDevice} />
+        <SectionGroupSitePreview group={group} title={title} sections={groupSections} allSections={sections} device={previewDevice} />
       </div>
     </section>
   );
@@ -2389,103 +2389,147 @@ const SectionGroupSitePreview = ({
   group,
   title,
   sections,
+  allSections,
   device,
 }: {
   readonly group: string;
   readonly title: string;
   readonly sections: readonly SectionBlockRecord[];
+  readonly allSections: readonly SectionBlockRecord[];
   readonly device: PreviewDevice;
 }) => {
   const activeSections = sections.filter((section) => section.active && !section.deletedAt);
-  const copy = sectionPreviewCopy[group] ?? {
+  const fallbackCopy = sectionPreviewCopy[group] ?? {
     eyebrow: sectionGroupLabels[group] ?? title,
     title,
     text: 'כך האזור הזה יופיע באתר אחרי פרסום.',
+  };
+  const managedCopy = allSections.find((section) => section.group === 'site-copy' && section.id === group && section.active && !section.deletedAt);
+  const copy = {
+    eyebrow: managedCopy?.items[0] || fallbackCopy.eyebrow,
+    title: managedCopy?.title || fallbackCopy.title,
+    text: managedCopy?.text || fallbackCopy.text,
   };
 
   return (
     <div className={device === 'mobile' ? 'preview-frame is-mobile' : 'preview-frame is-desktop'}>
       <PreviewBrowserBar device={device} />
       <div className={`site-section-preview site-section-preview-frame section-group-preview section-group-preview-${group}`}>
-        <p className="kicker">{copy.eyebrow}</p>
-        <h3>{copy.title}</h3>
-        <p>{copy.text}</p>
-        <SectionPreviewBody group={group} sections={activeSections} />
+        <SectionPreviewBody group={group} sections={activeSections} copy={copy} />
       </div>
     </div>
   );
 };
 
-const SectionPreviewBody = ({ group, sections }: { readonly group: string; readonly sections: readonly SectionBlockRecord[] }) => {
+const SectionPreviewBody = ({
+  group,
+  sections,
+  copy,
+}: {
+  readonly group: string;
+  readonly sections: readonly SectionBlockRecord[];
+  readonly copy: { readonly eyebrow: string; readonly title: string; readonly text: string };
+}) => {
   if (sections.length === 0) {
     return (
-      <div className="empty-state">
-        <FileText aria-hidden="true" />
-        <strong>אין פריטים פעילים באזור הזה</strong>
-        <span>הדליקו פריט אחד לפחות כדי שיופיע באתר.</span>
-      </div>
+      <>
+        <p className="kicker">{copy.eyebrow}</p>
+        <h3>{copy.title}</h3>
+        <p>{copy.text}</p>
+        <div className="empty-state">
+          <FileText aria-hidden="true" />
+          <strong>אין פריטים פעילים באזור הזה</strong>
+          <span>הדליקו פריט אחד לפחות כדי שיופיע באתר.</span>
+        </div>
+      </>
     );
   }
 
   if (group === 'process') {
     return (
-      <div className="preview-process-list">
-        {sections.map((section, index) => (
-          <article key={section.id}>
-            <span>{index + 1}</span>
-            <CheckCircle2 aria-hidden="true" />
-            <h3>{section.title}</h3>
-            <p>{section.text}</p>
-          </article>
-        ))}
-      </div>
+      <>
+        <p className="kicker">{copy.eyebrow}</p>
+        <h3>{copy.title}</h3>
+        <p>{copy.text}</p>
+        <div className="preview-process-list">
+          {sections.map((section, index) => (
+            <article key={section.id}>
+              <span>{index + 1}</span>
+              <CheckCircle2 aria-hidden="true" />
+              <h3>{section.title}</h3>
+              <p>{section.text}</p>
+            </article>
+          ))}
+        </div>
+      </>
     );
   }
 
   if (group === 'faq') {
     return (
-      <div className="preview-faq-list">
-        {sections.map((section, index) => (
-          <details key={section.id} open={index === 0}>
-            <summary>{section.title}</summary>
-            <p>{section.text}</p>
-          </details>
-        ))}
+      <div className="preview-faq-site-grid">
+        <div className="preview-faq-copy">
+          <p className="kicker">{copy.eyebrow}</p>
+          <h3>{copy.title}</h3>
+          {copy.text && <p>{copy.text}</p>}
+          <div className="preview-faq-meta" aria-label="סיכום שאלות">
+            <span>{sections.length} שאלות פעילות</span>
+            <span>מוצג כאקורדיון באתר</span>
+          </div>
+        </div>
+        <div className="preview-faq-list">
+          {sections.map((section, index) => (
+            <details key={section.id} open={index === 0}>
+              <summary>{section.title}</summary>
+              <p>{section.text}</p>
+            </details>
+          ))}
+        </div>
       </div>
     );
   }
 
   if (group === 'site-microcopy') {
     return (
-      <div className="preview-content-grid">
-        {sections.slice(0, 8).map((section) => (
-          <article key={section.id}>
-            <Tag aria-hidden="true" />
-            <h3>{section.title}</h3>
-            <p>{section.text || section.items.join(' | ')}</p>
-          </article>
-        ))}
-      </div>
+      <>
+        <p className="kicker">{copy.eyebrow}</p>
+        <h3>{copy.title}</h3>
+        <p>{copy.text}</p>
+        <div className="preview-content-grid">
+          {sections.slice(0, 8).map((section) => (
+            <article key={section.id}>
+              <Tag aria-hidden="true" />
+              <h3>{section.title}</h3>
+              <p>{section.text || section.items.join(' | ')}</p>
+            </article>
+          ))}
+        </div>
+      </>
     );
   }
 
   const isTrust = group === 'trust';
 
   return (
-    <div className={isTrust ? 'preview-trust-grid' : 'preview-content-grid'}>
-      {sections.map((section) => (
-        <article key={section.id}>
-          {isTrust ? <ShieldCheck aria-hidden="true" /> : <Sparkles aria-hidden="true" />}
-          <h3>{section.title}</h3>
-          <p>{section.text}</p>
-          {section.items.length > 0 && (
-            <div className="preview-mini-tags">
-              {section.items.slice(0, 3).map((item) => <span key={item}>{item}</span>)}
-            </div>
-          )}
-        </article>
-      ))}
-    </div>
+    <>
+      <p className="kicker">{copy.eyebrow}</p>
+      <h3>{copy.title}</h3>
+      <p>{copy.text}</p>
+      <div className={isTrust ? 'preview-trust-grid' : 'preview-content-grid'}>
+        {sections.map((section) => (
+          <article key={section.id}>
+            {isTrust ? <ShieldCheck aria-hidden="true" /> : <Sparkles aria-hidden="true" />}
+            <h3>{section.title}</h3>
+            <p>{section.text}</p>
+            {section.items.length > 0 && (
+              <div className="preview-mini-tags">
+                {section.items.slice(0, 3).map((item) => <span key={item}>{item}</span>)}
+              </div>
+            )}
+          </article>
+        ))}
+      </div>
+    </>
   );
 };
 

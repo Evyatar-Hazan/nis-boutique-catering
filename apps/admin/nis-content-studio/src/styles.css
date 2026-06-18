@@ -797,14 +797,17 @@ input[type="checkbox"] {
   column-gap: 14px;
 }
 
-.preview-faq {
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-}
-
 .preview-process-list,
 .preview-trust-grid,
-.preview-content-grid {
+.preview-content-grid,
+.preview-faq-site-grid {
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.preview-faq-site-grid {
+  grid-template-columns: minmax(180px, 0.72fr) minmax(260px, 1.28fr);
+  align-items: start;
+  gap: 24px;
 }
 
 .contact-section-preview {
@@ -1685,6 +1688,7 @@ input[type="checkbox"] {
 .preview-frame.is-mobile .preview-process-list,
 .preview-frame.is-mobile .preview-trust-grid,
 .preview-frame.is-mobile .preview-content-grid,
+.preview-frame.is-mobile .preview-faq-site-grid,
 .preview-frame.is-mobile .contact-section-preview {
   grid-template-columns: 1fr;
 }
@@ -1839,10 +1843,50 @@ input[type="checkbox"] {
   gap: 10px;
 }
 
+.preview-faq-copy {
+  display: grid;
+  gap: 12px;
+  align-content: start;
+  padding-block-start: 6px;
+}
+
+.preview-faq-copy h3,
+.preview-faq-copy p {
+  margin: 0;
+}
+
+.preview-faq-copy h3 {
+  color: #202520;
+  font-size: clamp(26px, 3vw, 40px);
+  line-height: 1.08;
+}
+
+.preview-faq-copy p:not(.kicker) {
+  color: #6d6354;
+}
+
+.preview-faq-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-block-start: 4px;
+}
+
+.preview-faq-meta span {
+  border: 1px solid #e0d4bd;
+  border-radius: 999px;
+  padding: 7px 10px;
+  color: #5c503f;
+  background: rgba(255, 253, 248, 0.84);
+  font-size: 12px;
+  font-weight: 900;
+}
+
 .preview-faq-list details {
   border: 1px solid #e4dccf;
   border-radius: 8px;
   background: #fffdf8;
+  box-shadow: 0 12px 32px rgba(45, 36, 24, 0.06);
 }
 
 .preview-faq-list summary {
