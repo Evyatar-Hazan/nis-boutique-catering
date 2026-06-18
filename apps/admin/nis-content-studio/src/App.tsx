@@ -16,6 +16,8 @@ import {
   LogIn,
   MessageCircle,
   MonitorCheck,
+  PanelRightClose,
+  PanelRightOpen,
   Phone,
   Plus,
   RefreshCw,
@@ -368,6 +370,7 @@ export const App = () => {
   const [session, setSession] = useState<Session | null>(null);
   const [content, setContent] = useState<ContentSnapshot>(emptyContent);
   const [activeView, setActiveView] = useState<ActiveView>('site-map');
+  const [isSidebarHidden, setIsSidebarHidden] = useState(false);
   const [publishState, setPublishState] = useState<PublishState>('clean');
   const [status, setStatus] = useState('התחברו כדי לנהל את התוכן האמיתי של האתר.');
   const [isBusy, setIsBusy] = useState(false);
@@ -729,8 +732,19 @@ export const App = () => {
   }
 
   return (
-    <main className="studio-shell">
-      <aside className="studio-sidebar" aria-label="ניווט ניהול">
+    <main className={`studio-shell${isSidebarHidden ? ' is-sidebar-hidden' : ''}`}>
+      <button
+        type="button"
+        className="sidebar-toggle"
+        onClick={() => setIsSidebarHidden((current) => !current)}
+        aria-expanded={!isSidebarHidden}
+        aria-controls="studio-sidebar"
+      >
+        {isSidebarHidden ? <PanelRightOpen aria-hidden="true" /> : <PanelRightClose aria-hidden="true" />}
+        {isSidebarHidden ? 'הצג תפריט' : 'הסתר תפריט'}
+      </button>
+
+      <aside id="studio-sidebar" className="studio-sidebar" aria-label="ניווט ניהול" aria-hidden={isSidebarHidden} inert={isSidebarHidden ? true : undefined}>
         <div className="brand-block">
           <img className="studio-logo" src={`${publicSiteOrigin}/brand/nis-logo.svg`} alt="Nis Boutique Catering" />
           <div>

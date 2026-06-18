@@ -108,15 +108,78 @@ input:disabled {
   display: grid;
   grid-template-columns: 288px minmax(0, 1fr);
   min-height: 100vh;
+  transition: grid-template-columns 180ms ease;
+}
+
+.studio-shell.is-sidebar-hidden {
+  grid-template-columns: 0 minmax(0, 1fr);
 }
 
 .studio-sidebar {
+  position: sticky;
+  top: 0;
+  align-self: start;
   display: flex;
   flex-direction: column;
   gap: 28px;
-  padding: 28px;
+  height: 100vh;
+  max-height: 100vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 86px 28px 28px;
   color: #f8f4ea;
   background: #1f2523;
+  transition:
+    opacity 180ms ease,
+    visibility 180ms ease,
+    padding 180ms ease;
+}
+
+.studio-shell.is-sidebar-hidden .studio-sidebar {
+  visibility: hidden;
+  overflow: hidden;
+  padding-inline: 0;
+  opacity: 0;
+}
+
+.sidebar-toggle {
+  position: fixed;
+  z-index: 20;
+  inset-block-start: 22px;
+  inset-inline-start: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  border: 1px solid rgba(248, 244, 234, 0.22);
+  border-radius: 8px;
+  padding: 0 13px;
+  color: #f8f4ea;
+  background: #2b322f;
+  box-shadow: 0 12px 36px rgba(11, 15, 12, 0.18);
+  font-weight: 800;
+}
+
+.sidebar-toggle:hover,
+.sidebar-toggle:focus-visible {
+  background: #3a423f;
+}
+
+.sidebar-toggle svg {
+  width: 17px;
+  height: 17px;
+  color: #e7c36a;
+}
+
+.studio-shell.is-sidebar-hidden .sidebar-toggle {
+  color: #202520;
+  border-color: #d6d0c1;
+  background: #fffdf8;
+}
+
+.studio-shell.is-sidebar-hidden .studio-main {
+  padding-block-start: 84px;
 }
 
 .brand-block {
@@ -228,6 +291,14 @@ input:disabled {
 
 .auth-panel svg {
   color: #e7c36a;
+}
+
+.auth-panel strong {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  direction: ltr;
+  text-align: left;
+  unicode-bidi: plaintext;
 }
 
 .creator-credit {
@@ -977,9 +1048,32 @@ input[type="checkbox"] {
     grid-template-columns: 1fr;
   }
 
+  .studio-shell.is-sidebar-hidden {
+    grid-template-columns: 1fr;
+  }
+
   .studio-sidebar {
     position: static;
-    padding: 18px;
+    height: auto;
+    max-height: none;
+    overflow: visible;
+    padding: 74px 18px 18px;
+  }
+
+  .studio-shell.is-sidebar-hidden .studio-sidebar {
+    display: none;
+  }
+
+  .sidebar-toggle {
+    inset-block-start: 14px;
+    inset-inline-start: 14px;
+    min-height: 38px;
+    padding: 0 11px;
+    font-size: 14px;
+  }
+
+  .studio-shell.is-sidebar-hidden .studio-main {
+    padding-block-start: 70px;
   }
 
   .nav-stack {
