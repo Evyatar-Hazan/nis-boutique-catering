@@ -80,9 +80,10 @@ type ActiveView =
   | 'media'
   | 'publish';
 type AuthState = 'signed-out' | 'loading' | 'authorized' | 'denied';
-type PublishState = 'clean' | 'draft' | 'saving' | 'publishing' | 'published' | 'error';
+type PublishState = 'clean' | 'draft' | 'saving' | 'publishing' | 'checking' | 'published' | 'live' | 'error';
 type PreviewDevice = 'desktop' | 'mobile';
 type MediaUsageKind = 'gallery' | 'service';
+type PublishStepState = 'done' | 'active' | 'pending' | 'blocked' | 'error';
 
 type MediaUsageEntry = {
   readonly kind: MediaUsageKind;
@@ -118,6 +119,8 @@ const archiveDate = () => new Date().toISOString();
 const creatorUrl = 'https://EvyatarHazan.com';
 const rememberedSessionKey = 'nis-content-studio-session-v1';
 const tokenRefreshWindowMs = 60_000;
+const liveVersionPollDelayMs = 15_000;
+const liveVersionPollAttempts = 12;
 const heroBackgroundImage = '/media/food/events/quiche-tart-clean.webp';
 const heroPrimaryImage = '/media/food/events/salmon-skewers-lemon.webp';
 const heroSideImage = '/media/food/events/dips-tray-close.webp';
@@ -727,15 +730,34 @@ export const App = () => {
     if (!session) {
       return;
     }
-    void runTask('מעדכנים את האתר', async () => {
-      await saveDraft();
-      setPublishState('publishing');
-      setStatus('הטיוטה נשמרה. מפעילים בנייה ופרסום ב-Cloudflare.');
-      const accessToken = await getFreshAccessToken();
-      await triggerPublish(accessToken);
-      setPublishState('published');
-      setStatus('הפרסום נשלח. Cloudflare בונה את האתר; בדקות הקרובות השינוי יופיע באתר החי.');
-    });
+
+    void (async () => {
+      const targetVersion = content.settings.siteVersion || content.version;
+      setIsBusy(true);
+      setStatus('מעדכנים את האתר...');
+      try {
+        await saveDraft();
+        setPublishState('publishing');
+        setStatus('הטיוטה נשמרה. שולחים את הפרסום ל-Cloudflare דרך השרת המאובטח.');
+        const accessToken = await getFreshAccessToken();
+        await triggerPublish(accessToken);
+
+        setPublishState('checking');
+        setStatus(`הפרסום נשלח. Cloudflare בונה עכשיו את גרסת ${targetVersion}; הסטודיו בודק מתי האתר החי מגיש אותה.`);
+        setIsBusy(false);
+        await waitForLiveSiteVersion(targetVersion, (message) => {
+          setPublishState('checking');
+          setStatus(message);
+        });
+        setPublishState('live');
+        setStatus(`האתר החי עודכן ומגיש עכשיו את גרסת ${targetVersion}.`);
+      } catch (error) {
+        setPublishState('error');
+        setStatus(formatError(error));
+      } finally {
+        setIsBusy(false);
+      }
+    })();
   };
 
   const handleLogout = () => {
@@ -2087,7 +2109,13 @@ const LoginGate = ({
 );
 
 const StatusPanel = ({ publishState, status, hasErrors }: { readonly publishState: PublishState; readonly status: string; readonly hasErrors: boolean }) => {
-  const icon = hasErrors ? <ShieldAlert aria-hidden="true" /> : publishState === 'published' ? <MonitorCheck aria-hidden="true" /> : <CheckCircle2 aria-hidden="true" />;
+  const icon = hasErrors || publishState === 'error'
+    ? <ShieldAlert aria-hidden="true" />
+    : publishState === 'live'
+      ? <MonitorCheck aria-hidden="true" />
+      : publishState === 'checking' || publishState === 'publishing'
+        ? <Cloud aria-hidden="true" />
+        : <CheckCircle2 aria-hidden="true" />;
   return (
     <div className={hasErrors ? 'status-line is-error' : `status-line is-${publishState}`}>
       {icon}
@@ -2395,13 +2423,8 @@ const PublishPanel = ({
   <section className="workspace-panel publish-panel-detail">
     <PanelHeader title="פרסום ושינויים" text="כאן עושים בדיקה אחרונה. שמירה לבד לא משנה את האתר; עדכון אתר מפרסם את הכל." />
     <div className="publish-flow">
-      {[
-        ['1', 'בדיקת שגיאות', hasErrors ? 'צריך לתקן לפני פרסום' : 'תקין'],
-        ['2', 'שמירה ל-Google Sheets', publishState === 'saving' ? 'נשמר עכשיו' : 'מוכן'],
-        ['3', 'הפעלת Cloudflare', publishState === 'publishing' ? 'נשלח לפרסום' : 'יחכה ללחיצה'],
-        ['4', 'האתר החי', publishState === 'published' ? 'הפרסום נשלח' : 'יתעדכן אחרי build'],
-      ].map(([step, title, text]) => (
-        <article key={step}>
+      {getPublishSteps(publishState, hasErrors).map(({ step, title, text, state }) => (
+        <article className={`is-${state}`} key={step}>
           <strong>{step}</strong>
           <div>
             <h3>{title}</h3>
@@ -2418,6 +2441,7 @@ const PublishPanel = ({
       <Metric label="שירותים לא בארכיון" value={String(content.services.filter((item) => !item.deletedAt).length)} />
       <Metric label="שאלות FAQ פעילות" value={String(content.sections.filter((item) => item.group === 'faq' && item.active && !item.deletedAt).length)} />
       <Metric label="תמונות פעילות" value={String(content.gallery.filter((item) => item.active && !item.deletedAt).length)} />
+      <Metric label="גרסה לפרסום" value={content.settings.siteVersion || content.version} />
     </div>
     <div className="topbar-actions">
       <button className="ghost-button" onClick={onSaveDraft} disabled={disabled}>
@@ -2623,6 +2647,97 @@ const validationErrorText = (
     return validation.error.issues[0]?.message ?? 'יש שדות שצריך לתקן.';
   }
   return referenceIssues[0] ?? 'יש שדות שצריך לתקן.';
+};
+
+const getPublishSteps = (
+  publishState: PublishState,
+  hasErrors: boolean,
+): readonly { readonly step: string; readonly title: string; readonly text: string; readonly state: PublishStepState }[] => {
+  if (hasErrors) {
+    return [
+      { step: '1', title: 'בדיקת שגיאות', text: 'צריך לתקן לפני פרסום', state: 'error' },
+      { step: '2', title: 'שמירה', text: 'מחכה לתיקון', state: 'blocked' },
+      { step: '3', title: 'שליחה לפרסום', text: 'חסום עד שהתוכן תקין', state: 'blocked' },
+      { step: '4', title: 'בנייה בענן', text: 'עוד לא התחילה', state: 'pending' },
+      { step: '5', title: 'האתר החי', text: 'עוד לא עודכן', state: 'pending' },
+    ];
+  }
+
+  const done = (states: readonly PublishState[]) => states.includes(publishState);
+  const active = (state: PublishState) => publishState === state;
+
+  return [
+    { step: '1', title: 'בדיקת שגיאות', text: 'התוכן תקין לפרסום', state: 'done' },
+    {
+      step: '2',
+      title: 'שמירה ב-Sheets',
+      text: active('saving') ? 'שומר עכשיו' : done(['draft', 'publishing', 'checking', 'published', 'live']) ? 'נשמר' : 'מוכן לשמירה',
+      state: active('saving') ? 'active' : done(['draft', 'publishing', 'checking', 'published', 'live']) ? 'done' : 'pending',
+    },
+    {
+      step: '3',
+      title: 'שליחה לפרסום',
+      text: active('publishing') ? 'שולח לשרת הפרסום' : done(['checking', 'published', 'live']) ? 'נשלח' : 'יחכה ללחיצה',
+      state: active('publishing') ? 'active' : done(['checking', 'published', 'live']) ? 'done' : 'pending',
+    },
+    {
+      step: '4',
+      title: 'Cloudflare בונה',
+      text: active('checking') ? 'בודק אם הגרסה כבר עלתה' : done(['live']) ? 'הסתיים' : 'יתחיל אחרי שליחה',
+      state: active('checking') ? 'active' : done(['live']) ? 'done' : 'pending',
+    },
+    {
+      step: '5',
+      title: 'האתר החי',
+      text: active('live') ? 'הגרסה החדשה באוויר' : 'מחכה לגרסה החדשה',
+      state: active('live') ? 'done' : 'pending',
+    },
+  ];
+};
+
+const wait = (milliseconds: number) => new Promise((resolve) => {
+  window.setTimeout(resolve, milliseconds);
+});
+
+const fetchPublicText = async (url: string) => {
+  const response = await fetch(`${url}${url.includes('?') ? '&' : '?'}nis_check=${Date.now()}`, {
+    cache: 'no-store',
+  });
+  if (!response.ok) {
+    throw new Error(`Could not read ${url}`);
+  }
+  return response.text();
+};
+
+const findBundleUrl = (html: string) => {
+  const match = html.match(/<script[^>]+src="([^"]*assets\/index-[^"]+\.js)"/);
+  return match ? new URL(match[1] ?? '', publicSiteOrigin).href : null;
+};
+
+const isLiveSiteVersion = async (version: string) => {
+  const html = await fetchPublicText(`${publicSiteOrigin}/`);
+  const bundleUrl = findBundleUrl(html);
+  if (!bundleUrl) {
+    return false;
+  }
+
+  const bundle = await fetchPublicText(bundleUrl);
+  return bundle.includes(version) || bundle.includes(JSON.stringify(version));
+};
+
+const waitForLiveSiteVersion = async (version: string, onProgress: (message: string) => void) => {
+  for (let attempt = 1; attempt <= liveVersionPollAttempts; attempt += 1) {
+    if (await isLiveSiteVersion(version)) {
+      return;
+    }
+
+    if (attempt < liveVersionPollAttempts) {
+      onProgress(`Cloudflare עדיין בונה או מפיץ את גרסת ${version}. בדיקה ${attempt}/${liveVersionPollAttempts}; נבדוק שוב בעוד כמה שניות.`);
+      await wait(liveVersionPollDelayMs);
+    }
+  }
+
+  throw new Error(`הפרסום נשלח, אבל הסטודיו עדיין לא רואה את גרסת ${version} באתר החי. לרוב זה אומר ש-Cloudflare עדיין בונה או שהפרסום נכשל בשרת.`);
 };
 
 const getMediaUsage = (mediaId: string, content: ContentSnapshot): readonly MediaUsageEntry[] => {

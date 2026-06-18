@@ -454,13 +454,15 @@ input:disabled {
 }
 
 .status-line.is-clean svg,
-.status-line.is-published svg {
+.status-line.is-published svg,
+.status-line.is-live svg {
   color: #25875a;
 }
 
 .status-line.is-draft svg,
 .status-line.is-saving svg,
-.status-line.is-publishing svg {
+.status-line.is-publishing svg,
+.status-line.is-checking svg {
   color: #96702c;
 }
 
@@ -1663,7 +1665,7 @@ input[type="checkbox"] {
 
 .publish-flow {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
   gap: 12px;
 }
 
@@ -1671,10 +1673,32 @@ input[type="checkbox"] {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   gap: 10px;
+  min-width: 0;
   padding: 14px;
   border: 1px solid #e4dccf;
   border-radius: 8px;
   background: #fffdf8;
+}
+
+.publish-flow article.is-done {
+  border-color: #b7d3bd;
+  background: #f1f8f1;
+}
+
+.publish-flow article.is-active {
+  border-color: #d6ad4a;
+  background: #fff6dd;
+  box-shadow: inset 0 0 0 1px rgba(150, 112, 44, 0.18);
+}
+
+.publish-flow article.is-blocked {
+  opacity: 0.72;
+}
+
+.publish-flow article.is-error {
+  border-color: #e0b4aa;
+  color: #782929;
+  background: #fff0ec;
 }
 
 .publish-flow article > strong {
@@ -1687,9 +1711,26 @@ input[type="checkbox"] {
   background: #e7c36a;
 }
 
+.publish-flow article.is-done > strong {
+  color: #fffdf8;
+  background: #25875a;
+}
+
+.publish-flow article.is-active > strong {
+  color: #fffdf8;
+  background: #96702c;
+}
+
+.publish-flow article.is-blocked > strong,
+.publish-flow article.is-error > strong {
+  color: #fffdf8;
+  background: #8b3a2f;
+}
+
 .publish-flow h3,
 .publish-flow p {
   margin: 0;
+  overflow-wrap: anywhere;
 }
 
 .publish-flow p {
