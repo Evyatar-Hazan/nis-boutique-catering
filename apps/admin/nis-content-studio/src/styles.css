@@ -412,6 +412,12 @@ input:disabled {
   min-height: 36px;
 }
 
+.ghost-button.is-confirmed {
+  border-color: #b7d3bd;
+  color: #38583d;
+  background: #eef7ef;
+}
+
 .icon-button {
   display: inline-grid;
   width: 34px;

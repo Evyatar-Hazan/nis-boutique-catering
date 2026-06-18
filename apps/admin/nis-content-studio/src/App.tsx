@@ -847,13 +847,31 @@ export const App = () => {
   };
 
   const addGalleryItem = (mediaId?: string) => {
-    updateContent((current) => ({
-      ...current,
-      gallery: [
-        ...current.gallery,
-        makeGalleryItem(current, mediaId),
-      ],
-    }));
+    let duplicateTitle: string | null = null;
+
+    updateContent((current) => {
+      if (mediaId) {
+        const existingItem = getGalleryItemForMedia(mediaId, current);
+        if (existingItem) {
+          duplicateTitle = existingItem.title;
+          return current;
+        }
+      }
+
+      return {
+        ...current,
+        gallery: [
+          ...current.gallery,
+          makeGalleryItem(current, mediaId),
+        ],
+      };
+    });
+
+    if (duplicateTitle) {
+      setStatus(`התמונה כבר מחוברת לגלריה תחת "${duplicateTitle}". לא נוצר עותק נוסף.`);
+      return;
+    }
+
     if (mediaId) {
       setStatus('נוצר פריט גלריה חדש מהתמונה. בדקו שם, תיאור וקטגוריה לפני פרסום.');
     }
@@ -1339,55 +1357,67 @@ export const App = () => {
               </label>
             </div>
             <div className="media-grid compact-media-grid">
-              {content.media.map((media) => (
-                <article className={media.deletedAt ? 'media-card is-archived' : 'media-card'} key={media.id}>
-                  <DrivePreviewImage media={media} accessToken={session.accessToken} />
-                  <div className="card-heading">
-                    <div>
-                      <p className="kicker">{mediaStatus(media, content)}</p>
-                      <h3>{mediaLabel(media, content)}</h3>
+              {content.media.map((media) => {
+                const galleryItem = getGalleryItemForMedia(media.id, content);
+                const galleryButtonLabel = galleryItem ? 'כבר בגלריה' : 'הוסף לגלריה';
+
+                return (
+                  <article className={media.deletedAt ? 'media-card is-archived' : 'media-card'} key={media.id}>
+                    <DrivePreviewImage media={media} accessToken={session.accessToken} />
+                    <div className="card-heading">
+                      <div>
+                        <p className="kicker">{mediaStatus(media, content)}</p>
+                        <h3>{mediaLabel(media, content)}</h3>
+                      </div>
+                      <ItemActions
+                        isArchived={Boolean(media.deletedAt)}
+                        onDuplicate={undefined}
+                        onArchive={() => archiveMedia(media.id)}
+                        onRestore={() => restoreMedia(media.id)}
+                      />
                     </div>
-                    <ItemActions
-                      isArchived={Boolean(media.deletedAt)}
-                      onDuplicate={undefined}
-                      onArchive={() => archiveMedia(media.id)}
-                      onRestore={() => restoreMedia(media.id)}
-                    />
-                  </div>
-                  <div className="usage-list">
-                    <strong>איפה זה משפיע באתר</strong>
-                    <MediaUsageList mediaId={media.id} content={content} />
-                  </div>
-                  <MediaRiskNotice mediaId={media.id} content={content} />
-                  <div className="media-quick-actions">
-                    <button className="ghost-button" onClick={() => addGalleryItem(media.id)} disabled={Boolean(media.deletedAt)}>הוסף לגלריה</button>
-                    <button className="ghost-button" onClick={() => handlePickDriveFile(media.id)} disabled={!canUseGoogle}>החלף מקור מדרייב</button>
-                  </div>
-                  <details className="technical-details">
-                    <summary>פרטים מתקדמים</summary>
-                    <Field label="שם תמונה בסטודיו" help="שם קצר באנגלית שמזהה את התמונה במערכת.">
-                      <TextInput value={media.id} onChange={(value) => renameMedia(media.id, value)} />
-                    </Field>
-                    <div className="inline-grid">
-                      <Field label="רוחב" help="נלקח מהתמונה המקורית בדרייב.">
-                        <NumberInput value={media.width} onChange={(value) => updateMedia(media.id, { width: value })} />
-                      </Field>
-                      <Field label="גובה" help="נלקח מהתמונה המקורית בדרייב.">
-                        <NumberInput value={media.height} onChange={(value) => updateMedia(media.id, { height: value })} />
-                      </Field>
+                    <div className="usage-list">
+                      <strong>איפה זה משפיע באתר</strong>
+                      <MediaUsageList mediaId={media.id} content={content} />
                     </div>
-                    <Field label="הערות שימוש" help="הסבר פנימי איפה כדאי להשתמש בתמונה.">
-                      <TextInput value={media.usageNotes ?? ''} onChange={(value) => updateMedia(media.id, { usageNotes: value })} />
-                    </Field>
-                    <Field label="כתובת באתר אחרי פרסום" help="נוצרת אוטומטית מתוך Drive בזמן build.">
-                      <TextInput value={media.src} onChange={(value) => updateMedia(media.id, { src: value })} />
-                    </Field>
-                    <Field label="מקור Drive" help="מזהה הקובץ בדרייב.">
-                      <TextInput value={media.driveFileId ?? ''} onChange={(value) => updateMedia(media.id, { driveFileId: value || undefined })} />
-                    </Field>
-                  </details>
-                </article>
-              ))}
+                    <MediaRiskNotice mediaId={media.id} content={content} />
+                    <div className="media-quick-actions">
+                      <button
+                        className={galleryItem ? 'ghost-button is-confirmed' : 'ghost-button'}
+                        onClick={() => addGalleryItem(media.id)}
+                        disabled={Boolean(media.deletedAt) || Boolean(galleryItem)}
+                        title={galleryItem ? `כבר מחובר לפריט "${galleryItem.title}"` : undefined}
+                      >
+                        {galleryButtonLabel}
+                      </button>
+                      <button className="ghost-button" onClick={() => handlePickDriveFile(media.id)} disabled={!canUseGoogle}>החלף מקור מדרייב</button>
+                    </div>
+                    <details className="technical-details">
+                      <summary>פרטים מתקדמים</summary>
+                      <Field label="שם תמונה בסטודיו" help="שם קצר באנגלית שמזהה את התמונה במערכת.">
+                        <TextInput value={media.id} onChange={(value) => renameMedia(media.id, value)} />
+                      </Field>
+                      <div className="inline-grid">
+                        <Field label="רוחב" help="נלקח מהתמונה המקורית בדרייב.">
+                          <NumberInput value={media.width} onChange={(value) => updateMedia(media.id, { width: value })} />
+                        </Field>
+                        <Field label="גובה" help="נלקח מהתמונה המקורית בדרייב.">
+                          <NumberInput value={media.height} onChange={(value) => updateMedia(media.id, { height: value })} />
+                        </Field>
+                      </div>
+                      <Field label="הערות שימוש" help="הסבר פנימי איפה כדאי להשתמש בתמונה.">
+                        <TextInput value={media.usageNotes ?? ''} onChange={(value) => updateMedia(media.id, { usageNotes: value })} />
+                      </Field>
+                      <Field label="כתובת באתר אחרי פרסום" help="נוצרת אוטומטית מתוך Drive בזמן build.">
+                        <TextInput value={media.src} onChange={(value) => updateMedia(media.id, { src: value })} />
+                      </Field>
+                      <Field label="מקור Drive" help="מזהה הקובץ בדרייב.">
+                        <TextInput value={media.driveFileId ?? ''} onChange={(value) => updateMedia(media.id, { driveFileId: value || undefined })} />
+                      </Field>
+                    </details>
+                  </article>
+                );
+              })}
             </div>
           </section>
         )}
@@ -1626,55 +1656,67 @@ export const App = () => {
               }
             />
             <div className="media-grid">
-              {content.media.map((media) => (
-                <article className={media.deletedAt ? 'media-card is-archived' : 'media-card'} key={media.id}>
-                  <DrivePreviewImage media={media} accessToken={session.accessToken} />
-                  <div className="card-heading">
-                    <div>
-                      <p className="kicker">{mediaStatus(media, content)}</p>
-                      <h3>{mediaLabel(media, content)}</h3>
+              {content.media.map((media) => {
+                const galleryItem = getGalleryItemForMedia(media.id, content);
+                const galleryButtonLabel = galleryItem ? 'כבר בגלריה' : 'הוסף לגלריה';
+
+                return (
+                  <article className={media.deletedAt ? 'media-card is-archived' : 'media-card'} key={media.id}>
+                    <DrivePreviewImage media={media} accessToken={session.accessToken} />
+                    <div className="card-heading">
+                      <div>
+                        <p className="kicker">{mediaStatus(media, content)}</p>
+                        <h3>{mediaLabel(media, content)}</h3>
+                      </div>
+                      <ItemActions
+                        isArchived={Boolean(media.deletedAt)}
+                        onDuplicate={undefined}
+                        onArchive={() => archiveMedia(media.id)}
+                        onRestore={() => restoreMedia(media.id)}
+                      />
                     </div>
-                    <ItemActions
-                      isArchived={Boolean(media.deletedAt)}
-                      onDuplicate={undefined}
-                      onArchive={() => archiveMedia(media.id)}
-                      onRestore={() => restoreMedia(media.id)}
-                    />
-                  </div>
-                  <Field label="שם תמונה בסטודיו" help="שם קצר באנגלית שמזהה את התמונה במערכת.">
-                    <TextInput value={media.id} onChange={(value) => renameMedia(media.id, value)} />
-                  </Field>
-                  <div className="usage-list">
-                    <strong>איפה זה משפיע באתר</strong>
-                    <MediaUsageList mediaId={media.id} content={content} />
-                  </div>
-                  <MediaRiskNotice mediaId={media.id} content={content} />
-                  <div className="inline-grid">
-                    <Field label="רוחב" help="נלקח מהתמונה המקורית בדרייב.">
-                      <NumberInput value={media.width} onChange={(value) => updateMedia(media.id, { width: value })} />
+                    <Field label="שם תמונה בסטודיו" help="שם קצר באנגלית שמזהה את התמונה במערכת.">
+                      <TextInput value={media.id} onChange={(value) => renameMedia(media.id, value)} />
                     </Field>
-                    <Field label="גובה" help="נלקח מהתמונה המקורית בדרייב.">
-                      <NumberInput value={media.height} onChange={(value) => updateMedia(media.id, { height: value })} />
+                    <div className="usage-list">
+                      <strong>איפה זה משפיע באתר</strong>
+                      <MediaUsageList mediaId={media.id} content={content} />
+                    </div>
+                    <MediaRiskNotice mediaId={media.id} content={content} />
+                    <div className="inline-grid">
+                      <Field label="רוחב" help="נלקח מהתמונה המקורית בדרייב.">
+                        <NumberInput value={media.width} onChange={(value) => updateMedia(media.id, { width: value })} />
+                      </Field>
+                      <Field label="גובה" help="נלקח מהתמונה המקורית בדרייב.">
+                        <NumberInput value={media.height} onChange={(value) => updateMedia(media.id, { height: value })} />
+                      </Field>
+                    </div>
+                    <Field label="הערות שימוש" help="הסבר פנימי איפה כדאי להשתמש בתמונה.">
+                      <TextInput value={media.usageNotes ?? ''} onChange={(value) => updateMedia(media.id, { usageNotes: value })} />
                     </Field>
-                  </div>
-                  <Field label="הערות שימוש" help="הסבר פנימי איפה כדאי להשתמש בתמונה.">
-                    <TextInput value={media.usageNotes ?? ''} onChange={(value) => updateMedia(media.id, { usageNotes: value })} />
-                  </Field>
-                  <div className="asset-path">
-                    <Cloud aria-hidden="true" />
-                    <span>באתר אחרי פרסום: {media.driveFileId ? cmsSrcFor(media.id) : media.src}</span>
-                  </div>
-                  <div className="media-quick-actions">
-                    <button className="ghost-button" onClick={() => addGalleryItem(media.id)} disabled={Boolean(media.deletedAt)}>הוסף לגלריה</button>
-                    <button className="ghost-button" onClick={() => handlePickDriveFile(media.id)} disabled={!canUseGoogle}>בחירה מ-Drive</button>
-                  </div>
-                  <details className="technical-details">
-                    <summary>מקור טכני</summary>
-                    <TextInput value={media.src} onChange={(value) => updateMedia(media.id, { src: value })} />
-                    <TextInput value={media.driveFileId ?? ''} onChange={(value) => updateMedia(media.id, { driveFileId: value || undefined })} />
-                  </details>
-                </article>
-              ))}
+                    <div className="asset-path">
+                      <Cloud aria-hidden="true" />
+                      <span>באתר אחרי פרסום: {media.driveFileId ? cmsSrcFor(media.id) : media.src}</span>
+                    </div>
+                    <div className="media-quick-actions">
+                      <button
+                        className={galleryItem ? 'ghost-button is-confirmed' : 'ghost-button'}
+                        onClick={() => addGalleryItem(media.id)}
+                        disabled={Boolean(media.deletedAt) || Boolean(galleryItem)}
+                        title={galleryItem ? `כבר מחובר לפריט "${galleryItem.title}"` : undefined}
+                      >
+                        {galleryButtonLabel}
+                      </button>
+                      <button className="ghost-button" onClick={() => handlePickDriveFile(media.id)} disabled={!canUseGoogle}>בחירה מ-Drive</button>
+                    </div>
+                    <details className="technical-details">
+                      <summary>מקור טכני</summary>
+                      <TextInput value={media.src} onChange={(value) => updateMedia(media.id, { src: value })} />
+                      <TextInput value={media.driveFileId ?? ''} onChange={(value) => updateMedia(media.id, { driveFileId: value || undefined })} />
+                    </details>
+                  </article>
+                );
+              })}
             </div>
           </section>
         )}
@@ -2749,6 +2791,10 @@ const getMediaUsage = (mediaId: string, content: ContentSnapshot): readonly Medi
     .map((service): MediaUsageEntry => ({ kind: 'service', title: service.title, active: service.active }));
   return [...galleryUsage, ...serviceUsage];
 };
+
+const getGalleryItemForMedia = (mediaId: string, content: ContentSnapshot) => (
+  content.gallery.find((item) => item.mediaId === mediaId && !item.deletedAt) ?? null
+);
 
 const formatMediaUsage = (usages: readonly MediaUsageEntry[]) => usages
   .map((usage) => `- ${usage.kind === 'gallery' ? 'גלריה' : 'שירות'}: ${usage.title}`)
