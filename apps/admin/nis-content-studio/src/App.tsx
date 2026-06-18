@@ -14,7 +14,6 @@ import {
   ListChecks,
   Lock,
   LogIn,
-  Map as MapIcon,
   MessageCircle,
   MonitorCheck,
   Phone,
@@ -24,10 +23,10 @@ import {
   Rocket,
   Save,
   Search,
-  Send,
   ShieldAlert,
   ShieldCheck,
   Sparkles,
+  Tag,
   Trash2,
   Upload,
   Users,
@@ -94,6 +93,21 @@ const emptyContent: ContentSnapshot = {
 const editableCategories = galleryCategoryIds.filter((category) => category !== 'all');
 const publicSiteOrigin = 'https://nisboutiquecatering.com';
 const archiveDate = () => new Date().toISOString();
+const creatorUrl = 'https://EvyatarHazan.com';
+
+const nextContentVersion = () => {
+  const now = new Date();
+  const pad = (value: number) => String(value).padStart(2, '0');
+  return [
+    'studio',
+    now.getFullYear(),
+    pad(now.getMonth() + 1),
+    pad(now.getDate()),
+    pad(now.getHours()),
+    pad(now.getMinutes()),
+    pad(now.getSeconds()),
+  ].join('-');
+};
 
 const categoryLabels: Readonly<Record<GalleryItemRecord['category'], string>> = {
   tables: 'שולחנות',
@@ -171,9 +185,9 @@ const areaDefinitions: readonly {
   },
   {
     id: 'gallery',
-    title: 'גלריה',
-    location: 'תמונות האוכל והאירוח באתר',
-    help: 'סדר, קטגוריות, תמונות גבוהות וכיבוי תמונות.',
+    title: 'תמונות וגלריה',
+    location: 'כל התמונות בדרייב ומה מתוכן מוצג באתר',
+    help: 'כאן מנהלים גם את מאגר התמונות וגם את הגלריה הציבורית במקום אחד.',
     icon: <Images aria-hidden="true" />,
   },
   {
@@ -190,19 +204,31 @@ const areaDefinitions: readonly {
     help: 'כל שאלה היא כרטיס שאפשר להוסיף, לכבות או לארכב.',
     icon: <HelpCircle aria-hidden="true" />,
   },
+];
+
+const studioSections: readonly {
+  readonly id: ActiveView;
+  readonly label: string;
+  readonly help: string;
+  readonly icon: ReactNode;
+}[] = [
   {
-    id: 'media',
-    title: 'ספריית תמונות',
-    location: 'Google Drive ותמונות האתר המהירות',
-    help: 'ניהול כל התמונות והיכן הן משמשות באתר.',
+    id: 'site-map',
+    label: 'ניהול האתר',
+    help: 'הירו, שירותים, שאלות, אמון וכל הטקסטים שהלקוח רואה.',
+    icon: <MonitorCheck aria-hidden="true" />,
+  },
+  {
+    id: 'gallery',
+    label: 'תמונות וגלריה',
+    help: 'מאגר התמונות בדרייב ומה מתוכן מוצג באתר.',
     icon: <Images aria-hidden="true" />,
   },
   {
-    id: 'publish',
-    title: 'פרסום ושינויים',
-    location: 'בדיקה אחרונה לפני עדכון האתר',
-    help: 'רואים מה לא פורסם ולוחצים עדכן אתר.',
-    icon: <Send aria-hidden="true" />,
+    id: 'contact',
+    label: 'מטה דאטה ופרסום',
+    help: 'טלפון, וואטסאפ, SEO, גרסה וכפתור עדכון אתר.',
+    icon: <Tag aria-hidden="true" />,
   },
 ];
 
@@ -246,7 +272,18 @@ export const App = () => {
   };
 
   const updateContent = (updater: (current: ContentSnapshot) => ContentSnapshot) => {
-    setContent((current) => updater(current));
+    setContent((current) => {
+      const next = updater(current);
+      const siteVersion = nextContentVersion();
+      return {
+        ...next,
+        version: siteVersion,
+        settings: {
+          ...next.settings,
+          siteVersion,
+        },
+      };
+    });
     markDraft();
   };
 
@@ -564,21 +601,24 @@ export const App = () => {
     <main className="studio-shell">
       <aside className="studio-sidebar" aria-label="ניווט ניהול">
         <div className="brand-block">
-          <span className="brand-mark">Nis</span>
+          <img className="studio-logo" src={`${publicSiteOrigin}/brand/nis-logo.svg`} alt="Nis Boutique Catering" />
           <div>
-            <h1>Content Studio</h1>
-            <p>ניהול תוכן, תמונות ופרסום</p>
+            <h1>Nis Studio</h1>
+            <p>ניהול האתר בלי קוד</p>
           </div>
         </div>
         <nav className="nav-stack">
-          <button className={activeView === 'site-map' ? 'is-active' : ''} onClick={() => setActiveView('site-map')}>
-            <MapIcon aria-hidden="true" />
-            מפת האתר
-          </button>
-          {areaDefinitions.map((area) => (
-            <button key={area.id} className={activeView === area.id ? 'is-active' : ''} onClick={() => setActiveView(area.id)}>
-              {area.icon}
-              {area.title}
+          {studioSections.map((section) => (
+            <button
+              key={section.id}
+              className={activeView === section.id || (section.id === 'site-map' && areaDefinitions.some((area) => area.id === activeView)) ? 'is-active' : ''}
+              onClick={() => setActiveView(section.id)}
+            >
+              {section.icon}
+              <span>
+                <strong>{section.label}</strong>
+                <small>{section.help}</small>
+              </span>
             </button>
           ))}
         </nav>
@@ -587,14 +627,17 @@ export const App = () => {
           <strong>{session.email}</strong>
           <span>מחובר ל-Google Sheets + Drive</span>
         </div>
+        <a className="creator-credit studio-credit" href={creatorUrl} target="_blank" rel="noreferrer">
+          נבנה באהבה על ידי EvyatarHazan.com
+        </a>
       </aside>
 
       <section className="studio-main">
         <header className="topbar">
           <div>
             <p className="kicker">ניהול אתר Nis</p>
-            <h2>{activeView === 'site-map' ? 'מה תרצו לשנות באתר?' : areaDefinitions.find((area) => area.id === activeView)?.title ?? 'תוכן האתר'}</h2>
-            <p className="topbar-help">כל שינוי נשמר קודם כטיוטה. רק הכפתור "עדכן אתר" מפרסם אותו לאתר החי.</p>
+            <h2>{activeView === 'site-map' ? 'ניהול מלא של האתר' : activeView === 'contact' ? 'מטה דאטה ופרסום' : areaDefinitions.find((area) => area.id === activeView)?.title ?? 'תוכן האתר'}</h2>
+            <p className="topbar-help">כל שינוי מקבל גרסה חדשה ונשמר כטיוטה. רק הכפתור "עדכן אתר" מפרסם לאתר החי.</p>
           </div>
           <div className="topbar-actions">
             <button className="ghost-button" onClick={handleRefresh} disabled={isBusy || !canUseGoogle}>
@@ -641,46 +684,61 @@ export const App = () => {
         )}
 
         {activeView === 'contact' && (
-          <section className="workspace-panel settings-grid">
-            <PanelHeader title="יצירת קשר ו-SEO" text="כאן משנים את פרטי ההתקשרות שמופיעים בכפתורים ובאזור יצירת הקשר באתר." />
-            <Field label="טלפון שמוצג באתר" help="מופיע בכפתורי יצירת קשר ובאזור הסיום.">
-              <TextInput value={content.settings.phoneDisplay} onChange={(value) => updateContent((current) => ({ ...current, settings: { ...current.settings, phoneDisplay: value } }))} />
-            </Field>
-            <Field label="קישור טלפון" help="צריך להתחיל ב-tel: כדי שלחיצה במובייל תפתח שיחה.">
-              <TextInput value={content.settings.phoneHref} onChange={(value) => updateContent((current) => ({ ...current, settings: { ...current.settings, phoneHref: value } }))} />
-            </Field>
-            <Field label="אימייל" help="מופיע בפרטי קשר ובמטא דאטה של האתר.">
-              <TextInput value={content.settings.email} onChange={(value) => updateContent((current) => ({ ...current, settings: { ...current.settings, email: value } }))} />
-            </Field>
-            <Field label="קישור WhatsApp" help="כל כפתורי הוואטסאפ באתר משתמשים בכתובת הזו.">
-              <TextInput value={content.settings.whatsappBase} onChange={(value) => updateContent((current) => ({ ...current, settings: { ...current.settings, whatsappBase: value } }))} />
-            </Field>
-            <Field label="גרסת תוכן" help="סימון פנימי שעוזר לדעת איזו גרסה פורסמה.">
-              <TextInput value={content.settings.siteVersion} onChange={(value) => updateContent((current) => ({ ...current, settings: { ...current.settings, siteVersion: value } }))} />
-            </Field>
-            <Field label="כותרת SEO" help="כותרת הדף שמופיעה בדפדפן ובשיתוף קישורים.">
-              <TextInput value={content.settings.seoTitle ?? ''} onChange={(value) => updateContent((current) => ({ ...current, settings: { ...current.settings, seoTitle: value || undefined } }))} />
-            </Field>
-            <Field label="תיאור SEO" help="תיאור קצר למנועי חיפוש ושיתופים.">
-              <textarea value={content.settings.seoDescription ?? ''} onChange={(event) => updateContent((current) => ({ ...current, settings: { ...current.settings, seoDescription: event.target.value || undefined } }))} />
-            </Field>
+          <section className="workspace-panel split-editor">
+            <div className="editor-column settings-grid">
+              <PanelHeader title="מטה דאטה, יצירת קשר ופרסום" text="כאן משנים את פרטי ההתקשרות, SEO, גרסת התוכן ומפעילים עדכון אתר." />
+              <Field label="טלפון שמוצג באתר" help="מופיע בתפריט, בכפתורי יצירת קשר ובתחתית האתר.">
+                <TextInput value={content.settings.phoneDisplay} onChange={(value) => updateContent((current) => ({ ...current, settings: { ...current.settings, phoneDisplay: value } }))} />
+              </Field>
+              <Field label="קישור טלפון" help="צריך להתחיל ב-tel: כדי שלחיצה במובייל תפתח שיחה.">
+                <TextInput value={content.settings.phoneHref} onChange={(value) => updateContent((current) => ({ ...current, settings: { ...current.settings, phoneHref: value } }))} />
+              </Field>
+              <Field label="אימייל" help="מופיע בפרטי קשר ובמטא דאטה של האתר.">
+                <TextInput value={content.settings.email} onChange={(value) => updateContent((current) => ({ ...current, settings: { ...current.settings, email: value } }))} />
+              </Field>
+              <Field label="קישור WhatsApp" help="כל כפתורי הוואטסאפ באתר משתמשים בכתובת הזו.">
+                <TextInput value={content.settings.whatsappBase} onChange={(value) => updateContent((current) => ({ ...current, settings: { ...current.settings, whatsappBase: value } }))} />
+              </Field>
+              <Field label="גרסת תוכן אוטומטית" help="מתעדכן לבד בכל שינוי. משתמשים בזה כדי לדעת שהפרסום האחרון באמת עלה.">
+                <TextInput value={content.settings.siteVersion} onChange={(value) => updateContent((current) => ({ ...current, settings: { ...current.settings, siteVersion: value } }))} />
+              </Field>
+              <Field label="כותרת SEO" help="כותרת הדף שמופיעה בדפדפן ובשיתוף קישורים.">
+                <TextInput value={content.settings.seoTitle ?? ''} onChange={(value) => updateContent((current) => ({ ...current, settings: { ...current.settings, seoTitle: value || undefined } }))} />
+              </Field>
+              <Field label="תיאור SEO" help="תיאור קצר למנועי חיפוש ושיתופים.">
+                <textarea value={content.settings.seoDescription ?? ''} onChange={(event) => updateContent((current) => ({ ...current, settings: { ...current.settings, seoDescription: event.target.value || undefined } }))} />
+              </Field>
+            </div>
+            <div className="preview-column">
+              <ContactPreview content={content} />
+              <PublishPanel
+                content={content}
+                hasErrors={hasErrors}
+                status={hasErrors ? validationErrorText(validation, referenceIssues) : status}
+                publishState={publishState}
+                onSaveDraft={handleSaveDraft}
+                onPublish={handleUpdateSite}
+                disabled={isBusy || !canUseGoogle || hasErrors}
+              />
+            </div>
           </section>
         )}
 
         {activeView === 'services' && (
-          <section className="workspace-panel">
-            <PanelHeader
-              title="מה מזמינים"
-              text="כל כרטיס כאן הוא שירות שמופיע באזור המרכזי באתר. אפשר לכבות, לשכפל, להוסיף או להעביר לארכיון."
-              action={
-                <button className="compact-button" onClick={addService}>
-                  <Plus aria-hidden="true" />
-                  הוסף שירות
-                </button>
-              }
-            />
-            <div className="cards-list">
-              {[...content.services].sort((left, right) => left.order - right.order).map((service) => (
+          <section className="workspace-panel split-editor">
+            <div className="editor-column">
+              <PanelHeader
+                title="מה מזמינים"
+                text="כל כרטיס כאן הוא שירות שמופיע באזור המרכזי באתר. אפשר לכבות, לשכפל, להוסיף או להעביר לארכיון."
+                action={
+                  <button className="compact-button" onClick={addService}>
+                    <Plus aria-hidden="true" />
+                    הוסף שירות
+                  </button>
+                }
+              />
+              <div className="cards-list">
+                {[...content.services].sort((left, right) => left.order - right.order).map((service) => (
                 <article className={service.deletedAt ? 'edit-card service-card is-archived' : 'edit-card service-card'} key={service.id}>
                   <DrivePreviewImage media={mediaById.get(service.mediaId)} accessToken={session.accessToken} />
                   <div className="card-heading">
@@ -735,7 +793,11 @@ export const App = () => {
                     <NumberInput value={service.order} onChange={(value) => updateService(service.id, { order: value })} />
                   </details>
                 </article>
-              ))}
+                ))}
+              </div>
+            </div>
+            <div className="preview-column">
+              <ServicesPreview content={content} mediaById={mediaById} accessToken={session.accessToken} />
             </div>
           </section>
         )}
@@ -743,8 +805,8 @@ export const App = () => {
         {activeView === 'gallery' && (
           <section className="workspace-panel">
             <PanelHeader
-              title="גלריה"
-              text="כל כרטיס כאן הוא תמונה באתר. כיבוי מסתיר מהאתר, ארכיון שומר לשחזור, והסדר קובע את ההופעה."
+              title="תמונות וגלריה"
+              text="זה מסך אחד: קודם מנהלים את התמונות שמופיעות בגלריה, ובהמשך אותו מסך מציג את כל מאגר התמונות מדרייב."
               action={
                 <div className="action-row">
                   <button className="compact-button" onClick={normalizeCmsMetadata}>
@@ -758,6 +820,7 @@ export const App = () => {
                 </div>
               }
             />
+            <GallerySitePreview content={content} mediaById={mediaById} accessToken={session.accessToken} />
             <label className="search-box">
               <Search aria-hidden="true" />
               <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="חיפוש לפי שם, תיאור או קטגוריה" />
@@ -813,6 +876,65 @@ export const App = () => {
                   </article>
                 );
               })}
+            </div>
+            <div className="subsection-heading">
+              <div>
+                <p className="kicker">מאגר התמונות</p>
+                <h3>כל התמונות בדרייב, גם כאלה שלא מוצגות בגלריה</h3>
+                <p>כאן רואים איפה כל תמונה משמשת באתר. כדי להציג תמונה באתר, חברו אותה לפריט גלריה והדליקו “מוצג באתר”.</p>
+              </div>
+              <label className="compact-button file-button">
+                <Upload aria-hidden="true" />
+                העלאה ל-Drive
+                <input type="file" accept="image/*" onChange={handleUpload} disabled={!canUseGoogle} />
+              </label>
+            </div>
+            <div className="media-grid compact-media-grid">
+              {content.media.map((media) => (
+                <article className={media.deletedAt ? 'media-card is-archived' : 'media-card'} key={media.id}>
+                  <DrivePreviewImage media={media} accessToken={session.accessToken} />
+                  <div className="card-heading">
+                    <div>
+                      <p className="kicker">{mediaStatus(media, content)}</p>
+                      <h3>{mediaLabel(media, content)}</h3>
+                    </div>
+                    <ItemActions
+                      isArchived={Boolean(media.deletedAt)}
+                      onDuplicate={undefined}
+                      onArchive={() => archiveMedia(media.id)}
+                      onRestore={() => restoreMedia(media.id)}
+                    />
+                  </div>
+                  <div className="usage-list">
+                    <strong>איפה זה משפיע באתר</strong>
+                    <span>{mediaUsage(media.id, content) || 'עדיין לא מחובר לשום אזור באתר'}</span>
+                  </div>
+                  <button className="ghost-button" onClick={() => handlePickDriveFile(media.id)} disabled={!canUseGoogle}>החלף מקור מדרייב</button>
+                  <details className="technical-details">
+                    <summary>פרטים מתקדמים</summary>
+                    <Field label="שם תמונה בסטודיו" help="שם קצר באנגלית שמזהה את התמונה במערכת.">
+                      <TextInput value={media.id} onChange={(value) => renameMedia(media.id, value)} />
+                    </Field>
+                    <div className="inline-grid">
+                      <Field label="רוחב" help="נלקח מהתמונה המקורית בדרייב.">
+                        <NumberInput value={media.width} onChange={(value) => updateMedia(media.id, { width: value })} />
+                      </Field>
+                      <Field label="גובה" help="נלקח מהתמונה המקורית בדרייב.">
+                        <NumberInput value={media.height} onChange={(value) => updateMedia(media.id, { height: value })} />
+                      </Field>
+                    </div>
+                    <Field label="הערות שימוש" help="הסבר פנימי איפה כדאי להשתמש בתמונה.">
+                      <TextInput value={media.usageNotes ?? ''} onChange={(value) => updateMedia(media.id, { usageNotes: value })} />
+                    </Field>
+                    <Field label="כתובת באתר אחרי פרסום" help="נוצרת אוטומטית מתוך Drive בזמן build.">
+                      <TextInput value={media.src} onChange={(value) => updateMedia(media.id, { src: value })} />
+                    </Field>
+                    <Field label="מקור Drive" help="מזהה הקובץ בדרייב.">
+                      <TextInput value={media.driveFileId ?? ''} onChange={(value) => updateMedia(media.id, { driveFileId: value || undefined })} />
+                    </Field>
+                  </details>
+                </article>
+              ))}
             </div>
           </section>
         )}
@@ -1086,6 +1208,98 @@ const HeroEditor = ({
   );
 };
 
+const ServicesPreview = ({
+  content,
+  mediaById,
+  accessToken,
+}: {
+  readonly content: ContentSnapshot;
+  readonly mediaById: ReadonlyMap<string, ImageAssetRecord>;
+  readonly accessToken: string;
+}) => {
+  const services = [...content.services]
+    .filter((service) => service.active && !service.deletedAt)
+    .sort((left, right) => left.order - right.order);
+
+  return (
+    <div className="site-section-preview">
+      <p className="kicker">תצוגה מקדימה באתר</p>
+      <h3>מה אפשר להזמין</h3>
+      <p>כך כרטיסי השירות יופיעו ללקוח אחרי פרסום.</p>
+      <div className="preview-services">
+        {services.map((service) => (
+          <article key={service.id}>
+            <DrivePreviewImage media={mediaById.get(service.mediaId)} accessToken={accessToken} />
+            <h3>{service.title}</h3>
+            <strong>{service.subtitle}</strong>
+            <p>{service.description}</p>
+            <span className="preview-chip">{service.cta}</span>
+          </article>
+        ))}
+        {services.length === 0 && (
+          <div className="empty-state">
+            <Sparkles aria-hidden="true" />
+            <strong>אין שירותים פעילים</strong>
+            <span>הדליקו שירות אחד לפחות כדי שיופיע באתר.</span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const GallerySitePreview = ({
+  content,
+  mediaById,
+  accessToken,
+}: {
+  readonly content: ContentSnapshot;
+  readonly mediaById: ReadonlyMap<string, ImageAssetRecord>;
+  readonly accessToken: string;
+}) => {
+  const activeItems = [...content.gallery]
+    .filter((item) => item.active && !item.deletedAt)
+    .sort((left, right) => left.order - right.order)
+    .slice(0, 6);
+
+  return (
+    <div className="site-section-preview">
+      <p className="kicker">תצוגה מקדימה באתר</p>
+      <h3>גלריה</h3>
+      <p>אלה התמונות הראשונות שהלקוח יראה בגלריה. תמונה כבויה נשארת במאגר אבל לא מופיעה באתר.</p>
+      <div className="preview-gallery">
+        {activeItems.map((item) => (
+          <article className={item.tall ? 'is-tall' : undefined} key={item.id}>
+            <DrivePreviewImage media={mediaById.get(item.mediaId)} accessToken={accessToken} />
+            <h3>{item.title}</h3>
+            <span>{categoryLabels[item.category]}</span>
+          </article>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const ContactPreview = ({ content }: { readonly content: ContentSnapshot }) => (
+  <div className="site-section-preview">
+    <p className="kicker">תצוגה מקדימה באתר</p>
+    <h3>יצירת קשר</h3>
+    <p>כך פרטי ההתקשרות והגרסה יופיעו באתר אחרי פרסום.</p>
+    <div className="contact-preview-card">
+      <a href={content.settings.whatsappBase} target="_blank" rel="noreferrer">
+        <MessageCircle aria-hidden="true" />
+        וואטסאפ: {content.settings.phoneDisplay}
+      </a>
+      <a href={content.settings.phoneHref}>
+        <Phone aria-hidden="true" />
+        טלפון
+      </a>
+      <span>{content.settings.email}</span>
+      <small>גרסה: {content.settings.siteVersion}</small>
+    </div>
+  </div>
+);
+
 const LoginGate = ({
   authState,
   isBusy,
@@ -1102,10 +1316,10 @@ const LoginGate = ({
   <main className="login-shell">
     <section className="login-panel" aria-labelledby="login-title">
       <div className="brand-block login-brand">
-        <span className="brand-mark">Nis</span>
+        <img className="studio-logo login-logo" src={`${publicSiteOrigin}/brand/nis-logo.svg`} alt="Nis Boutique Catering" />
         <div>
           <p className="kicker">מערכת ניהול פרטית</p>
-          <h1 id="login-title">Content Studio</h1>
+          <h1 id="login-title">Nis Studio</h1>
         </div>
       </div>
       <div className="login-copy">
@@ -1121,6 +1335,9 @@ const LoginGate = ({
         {authState === 'loading' ? 'מתחברים...' : 'כניסה עם Google'}
       </button>
       {!googleConfigured && <p className="config-warning">חסרה הגדרת Google ולכן אי אפשר להתחבר כרגע.</p>}
+      <a className="creator-credit login-credit" href={creatorUrl} target="_blank" rel="noreferrer">
+        נבנה באהבה על ידי EvyatarHazan.com
+      </a>
     </section>
   </main>
 );

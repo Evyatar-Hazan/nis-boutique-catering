@@ -80,10 +80,15 @@ export const HeroSection = ({ heroWhatsapp }: { readonly heroWhatsapp: string })
         </div>
         <p className="eyebrow">{heroContent.eyebrow}</p>
         <h1 id="hero-title">
-          {heroContent.title.split('\n').map((line) => (
+          {heroContent.title.split('\n').map((line, index, lines) => (
             <span key={line}>
               {line}
-              <br />
+              {index < lines.length - 1 ? (
+                <>
+                  <br />
+                  {' '}
+                </>
+              ) : null}
             </span>
           ))}
         </h1>
@@ -319,10 +324,10 @@ export const ExperienceLabSection = ({
       <div className="container experience-lab">
         <div className="experience-copy reveal">
           <p className="eyebrow">בחרו את החוויה</p>
-          <h2 id="experience-lab-title">מהרגע שבוחרים כיוון, כל האתר מתחיל להרגיש יותר מדויק.</h2>
+          <h2 id="experience-lab-title">מהרגע שבוחרים כיוון, האירוח מתחיל לקבל צורה.</h2>
           <p>
-            במקום לקרוא רשימה יבשה, בוחרים את סוג האירוח ורואים מיד איך Nis מדמיינת אותו:
-            מה נפתח על השולחן, מה מקבלים, ואיך זה מרגיש בפועל.
+            בוחרים את סוג האירוח ומבינים מהר איך זה יכול להיראות אצלכם:
+            מה נפתח על השולחן, מה מתאים לאופי האירוע, ואיך ממשיכים לשיחה קצרה.
           </p>
           <div className="experience-switcher" role="tablist" aria-label="בחירת חוויית אירוח">
             {services.map((service, index) => {
@@ -422,8 +427,8 @@ export const BoutiqueSection = () => (
         <p className="eyebrow">למה זה מרגיש בוטיק</p>
         <h2 id="boutique-title">הפרטים הקטנים שעוזרים להחליט מהר יותר.</h2>
         <p>
-          במקום עוד הבטחות, הנה מה שבאמת משנה לפני שפונים: התאמה אישית, נראות מוכנה לשולחן,
-          יחס אנושי וטעם שמרגיש ביתי אבל חגיגי.
+          התאמה אישית, נראות מוכנה לשולחן, יחס אנושי וטעם שמרגיש ביתי אבל חגיגי.
+          אלה הפרטים שעוזרים לאירוח להרגיש רגוע ומדויק יותר.
         </p>
       </div>
       <div className="boutique-grid">
@@ -539,13 +544,13 @@ export const SamplesSection = () => (
     <div className="container">
       <SectionHeading
         eyebrow="כיוונים שאפשר להתחיל מהם"
-        title="לא תפריט סגור. כן תחושת כיוון ברורה יותר לשיחה."
+        title="כיוונים טעימים שקל להתחיל מהם שיחה."
         id="samples-title"
         className="section-heading sample-heading reveal"
       >
         <p>
-          הדוגמאות כאן נועדו לפתוח כיוון ולהפוך את ההזמנה למוחשית יותר. כל הזמנה מותאמת אישית,
-          והצעת מחיר ניתנת אחרי שיחה קצרה לפי סוג האירוח, מספר הסועדים והתאריך.
+          אפשר להתחיל מכיוון כללי ולהתאים אותו לשבת, לאירוח קטן או למארז לדרך.
+          בשיחה קצרה מדייקים יחד כמויות, תאריך וסגנון הגשה.
         </p>
       </SectionHeading>
       <div className="menu-grid">
@@ -571,7 +576,7 @@ export const SamplesSection = () => (
 export const CoordinationSection = () => (
   <section className="section coordination-section" aria-labelledby="coordination-title">
     <div className="container">
-      <SectionHeading eyebrow="תיאום וזמינות" title="פרטים זמניים שמאפשרים להתקדם כבר עכשיו." id="coordination-title" />
+      <SectionHeading eyebrow="תיאום וזמינות" title="הפרטים שעוזרים להתקדם בביטחון." id="coordination-title" />
       <div className="compact-grid">
         {coordinationCards.map((card) => {
           const Icon = card.icon;
@@ -688,8 +693,8 @@ export const BookingBasicsSection = () => (
         <p className="eyebrow">לפני שפונים</p>
         <h2 id="booking-basics-title">כל מה שצריך לדעת כדי לשלוח פנייה בלי להתלבט.</h2>
         <p>
-          אין צורך להגיע מוכנים עם תפריט סגור. מספיק לדעת מה סוג האירוח, בערך כמה סועדים,
-          ומה התאריך הרצוי, ומשם אפשר לדייק יחד.
+          מספיק לדעת מה סוג האירוח, בערך כמה סועדים ומה התאריך הרצוי.
+          משם אפשר לדייק יחד את התפריט, ההגשה ואופן הקבלה.
         </p>
       </div>
       <div className="booking-basics-content">

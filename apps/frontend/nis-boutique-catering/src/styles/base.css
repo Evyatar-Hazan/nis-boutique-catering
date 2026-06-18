@@ -1809,12 +1809,31 @@ details p {
   text-transform: none;
 }
 
+.creator-credit {
+  display: inline-flex;
+  width: fit-content;
+  margin-top: 10px;
+  color: rgba(255, 250, 242, 0.72);
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.creator-credit:hover {
+  color: var(--gold);
+}
+
 .footer-links {
   display: flex;
   flex-wrap: wrap;
   gap: 18px;
   color: rgba(255, 250, 242, 0.86);
   font-weight: 900;
+}
+
+.studio-footer-link {
+  opacity: 0.72;
+  font-size: 0.76rem;
 }
 
 .floating-whatsapp {

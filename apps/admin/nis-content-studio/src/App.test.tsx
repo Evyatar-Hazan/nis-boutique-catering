@@ -9,9 +9,9 @@ describe('Content Studio', () => {
   it('shows only the private login gate before authentication', () => {
     render(<App />);
 
-    expect(screen.getByRole('heading', { name: 'Content Studio' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Nis Studio' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'כניסה עם Google' })).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'גלריה' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /תמונות וגלריה/ })).not.toBeInTheDocument();
     expect(screen.queryByDisplayValue('מיני לחמניות אישיות')).not.toBeInTheDocument();
   });
 

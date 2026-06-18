@@ -53,11 +53,15 @@ export const Footer = ({
         <span>boutique catering</span>
         <p>אוכל של בית, גימור של בוטיק.</p>
         <small className="footer-version">Version {version}</small>
+        <a className="creator-credit" href="https://EvyatarHazan.com" target="_blank" rel="noreferrer">
+          נבנה באהבה על ידי EvyatarHazan.com
+        </a>
       </div>
       <div className="footer-links">
         <a href={phoneHref}>{phoneDisplay}</a>
         <a href={`mailto:${email}`}>{email}</a>
         <a href={footerWhatsapp}>וואטסאפ</a>
+        <a className="studio-footer-link" href="https://studio.nisboutiquecatering.com/" target="_blank" rel="noreferrer">כניסת ניהול</a>
       </div>
     </div>
   </footer>
