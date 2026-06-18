@@ -284,6 +284,88 @@ const getGeneratedCardsByGroup = (group: string, fallbackIcon: LucideIcon): read
       icon: section.items[0] ? (iconByName[section.items[0]] ?? fallbackIcon) : fallbackIcon,
     }));
 
+const getGeneratedSectionsByGroup = (group: string) =>
+  activeGeneratedSections.filter((section) => section.group === group && (section.title || section.text || section.items.length > 0));
+
+const mergeGeneratedSimpleCards = <T extends SimpleCard>(
+  group: string,
+  fallback: readonly T[],
+  fallbackIcon: LucideIcon,
+): readonly T[] => {
+  const generated = getGeneratedSectionsByGroup(group);
+  if (generated.length === 0) {
+    return fallback;
+  }
+
+  return generated.map((section, index) => {
+    const base = fallback[index] ?? fallback[0];
+    return {
+      ...base,
+      title: section.title ?? base.title,
+      text: section.text ?? base.text,
+      icon: section.items[0] ? (iconByName[section.items[0]] ?? base.icon ?? fallbackIcon) : base.icon ?? fallbackIcon,
+    };
+  });
+};
+
+const mergeGeneratedEditorialCards = (
+  group: string,
+  fallback: readonly EditorialCard[],
+): readonly EditorialCard[] => {
+  const generated = getGeneratedSectionsByGroup(group);
+  if (generated.length === 0) {
+    return fallback;
+  }
+
+  return generated.map((section, index) => {
+    const base = fallback[index] ?? fallback[0];
+    return {
+      ...base,
+      label: section.items[0] ?? base.label,
+      title: section.title ?? base.title,
+      text: section.text ?? base.text,
+      icon: section.items[1] ? (iconByName[section.items[1]] ?? base.icon) : base.icon,
+    };
+  });
+};
+
+const mergeGeneratedStoryMoments = (
+  group: string,
+  fallback: readonly StoryMoment[],
+): readonly StoryMoment[] => {
+  const generated = getGeneratedSectionsByGroup(group);
+  if (generated.length === 0) {
+    return fallback;
+  }
+
+  return generated.map((section, index) => {
+    const base = fallback[index] ?? fallback[0];
+    return {
+      title: section.title ?? base.title,
+      text: section.text ?? base.text,
+    };
+  });
+};
+
+const mergeGeneratedMenuGroups = (
+  group: string,
+  fallback: readonly MenuGroup[],
+): readonly MenuGroup[] => {
+  const generated = getGeneratedSectionsByGroup(group);
+  if (generated.length === 0) {
+    return fallback;
+  }
+
+  return generated.map((section, index) => {
+    const base = fallback[index] ?? fallback[0];
+    return {
+      title: section.title ?? base.title,
+      intro: section.text ?? base.intro,
+      items: section.items.length > 0 ? section.items : base.items,
+    };
+  });
+};
+
 const fallbackServices: readonly Service[] = [
   {
     title: 'ניס בטעם של שבת',
@@ -348,7 +430,7 @@ const generatedServices = contentSnapshot.services
 
 export const services: readonly Service[] = generatedServices.length > 0 ? generatedServices : fallbackServices;
 
-export const editorialCards: readonly EditorialCard[] = [
+const fallbackEditorialCards: readonly EditorialCard[] = [
   {
     label: 'שבתות',
     title: 'אוכל ביתי מוקפד לשבת שנכנסת ברוגע',
@@ -372,6 +454,8 @@ export const editorialCards: readonly EditorialCard[] = [
   },
 ];
 
+export const editorialCards: readonly EditorialCard[] = mergeGeneratedEditorialCards('editorial', fallbackEditorialCards);
+
 const fallbackAudienceCards: readonly SimpleCard[] = [
   {
     title: 'למשפחות שמארחות שבת',
@@ -393,7 +477,7 @@ const fallbackAudienceCards: readonly SimpleCard[] = [
 const generatedAudienceCards = getGeneratedCardsByGroup('audience', Users);
 export const audienceCards: readonly SimpleCard[] = generatedAudienceCards.length > 0 ? generatedAudienceCards : fallbackAudienceCards;
 
-export const boutiqueReasons: readonly SimpleCard[] = [
+const fallbackBoutiqueReasons: readonly SimpleCard[] = [
   {
     title: 'התאמה בשיחה קצרה',
     text: 'סוג האירוח, מספר הסועדים והתאריך הופכים מהר לכיוון ברור שאפשר להתקדם איתו.',
@@ -416,7 +500,9 @@ export const boutiqueReasons: readonly SimpleCard[] = [
   },
 ];
 
-export const manifestoMoments: readonly Readonly<{
+export const boutiqueReasons: readonly SimpleCard[] = mergeGeneratedSimpleCards('boutique', fallbackBoutiqueReasons, Sparkles);
+
+const fallbackManifestoMoments: readonly Readonly<{
   label: string;
   title: string;
   text: string;
@@ -441,6 +527,28 @@ export const manifestoMoments: readonly Readonly<{
     image: foodMedia.tableSettingBlueGold,
   },
 ];
+
+export const manifestoMoments: readonly Readonly<{
+  label: string;
+  title: string;
+  text: string;
+  image: ImageAsset;
+}>[] = (() => {
+  const generated = getGeneratedSectionsByGroup('manifesto');
+  if (generated.length === 0) {
+    return fallbackManifestoMoments;
+  }
+
+  return generated.map((section, index) => {
+    const base = fallbackManifestoMoments[index] ?? fallbackManifestoMoments[0];
+    return {
+      ...base,
+      label: section.items[0] ?? base.label,
+      title: section.title ?? base.title,
+      text: section.text ?? base.text,
+    };
+  });
+})();
 
 const fallbackProcessSteps: readonly SimpleCard[] = [
   {
@@ -468,7 +576,7 @@ const fallbackProcessSteps: readonly SimpleCard[] = [
 const generatedProcessSteps = getGeneratedCardsByGroup('process', CheckCircle2);
 export const processSteps: readonly SimpleCard[] = generatedProcessSteps.length > 0 ? generatedProcessSteps : fallbackProcessSteps;
 
-export const menuGroups: readonly MenuGroup[] = [
+const fallbackMenuGroups: readonly MenuGroup[] = [
   {
     title: 'תפריט שבת לדוגמה',
     intro: 'כיוון לשולחן שבת שמרגיש מלא, מכובד ונוח להגשה.',
@@ -486,7 +594,9 @@ export const menuGroups: readonly MenuGroup[] = [
   },
 ];
 
-export const storyMoments: readonly StoryMoment[] = [
+export const menuGroups: readonly MenuGroup[] = mergeGeneratedMenuGroups('samples', fallbackMenuGroups);
+
+const fallbackStoryMoments: readonly StoryMoment[] = [
   {
     title: 'מהרובע היהודי',
     text: 'שנים של סמטאות אבן, בתים פתוחים וריח של שבת בנו אצל יהודית שפה של אירוח שיש בו נשמה, סדר וחום.',
@@ -501,7 +611,9 @@ export const storyMoments: readonly StoryMoment[] = [
   },
 ];
 
-export const coordinationCards: readonly SimpleCard[] = [
+export const storyMoments: readonly StoryMoment[] = mergeGeneratedStoryMoments('story', fallbackStoryMoments);
+
+const fallbackCoordinationCards: readonly SimpleCard[] = [
   {
     title: 'אזור פעילות',
     text: 'ביתר עילית כבסיס פעילות. איסוף ומשלוחים בסביבה מתואמים לפי תאריך, מיקום ואופי ההזמנה.',
@@ -523,6 +635,8 @@ export const coordinationCards: readonly SimpleCard[] = [
     icon: ClipboardList,
   },
 ];
+
+export const coordinationCards: readonly SimpleCard[] = mergeGeneratedSimpleCards('coordination', fallbackCoordinationCards, ClipboardList);
 
 const fallbackGalleryImages: readonly GalleryImage[] = [
   {
@@ -669,7 +783,7 @@ export const heroStats: readonly Readonly<{ value: string; label: string }>[] = 
   { value: 'Travel Nis', label: 'מארזים חכמים לדרך ולרגעים מיוחדים' },
 ];
 
-export const heroSceneNotes: readonly Readonly<{ title: string; text: string }>[] = [
+const fallbackHeroSceneNotes: readonly Readonly<{ title: string; text: string }>[] = [
   {
     title: 'אירוח מוכן להגשה',
     text: 'כל מגש מגיע מסודר כך שהשולחן נראה נכון כבר מהרגע הראשון.',
@@ -680,7 +794,12 @@ export const heroSceneNotes: readonly Readonly<{ title: string; text: string }>[
   },
 ];
 
-export const heroMarquee: readonly string[] = [
+export const heroSceneNotes: readonly Readonly<{ title: string; text: string }>[] =
+  mergeGeneratedStoryMoments('hero-notes', fallbackHeroSceneNotes);
+
+const heroMarqueeSection = getGeneratedSection('hero-marquee');
+
+export const heroMarquee: readonly string[] = heroMarqueeSection?.items.length ? heroMarqueeSection.items : [
   'שולחן שנפתח יפה',
   'אוכל ביתי מוקפד',
   'מגשי אירוח אלגנטיים',
@@ -689,7 +808,7 @@ export const heroMarquee: readonly string[] = [
   'אריזה שנראית כמו מותג',
 ];
 
-export const signatureMoments: readonly Readonly<{ title: string; text: string; image: ImageAsset }>[] = [
+const fallbackSignatureMoments: readonly Readonly<{ title: string; text: string; image: ImageAsset }>[] = [
   {
     title: 'שולחן שנפתח יפה',
     text: 'מגשים, צבעים וכלי הגשה שמרגישים מוכנים לאורחים כבר מהרגע הראשון.',
@@ -706,6 +825,22 @@ export const signatureMoments: readonly Readonly<{ title: string; text: string; 
     image: foodMedia.coffeeServiceClose,
   },
 ];
+
+export const signatureMoments: readonly Readonly<{ title: string; text: string; image: ImageAsset }>[] = (() => {
+  const generated = getGeneratedSectionsByGroup('signature');
+  if (generated.length === 0) {
+    return fallbackSignatureMoments;
+  }
+
+  return generated.map((section, index) => {
+    const base = fallbackSignatureMoments[index] ?? fallbackSignatureMoments[0];
+    return {
+      ...base,
+      title: section.title ?? base.title,
+      text: section.text ?? base.text,
+    };
+  });
+})();
 
 const factsSection = getGeneratedSection('facts');
 

@@ -430,6 +430,372 @@ export const contentSnapshot = {
         "אפשר לדבר על העדפות, רגישויות והתאמות תפריט לפי הצורך."
       ],
       "active": true
+    },
+    {
+      "id": "editorial-shabbat",
+      "group": "editorial",
+      "title": "אוכל ביתי מוקפד לשבת שנכנסת ברוגע",
+      "text": "תפריטי שבת עשירים, מסודרים ויפים להגשה, כדי שהבית ירגיש מלא בלי שכל העומס יישב עליכם.",
+      "items": [
+        "שבתות",
+        "ChefHat"
+      ],
+      "active": true,
+      "order": 1
+    },
+    {
+      "id": "editorial-events",
+      "group": "editorial",
+      "title": "שולחן שנפתח יפה ומייצר רושם כבר בדקה הראשונה",
+      "text": "מגשי אירוח, פינגר פוד ושולחנות קטנים עם הגשה אסתטית שמתאימה למשפחה, מפגש או אירוח עסקי.",
+      "items": [
+        "אירועים קטנים",
+        "Sparkles"
+      ],
+      "active": true,
+      "order": 2
+    },
+    {
+      "id": "editorial-travel",
+      "group": "editorial",
+      "title": "Travel Nis לפינוקים שלוקחים אתכם הלאה",
+      "text": "מארזים נוחים, חכמים ויפים לנסיעות, טיולים וימי כיף, כך שהחוויה מתחילה כבר בדרך.",
+      "items": [
+        "מארזים ודרך",
+        "Gift"
+      ],
+      "active": true,
+      "order": 3
+    },
+    {
+      "id": "manifesto-table",
+      "group": "manifesto",
+      "title": "שולחן שנראה מסודר עוד לפני שנוגעים בו",
+      "text": "ההגשה, הצבעים והקצב של השולחן הם חלק מהחוויה, לא רק הרקע של האוכל.",
+      "items": [
+        "01"
+      ],
+      "active": true,
+      "order": 1
+    },
+    {
+      "id": "manifesto-home",
+      "group": "manifesto",
+      "title": "אוכל שמרגיש ביתי, אבל לא יומיומי",
+      "text": "הטעם נשאר חם ומוכר, אבל ההופעה, האריזה והדיוק נותנים תחושת occasion.",
+      "items": [
+        "02"
+      ],
+      "active": true,
+      "order": 2
+    },
+    {
+      "id": "manifesto-custom",
+      "group": "manifesto",
+      "title": "התאמה אישית במקום פס ייצור",
+      "text": "החוויה נבנית סביב האירוח שלכם, לא סביב קטלוג אחיד שצריך להסתדר איתו.",
+      "items": [
+        "03"
+      ],
+      "active": true,
+      "order": 3
+    },
+    {
+      "id": "audience-shabbat",
+      "group": "audience",
+      "title": "למשפחות שמארחות שבת",
+      "text": "למי שרוצה שולחן מכובד, מלא ויפה בלי לעמוד שעות במטבח ובלי להיכנס ללחץ לפני שבת.",
+      "items": [
+        "Users"
+      ],
+      "active": true,
+      "order": 1
+    },
+    {
+      "id": "audience-events",
+      "group": "audience",
+      "title": "לאירועים קטנים ומוקפדים",
+      "text": "לזוגות, משפחות ומארחים שמתכננים שמחה קטנה, ברית, שבע ברכות או מפגש משפחתי עם נראות טובה ושקט תפעולי.",
+      "items": [
+        "HeartHandshake"
+      ],
+      "active": true,
+      "order": 2
+    },
+    {
+      "id": "audience-travel",
+      "group": "audience",
+      "title": "למארזים, דרך ומתנה",
+      "text": "למי שרוצה לשלוח או לקחת משהו יפה, טעים ומכובד לדרך, לשבת, לאורחים או ליום מיוחד.",
+      "items": [
+        "Gift"
+      ],
+      "active": true,
+      "order": 3
+    },
+    {
+      "id": "boutique-custom",
+      "group": "boutique",
+      "title": "התאמה בשיחה קצרה",
+      "text": "סוג האירוח, מספר הסועדים והתאריך הופכים מהר לכיוון ברור שאפשר להתקדם איתו.",
+      "items": [
+        "ClipboardList"
+      ],
+      "active": true,
+      "order": 1
+    },
+    {
+      "id": "boutique-ready",
+      "group": "boutique",
+      "title": "נראות שמוכנה לשולחן",
+      "text": "מגשים, מארזים וסידור שמרגישים יפים כבר בפתיחה, בלי עבודה מיותרת מצד המארח.",
+      "items": [
+        "Sparkles"
+      ],
+      "active": true,
+      "order": 2
+    },
+    {
+      "id": "boutique-personal",
+      "group": "boutique",
+      "title": "יחס אישי ולא תעשייתי",
+      "text": "אין מסלול גנרי. יש תיאום, הקשבה ותשומת לב לפרטים שחשובים לאירוח שלכם.",
+      "items": [
+        "HeartHandshake"
+      ],
+      "active": true,
+      "order": 3
+    },
+    {
+      "id": "boutique-home",
+      "group": "boutique",
+      "title": "טעם ביתי בגימור בוטיק",
+      "text": "החיבור בין אוכל חם ומוכר לבין אריזה, צבעים וסידור שמרגישים חגיגיים יותר.",
+      "items": [
+        "Package"
+      ],
+      "active": true,
+      "order": 4
+    },
+    {
+      "id": "process-whatsapp",
+      "group": "process",
+      "title": "שולחים הודעה בוואטסאפ",
+      "text": "אפשר ללחוץ על וואטסאפ או לשלוח את הטופס המסודר בתחתית האתר.",
+      "items": [
+        "MessageCircle"
+      ],
+      "active": true,
+      "order": 1
+    },
+    {
+      "id": "process-details",
+      "group": "process",
+      "title": "מחדדים סוג אירוח וכמות",
+      "text": "בוחרים שבת, מגשי אירוח או Travel Nis, ומוסיפים תאריך, כמות וכיוון כללי.",
+      "items": [
+        "CalendarDays"
+      ],
+      "active": true,
+      "order": 2
+    },
+    {
+      "id": "process-offer",
+      "group": "process",
+      "title": "מקבלים הצעה או תפריט מותאם",
+      "text": "מקבלים כיוון שמתאים לאירוח, למספר הסועדים ולרמת ההגשה הרצויה.",
+      "items": [
+        "ClipboardList"
+      ],
+      "active": true,
+      "order": 3
+    },
+    {
+      "id": "process-ready",
+      "group": "process",
+      "title": "סוגרים פרטים ומקבלים מוכן להגשה",
+      "text": "מסכמים תאריך, אופן קבלה והתאמות, ואז מקבלים אוכל מסודר ונוח להגשה.",
+      "items": [
+        "CheckCircle2"
+      ],
+      "active": true,
+      "order": 4
+    },
+    {
+      "id": "signature-table",
+      "group": "signature",
+      "title": "שולחן שנפתח יפה",
+      "text": "מגשים, צבעים וכלי הגשה שמרגישים מוכנים לאורחים כבר מהרגע הראשון.",
+      "items": [],
+      "active": true,
+      "order": 1
+    },
+    {
+      "id": "signature-bites",
+      "group": "signature",
+      "title": "ביסים קטנים, רושם גדול",
+      "text": "פינגר פוד, כריכונים ומנות אישיות שנוחים להגשה, לצילום ולאכילה.",
+      "items": [],
+      "active": true,
+      "order": 2
+    },
+    {
+      "id": "signature-details",
+      "group": "signature",
+      "title": "פרטים שמרגישים בוטיק",
+      "text": "קפה, עריכה, אריזה ותיאום קטן שמסדרים את כל החוויה סביבכם.",
+      "items": [],
+      "active": true,
+      "order": 3
+    },
+    {
+      "id": "story-rova",
+      "group": "story",
+      "title": "מהרובע היהודי",
+      "text": "שנים של סמטאות אבן, בתים פתוחים וריח של שבת בנו אצל יהודית שפה של אירוח שיש בו נשמה, סדר וחום.",
+      "items": [],
+      "active": true,
+      "order": 1
+    },
+    {
+      "id": "story-kitchen",
+      "group": "story",
+      "title": "אל המטבח של Nis",
+      "text": "הזיכרון הזה הופך למטבח מוקפד: חומרי גלם טריים, טעמים מדויקים, אריזה יפה ותחושה שמישהו חשב עליכם באמת.",
+      "items": [],
+      "active": true,
+      "order": 2
+    },
+    {
+      "id": "story-table",
+      "group": "story",
+      "title": "עד השולחן שלכם",
+      "text": "המטרה פשוטה: שתוכלו לארח ברוגע, לפתוח את המארז או המגש, ולהרגיש שהאוכל כבר מספר את הסיפור הנכון.",
+      "items": [],
+      "active": true,
+      "order": 3
+    },
+    {
+      "id": "samples-shabbat",
+      "group": "samples",
+      "title": "תפריט שבת לדוגמה",
+      "text": "כיוון לשולחן שבת שמרגיש מלא, מכובד ונוח להגשה.",
+      "items": [
+        "מבחר סלטים לשולחן",
+        "דגים לשבת",
+        "עיקריות חמות",
+        "תוספות וסירים משפחתיים",
+        "חלות וקינוחים"
+      ],
+      "active": true,
+      "order": 1
+    },
+    {
+      "id": "samples-trays",
+      "group": "samples",
+      "title": "מגשי אירוח ופינגר פוד",
+      "text": "פתרון לאירוח קטן שרוצה להרגיש מוקפד ולא גנרי.",
+      "items": [
+        "מגש מלוח מעוצב",
+        "מיני קישים ומאפים אישיים",
+        "כריכונים וביסים קטנים",
+        "בראנץ׳ בוטיק למשפחה",
+        "קינוחים אישיים"
+      ],
+      "active": true,
+      "order": 2
+    },
+    {
+      "id": "samples-travel",
+      "group": "samples",
+      "title": "Travel Nis לדרך",
+      "text": "מארזים יפים ונוחים לרגעים מיוחדים שמתחילים כבר ביציאה מהבית.",
+      "items": [
+        "ערכת פיקניק זוגית",
+        "ערכת דרך משפחתית",
+        "מארז נסיעה מפנק לילדים",
+        "מארז יום כיף",
+        "פתרון מותאם לטיול או יציאה"
+      ],
+      "active": true,
+      "order": 3
+    },
+    {
+      "id": "coordination-area",
+      "group": "coordination",
+      "title": "אזור פעילות",
+      "text": "ביתר עילית כבסיס פעילות. איסוף ומשלוחים בסביבה מתואמים לפי תאריך, מיקום ואופי ההזמנה.",
+      "items": [
+        "MapPin"
+      ],
+      "active": true,
+      "order": 1
+    },
+    {
+      "id": "coordination-time",
+      "group": "coordination",
+      "title": "זמן פנייה מומלץ",
+      "text": "לשבתות, חגים ואירועים כדאי לפנות כמה שיותר מוקדם כדי להשאיר מקום להתאמה אישית.",
+      "items": [
+        "CalendarDays"
+      ],
+      "active": true,
+      "order": 2
+    },
+    {
+      "id": "coordination-price",
+      "group": "coordination",
+      "title": "הצעת מחיר",
+      "text": "מקבלים הצעה מותאמת אחרי שמבינים את סוג האירוח, הכמות, התאריך ורמת ההגשה הרצויה.",
+      "items": [
+        "Users"
+      ],
+      "active": true,
+      "order": 3
+    },
+    {
+      "id": "coordination-confirm",
+      "group": "coordination",
+      "title": "אישור תפריט",
+      "text": "אחרי שיחה קצרה מסכמים כיוון, התאמות, תאריך ואופן קבלה לפני סגירת ההזמנה.",
+      "items": [
+        "ClipboardList"
+      ],
+      "active": true,
+      "order": 4
+    },
+    {
+      "id": "hero-note-ready",
+      "group": "hero-notes",
+      "title": "אירוח מוכן להגשה",
+      "text": "כל מגש מגיע מסודר כך שהשולחן נראה נכון כבר מהרגע הראשון.",
+      "items": [],
+      "active": true,
+      "order": 1
+    },
+    {
+      "id": "hero-note-custom",
+      "group": "hero-notes",
+      "title": "שיחה קצרה, התאמה אישית",
+      "text": "מספר סועדים, סוג האירוח והאווירה שאתם רוצים יוצרים יחד את הכיוון.",
+      "items": [],
+      "active": true,
+      "order": 2
+    },
+    {
+      "id": "hero-marquee",
+      "group": "hero-marquee",
+      "title": "טקסט רץ במסך הפתיחה",
+      "items": [
+        "שולחן שנפתח יפה",
+        "אוכל ביתי מוקפד",
+        "מגשי אירוח אלגנטיים",
+        "Travel Nis",
+        "ביתר עילית",
+        "אריזה שנראית כמו מותג"
+      ],
+      "active": true,
+      "order": 1
     }
   ]
 } as const;

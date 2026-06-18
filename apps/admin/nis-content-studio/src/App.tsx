@@ -58,9 +58,16 @@ type ActiveView =
   | 'site-map'
   | 'hero'
   | 'contact'
+  | 'editorial'
+  | 'manifesto'
   | 'services'
   | 'audience'
+  | 'boutique'
+  | 'signature'
   | 'process'
+  | 'story'
+  | 'samples'
+  | 'coordination'
   | 'gallery'
   | 'trust'
   | 'faq'
@@ -121,11 +128,86 @@ const sectionGroupLabels: Readonly<Record<string, string>> = {
   hero: 'מסך פתיחה',
   audience: 'למי זה מתאים',
   intro: 'פתיח',
+  editorial: 'מה מזמינים אצלנו',
+  manifesto: 'השפה של Nis',
   process: 'איך זה עובד',
+  boutique: 'למה זה בוטיק',
+  signature: 'רגעי בוטיק',
+  story: 'הסיפור של המותג',
+  samples: 'כיוונים להזמנה',
+  coordination: 'תיאום וזמינות',
   faq: 'שאלות ותשובות',
   trust: 'אמון',
   facts: 'נתונים',
+  'hero-notes': 'נקודות Hero',
+  'hero-marquee': 'טקסט רץ Hero',
   general: 'כללי',
+};
+
+const makeSection = (
+  id: string,
+  group: string,
+  title: string,
+  text: string | undefined,
+  items: readonly string[],
+  order: number,
+): SectionBlockRecord => ({
+  id,
+  group,
+  title,
+  text,
+  items: [...items],
+  active: true,
+  order,
+});
+
+const managedSectionDefaults: readonly SectionBlockRecord[] = [
+  makeSection('editorial-shabbat', 'editorial', 'אוכל ביתי מוקפד לשבת שנכנסת ברוגע', 'תפריטי שבת עשירים, מסודרים ויפים להגשה, כדי שהבית ירגיש מלא בלי שכל העומס יישב עליכם.', ['שבתות', 'ChefHat'], 1),
+  makeSection('editorial-events', 'editorial', 'שולחן שנפתח יפה ומייצר רושם כבר בדקה הראשונה', 'מגשי אירוח, פינגר פוד ושולחנות קטנים עם הגשה אסתטית שמתאימה למשפחה, מפגש או אירוח עסקי.', ['אירועים קטנים', 'Sparkles'], 2),
+  makeSection('editorial-travel', 'editorial', 'Travel Nis לפינוקים שלוקחים אתכם הלאה', 'מארזים נוחים, חכמים ויפים לנסיעות, טיולים וימי כיף, כך שהחוויה מתחילה כבר בדרך.', ['מארזים ודרך', 'Gift'], 3),
+  makeSection('manifesto-table', 'manifesto', 'שולחן שנראה מסודר עוד לפני שנוגעים בו', 'ההגשה, הצבעים והקצב של השולחן הם חלק מהחוויה, לא רק הרקע של האוכל.', ['01'], 1),
+  makeSection('manifesto-home', 'manifesto', 'אוכל שמרגיש ביתי, אבל לא יומיומי', 'הטעם נשאר חם ומוכר, אבל ההופעה, האריזה והדיוק נותנים תחושת occasion.', ['02'], 2),
+  makeSection('manifesto-custom', 'manifesto', 'התאמה אישית במקום פס ייצור', 'החוויה נבנית סביב האירוח שלכם, לא סביב קטלוג אחיד שצריך להסתדר איתו.', ['03'], 3),
+  makeSection('audience-shabbat', 'audience', 'למשפחות שמארחות שבת', 'למי שרוצה שולחן מכובד, מלא ויפה בלי לעמוד שעות במטבח ובלי להיכנס ללחץ לפני שבת.', ['Users'], 1),
+  makeSection('audience-events', 'audience', 'לאירועים קטנים ומוקפדים', 'לזוגות, משפחות ומארחים שמתכננים שמחה קטנה, ברית, שבע ברכות או מפגש משפחתי עם נראות טובה ושקט תפעולי.', ['HeartHandshake'], 2),
+  makeSection('audience-travel', 'audience', 'למארזים, דרך ומתנה', 'למי שרוצה לשלוח או לקחת משהו יפה, טעים ומכובד לדרך, לשבת, לאורחים או ליום מיוחד.', ['Gift'], 3),
+  makeSection('boutique-custom', 'boutique', 'התאמה בשיחה קצרה', 'סוג האירוח, מספר הסועדים והתאריך הופכים מהר לכיוון ברור שאפשר להתקדם איתו.', ['ClipboardList'], 1),
+  makeSection('boutique-ready', 'boutique', 'נראות שמוכנה לשולחן', 'מגשים, מארזים וסידור שמרגישים יפים כבר בפתיחה, בלי עבודה מיותרת מצד המארח.', ['Sparkles'], 2),
+  makeSection('boutique-personal', 'boutique', 'יחס אישי ולא תעשייתי', 'אין מסלול גנרי. יש תיאום, הקשבה ותשומת לב לפרטים שחשובים לאירוח שלכם.', ['HeartHandshake'], 3),
+  makeSection('boutique-home', 'boutique', 'טעם ביתי בגימור בוטיק', 'החיבור בין אוכל חם ומוכר לבין אריזה, צבעים וסידור שמרגישים חגיגיים יותר.', ['Package'], 4),
+  makeSection('process-whatsapp', 'process', 'שולחים הודעה בוואטסאפ', 'אפשר ללחוץ על וואטסאפ או לשלוח את הטופס המסודר בתחתית האתר.', ['MessageCircle'], 1),
+  makeSection('process-details', 'process', 'מחדדים סוג אירוח וכמות', 'בוחרים שבת, מגשי אירוח או Travel Nis, ומוסיפים תאריך, כמות וכיוון כללי.', ['CalendarDays'], 2),
+  makeSection('process-offer', 'process', 'מקבלים הצעה או תפריט מותאם', 'מקבלים כיוון שמתאים לאירוח, למספר הסועדים ולרמת ההגשה הרצויה.', ['ClipboardList'], 3),
+  makeSection('process-ready', 'process', 'סוגרים פרטים ומקבלים מוכן להגשה', 'מסכמים תאריך, אופן קבלה והתאמות, ואז מקבלים אוכל מסודר ונוח להגשה.', ['CheckCircle2'], 4),
+  makeSection('signature-table', 'signature', 'שולחן שנפתח יפה', 'מגשים, צבעים וכלי הגשה שמרגישים מוכנים לאורחים כבר מהרגע הראשון.', [], 1),
+  makeSection('signature-bites', 'signature', 'ביסים קטנים, רושם גדול', 'פינגר פוד, כריכונים ומנות אישיות שנוחים להגשה, לצילום ולאכילה.', [], 2),
+  makeSection('signature-details', 'signature', 'פרטים שמרגישים בוטיק', 'קפה, עריכה, אריזה ותיאום קטן שמסדרים את כל החוויה סביבכם.', [], 3),
+  makeSection('story-rova', 'story', 'מהרובע היהודי', 'שנים של סמטאות אבן, בתים פתוחים וריח של שבת בנו אצל יהודית שפה של אירוח שיש בו נשמה, סדר וחום.', [], 1),
+  makeSection('story-kitchen', 'story', 'אל המטבח של Nis', 'הזיכרון הזה הופך למטבח מוקפד: חומרי גלם טריים, טעמים מדויקים, אריזה יפה ותחושה שמישהו חשב עליכם באמת.', [], 2),
+  makeSection('story-table', 'story', 'עד השולחן שלכם', 'המטרה פשוטה: שתוכלו לארח ברוגע, לפתוח את המארז או המגש, ולהרגיש שהאוכל כבר מספר את הסיפור הנכון.', [], 3),
+  makeSection('samples-shabbat', 'samples', 'תפריט שבת לדוגמה', 'כיוון לשולחן שבת שמרגיש מלא, מכובד ונוח להגשה.', ['מבחר סלטים לשולחן', 'דגים לשבת', 'עיקריות חמות', 'תוספות וסירים משפחתיים', 'חלות וקינוחים'], 1),
+  makeSection('samples-trays', 'samples', 'מגשי אירוח ופינגר פוד', 'פתרון לאירוח קטן שרוצה להרגיש מוקפד ולא גנרי.', ['מגש מלוח מעוצב', 'מיני קישים ומאפים אישיים', 'כריכונים וביסים קטנים', 'בראנץ׳ בוטיק למשפחה', 'קינוחים אישיים'], 2),
+  makeSection('samples-travel', 'samples', 'Travel Nis לדרך', 'מארזים יפים ונוחים לרגעים מיוחדים שמתחילים כבר ביציאה מהבית.', ['ערכת פיקניק זוגית', 'ערכת דרך משפחתית', 'מארז נסיעה מפנק לילדים', 'מארז יום כיף', 'פתרון מותאם לטיול או יציאה'], 3),
+  makeSection('coordination-area', 'coordination', 'אזור פעילות', 'ביתר עילית כבסיס פעילות. איסוף ומשלוחים בסביבה מתואמים לפי תאריך, מיקום ואופי ההזמנה.', ['MapPin'], 1),
+  makeSection('coordination-time', 'coordination', 'זמן פנייה מומלץ', 'לשבתות, חגים ואירועים כדאי לפנות כמה שיותר מוקדם כדי להשאיר מקום להתאמה אישית.', ['CalendarDays'], 2),
+  makeSection('coordination-price', 'coordination', 'הצעת מחיר', 'מקבלים הצעה מותאמת אחרי שמבינים את סוג האירוח, הכמות, התאריך ורמת ההגשה הרצויה.', ['Users'], 3),
+  makeSection('coordination-confirm', 'coordination', 'אישור תפריט', 'אחרי שיחה קצרה מסכמים כיוון, התאמות, תאריך ואופן קבלה לפני סגירת ההזמנה.', ['ClipboardList'], 4),
+  makeSection('hero-note-ready', 'hero-notes', 'אירוח מוכן להגשה', 'כל מגש מגיע מסודר כך שהשולחן נראה נכון כבר מהרגע הראשון.', [], 1),
+  makeSection('hero-note-custom', 'hero-notes', 'שיחה קצרה, התאמה אישית', 'מספר סועדים, סוג האירוח והאווירה שאתם רוצים יוצרים יחד את הכיוון.', [], 2),
+  makeSection('hero-marquee', 'hero-marquee', 'טקסט רץ במסך הפתיחה', undefined, ['שולחן שנפתח יפה', 'אוכל ביתי מוקפד', 'מגשי אירוח אלגנטיים', 'Travel Nis', 'ביתר עילית', 'אריזה שנראית כמו מותג'], 1),
+];
+
+const ensureManagedSections = (snapshot: ContentSnapshot): ContentSnapshot => {
+  const existingIds = new Set(snapshot.sections.map((section) => section.id));
+  const missing = managedSectionDefaults.filter((section) => !existingIds.has(section.id));
+  if (missing.length === 0) {
+    return snapshot;
+  }
+
+  return {
+    ...snapshot,
+    sections: [...snapshot.sections, ...missing],
+  };
 };
 
 const formatError = (error: unknown) => (error instanceof Error ? error.message : 'הפעולה נכשלה');
@@ -170,6 +252,20 @@ const areaDefinitions: readonly {
     icon: <Sparkles aria-hidden="true" />,
   },
   {
+    id: 'editorial',
+    title: 'קטגוריות פתיחה',
+    location: 'שלושת הכרטיסים הראשונים שמסבירים מה מזמינים',
+    help: 'שבתות, אירועים קטנים ו-Travel Nis לפני אזור השירותים המלא.',
+    icon: <FileText aria-hidden="true" />,
+  },
+  {
+    id: 'manifesto',
+    title: 'השפה של Nis',
+    location: 'אזור שמסביר את תחושת הבוטיק וההגשה',
+    help: 'כרטיסים עם מסר רגשי ותמונות, לפני הפירוט המעשי.',
+    icon: <Wand2 aria-hidden="true" />,
+  },
+  {
     id: 'audience',
     title: 'למי זה מתאים',
     location: 'כרטיסי קהל יעד והסברים קצרים',
@@ -177,11 +273,46 @@ const areaDefinitions: readonly {
     icon: <Users aria-hidden="true" />,
   },
   {
+    id: 'boutique',
+    title: 'למה זה בוטיק',
+    location: 'נקודות שמסבירות את הערך והיחס האישי',
+    help: 'כרטיסי הסבר קצרים שעוזרים ללקוח להבין למה זה מרגיש מוקפד.',
+    icon: <Sparkles aria-hidden="true" />,
+  },
+  {
+    id: 'signature',
+    title: 'רגעי בוטיק',
+    location: 'כרטיסי תמונה וטקסט שמדגישים פרטים קטנים',
+    help: 'שלושה רגעים ויזואליים שמחזקים את תחושת המותג.',
+    icon: <Images aria-hidden="true" />,
+  },
+  {
     id: 'process',
     title: 'איך זה עובד',
     location: 'רשימת השלבים מהפנייה ועד קבלת האוכל',
     help: 'אפשר להוסיף, לכבות ולסדר שלבים.',
     icon: <ListChecks aria-hidden="true" />,
+  },
+  {
+    id: 'story',
+    title: 'הסיפור של המותג',
+    location: 'אזור הסיפור האישי של Nis',
+    help: 'תחנות קצרות שמספרות מאיפה המותג מגיע ומה הוא מביא לשולחן.',
+    icon: <Home aria-hidden="true" />,
+  },
+  {
+    id: 'samples',
+    title: 'כיוונים להזמנה',
+    location: 'דוגמאות תפריט וכיווני שיחה',
+    help: 'לא מחירים ולא תפריט קשיח, אלא כיוונים שאפשר לערוך ולהציג.',
+    icon: <ListChecks aria-hidden="true" />,
+  },
+  {
+    id: 'coordination',
+    title: 'תיאום וזמינות',
+    location: 'פרטים שעוזרים ללקוח להבין איך מתקדמים',
+    help: 'אזור פעילות, זמן פנייה, הצעת מחיר ואישור תפריט.',
+    icon: <Phone aria-hidden="true" />,
   },
   {
     id: 'gallery',
@@ -317,7 +448,7 @@ export const App = () => {
         throw new Error('אין למשתמש הזה הרשאה לנהל את האתר.');
       }
 
-      const remoteContent = await readContentFromSheets(accessToken);
+      const remoteContent = ensureManagedSections(await readContentFromSheets(accessToken));
       setSession({ accessToken, email });
       setContent(remoteContent);
       setAuthState('authorized');
@@ -330,7 +461,7 @@ export const App = () => {
       return;
     }
     void runTask('מרעננים תוכן מ-Google Sheets', async () => {
-      setContent(await readContentFromSheets(session.accessToken));
+      setContent(ensureManagedSections(await readContentFromSheets(session.accessToken)));
       setPublishState('clean');
       setStatus('התוכן רוענן מה-Sheets.');
     });
@@ -953,11 +1084,109 @@ export const App = () => {
           />
         )}
 
+        {activeView === 'editorial' && (
+          <SectionGroupEditor
+            title="קטגוריות פתיחה"
+            text="שלושת הכרטיסים הראשונים באתר שמסבירים מהר מה אפשר להזמין. בשדה נקודות נוספות: נקודה ראשונה היא התווית הקטנה, נקודה שנייה יכולה להיות שם אייקון."
+            group="editorial"
+            sections={content.sections}
+            updateSection={updateSection}
+            addSection={addSection}
+            duplicateSection={duplicateSection}
+            archiveSection={archiveSection}
+            restoreSection={restoreSection}
+          />
+        )}
+
+        {activeView === 'manifesto' && (
+          <SectionGroupEditor
+            title="השפה של Nis"
+            text="האזור שמסביר את תחושת הבוטיק: נראות, ביתיות והתאמה אישית. נקודה ראשונה יכולה להיות מספר כמו 01."
+            group="manifesto"
+            sections={content.sections}
+            updateSection={updateSection}
+            addSection={addSection}
+            duplicateSection={duplicateSection}
+            archiveSection={archiveSection}
+            restoreSection={restoreSection}
+          />
+        )}
+
+        {activeView === 'boutique' && (
+          <SectionGroupEditor
+            title="למה זה בוטיק"
+            text="כרטיסים קצרים שמסבירים את הערך: התאמה, נראות, יחס אישי וטעם ביתי."
+            group="boutique"
+            sections={content.sections}
+            updateSection={updateSection}
+            addSection={addSection}
+            duplicateSection={duplicateSection}
+            archiveSection={archiveSection}
+            restoreSection={restoreSection}
+          />
+        )}
+
+        {activeView === 'signature' && (
+          <SectionGroupEditor
+            title="רגעי בוטיק"
+            text="כרטיסי תמונה וטקסט שמחזקים את האופי הוויזואלי של האתר. כרגע התמונות נשמרות מהאתר והטקסט מנוהל כאן."
+            group="signature"
+            sections={content.sections}
+            updateSection={updateSection}
+            addSection={addSection}
+            duplicateSection={duplicateSection}
+            archiveSection={archiveSection}
+            restoreSection={restoreSection}
+          />
+        )}
+
         {activeView === 'process' && (
           <SectionGroupEditor
             title="איך זה עובד"
             text="שלבים פשוטים שמסבירים ללקוח מה קורה מהרגע שהוא פונה ועד שהאוכל מוכן."
             group="process"
+            sections={content.sections}
+            updateSection={updateSection}
+            addSection={addSection}
+            duplicateSection={duplicateSection}
+            archiveSection={archiveSection}
+            restoreSection={restoreSection}
+          />
+        )}
+
+        {activeView === 'story' && (
+          <SectionGroupEditor
+            title="הסיפור של המותג"
+            text="התחנות הקצרות שמופיעות באזור הסיפור: מאיפה Nis באה, מה המטבח מביא, ומה מגיע לשולחן."
+            group="story"
+            sections={content.sections}
+            updateSection={updateSection}
+            addSection={addSection}
+            duplicateSection={duplicateSection}
+            archiveSection={archiveSection}
+            restoreSection={restoreSection}
+          />
+        )}
+
+        {activeView === 'samples' && (
+          <SectionGroupEditor
+            title="כיוונים להזמנה"
+            text="כל כרטיס הוא כיוון תפריט. הכותרת היא שם הכיוון, הטקסט הוא הפתיח, והנקודות הן הפריטים שמופיעים ברשימה."
+            group="samples"
+            sections={content.sections}
+            updateSection={updateSection}
+            addSection={addSection}
+            duplicateSection={duplicateSection}
+            archiveSection={archiveSection}
+            restoreSection={restoreSection}
+          />
+        )}
+
+        {activeView === 'coordination' && (
+          <SectionGroupEditor
+            title="תיאום וזמינות"
+            text="פרטים מעשיים שמרגיעים את הלקוח לפני פנייה: אזור פעילות, זמן פנייה, הצעת מחיר ואישור תפריט."
+            group="coordination"
             sections={content.sections}
             updateSection={updateSection}
             addSection={addSection}
