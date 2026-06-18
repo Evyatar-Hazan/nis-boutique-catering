@@ -15,6 +15,7 @@ import {
   manifestoMoments,
   menuGroups,
   processSteps,
+  sectionCopy,
   seoTopics,
   services,
   signatureMoments,
@@ -45,6 +46,30 @@ const SectionHeading = ({
     <h2 id={id}>{title}</h2>
     {children}
   </div>
+);
+
+const MultilineTitle = ({ text }: { readonly text: string }) => (
+  <>
+    {text.split('\n').map((line, index, lines) => (
+      <span key={line}>
+        {line}
+        {index < lines.length - 1 ? (
+          <>
+            <br />
+            {' '}
+          </>
+        ) : null}
+      </span>
+    ))}
+  </>
+);
+
+const TextParagraphs = ({ text }: { readonly text?: string }) => (
+  <>
+    {text?.split('|').filter(Boolean).map((paragraph) => (
+      <p key={paragraph}>{paragraph}</p>
+    ))}
+  </>
 );
 
 export const HeroSection = ({ heroWhatsapp }: { readonly heroWhatsapp: string }) => (
@@ -181,14 +206,10 @@ export const IntroBandSection = () => (
   <section className="section intro-band reveal" aria-label="בידול">
     <div className="container intro-grid">
       <div>
-        <p className="eyebrow">רעיון אחד ברור</p>
-        <h2>אוכל ביתי מוקפד, בהגשה של בוטיק, לאירוח קטן שמרגיש גדול.</h2>
+        <p className="eyebrow">{sectionCopy.introBand.eyebrow}</p>
+        <h2>{sectionCopy.introBand.title}</h2>
       </div>
-      <p>
-        במקום לנסות להיות הכול, Nis בנויה סביב שלוש חוויות ברורות: שבתות, אירועים קטנים
-        ומארזים לדרך. החוט שמחבר ביניהן הוא אותו חוט: אוכל שמרגיש חם וביתי, נראות נקייה
-        ומכובדת, ושירות אישי שלא משאיר אתכם לבד עם הפרטים.
-      </p>
+      <TextParagraphs text={sectionCopy.introBand.text} />
     </div>
   </section>
 );
@@ -197,18 +218,11 @@ export const ManifestoSection = () => (
   <section className="section manifesto-section" aria-labelledby="manifesto-title">
     <div className="container manifesto-layout">
       <div className="manifesto-copy reveal">
-        <p className="eyebrow">השפה של Nis</p>
+        <p className="eyebrow">{sectionCopy.manifesto.eyebrow}</p>
         <h2 id="manifesto-title">
-          לא עוד מגש.
-          <br />
-          חוויית אירוח שנראית
-          <br />
-          כמו מחשבה.
+          <MultilineTitle text={sectionCopy.manifesto.title} />
         </h2>
-        <p>
-          כש־Nis נראית נכון, זה מרגיש מיד אחרת: יותר שקט למארח, יותר כבוד לשולחן, ויותר
-          תחושה שמישהו החזיק את כל הפרטים יחד.
-        </p>
+        <TextParagraphs text={sectionCopy.manifesto.text} />
       </div>
       <div className="manifesto-stack">
         {manifestoMoments.map((moment, index) => (
@@ -233,7 +247,7 @@ export const ManifestoSection = () => (
 export const EditorialSection = () => (
   <section className="section editorial-section" aria-labelledby="editorial-title">
     <div className="container">
-      <SectionHeading eyebrow="מה מזמינים אצלנו" title="שלוש קטגוריות ברורות. שפה אחת של אירוח." id="editorial-title" />
+      <SectionHeading eyebrow={sectionCopy.editorial.eyebrow} title={sectionCopy.editorial.title} id="editorial-title" />
       <div className="editorial-grid">
         {editorialCards.map((card, index) => {
           const Icon = card.icon;
@@ -262,11 +276,8 @@ export const EditorialSection = () => (
 export const AudienceSection = () => (
   <section className="section" aria-labelledby="audience-title">
     <div className="container">
-      <SectionHeading eyebrow="למי זה מתאים" title="כשרוצים לארח יפה, טעים ומכובד בלי לסחוב הכול לבד." id="audience-title">
-        <p>
-          Nis מתאימה למי שרוצה לזהות את עצמו מהר: שבת רגועה יותר, אירוע קטן שנראה נכון, או
-          מארז יפה שלוקחים לדרך או שולחים הלאה.
-        </p>
+      <SectionHeading eyebrow={sectionCopy.audience.eyebrow} title={sectionCopy.audience.title} id="audience-title">
+        <TextParagraphs text={sectionCopy.audience.text} />
       </SectionHeading>
       <div className="compact-grid">
         {audienceCards.map((card) => {
@@ -323,12 +334,9 @@ export const ExperienceLabSection = ({
     >
       <div className="container experience-lab">
         <div className="experience-copy reveal">
-          <p className="eyebrow">בחרו את החוויה</p>
-          <h2 id="experience-lab-title">מהרגע שבוחרים כיוון, האירוח מתחיל לקבל צורה.</h2>
-          <p>
-            בוחרים את סוג האירוח ומבינים מהר איך זה יכול להיראות אצלכם:
-            מה נפתח על השולחן, מה מתאים לאופי האירוע, ואיך ממשיכים לשיחה קצרה.
-          </p>
+          <p className="eyebrow">{sectionCopy.experienceLab.eyebrow}</p>
+          <h2 id="experience-lab-title">{sectionCopy.experienceLab.title}</h2>
+          <TextParagraphs text={sectionCopy.experienceLab.text} />
           <div className="experience-switcher" role="tablist" aria-label="בחירת חוויית אירוח">
             {services.map((service, index) => {
               const Icon = service.icon;
@@ -399,7 +407,7 @@ export const ExperienceLabSection = ({
 export const SignatureSection = () => (
   <section className="section signature-section" aria-labelledby="signature-title">
     <div className="container">
-      <SectionHeading eyebrow="למה זה בוטיק" title="בוטיק זו לא מילה. זו הדרך שבה כל פרט מרגיש נכון יותר." id="signature-title" />
+      <SectionHeading eyebrow={sectionCopy.signature.eyebrow} title={sectionCopy.signature.title} id="signature-title" />
       <div className="signature-grid">
         {signatureMoments.map((moment, index) => (
           <article
@@ -424,12 +432,9 @@ export const BoutiqueSection = () => (
   <section className="section boutique-section" aria-labelledby="boutique-title">
     <div className="container boutique-layout">
       <div className="boutique-copy reveal">
-        <p className="eyebrow">למה זה מרגיש בוטיק</p>
-        <h2 id="boutique-title">הפרטים הקטנים שעוזרים להחליט מהר יותר.</h2>
-        <p>
-          התאמה אישית, נראות מוכנה לשולחן, יחס אנושי וטעם שמרגיש ביתי אבל חגיגי.
-          אלה הפרטים שעוזרים לאירוח להרגיש רגוע ומדויק יותר.
-        </p>
+        <p className="eyebrow">{sectionCopy.boutique.eyebrow}</p>
+        <h2 id="boutique-title">{sectionCopy.boutique.title}</h2>
+        <TextParagraphs text={sectionCopy.boutique.text} />
       </div>
       <div className="boutique-grid">
         {boutiqueReasons.map((reason, index) => {
@@ -454,11 +459,8 @@ export const BoutiqueSection = () => (
 export const ServicesSection = () => (
   <section id="experiences" className="section" aria-labelledby="experiences-title">
     <div className="container">
-      <SectionHeading eyebrow="מה אפשר להזמין" title="שלוש אפשרויות ברורות. בוחרים כיוון וממשיכים לפנייה." id="experiences-title">
-        <p>
-          שבת, אירוח קטן או דרך: שלושת השירותים מקבלים משקל שווה, וכל אחד מהם נבנה לפי כמות,
-          תאריך והתחושה שרוצים ליצור.
-        </p>
+      <SectionHeading eyebrow={sectionCopy.services.eyebrow} title={sectionCopy.services.title} id="experiences-title">
+        <TextParagraphs text={sectionCopy.services.text} />
       </SectionHeading>
       <div className="service-grid">
         {services.map((service) => {
@@ -492,7 +494,7 @@ export const ServicesSection = () => (
 export const ProcessSection = () => (
   <section id="process" className="section" aria-labelledby="process-title">
     <div className="container">
-      <SectionHeading eyebrow="איך זה עובד" title="ארבעה צעדים קצרים מהרעיון ועד אוכל שמוכן להגשה." id="process-title" />
+      <SectionHeading eyebrow={sectionCopy.process.eyebrow} title={sectionCopy.process.title} id="process-title" />
       <div className="process-list">
         {processSteps.map((step, index) => {
           const Icon = step.icon;
@@ -514,11 +516,10 @@ export const StorySection = () => (
   <section className="section story-section" aria-labelledby="story-title">
     <div className="container story-grid">
       <div className="story-copy reveal">
-        <p className="eyebrow">הסיפור של המותג</p>
-        <h2 id="story-title">Nis נולדה מתוך אהבה לאירוח יפה, אוכל ביתי מדויק ותשומת לב לפרטים הקטנים.</h2>
-        <p>מאחורי Nis עומדת יהודית ניסטנפובר, עם אהבה עמוקה לאירוח, לאוכל מוקפד ולרגעים הקטנים שהופכים ארוחה לחוויה.</p>
-        <p>אחרי שנים של חיים ברובע היהודי, בין סמטאות אבן, בתים מלאי ריח של שבת ושולחנות שנפתחים לאנשים שאוהבים, יהודית מביאה למטבח של Nis חיבור בין ביתיות, אסתטיקה ושירות אישי.</p>
-        <p>כל הזמנה נבנית מתוך תשומת לב לפרטים הקטנים: חומרי גלם טריים, טעמים מדויקים, אריזה אסתטית ותחושה שמישהו חשב עליכם באמת.</p>
+        <p className="eyebrow">{sectionCopy.story.eyebrow}</p>
+        <h2 id="story-title">{sectionCopy.story.title}</h2>
+        <TextParagraphs text={sectionCopy.story.text} />
+        <TextParagraphs text={sectionCopy.story.extraText} />
         <div className="story-moments" aria-label="הדרך של Nis">
           {storyMoments.map((moment) => (
             <article key={moment.title}>
@@ -543,15 +544,12 @@ export const SamplesSection = () => (
   <section id="samples" className="section soft-section" aria-labelledby="samples-title">
     <div className="container">
       <SectionHeading
-        eyebrow="כיוונים שאפשר להתחיל מהם"
-        title="כיוונים טעימים שקל להתחיל מהם שיחה."
+        eyebrow={sectionCopy.samples.eyebrow}
+        title={sectionCopy.samples.title}
         id="samples-title"
         className="section-heading sample-heading reveal"
       >
-        <p>
-          אפשר להתחיל מכיוון כללי ולהתאים אותו לשבת, לאירוח קטן או למארז לדרך.
-          בשיחה קצרה מדייקים יחד כמויות, תאריך וסגנון הגשה.
-        </p>
+        <TextParagraphs text={sectionCopy.samples.text} />
       </SectionHeading>
       <div className="menu-grid">
         {menuGroups.map((group) => (
@@ -576,7 +574,7 @@ export const SamplesSection = () => (
 export const CoordinationSection = () => (
   <section className="section coordination-section" aria-labelledby="coordination-title">
     <div className="container">
-      <SectionHeading eyebrow="תיאום וזמינות" title="הפרטים שעוזרים להתקדם בביטחון." id="coordination-title" />
+      <SectionHeading eyebrow={sectionCopy.coordination.eyebrow} title={sectionCopy.coordination.title} id="coordination-title" />
       <div className="compact-grid">
         {coordinationCards.map((card) => {
           const Icon = card.icon;
@@ -597,12 +595,9 @@ export const RealMediaSection = () => (
   <section className="section real-media-section" aria-labelledby="real-media-title">
     <div className="container real-media-grid">
       <div className="reveal">
-        <p className="eyebrow">וידאו אמיתי</p>
-        <h2 id="real-media-title">ככה נראית תשומת לב לפני שהאירוח בכלל פוגש את האורחים.</h2>
-        <p>
-          מנות אישיות, אריזה נקייה, מדבקת Nis ופרטים קטנים שמסדרים את החוויה עוד לפני הביס
-          הראשון. התמונות והווידאו כאן הם מהכנות אמיתיות של Nis.
-        </p>
+        <p className="eyebrow">{sectionCopy.realMedia.eyebrow}</p>
+        <h2 id="real-media-title">{sectionCopy.realMedia.title}</h2>
+        <TextParagraphs text={sectionCopy.realMedia.text} />
       </div>
       <video className="reveal" controls muted playsInline preload="none" poster={foodMedia.hostingTableOverview.src}>
         <source src={videoMedia.eventVideo} type="video/mp4" />
@@ -629,10 +624,8 @@ export const GallerySection = ({
   return (
     <section id="gallery" className="section" aria-labelledby="gallery-title">
       <div className="container">
-        <SectionHeading eyebrow="גלריה" title="קודם רואים. אחר כך הרבה יותר קל לפנות." id="gallery-title" className="section-heading gallery-heading reveal">
-          <p>
-            שולחנות, מגשים, סלטים, קפה ופרטים קטנים שמראים את הסגנון לפני שמתחילים לדבר על תפריט.
-          </p>
+        <SectionHeading eyebrow={sectionCopy.gallery.eyebrow} title={sectionCopy.gallery.title} id="gallery-title" className="section-heading gallery-heading reveal">
+          <TextParagraphs text={sectionCopy.gallery.text} />
         </SectionHeading>
         <div className="gallery-tabs reveal" aria-label="סינון גלריה לפי סוג">
           {galleryCategories.map((category) => (
@@ -671,8 +664,8 @@ export const DetailsSection = () => (
   <section className="section details-section" aria-labelledby="details-title">
     <div className="container split-section">
       <div className="reveal">
-        <p className="eyebrow">פרטים שחשוב לדעת</p>
-        <h2 id="details-title">שומרים על ציפיות ברורות כבר מהשיחה הראשונה.</h2>
+        <p className="eyebrow">{sectionCopy.details.eyebrow}</p>
+        <h2 id="details-title">{sectionCopy.details.title}</h2>
       </div>
       <ul className="fact-list reveal">
         {facts.map((fact) => (
@@ -690,12 +683,9 @@ export const BookingBasicsSection = () => (
   <section className="section booking-basics-section soft-section" aria-labelledby="booking-basics-title">
     <div className="container booking-basics-grid">
       <div className="reveal">
-        <p className="eyebrow">לפני שפונים</p>
-        <h2 id="booking-basics-title">כל מה שצריך לדעת כדי לשלוח פנייה בלי להתלבט.</h2>
-        <p>
-          מספיק לדעת מה סוג האירוח, בערך כמה סועדים ומה התאריך הרצוי.
-          משם אפשר לדייק יחד את התפריט, ההגשה ואופן הקבלה.
-        </p>
+        <p className="eyebrow">{sectionCopy.bookingBasics.eyebrow}</p>
+        <h2 id="booking-basics-title">{sectionCopy.bookingBasics.title}</h2>
+        <TextParagraphs text={sectionCopy.bookingBasics.text} />
       </div>
       <div className="booking-basics-content">
         <div className="compact-grid booking-facts">
@@ -727,15 +717,11 @@ export const SeoSection = () => (
   <section className="section seo-section" aria-labelledby="seo-title">
     <div className="container split-section">
       <div className="reveal">
-        <p className="eyebrow">מה אפשר להזמין</p>
-        <h2 id="seo-title">קייטרינג בוטיק מביתר עילית לשבת, אירוח קטן ומארזים לדרך.</h2>
+        <p className="eyebrow">{sectionCopy.seo.eyebrow}</p>
+        <h2 id="seo-title">{sectionCopy.seo.title}</h2>
       </div>
       <div className="reveal">
-        <p>
-          Nis נותנת מענה למי שמחפש קייטרינג בוטיק בביתר עילית והסביבה: תפריט שבת מוכן, מגשי
-          אירוח לאירועים קטנים, פינגר פוד, בראנץ׳ משפחתי ומארזי פיקניק או דרך. כל פנייה מתחילה
-          בשיחה קצרה כדי להבין את סוג האירוח, כמות הסועדים, התאריך והתחושה שרוצים ליצור.
-        </p>
+        <TextParagraphs text={sectionCopy.seo.text} />
         <div className="seo-tags" aria-label="תחומי שירות">
           {seoTopics.map((topic) => (
             <span key={topic}>{topic}</span>
@@ -749,7 +735,7 @@ export const SeoSection = () => (
 export const TrustSection = () => (
   <section className="section trust-section" aria-labelledby="trust-title">
     <div className="container">
-      <SectionHeading eyebrow="מה מרגיע לפני שסוגרים" title="פחות סימני שאלה, יותר תחושה שיש עם מי לדבר." id="trust-title" />
+      <SectionHeading eyebrow={sectionCopy.trust.eyebrow} title={sectionCopy.trust.title} id="trust-title" />
       <div className="testimonial-grid">
         {trustCards.map((card) => {
           const Icon = card.icon;
@@ -770,8 +756,8 @@ export const FaqSection = () => (
   <section id="faq" className="section soft-section" aria-labelledby="faq-title">
     <div className="container faq-grid">
       <div className="reveal">
-        <p className="eyebrow">שאלות נפוצות</p>
-        <h2 id="faq-title">התשובות שמקלות על הפנייה הראשונה.</h2>
+        <p className="eyebrow">{sectionCopy.faq.eyebrow}</p>
+        <h2 id="faq-title">{sectionCopy.faq.title}</h2>
       </div>
       <div className="faq-list reveal">
         {faqs.map((faq) => (
@@ -808,12 +794,9 @@ export const ContactSection = ({
   >
     <div className="container contact-grid">
       <div className="contact-copy reveal">
-        <p className="eyebrow">יצירת קשר</p>
-        <h2 id="contact-title">אהבתם את הסגנון? שלחו פנייה מסודרת לוואטסאפ.</h2>
-        <p>
-          הטופס נשאר קצר ומעשי: סוג הזמנה, תאריך, כמות והערה. אחרי השליחה נפתחת הודעת וואטסאפ
-          מוכנה, כדי שיהיה קל להמשיך לשיחה אישית.
-        </p>
+        <p className="eyebrow">{sectionCopy.contact.eyebrow}</p>
+        <h2 id="contact-title">{sectionCopy.contact.title}</h2>
+        <TextParagraphs text={sectionCopy.contact.text} />
         <div className="contact-actions">
           <a className="button primary" href={contactWhatsapp} data-event="contact_whatsapp">
             <MessageCircle aria-hidden="true" />
@@ -834,7 +817,7 @@ export const ContactSection = ({
         </div>
         <div className="contact-promise" aria-label="מה קורה אחרי הפנייה">
           <strong>מה קורה אחרי הפנייה?</strong>
-          <span>שיחה קצרה, התאמה אישית, ואז סיכום ברור של תאריך, כמות וסגנון אירוח.</span>
+          <span>{sectionCopy.contact.extraText}</span>
         </div>
       </div>
       <form className="contact-form reveal" onSubmit={onSubmit}>

@@ -64,6 +64,7 @@ type ActiveView =
   | 'editorial'
   | 'manifesto'
   | 'services'
+  | 'site-copy'
   | 'audience'
   | 'boutique'
   | 'signature'
@@ -184,6 +185,7 @@ const sectionGroupLabels: Readonly<Record<string, string>> = {
   hero: 'מסך פתיחה',
   audience: 'למי זה מתאים',
   intro: 'פתיח',
+  'site-copy': 'טקסטי מעטפת',
   editorial: 'מה מזמינים אצלנו',
   manifesto: 'השפה של Nis',
   process: 'איך זה עובד',
@@ -199,6 +201,15 @@ const sectionGroupLabels: Readonly<Record<string, string>> = {
   'hero-marquee': 'טקסט רץ Hero',
   general: 'כללי',
 };
+
+const makeCopySection = (
+  id: string,
+  title: string,
+  text: string | undefined,
+  eyebrow: string,
+  order: number,
+  extraText?: string,
+) => makeSection(`copy-${id}`, 'site-copy', title, text, extraText ? [eyebrow, extraText] : [eyebrow], order);
 
 const makeSection = (
   id: string,
@@ -218,6 +229,27 @@ const makeSection = (
 });
 
 const managedSectionDefaults: readonly SectionBlockRecord[] = [
+  makeCopySection('intro-band', 'אוכל ביתי מוקפד, בהגשה של בוטיק, לאירוח קטן שמרגיש גדול.', 'במקום לנסות להיות הכול, Nis בנויה סביב שלוש חוויות ברורות: שבתות, אירועים קטנים ומארזים לדרך. החוט שמחבר ביניהן הוא אותו חוט: אוכל שמרגיש חם וביתי, נראות נקייה ומכובדת, ושירות אישי שלא משאיר אתכם לבד עם הפרטים.', 'רעיון אחד ברור', 1),
+  makeCopySection('manifesto', 'לא עוד מגש.\nחוויית אירוח שנראית\nכמו מחשבה.', 'כש־Nis נראית נכון, זה מרגיש מיד אחרת: יותר שקט למארח, יותר כבוד לשולחן, ויותר תחושה שמישהו החזיק את כל הפרטים יחד.', 'השפה של Nis', 2),
+  makeCopySection('editorial', 'שלוש קטגוריות ברורות. שפה אחת של אירוח.', undefined, 'מה מזמינים אצלנו', 3),
+  makeCopySection('audience', 'כשרוצים לארח יפה, טעים ומכובד בלי לסחוב הכול לבד.', 'Nis מתאימה למי שרוצה לזהות את עצמו מהר: שבת רגועה יותר, אירוע קטן שנראה נכון, או מארז יפה שלוקחים לדרך או שולחים הלאה.', 'למי זה מתאים', 4),
+  makeCopySection('experience-lab', 'מהרגע שבוחרים כיוון, האירוח מתחיל לקבל צורה.', 'בוחרים את סוג האירוח ומבינים מהר איך זה יכול להיראות אצלכם: מה נפתח על השולחן, מה מתאים לאופי האירוע, ואיך ממשיכים לשיחה קצרה.', 'בחרו את החוויה', 5),
+  makeCopySection('signature', 'בוטיק זו לא מילה. זו הדרך שבה כל פרט מרגיש נכון יותר.', undefined, 'למה זה בוטיק', 6),
+  makeCopySection('boutique', 'הפרטים הקטנים שעוזרים להחליט מהר יותר.', 'התאמה אישית, נראות מוכנה לשולחן, יחס אנושי וטעם שמרגיש ביתי אבל חגיגי. אלה הפרטים שעוזרים לאירוח להרגיש רגוע ומדויק יותר.', 'למה זה מרגיש בוטיק', 7),
+  makeCopySection('services', 'שלוש אפשרויות ברורות. בוחרים כיוון וממשיכים לפנייה.', 'שבת, אירוח קטן או דרך: שלושת השירותים מקבלים משקל שווה, וכל אחד מהם נבנה לפי כמות, תאריך והתחושה שרוצים ליצור.', 'מה אפשר להזמין', 8),
+  makeCopySection('process', 'ארבעה צעדים קצרים מהרעיון ועד אוכל שמוכן להגשה.', undefined, 'איך זה עובד', 9),
+  makeCopySection('story', 'Nis נולדה מתוך אהבה לאירוח יפה, אוכל ביתי מדויק ותשומת לב לפרטים הקטנים.', 'מאחורי Nis עומדת יהודית ניסטנפובר, עם אהבה עמוקה לאירוח, לאוכל מוקפד ולרגעים הקטנים שהופכים ארוחה לחוויה.', 'הסיפור של המותג', 10, 'אחרי שנים של חיים ברובע היהודי, בין סמטאות אבן, בתים מלאי ריח של שבת ושולחנות שנפתחים לאנשים שאוהבים, יהודית מביאה למטבח של Nis חיבור בין ביתיות, אסתטיקה ושירות אישי.|כל הזמנה נבנית מתוך תשומת לב לפרטים הקטנים: חומרי גלם טריים, טעמים מדויקים, אריזה אסתטית ותחושה שמישהו חשב עליכם באמת.'),
+  makeCopySection('samples', 'כיוונים טעימים שקל להתחיל מהם שיחה.', 'אפשר להתחיל מכיוון כללי ולהתאים אותו לשבת, לאירוח קטן או למארז לדרך. בשיחה קצרה מדייקים יחד כמויות, תאריך וסגנון הגשה.', 'כיוונים שאפשר להתחיל מהם', 11),
+  makeCopySection('coordination', 'הפרטים שעוזרים להתקדם בביטחון.', undefined, 'תיאום וזמינות', 12),
+  makeCopySection('real-media', 'ככה נראית תשומת לב לפני שהאירוח בכלל פוגש את האורחים.', 'מנות אישיות, אריזה נקייה, מדבקת Nis ופרטים קטנים שמסדרים את החוויה עוד לפני הביס הראשון. התמונות והווידאו כאן הם מהכנות אמיתיות של Nis.', 'וידאו אמיתי', 13),
+  makeCopySection('gallery', 'קודם רואים. אחר כך הרבה יותר קל לפנות.', 'שולחנות, מגשים, סלטים, קפה ופרטים קטנים שמראים את הסגנון לפני שמתחילים לדבר על תפריט.', 'גלריה', 14),
+  makeCopySection('details', 'שומרים על ציפיות ברורות כבר מהשיחה הראשונה.', undefined, 'פרטים שחשוב לדעת', 15),
+  makeCopySection('booking-basics', 'כל מה שצריך לדעת כדי לשלוח פנייה בלי להתלבט.', 'מספיק לדעת מה סוג האירוח, בערך כמה סועדים ומה התאריך הרצוי. משם אפשר לדייק יחד את התפריט, ההגשה ואופן הקבלה.', 'לפני שפונים', 16),
+  makeCopySection('seo', 'קייטרינג בוטיק מביתר עילית לשבת, אירוח קטן ומארזים לדרך.', 'Nis נותנת מענה למי שמחפש קייטרינג בוטיק בביתר עילית והסביבה: תפריט שבת מוכן, מגשי אירוח לאירועים קטנים, פינגר פוד, בראנץ׳ משפחתי ומארזי פיקניק או דרך. כל פנייה מתחילה בשיחה קצרה כדי להבין את סוג האירוח, כמות הסועדים, התאריך והתחושה שרוצים ליצור.', 'מה אפשר להזמין', 17),
+  makeCopySection('trust', 'פחות סימני שאלה, יותר תחושה שיש עם מי לדבר.', undefined, 'מה מרגיע לפני שסוגרים', 18),
+  makeCopySection('faq', 'התשובות שמקלות על הפנייה הראשונה.', undefined, 'שאלות נפוצות', 19),
+  makeCopySection('contact', 'אהבתם את הסגנון? שלחו פנייה מסודרת לוואטסאפ.', 'הטופס נשאר קצר ומעשי: סוג הזמנה, תאריך, כמות והערה. אחרי השליחה נפתחת הודעת וואטסאפ מוכנה, כדי שיהיה קל להמשיך לשיחה אישית.', 'יצירת קשר', 20, 'שיחה קצרה, התאמה אישית, ואז סיכום ברור של תאריך, כמות וסגנון אירוח.'),
+  makeSection('facts', 'facts', 'פרטים שחשוב לדעת', undefined, ['אזור פעילות: ביתר עילית והסביבה, בתיאום לפי תאריך ומיקום.', 'להזמנות שבת ואירועים מומלץ לפנות מוקדם ככל האפשר.', 'כל הזמנה מקבלת הצעה מותאמת אחרי שיחה קצרה והבנת הצורך.', 'אפשר לדבר על העדפות, רגישויות והתאמות תפריט לפי הצורך.'], 1),
   makeSection('editorial-shabbat', 'editorial', 'אוכל ביתי מוקפד לשבת שנכנסת ברוגע', 'תפריטי שבת עשירים, מסודרים ויפים להגשה, כדי שהבית ירגיש מלא בלי שכל העומס יישב עליכם.', ['שבתות', 'ChefHat'], 1),
   makeSection('editorial-events', 'editorial', 'שולחן שנפתח יפה ומייצר רושם כבר בדקה הראשונה', 'מגשי אירוח, פינגר פוד ושולחנות קטנים עם הגשה אסתטית שמתאימה למשפחה, מפגש או אירוח עסקי.', ['אירועים קטנים', 'Sparkles'], 2),
   makeSection('editorial-travel', 'editorial', 'Travel Nis לפינוקים שלוקחים אתכם הלאה', 'מארזים נוחים, חכמים ויפים לנסיעות, טיולים וימי כיף, כך שהחוויה מתחילה כבר בדרך.', ['מארזים ודרך', 'Gift'], 3),
@@ -306,6 +338,13 @@ const areaDefinitions: readonly {
     location: 'כרטיסי השירות המרכזיים בעמוד',
     help: 'שבת, אירועים, Travel Nis וכל שירות נוסף שתוסיפו.',
     icon: <Sparkles aria-hidden="true" />,
+  },
+  {
+    id: 'site-copy',
+    title: 'טקסטי מעטפת',
+    location: 'כותרות ופתיחים של כל אזורי האתר',
+    help: 'כאן עורכים את הכותרת, התווית והטקסט שמלווים כל אזור באתר.',
+    icon: <FileText aria-hidden="true" />,
   },
   {
     id: 'editorial',
@@ -1293,6 +1332,22 @@ export const App = () => {
           />
         )}
 
+        {activeView === 'site-copy' && (
+          <SectionGroupEditor
+            title="טקסטי מעטפת"
+            text="כותרות, תוויות ופתיחים של אזורי האתר. הכותרת היא H2, הטקסט הוא ההסבר, ונקודה ראשונה היא התווית הקטנה מעל הכותרת."
+            group="site-copy"
+            sections={content.sections}
+            updateSection={updateSection}
+            addSection={addSection}
+            duplicateSection={duplicateSection}
+            archiveSection={archiveSection}
+            restoreSection={restoreSection}
+            previewDevice={previewDevice}
+            onPreviewDeviceChange={setPreviewDevice}
+          />
+        )}
+
         {activeView === 'manifesto' && (
           <SectionGroupEditor
             title="השפה של Nis"
@@ -2009,13 +2064,13 @@ const SectionGroupEditor = ({
                 />
               </div>
               <Toggle checked={section.active && !section.deletedAt} label="מוצג באתר" onChange={(checked) => updateSection(section.id, { active: checked })} />
-              <Field label={group === 'faq' ? 'השאלה שמופיעה באתר' : 'כותרת שמופיעה באתר'} help="זו הכותרת שהלקוח יראה באזור הזה.">
+              <Field label={group === 'faq' ? 'השאלה שמופיעה באתר' : 'כותרת שמופיעה באתר'} help={group === 'site-copy' ? 'זו הכותרת הגדולה של האזור באתר.' : 'זו הכותרת שהלקוח יראה באזור הזה.'}>
                 <TextInput value={section.title ?? ''} onChange={(value) => updateSection(section.id, { title: value || undefined })} />
               </Field>
-              <Field label={group === 'faq' ? 'התשובה' : 'טקסט מתחת לכותרת'} help="טקסט קצר וברור, בלי ניסוחים טכניים.">
+              <Field label={group === 'faq' ? 'התשובה' : 'טקסט מתחת לכותרת'} help={group === 'site-copy' ? 'הפתיח או פסקת ההסבר של האזור. אפשר להשאיר ריק אם באזור אין פסקה.' : 'טקסט קצר וברור, בלי ניסוחים טכניים.'}>
                 <textarea value={section.text ?? ''} onChange={(event) => updateSection(section.id, { text: event.target.value || undefined })} />
               </Field>
-              <Field label="נקודות נוספות" help="אם צריך רשימה קצרה, מפרידים נקודות עם |">
+              <Field label={group === 'site-copy' ? 'תווית קטנה ועוד פסקאות' : 'נקודות נוספות'} help={group === 'site-copy' ? 'הנקודה הראשונה היא התווית שמעל הכותרת. נקודה שנייה יכולה להכיל עוד פסקאות, מופרדות עם |.' : 'אם צריך רשימה קצרה, מפרידים נקודות עם |'}>
                 <TextInput value={joinPipeList(section.items)} onChange={(value) => updateSection(section.id, { items: splitPipeList(value) })} />
               </Field>
               <details className="technical-details">
@@ -2149,6 +2204,11 @@ const sectionPreviewCopy: Readonly<Record<string, { readonly eyebrow: string; re
     eyebrow: 'מה מזמינים אצלנו',
     title: 'שלוש כניסות ברורות לעולם של Nis.',
     text: 'פתיח קצר לקטגוריות המרכזיות באתר.',
+  },
+  'site-copy': {
+    eyebrow: 'טקסטי מעטפת',
+    title: 'הכותרות והפתיחים שמחזיקים את כל האתר.',
+    text: 'כל כרטיס כאן משפיע על אזור אחר באתר: תווית קטנה, כותרת ראשית וטקסט הסבר.',
   },
   manifesto: {
     eyebrow: 'השפה של Nis',

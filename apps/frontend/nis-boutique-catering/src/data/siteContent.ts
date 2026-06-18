@@ -222,6 +222,13 @@ export interface MenuGroup {
   readonly items: readonly string[];
 }
 
+export interface SectionCopy {
+  readonly eyebrow: string;
+  readonly title: string;
+  readonly text?: string;
+  readonly extraText?: string;
+}
+
 export type GalleryCategory = 'all' | 'tables' | 'trays' | 'salads' | 'coffee' | 'fish';
 
 export interface GalleryImage {
@@ -286,6 +293,20 @@ const getGeneratedCardsByGroup = (group: string, fallbackIcon: LucideIcon): read
 
 const getGeneratedSectionsByGroup = (group: string) =>
   activeGeneratedSections.filter((section) => section.group === group && (section.title || section.text || section.items.length > 0));
+
+const getGeneratedSectionCopy = (id: string, fallback: SectionCopy): SectionCopy => {
+  const section = getGeneratedSection(`copy-${id}`);
+  if (!section) {
+    return fallback;
+  }
+
+  return {
+    eyebrow: section.items[0] ?? fallback.eyebrow,
+    title: section.title ?? fallback.title,
+    text: section.text ?? fallback.text,
+    extraText: section.items[1] ?? fallback.extraText,
+  };
+};
 
 const mergeGeneratedSimpleCards = <T extends SimpleCard>(
   group: string,
@@ -775,6 +796,118 @@ export const heroContent = {
   text:
     heroSection?.text ||
     'רואים את הסגנון, בוחרים את סוג ההזמנה, ומשאירים פנייה מסודרת. Nis כבר תהפוך את זה לתפריט, מגשים או מארז שמתאימים לאירוח שלכם.',
+} as const;
+
+export const sectionCopy = {
+  introBand: getGeneratedSectionCopy('intro-band', {
+    eyebrow: 'רעיון אחד ברור',
+    title: 'אוכל ביתי מוקפד, בהגשה של בוטיק, לאירוח קטן שמרגיש גדול.',
+    text:
+      'במקום לנסות להיות הכול, Nis בנויה סביב שלוש חוויות ברורות: שבתות, אירועים קטנים ומארזים לדרך. החוט שמחבר ביניהן הוא אותו חוט: אוכל שמרגיש חם וביתי, נראות נקייה ומכובדת, ושירות אישי שלא משאיר אתכם לבד עם הפרטים.',
+  }),
+  manifesto: getGeneratedSectionCopy('manifesto', {
+    eyebrow: 'השפה של Nis',
+    title: 'לא עוד מגש.\nחוויית אירוח שנראית\nכמו מחשבה.',
+    text:
+      'כש־Nis נראית נכון, זה מרגיש מיד אחרת: יותר שקט למארח, יותר כבוד לשולחן, ויותר תחושה שמישהו החזיק את כל הפרטים יחד.',
+  }),
+  editorial: getGeneratedSectionCopy('editorial', {
+    eyebrow: 'מה מזמינים אצלנו',
+    title: 'שלוש קטגוריות ברורות. שפה אחת של אירוח.',
+  }),
+  audience: getGeneratedSectionCopy('audience', {
+    eyebrow: 'למי זה מתאים',
+    title: 'כשרוצים לארח יפה, טעים ומכובד בלי לסחוב הכול לבד.',
+    text:
+      'Nis מתאימה למי שרוצה לזהות את עצמו מהר: שבת רגועה יותר, אירוע קטן שנראה נכון, או מארז יפה שלוקחים לדרך או שולחים הלאה.',
+  }),
+  experienceLab: getGeneratedSectionCopy('experience-lab', {
+    eyebrow: 'בחרו את החוויה',
+    title: 'מהרגע שבוחרים כיוון, האירוח מתחיל לקבל צורה.',
+    text:
+      'בוחרים את סוג האירוח ומבינים מהר איך זה יכול להיראות אצלכם: מה נפתח על השולחן, מה מתאים לאופי האירוע, ואיך ממשיכים לשיחה קצרה.',
+  }),
+  signature: getGeneratedSectionCopy('signature', {
+    eyebrow: 'למה זה בוטיק',
+    title: 'בוטיק זו לא מילה. זו הדרך שבה כל פרט מרגיש נכון יותר.',
+  }),
+  boutique: getGeneratedSectionCopy('boutique', {
+    eyebrow: 'למה זה מרגיש בוטיק',
+    title: 'הפרטים הקטנים שעוזרים להחליט מהר יותר.',
+    text:
+      'התאמה אישית, נראות מוכנה לשולחן, יחס אנושי וטעם שמרגיש ביתי אבל חגיגי. אלה הפרטים שעוזרים לאירוח להרגיש רגוע ומדויק יותר.',
+  }),
+  services: getGeneratedSectionCopy('services', {
+    eyebrow: 'מה אפשר להזמין',
+    title: 'שלוש אפשרויות ברורות. בוחרים כיוון וממשיכים לפנייה.',
+    text:
+      'שבת, אירוח קטן או דרך: שלושת השירותים מקבלים משקל שווה, וכל אחד מהם נבנה לפי כמות, תאריך והתחושה שרוצים ליצור.',
+  }),
+  process: getGeneratedSectionCopy('process', {
+    eyebrow: 'איך זה עובד',
+    title: 'ארבעה צעדים קצרים מהרעיון ועד אוכל שמוכן להגשה.',
+  }),
+  story: getGeneratedSectionCopy('story', {
+    eyebrow: 'הסיפור של המותג',
+    title: 'Nis נולדה מתוך אהבה לאירוח יפה, אוכל ביתי מדויק ותשומת לב לפרטים הקטנים.',
+    text:
+      'מאחורי Nis עומדת יהודית ניסטנפובר, עם אהבה עמוקה לאירוח, לאוכל מוקפד ולרגעים הקטנים שהופכים ארוחה לחוויה.',
+    extraText:
+      'אחרי שנים של חיים ברובע היהודי, בין סמטאות אבן, בתים מלאי ריח של שבת ושולחנות שנפתחים לאנשים שאוהבים, יהודית מביאה למטבח של Nis חיבור בין ביתיות, אסתטיקה ושירות אישי.|כל הזמנה נבנית מתוך תשומת לב לפרטים הקטנים: חומרי גלם טריים, טעמים מדויקים, אריזה אסתטית ותחושה שמישהו חשב עליכם באמת.',
+  }),
+  samples: getGeneratedSectionCopy('samples', {
+    eyebrow: 'כיוונים שאפשר להתחיל מהם',
+    title: 'כיוונים טעימים שקל להתחיל מהם שיחה.',
+    text:
+      'אפשר להתחיל מכיוון כללי ולהתאים אותו לשבת, לאירוח קטן או למארז לדרך. בשיחה קצרה מדייקים יחד כמויות, תאריך וסגנון הגשה.',
+  }),
+  coordination: getGeneratedSectionCopy('coordination', {
+    eyebrow: 'תיאום וזמינות',
+    title: 'הפרטים שעוזרים להתקדם בביטחון.',
+  }),
+  realMedia: getGeneratedSectionCopy('real-media', {
+    eyebrow: 'וידאו אמיתי',
+    title: 'ככה נראית תשומת לב לפני שהאירוח בכלל פוגש את האורחים.',
+    text:
+      'מנות אישיות, אריזה נקייה, מדבקת Nis ופרטים קטנים שמסדרים את החוויה עוד לפני הביס הראשון. התמונות והווידאו כאן הם מהכנות אמיתיות של Nis.',
+  }),
+  gallery: getGeneratedSectionCopy('gallery', {
+    eyebrow: 'גלריה',
+    title: 'קודם רואים. אחר כך הרבה יותר קל לפנות.',
+    text:
+      'שולחנות, מגשים, סלטים, קפה ופרטים קטנים שמראים את הסגנון לפני שמתחילים לדבר על תפריט.',
+  }),
+  details: getGeneratedSectionCopy('details', {
+    eyebrow: 'פרטים שחשוב לדעת',
+    title: 'שומרים על ציפיות ברורות כבר מהשיחה הראשונה.',
+  }),
+  bookingBasics: getGeneratedSectionCopy('booking-basics', {
+    eyebrow: 'לפני שפונים',
+    title: 'כל מה שצריך לדעת כדי לשלוח פנייה בלי להתלבט.',
+    text:
+      'מספיק לדעת מה סוג האירוח, בערך כמה סועדים ומה התאריך הרצוי. משם אפשר לדייק יחד את התפריט, ההגשה ואופן הקבלה.',
+  }),
+  seo: getGeneratedSectionCopy('seo', {
+    eyebrow: 'מה אפשר להזמין',
+    title: 'קייטרינג בוטיק מביתר עילית לשבת, אירוח קטן ומארזים לדרך.',
+    text:
+      'Nis נותנת מענה למי שמחפש קייטרינג בוטיק בביתר עילית והסביבה: תפריט שבת מוכן, מגשי אירוח לאירועים קטנים, פינגר פוד, בראנץ׳ משפחתי ומארזי פיקניק או דרך. כל פנייה מתחילה בשיחה קצרה כדי להבין את סוג האירוח, כמות הסועדים, התאריך והתחושה שרוצים ליצור.',
+  }),
+  trust: getGeneratedSectionCopy('trust', {
+    eyebrow: 'מה מרגיע לפני שסוגרים',
+    title: 'פחות סימני שאלה, יותר תחושה שיש עם מי לדבר.',
+  }),
+  faq: getGeneratedSectionCopy('faq', {
+    eyebrow: 'שאלות נפוצות',
+    title: 'התשובות שמקלות על הפנייה הראשונה.',
+  }),
+  contact: getGeneratedSectionCopy('contact', {
+    eyebrow: 'יצירת קשר',
+    title: 'אהבתם את הסגנון? שלחו פנייה מסודרת לוואטסאפ.',
+    text:
+      'הטופס נשאר קצר ומעשי: סוג הזמנה, תאריך, כמות והערה. אחרי השליחה נפתחת הודעת וואטסאפ מוכנה, כדי שיהיה קל להמשיך לשיחה אישית.',
+    extraText: 'שיחה קצרה, התאמה אישית, ואז סיכום ברור של תאריך, כמות וסגנון אירוח.',
+  }),
 } as const;
 
 export const heroStats: readonly Readonly<{ value: string; label: string }>[] = [
