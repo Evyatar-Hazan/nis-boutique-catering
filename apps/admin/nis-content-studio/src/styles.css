@@ -875,6 +875,59 @@ input[type="checkbox"] {
   font-size: 14px;
 }
 
+.usage-empty {
+  color: #71685c;
+}
+
+.usage-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.usage-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 4px 8px;
+  border: 1px solid #d8ccba;
+  border-radius: 999px;
+  color: #5f574d;
+  background: #fffaf0;
+  font-weight: 800;
+}
+
+.usage-chip.is-active {
+  border-color: #9c7d42;
+  color: #4b3614;
+  background: #f4ddab;
+}
+
+.media-risk-notice {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 8px;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid #e0b35f;
+  border-radius: 8px;
+  color: #5d3b09;
+  background: #fff3d3;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.media-risk-notice svg {
+  width: 18px;
+  height: 18px;
+}
+
+.media-quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .asset-path {
   grid-template-columns: auto minmax(0, 1fr);
   align-items: center;

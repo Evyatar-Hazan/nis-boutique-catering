@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState, type ChangeEvent, type CSSPr
 import {
   ArrowDown,
   ArrowUp,
+  AlertTriangle,
   CheckCircle2,
   Cloud,
   Copy,
@@ -81,6 +82,13 @@ type ActiveView =
 type AuthState = 'signed-out' | 'loading' | 'authorized' | 'denied';
 type PublishState = 'clean' | 'draft' | 'saving' | 'publishing' | 'published' | 'error';
 type PreviewDevice = 'desktop' | 'mobile';
+type MediaUsageKind = 'gallery' | 'service';
+
+type MediaUsageEntry = {
+  readonly kind: MediaUsageKind;
+  readonly title: string;
+  readonly active: boolean;
+};
 
 type Session = {
   readonly accessToken: string;
@@ -771,7 +779,19 @@ export const App = () => {
   const restoreService = (id: string) => updateService(id, { deletedAt: undefined });
   const archiveSection = (id: string) => updateSection(id, { active: false, deletedAt: archiveDate() });
   const restoreSection = (id: string) => updateSection(id, { deletedAt: undefined });
-  const archiveMedia = (id: string) => updateMedia(id, { deletedAt: archiveDate() });
+  const archiveMedia = (id: string) => {
+    const usages = getMediaUsage(id, content);
+    const activeUsages = usages.filter((usage) => usage.active);
+    if (activeUsages.length > 0) {
+      const ok = window.confirm(`התמונה הזאת עדיין מוצגת באתר ב-${activeUsages.length} מקום/ות:\n${formatMediaUsage(activeUsages)}\n\nלהעביר אותה לארכיון בכל זאת?`);
+      if (!ok) {
+        setStatus('הארכוב בוטל. קודם החליפו את התמונה באזורים שבהם היא בשימוש.');
+        return;
+      }
+    }
+
+    updateMedia(id, { deletedAt: archiveDate() });
+  };
   const restoreMedia = (id: string) => updateMedia(id, { deletedAt: undefined });
 
   const moveGalleryItem = (id: string, direction: -1 | 1) => {
@@ -804,23 +824,17 @@ export const App = () => {
     setStatus('נתיבי המדיה נוקו לכתובות CMS. לחצו "עדכן אתר" כדי לפרסם את הניקוי.');
   };
 
-  const addGalleryItem = () => {
+  const addGalleryItem = (mediaId?: string) => {
     updateContent((current) => ({
       ...current,
       gallery: [
         ...current.gallery,
-        {
-          id: `gallery-${current.gallery.length + 1}`,
-          title: 'תמונה חדשה',
-          alt: 'תיאור נגיש לתמונה חדשה',
-          category: 'trays',
-          order: current.gallery.length + 1,
-          active: false,
-          tall: false,
-          mediaId: current.media[0]?.id ?? '',
-        },
+        makeGalleryItem(current, mediaId),
       ],
     }));
+    if (mediaId) {
+      setStatus('נוצר פריט גלריה חדש מהתמונה. בדקו שם, תיאור וקטגוריה לפני פרסום.');
+    }
   };
 
   const duplicateGalleryItem = (item: GalleryItemRecord) => {
@@ -1220,7 +1234,7 @@ export const App = () => {
                     <Wand2 aria-hidden="true" />
                     ניקוי מדיה
                   </button>
-                  <button className="compact-button" onClick={addGalleryItem}>
+                  <button className="compact-button" onClick={() => addGalleryItem()}>
                     <ImagePlus aria-hidden="true" />
                     הוספת תמונה לגלריה
                   </button>
@@ -1320,9 +1334,13 @@ export const App = () => {
                   </div>
                   <div className="usage-list">
                     <strong>איפה זה משפיע באתר</strong>
-                    <span>{mediaUsage(media.id, content) || 'עדיין לא מחובר לשום אזור באתר'}</span>
+                    <MediaUsageList mediaId={media.id} content={content} />
                   </div>
-                  <button className="ghost-button" onClick={() => handlePickDriveFile(media.id)} disabled={!canUseGoogle}>החלף מקור מדרייב</button>
+                  <MediaRiskNotice mediaId={media.id} content={content} />
+                  <div className="media-quick-actions">
+                    <button className="ghost-button" onClick={() => addGalleryItem(media.id)} disabled={Boolean(media.deletedAt)}>הוסף לגלריה</button>
+                    <button className="ghost-button" onClick={() => handlePickDriveFile(media.id)} disabled={!canUseGoogle}>החלף מקור מדרייב</button>
+                  </div>
                   <details className="technical-details">
                     <summary>פרטים מתקדמים</summary>
                     <Field label="שם תמונה בסטודיו" help="שם קצר באנגלית שמזהה את התמונה במערכת.">
@@ -1606,8 +1624,9 @@ export const App = () => {
                   </Field>
                   <div className="usage-list">
                     <strong>איפה זה משפיע באתר</strong>
-                    <span>{mediaUsage(media.id, content) || 'עדיין לא מחובר לשום אזור באתר'}</span>
+                    <MediaUsageList mediaId={media.id} content={content} />
                   </div>
+                  <MediaRiskNotice mediaId={media.id} content={content} />
                   <div className="inline-grid">
                     <Field label="רוחב" help="נלקח מהתמונה המקורית בדרייב.">
                       <NumberInput value={media.width} onChange={(value) => updateMedia(media.id, { width: value })} />
@@ -1623,7 +1642,10 @@ export const App = () => {
                     <Cloud aria-hidden="true" />
                     <span>באתר אחרי פרסום: {media.driveFileId ? cmsSrcFor(media.id) : media.src}</span>
                   </div>
-                  <button className="ghost-button" onClick={() => handlePickDriveFile(media.id)} disabled={!canUseGoogle}>בחירה מ-Drive</button>
+                  <div className="media-quick-actions">
+                    <button className="ghost-button" onClick={() => addGalleryItem(media.id)} disabled={Boolean(media.deletedAt)}>הוסף לגלריה</button>
+                    <button className="ghost-button" onClick={() => handlePickDriveFile(media.id)} disabled={!canUseGoogle}>בחירה מ-Drive</button>
+                  </div>
                   <details className="technical-details">
                     <summary>מקור טכני</summary>
                     <TextInput value={media.src} onChange={(value) => updateMedia(media.id, { src: value })} />
@@ -2551,6 +2573,40 @@ const Metric = ({ label, value }: { readonly label: string; readonly value: stri
   </article>
 );
 
+const MediaUsageList = ({ mediaId, content }: { readonly mediaId: string; readonly content: ContentSnapshot }) => {
+  const usages = getMediaUsage(mediaId, content);
+
+  if (usages.length === 0) {
+    return <span className="usage-empty">עדיין לא מחובר לשום אזור באתר</span>;
+  }
+
+  return (
+    <div className="usage-chips" aria-label="מפת שימושים לתמונה">
+      {usages.map((usage) => (
+        <span className={usage.active ? 'usage-chip is-active' : 'usage-chip'} key={`${usage.kind}-${usage.title}`}>
+          {usage.kind === 'gallery' ? 'גלריה' : 'שירות'}: {usage.title}
+          {!usage.active ? ' (כבוי)' : ''}
+        </span>
+      ))}
+    </div>
+  );
+};
+
+const MediaRiskNotice = ({ mediaId, content }: { readonly mediaId: string; readonly content: ContentSnapshot }) => {
+  const activeUsages = getMediaUsage(mediaId, content).filter((usage) => usage.active);
+
+  if (activeUsages.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="media-risk-notice" role="note">
+      <AlertTriangle aria-hidden="true" />
+      <span>לפני ארכוב או החלפה: התמונה מוצגת עכשיו באתר. שינוי ישפיע על {activeUsages.length} מקום/ות.</span>
+    </div>
+  );
+};
+
 const TextInput = ({ value, onChange, placeholder }: { readonly value: string; readonly onChange: (value: string) => void; readonly placeholder?: string }) => (
   <input value={value} onChange={(event) => onChange(event.target.value)} placeholder={placeholder} />
 );
@@ -2569,12 +2625,34 @@ const validationErrorText = (
   return referenceIssues[0] ?? 'יש שדות שצריך לתקן.';
 };
 
-const mediaUsage = (mediaId: string, content: ContentSnapshot) => {
-  const usage = [
-    ...content.gallery.filter((item) => item.mediaId === mediaId && !item.deletedAt).map((item) => `גלריה: ${item.title}`),
-    ...content.services.filter((service) => service.mediaId === mediaId && !service.deletedAt).map((service) => `שירות: ${service.title}`),
-  ];
-  return usage.join(' | ');
+const getMediaUsage = (mediaId: string, content: ContentSnapshot): readonly MediaUsageEntry[] => {
+  const galleryUsage = content.gallery
+    .filter((item) => item.mediaId === mediaId && !item.deletedAt)
+    .map((item): MediaUsageEntry => ({ kind: 'gallery', title: item.title, active: item.active }));
+  const serviceUsage = content.services
+    .filter((service) => service.mediaId === mediaId && !service.deletedAt)
+    .map((service): MediaUsageEntry => ({ kind: 'service', title: service.title, active: service.active }));
+  return [...galleryUsage, ...serviceUsage];
+};
+
+const formatMediaUsage = (usages: readonly MediaUsageEntry[]) => usages
+  .map((usage) => `- ${usage.kind === 'gallery' ? 'גלריה' : 'שירות'}: ${usage.title}`)
+  .join('\n');
+
+const makeGalleryItem = (content: ContentSnapshot, mediaId?: string): GalleryItemRecord => {
+  const media = mediaId ? content.media.find((item) => item.id === mediaId) : undefined;
+  const title = media ? mediaLabel(media, content) : 'תמונה חדשה';
+
+  return {
+    id: `gallery-${content.gallery.length + 1}`,
+    title,
+    alt: media ? `תיאור נגיש עבור ${title}` : 'תיאור נגיש לתמונה חדשה',
+    category: 'trays',
+    order: content.gallery.length + 1,
+    active: Boolean(media),
+    tall: false,
+    mediaId: media?.id ?? content.media.find((item) => !item.deletedAt)?.id ?? '',
+  };
 };
 
 const mediaLabel = (media: ImageAssetRecord, content: ContentSnapshot) => {
@@ -2590,7 +2668,7 @@ const mediaStatus = (media: ImageAssetRecord, content: ContentSnapshot) => {
   if (!media.driveFileId) {
     return 'חסר מקור בדרייב';
   }
-  if (!mediaUsage(media.id, content)) {
+  if (getMediaUsage(media.id, content).length === 0) {
     return 'לא בשימוש באתר';
   }
   if (media.src.startsWith('/media/cms/')) {
