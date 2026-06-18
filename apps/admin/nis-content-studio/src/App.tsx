@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useMemo, useState, type ChangeEvent, type CSSProperties, type ReactNode } from 'react';
 import {
   ArrowDown,
+  ArrowLeft,
   ArrowUp,
   AlertTriangle,
+  ChefHat,
   CheckCircle2,
   Cloud,
   Copy,
@@ -21,6 +23,7 @@ import {
   PanelRightOpen,
   Phone,
   Plus,
+  Package,
   RefreshCw,
   RotateCcw,
   Rocket,
@@ -32,6 +35,7 @@ import {
   Tag,
   Trash2,
   Upload,
+  Utensils,
   Users,
   Wand2,
 } from 'lucide-react';
@@ -2037,29 +2041,43 @@ const ServicesPreview = ({
   const services = [...content.services]
     .filter((service) => service.active && !service.deletedAt)
     .sort((left, right) => left.order - right.order);
+  const servicesCopy = content.sections.find((section) => section.id === 'copy-services' && section.active && !section.deletedAt);
+  const eyebrow = servicesCopy?.items[0] ?? 'מה אפשר להזמין';
+  const title = servicesCopy?.title ?? 'שלוש אפשרויות ברורות. בוחרים כיוון וממשיכים לפנייה.';
+  const text = servicesCopy?.text ?? 'שבת, אירוח קטן או דרך: שלושת השירותים מקבלים משקל שווה, וכל אחד מהם נבנה לפי כמות, תאריך והתחושה שרוצים ליצור.';
 
   return (
     <div className={device === 'mobile' ? 'preview-frame is-mobile' : 'preview-frame is-desktop'}>
       <PreviewBrowserBar device={device} />
       <div className="site-section-preview site-section-preview-frame services-section-preview">
-        <p className="kicker">מה מזמינים אצלנו</p>
-        <h3>שלוש קטגוריות ברורות. שפה אחת של אירוח.</h3>
-        <p>כך כרטיסי השירות יופיעו ללקוח אחרי פרסום.</p>
+        <p className="kicker">{eyebrow}</p>
+        <h3>{title}</h3>
+        {text && <p>{text}</p>}
         <div className="preview-services">
-          {services.map((service) => (
-            <article key={service.id}>
-              <DrivePreviewImage media={mediaById.get(service.mediaId)} accessToken={accessToken} />
-              <span className="preview-service-subtitle">{service.subtitle}</span>
-              <h3>{service.title}</h3>
-              <p>{service.description}</p>
-              {service.details.length > 0 && (
-                <ul>
-                  {service.details.slice(0, 3).map((detail) => <li key={detail}>{detail}</li>)}
-                </ul>
-              )}
-              <span className="preview-chip">{service.cta}</span>
-            </article>
-          ))}
+          {services.map((service) => {
+            const icon = getServicePreviewIcon(service.icon);
+            return (
+              <article key={service.id}>
+                <DrivePreviewImage media={mediaById.get(service.mediaId)} accessToken={accessToken} />
+                <div className="preview-service-body">
+                  {icon}
+                  <h3>{service.title}</h3>
+                  <p className="preview-service-subtitle">{service.subtitle}</p>
+                  <p>{service.description}</p>
+                  {service.promise && <strong className="preview-service-promise">{service.promise}</strong>}
+                  {service.details.length > 0 && (
+                    <ul>
+                      {service.details.slice(0, 4).map((detail) => <li key={detail}>{detail}</li>)}
+                    </ul>
+                  )}
+                  <span className="preview-text-link">
+                    {service.cta}
+                    <ArrowLeft aria-hidden="true" />
+                  </span>
+                </div>
+              </article>
+            );
+          })}
           {services.length === 0 && (
             <div className="empty-state">
               <Sparkles aria-hidden="true" />
@@ -2071,6 +2089,19 @@ const ServicesPreview = ({
       </div>
     </div>
   );
+};
+
+const getServicePreviewIcon = (icon: string) => {
+  if (icon === 'ChefHat') {
+    return <ChefHat aria-hidden="true" className="preview-card-icon" />;
+  }
+  if (icon === 'Utensils') {
+    return <Utensils aria-hidden="true" className="preview-card-icon" />;
+  }
+  if (icon === 'Package') {
+    return <Package aria-hidden="true" className="preview-card-icon" />;
+  }
+  return <Sparkles aria-hidden="true" className="preview-card-icon" />;
 };
 
 const GallerySitePreview = ({
