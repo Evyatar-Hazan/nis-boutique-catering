@@ -873,6 +873,7 @@ input[type="checkbox"] {
 }
 
 .usage-list,
+.media-selection-usage,
 .asset-path {
   display: grid;
   gap: 4px;
@@ -881,6 +882,18 @@ input[type="checkbox"] {
   color: #5f574d;
   background: #f1eadb;
   font-size: 14px;
+}
+
+.media-selection-usage {
+  grid-column: 1 / -1;
+  gap: 8px;
+  border: 1px solid transparent;
+}
+
+.media-selection-usage.has-risk {
+  border-color: #e0b35f;
+  color: #5d3b09;
+  background: #fff3d3;
 }
 
 .usage-empty {
@@ -928,6 +941,18 @@ input[type="checkbox"] {
 .media-risk-notice svg {
   width: 18px;
   height: 18px;
+}
+
+.selection-risk-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 800;
+}
+
+.selection-risk-text svg {
+  width: 16px;
+  height: 16px;
 }
 
 .media-quick-actions {

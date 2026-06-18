@@ -87,6 +87,7 @@ type PublishStepState = 'done' | 'active' | 'pending' | 'blocked' | 'error';
 
 type MediaUsageEntry = {
   readonly kind: MediaUsageKind;
+  readonly id: string;
   readonly title: string;
   readonly active: boolean;
 };
@@ -1237,6 +1238,11 @@ export const App = () => {
                         {visibleMedia.map((media) => <option key={media.id} value={media.id}>{mediaLabel(media, content)}</option>)}
                       </select>
                     </Field>
+                    <MediaSelectionUsageNotice
+                      mediaId={service.mediaId}
+                      content={content}
+                      currentUsage={{ kind: 'service', id: service.id }}
+                    />
                     <Field label="טקסט כפתור" help="כפתור הפעולה בכרטיס.">
                       <TextInput value={service.cta} onChange={(value) => updateService(service.id, { cta: value })} />
                     </Field>
@@ -1336,6 +1342,11 @@ export const App = () => {
                         </select>
                       </Field>
                     </div>
+                    <MediaSelectionUsageNotice
+                      mediaId={item.mediaId}
+                      content={content}
+                      currentUsage={{ kind: 'gallery', id: item.id }}
+                    />
                     <div className="toggle-row">
                       <Toggle checked={item.active} label="מוצג באתר" onChange={(checked) => updateGallery(item.id, { active: checked })} />
                       <Toggle checked={item.tall} label="תמונה גבוהה" onChange={(checked) => updateGallery(item.id, { tall: checked })} />
@@ -2658,6 +2669,43 @@ const MediaUsageList = ({ mediaId, content }: { readonly mediaId: string; readon
   );
 };
 
+const MediaSelectionUsageNotice = ({
+  mediaId,
+  content,
+  currentUsage,
+}: {
+  readonly mediaId: string;
+  readonly content: ContentSnapshot;
+  readonly currentUsage: Pick<MediaUsageEntry, 'kind' | 'id'>;
+}) => {
+  const otherUsages = getMediaUsage(mediaId, content).filter((usage) => usage.kind !== currentUsage.kind || usage.id !== currentUsage.id);
+  const activeOtherUsages = otherUsages.filter((usage) => usage.active);
+
+  return (
+    <div className={activeOtherUsages.length > 0 ? 'media-selection-usage has-risk' : 'media-selection-usage'}>
+      <strong>התמונה הזאת מחוברת גם ל...</strong>
+      {otherUsages.length > 0 ? (
+        <div className="usage-chips" aria-label="שימושים נוספים לתמונה">
+          {otherUsages.map((usage) => (
+            <span className={usage.active ? 'usage-chip is-active' : 'usage-chip'} key={`${usage.kind}-${usage.id}`}>
+              {usage.kind === 'gallery' ? 'גלריה' : 'שירות'}: {usage.title}
+              {!usage.active ? ' (כבוי)' : ''}
+            </span>
+          ))}
+        </div>
+      ) : (
+        <span className="usage-empty">אין שימוש נוסף לתמונה הזאת כרגע.</span>
+      )}
+      {activeOtherUsages.length > 0 && (
+        <span className="selection-risk-text">
+          <AlertTriangle aria-hidden="true" />
+          החלפה או שינוי מקור ישפיעו גם על המקומות הפעילים שמסומנים כאן.
+        </span>
+      )}
+    </div>
+  );
+};
+
 const MediaRiskNotice = ({ mediaId, content }: { readonly mediaId: string; readonly content: ContentSnapshot }) => {
   const activeUsages = getMediaUsage(mediaId, content).filter((usage) => usage.active);
 
@@ -2785,10 +2833,10 @@ const waitForLiveSiteVersion = async (version: string, onProgress: (message: str
 const getMediaUsage = (mediaId: string, content: ContentSnapshot): readonly MediaUsageEntry[] => {
   const galleryUsage = content.gallery
     .filter((item) => item.mediaId === mediaId && !item.deletedAt)
-    .map((item): MediaUsageEntry => ({ kind: 'gallery', title: item.title, active: item.active }));
+    .map((item): MediaUsageEntry => ({ kind: 'gallery', id: item.id, title: item.title, active: item.active }));
   const serviceUsage = content.services
     .filter((service) => service.mediaId === mediaId && !service.deletedAt)
-    .map((service): MediaUsageEntry => ({ kind: 'service', title: service.title, active: service.active }));
+    .map((service): MediaUsageEntry => ({ kind: 'service', id: service.id, title: service.title, active: service.active }));
   return [...galleryUsage, ...serviceUsage];
 };
 
