@@ -10,6 +10,7 @@ import {
   Copy,
   Eye,
   FileText,
+  HeartHandshake,
   HelpCircle,
   Home,
   ImagePlus,
@@ -2508,17 +2509,45 @@ const SectionPreviewBody = ({
     );
   }
 
-  const isTrust = group === 'trust';
+  if (group === 'trust') {
+    return (
+      <div className="preview-trust-site">
+        <div className="preview-trust-heading">
+          <p className="kicker">{copy.eyebrow}</p>
+          <h3>{copy.title}</h3>
+          {copy.text && <p>{copy.text}</p>}
+          <div className="preview-trust-summary" aria-label="סיכום אמון">
+            <span>{sections.length} כרטיסי אמון פעילים</span>
+            <span>מופיע לפני שאלות ויצירת קשר</span>
+          </div>
+        </div>
+        <div className="preview-trust-grid">
+          {sections.map((section, index) => (
+            <article key={section.id}>
+              {index % 2 === 0 ? <ShieldCheck aria-hidden="true" /> : <HeartHandshake aria-hidden="true" />}
+              <h3>{section.title}</h3>
+              <p>{section.text}</p>
+              {section.items.length > 0 && (
+                <div className="preview-mini-tags">
+                  {section.items.slice(0, 3).map((item) => <span key={item}>{item}</span>)}
+                </div>
+              )}
+            </article>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
       <p className="kicker">{copy.eyebrow}</p>
       <h3>{copy.title}</h3>
       <p>{copy.text}</p>
-      <div className={isTrust ? 'preview-trust-grid' : 'preview-content-grid'}>
+      <div className="preview-content-grid">
         {sections.map((section) => (
           <article key={section.id}>
-            {isTrust ? <ShieldCheck aria-hidden="true" /> : <Sparkles aria-hidden="true" />}
+            <Sparkles aria-hidden="true" />
             <h3>{section.title}</h3>
             <p>{section.text}</p>
             {section.items.length > 0 && (
