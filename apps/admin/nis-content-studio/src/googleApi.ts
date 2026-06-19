@@ -98,6 +98,11 @@ const rowsToObjects = (rows: string[][]) => {
     ) as Record<string, string>[];
 };
 
+const numberOrFallback = (value: string | undefined, fallback: number) => {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+};
+
 export const readContentFromSheets = async (accessToken: string): Promise<ContentSnapshot> => {
   const [settingsRows, mediaRows, galleryRows, servicesRows, sectionsRows] = await Promise.all([
     fetchSheetValues(accessToken, 'site_settings!A:B'),
@@ -143,7 +148,7 @@ export const readContentFromSheets = async (accessToken: string): Promise<Conten
     mediaId: row.mediaId,
     icon: row.icon,
     active: parseBoolean(row.active, true),
-    order: Number(row.order || index + 1),
+    order: numberOrFallback(row.order || undefined, index + 1),
     deletedAt: row.deletedAt || undefined,
   }));
   const sections = rowsToObjects(sectionsRows).map((row, index) => ({
@@ -153,7 +158,7 @@ export const readContentFromSheets = async (accessToken: string): Promise<Conten
     text: row.text || undefined,
     items: row.items.split('|').map((item) => item.trim()).filter(Boolean),
     active: parseBoolean(row.active, true),
-    order: Number(row.order || index + 1),
+    order: numberOrFallback(row.order || undefined, index + 1),
     deletedAt: row.deletedAt || undefined,
   }));
 
