@@ -13,6 +13,7 @@ import {
   galleryCategories,
   heroBadges,
   heroContent,
+  heroMedia,
   heroSceneNotes,
   heroStats,
   manifestoMoments,
@@ -84,7 +85,7 @@ export const HeroSection = ({ heroWhatsapp }: { readonly heroWhatsapp: string })
     id="top"
     className="hero"
     aria-labelledby="hero-title"
-    style={{ '--hero-media-image': `url('${foodMedia.hostingTableOverview.src}')` } as CSSProperties}
+    style={{ '--hero-media-image': `url('${heroMedia.background.src}')` } as CSSProperties}
   >
     <div className="hero-media" aria-hidden="true" />
     <video
@@ -95,7 +96,7 @@ export const HeroSection = ({ heroWhatsapp }: { readonly heroWhatsapp: string })
       muted
       playsInline
       preload="none"
-      poster={foodMedia.hostingTableOverview.src}
+      poster={heroMedia.background.src}
     >
       <source src={videoMedia.eventVideo} type="video/mp4" />
     </video>
@@ -165,7 +166,7 @@ export const HeroSection = ({ heroWhatsapp }: { readonly heroWhatsapp: string })
         <div className="hero-stage-frame">
           <OptimizedImage
             className="hero-plate primary-plate"
-            image={foodMedia.salmonSkewersLemon}
+            image={heroMedia.primary}
             alt="שיפודי סלמון עם לימון"
             loading="eager"
             fetchPriority="high"
@@ -178,13 +179,13 @@ export const HeroSection = ({ heroWhatsapp }: { readonly heroWhatsapp: string })
         </div>
         <OptimizedImage
           className="hero-plate side-plate"
-          image={foodMedia.dipsTrayClose}
+          image={heroMedia.side}
           alt="מגש מטבלים צבעוני"
           decoding="async"
         />
         <OptimizedImage
           className="hero-plate tall-plate"
-          image={foodMedia.tableSettingBlueGold}
+          image={heroMedia.tall}
           alt="שולחן ערוך לאירוח"
           decoding="async"
         />

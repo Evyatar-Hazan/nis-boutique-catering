@@ -91,7 +91,7 @@ type ActiveView =
 type AuthState = 'signed-out' | 'loading' | 'authorized' | 'denied';
 type PublishState = 'clean' | 'draft' | 'saving' | 'publishing' | 'checking' | 'published' | 'live' | 'error';
 type PreviewDevice = 'desktop' | 'mobile';
-type MediaUsageKind = 'gallery' | 'service';
+type MediaUsageKind = 'gallery' | 'service' | 'hero';
 type PublishStepState = 'done' | 'active' | 'pending' | 'blocked' | 'error';
 type GalleryPreviewCategory = GalleryItemRecord['category'] | 'all';
 
@@ -159,10 +159,12 @@ const rememberedSessionKey = 'nis-content-studio-session-v1';
 const tokenRefreshWindowMs = 60_000;
 const liveVersionPollDelayMs = 15_000;
 const liveVersionPollAttempts = 12;
-const heroBackgroundImage = '/media/food/events/quiche-tart-clean.webp';
-const heroPrimaryImage = '/media/food/events/salmon-skewers-lemon.webp';
-const heroSideImage = '/media/food/events/dips-tray-close.webp';
-const heroTallImage = '/media/food/events/table-setting-blue-gold.webp';
+const heroMediaSlots = [
+  { key: 'background', label: 'רקע מסך פתיחה', help: 'התמונה הרחבה שמופיעה מאחורי כל מסך הפתיחה.', fallbackMediaId: 'hosting-table-overview' },
+  { key: 'primary', label: 'תמונה ראשית', help: 'התמונה הגדולה באזור התצוגה/האירוח.', fallbackMediaId: 'salmon-skewers-lemon' },
+  { key: 'side', label: 'תמונה צדדית', help: 'תמונה קטנה שמוסיפה עומק לתצוגת האירוח.', fallbackMediaId: 'dips-tray-close' },
+  { key: 'tall', label: 'תמונה גבוהה', help: 'תמונה אנכית נוספת באזור התצוגה.', fallbackMediaId: 'table-setting-blue-gold' },
+] as const;
 
 const isSessionShape = (value: unknown): value is Session => {
   if (!value || typeof value !== 'object') {
@@ -249,6 +251,7 @@ const sectionGroupLabels: Readonly<Record<string, string>> = {
   trust: 'אמון',
   'hero-notes': 'נקודות Hero',
   'hero-marquee': 'טקסט רץ Hero',
+  'hero-media': 'תמונות Hero',
   general: 'כללי',
 };
 
@@ -400,6 +403,7 @@ export const managedSectionDefaults: readonly SectionBlockRecord[] = [
   makeSection('hero-stat-shabbat', 'hero-stats', 'שבתות', 'אוכל ביתי מוקפד, מוכן להגשה', [], 1),
   makeSection('hero-stat-events', 'hero-stats', 'אירוח קטן', 'מגשים ושולחנות שנראים כמו בוטיק', [], 2),
   makeSection('hero-stat-travel', 'hero-stats', 'Travel Nis', 'מארזים חכמים לדרך ולרגעים מיוחדים', [], 3),
+  makeSection('hero-media', 'hero-media', 'תמונות מסך פתיחה', 'התמונות שמרכיבות את הרקע והקומפוזיציה במסך הפתיחה.', heroMediaSlots.map((slot) => slot.fallbackMediaId), 1),
   makeSection('hero-note-ready', 'hero-notes', 'אירוח מוכן להגשה', 'כל מגש מגיע מסודר כך שהשולחן נראה נכון כבר מהרגע הראשון.', [], 1),
   makeSection('hero-note-custom', 'hero-notes', 'שיחה קצרה, התאמה אישית', 'מספר סועדים, סוג האירוח והאווירה שאתם רוצים יוצרים יחד את הכיוון.', [], 2),
   makeSection('hero-marquee', 'hero-marquee', 'טקסט רץ במסך הפתיחה', undefined, ['שולחן שנפתח יפה', 'אוכל ביתי מוקפד', 'מגשי אירוח אלגנטיים', 'Travel Nis', 'ביתר עילית', 'אריזה שנראית כמו מותג'], 1),
@@ -427,6 +431,16 @@ const splitPipeList = (value: string) => value.split('|').map((item) => item.tri
 const joinPipeList = (items: readonly string[]) => items.join(' | ');
 const cmsSrcFor = (id: string) => `/media/cms/${id}.webp`;
 const publicAssetSrcFor = (src: string) => (src.startsWith('http') ? src : `${publicSiteOrigin}${src}`);
+const patchSectionItem = (section: SectionBlockRecord, index: number, value: string, fallback: string): Partial<SectionBlockRecord> => {
+  const items = [...section.items];
+  items[index] = value || fallback;
+  return { items };
+};
+const heroMediaIdAt = (heroMedia: SectionBlockRecord | undefined, index: number) => heroMedia?.items[index] ?? heroMediaSlots[index]?.fallbackMediaId ?? '';
+const patchHeroMediaId = (heroMedia: SectionBlockRecord, index: number, mediaId: string): Partial<SectionBlockRecord> => {
+  const items = heroMediaSlots.map((slot, slotIndex) => (slotIndex === index ? mediaId : heroMedia.items[slotIndex] ?? slot.fallbackMediaId));
+  return { items };
+};
 
 const normalizeMediaId = (value: string) =>
   value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'media-new';
@@ -881,6 +895,7 @@ export const App = () => {
       media: current.media.map((media) => (media.id === id ? { ...media, id: cleanId, src: media.driveFileId ? cmsSrcFor(cleanId) : media.src } : media)),
       gallery: current.gallery.map((item) => (item.mediaId === id ? { ...item, mediaId: cleanId } : item)),
       services: current.services.map((service) => (service.mediaId === id ? { ...service, mediaId: cleanId } : service)),
+      sections: current.sections.map((section) => (section.group === 'hero-media' ? { ...section, items: section.items.map((item) => (item === id ? cleanId : item)) } : section)),
     }));
   };
 
@@ -1984,9 +1999,11 @@ const HeroEditor = ({
 }) => {
   const hero = content.sections.find((section) => section.id === 'hero') ?? content.sections.find((section) => section.group === 'hero');
   const heroBadges = content.sections.find((section) => section.id === 'hero-badges');
+  const heroMedia = content.sections.find((section) => section.id === 'hero-media');
   const heroStats = content.sections
     .filter((section) => section.group === 'hero-stats')
     .sort((left, right) => left.order - right.order);
+  const visibleMedia = content.media.filter((media) => !media.deletedAt);
 
   if (!hero) {
     return (
@@ -2005,19 +2022,66 @@ const HeroEditor = ({
       <div className="editor-column">
         <PanelHeader title="מסך פתיחה" text="זה הדבר הראשון שרואים באתר. כתבו כותרת פשוטה וברורה." />
         <Toggle checked={hero.active && !hero.deletedAt} label="מסך הפתיחה פעיל" onChange={(checked) => updateSection(hero.id, { active: checked })} />
-        <Field label="כותרת גדולה" help="מופיעה במרכז המסך הראשון. אפשר לרדת שורה עם Enter.">
-          <textarea value={hero.title ?? ''} onChange={(event) => updateSection(hero.id, { title: event.target.value || undefined })} />
-        </Field>
-        <Field label="טקסט מתחת לכותרת" help="משפט שמסביר למה לפנות ומה מקבלים.">
-          <textarea value={hero.text ?? ''} onChange={(event) => updateSection(hero.id, { text: event.target.value || undefined })} />
-        </Field>
-        <Field label="שורות קטנות במסך הפתיחה" help="הפריט הראשון הוא טקסט מעל הכותרת. השני הוא משפט מודגש קצר. מפרידים עם |">
-          <TextInput value={joinPipeList(hero.items)} onChange={(value) => updateSection(hero.id, { items: splitPipeList(value) })} />
-        </Field>
-        {heroBadges && (
-          <Field label="תגיות אמון ב-Hero" help="התגיות הקטנות מתחת לכפתורים במסך הפתיחה. מפרידים עם |">
-            <TextInput value={joinPipeList(heroBadges.items)} onChange={(value) => updateSection(heroBadges.id, { items: splitPipeList(value) })} />
+        <div className="editor-group">
+          <div className="editor-group-heading">
+            <strong>טקסטים במסך הראשון</strong>
+            <span>כל שדה כאן מופיע במקום אחד ברור במסך הפתיחה.</span>
+          </div>
+          <Field label="טקסט קטן מעל הכותרת" help="מופיע מעל הכותרת הגדולה, ליד הקו הזהוב.">
+            <TextInput
+              value={hero.items[0] ?? ''}
+              onChange={(value) => updateSection(hero.id, patchSectionItem(hero, 0, value, 'מהרובע היהודי לביתר עילית'))}
+            />
           </Field>
+          <Field label="כותרת גדולה" help="מופיעה במרכז המסך הראשון. אפשר לרדת שורה עם Enter.">
+            <textarea value={hero.title ?? ''} onChange={(event) => updateSection(hero.id, { title: event.target.value || undefined })} />
+          </Field>
+          <Field label="משפט מודגש מתחת לכותרת" help="זה המשפט: שבתות, מגשי אירוח ו-Travel Nis...">
+            <textarea
+              value={hero.items[1] ?? ''}
+              onChange={(event) => updateSection(hero.id, patchSectionItem(hero, 1, event.target.value, 'שבתות, מגשי אירוח ו־Travel Nis, עם אוכל מוקפד, נראות יפה ושיחה קצרה שסוגרת כיוון.'))}
+            />
+          </Field>
+          <Field label="פסקת הסבר קצרה" help="הטקסט הקטן שמתחת למשפט המודגש.">
+            <textarea value={hero.text ?? ''} onChange={(event) => updateSection(hero.id, { text: event.target.value || undefined })} />
+          </Field>
+        </div>
+        {heroBadges && (
+          <div className="editor-group">
+            <div className="editor-group-heading">
+              <strong>תגיות וכפתורי אמון</strong>
+              <span>התגיות הקטנות שמופיעות מתחת לטקסטים במסך הפתיחה.</span>
+            </div>
+            <Field label="תגיות קצרות" help="מפרידים עם | לדוגמה: שבתות | מגשי אירוח | Travel Nis">
+              <TextInput value={joinPipeList(heroBadges.items)} onChange={(value) => updateSection(heroBadges.id, { items: splitPipeList(value) })} />
+            </Field>
+          </div>
+        )}
+        {heroMedia && (
+          <div className="editor-group hero-media-editor">
+            <div className="editor-group-heading">
+              <strong>תמונות מסך פתיחה</strong>
+              <span>בחרו איזו תמונה תשמש לרקע ולכל שכבת תמונה ב-Hero.</span>
+            </div>
+            {heroMediaSlots.map((slot, index) => {
+              const selectedMediaId = heroMediaIdAt(heroMedia, index);
+              return (
+                <Field key={slot.key} label={slot.label} help={slot.help}>
+                  <select value={selectedMediaId} onChange={(event) => updateSection(heroMedia.id, patchHeroMediaId(heroMedia, index, event.target.value))}>
+                    {visibleMedia.map((media) => <option key={media.id} value={media.id}>{mediaLabel(media, content)}</option>)}
+                  </select>
+                  <MediaQuickPicker
+                    label={`בחירה מהירה - ${slot.label}`}
+                    mediaItems={visibleMedia}
+                    selectedMediaId={selectedMediaId}
+                    content={content}
+                    onSelect={(mediaId) => updateSection(heroMedia.id, patchHeroMediaId(heroMedia, index, mediaId))}
+                  />
+                  <MediaSelectionUsageNotice mediaId={selectedMediaId} content={content} currentUsage={{ kind: 'hero', id: slot.key }} />
+                </Field>
+              );
+            })}
+          </div>
         )}
         {heroStats.length > 0 && (
           <div className="nested-editor-list">
@@ -2095,10 +2159,19 @@ const HeroSitePreview = ({
     .filter((section) => section.group === 'hero-notes' && section.active && !section.deletedAt)
     .sort((left, right) => left.order - right.order)
     .slice(0, 2);
-  const primaryServiceMedia = content.services[0] ? mediaById.get(content.services[0].mediaId) : undefined;
+  const heroMedia = content.sections.find((section) => section.id === 'hero-media');
+  const heroBadges = content.sections.find((section) => section.id === 'hero-badges');
+  const backgroundMedia = mediaById.get(heroMediaIdAt(heroMedia, 0));
+  const primaryMedia = mediaById.get(heroMediaIdAt(heroMedia, 1));
+  const sideMedia = mediaById.get(heroMediaIdAt(heroMedia, 2));
+  const tallMedia = mediaById.get(heroMediaIdAt(heroMedia, 3));
   const title = hero.title ?? 'קייטרינג בוטיק ביתי\nלשבתות ואירועים קטנים';
   const kicker = hero.items[1] ?? 'שבתות, מגשי אירוח ו־Travel Nis, עם אוכל מוקפד, נראות יפה ושיחה קצרה שסוגרת כיוון.';
   const text = hero.text ?? 'רואים את הסגנון, בוחרים את סוג ההזמנה, ומשאירים פנייה מסודרת. Nis כבר תהפוך את זה לתפריט, מגשים או מארז שמתאימים לאירוח שלכם.';
+  const backgroundSrc = backgroundMedia?.src ? publicAssetSrcFor(backgroundMedia.src) : publicAssetSrcFor('/media/food/events/quiche-tart-clean.webp');
+  const sideSrc = sideMedia?.src ? publicAssetSrcFor(sideMedia.src) : publicAssetSrcFor('/media/food/events/dips-tray-close.webp');
+  const tallSrc = tallMedia?.src ? publicAssetSrcFor(tallMedia.src) : publicAssetSrcFor('/media/food/events/table-setting-blue-gold.webp');
+  const badges = heroBadges?.items.length ? heroBadges.items : ['שבתות', 'מגשי אירוח', 'Travel Nis', 'מומלץ לפנות מוקדם'];
 
   return (
     <div className={device === 'mobile' ? 'preview-frame is-mobile' : 'preview-frame is-desktop'}>
@@ -2106,7 +2179,7 @@ const HeroSitePreview = ({
         <span>{device === 'mobile' ? '390px מובייל' : 'אתר במחשב'}</span>
         <strong>nisboutiquecatering.com</strong>
       </div>
-      <section className="hero-site-preview" style={{ '--hero-preview-bg': `url('${publicAssetSrcFor(heroBackgroundImage)}')` } as CSSProperties}>
+      <section className="hero-site-preview" style={{ '--hero-preview-bg': `url('${backgroundSrc}')` } as CSSProperties}>
         <div className="hero-preview-media" aria-hidden="true" />
         <div className="hero-preview-texture" aria-hidden="true" />
         <div className="hero-preview-layout">
@@ -2131,23 +2204,23 @@ const HeroSitePreview = ({
               </span>
             </div>
             <div className="hero-preview-badges" aria-label="נקודות Hero">
-              {['שבתות', 'מגשי אירוח', 'Travel Nis', 'מומלץ לפנות מוקדם'].map((badge) => <span key={badge}>{badge}</span>)}
+              {badges.map((badge) => <span key={badge}>{badge}</span>)}
             </div>
           </div>
           <div className="hero-preview-showcase" aria-label="תמונות Hero">
             <div className="hero-preview-stage">
-              {primaryServiceMedia?.driveFileId ? (
-                <DrivePreviewImage media={primaryServiceMedia} accessToken={accessToken} />
+              {primaryMedia?.driveFileId ? (
+                <DrivePreviewImage media={primaryMedia} accessToken={accessToken} />
               ) : (
-                <img className="hero-preview-plate primary-plate" src={publicAssetSrcFor(heroPrimaryImage)} alt="" />
+                <img className="hero-preview-plate primary-plate" src={primaryMedia?.src ? publicAssetSrcFor(primaryMedia.src) : publicAssetSrcFor('/media/food/events/salmon-skewers-lemon.webp')} alt="" />
               )}
               <div className="hero-preview-caption">
                 <strong>שבתות, אירוח קטן ומארזים</strong>
                 <span>אותה שפה של טעם, נראות ושקט למארח.</span>
               </div>
             </div>
-            <img className="hero-preview-plate side-plate" src={publicAssetSrcFor(heroSideImage)} alt="" />
-            <img className="hero-preview-plate tall-plate" src={publicAssetSrcFor(heroTallImage)} alt="" />
+            <img className="hero-preview-plate side-plate" src={sideSrc} alt="" />
+            <img className="hero-preview-plate tall-plate" src={tallSrc} alt="" />
             <div className="hero-preview-notes">
               {heroNotes.map((note) => (
                 <article key={note.id}>
@@ -3306,7 +3379,7 @@ const MediaUsageList = ({ mediaId, content }: { readonly mediaId: string; readon
     <div className="usage-chips" aria-label="מפת שימושים לתמונה">
       {usages.map((usage) => (
         <span className={usage.active ? 'usage-chip is-active' : 'usage-chip'} key={`${usage.kind}-${usage.title}`}>
-          {usage.kind === 'gallery' ? 'גלריה' : 'שירות'}: {usage.title}
+          {usageKindLabel(usage.kind)}: {usage.title}
           {!usage.active ? ' (כבוי)' : ''}
         </span>
       ))}
@@ -3333,7 +3406,7 @@ const MediaSelectionUsageNotice = ({
         <div className="usage-chips" aria-label="שימושים נוספים לתמונה">
           {otherUsages.map((usage) => (
             <span className={usage.active ? 'usage-chip is-active' : 'usage-chip'} key={`${usage.kind}-${usage.id}`}>
-              {usage.kind === 'gallery' ? 'גלריה' : 'שירות'}: {usage.title}
+              {usageKindLabel(usage.kind)}: {usage.title}
               {!usage.active ? ' (כבוי)' : ''}
             </span>
           ))}
@@ -3651,13 +3724,25 @@ const waitForLiveSiteVersion = async (
 };
 
 const getMediaUsage = (mediaId: string, content: ContentSnapshot): readonly MediaUsageEntry[] => {
+  const heroMedia = content.sections.find((section) => section.id === 'hero-media' && !section.deletedAt);
+  const heroUsage = heroMedia
+    ? heroMediaSlots
+      .filter((_, index) => heroMediaIdAt(heroMedia, index) === mediaId)
+      .map((slot): MediaUsageEntry => ({ kind: 'hero', id: slot.key, title: slot.label, active: heroMedia.active }))
+    : [];
   const galleryUsage = content.gallery
     .filter((item) => item.mediaId === mediaId && !item.deletedAt)
     .map((item): MediaUsageEntry => ({ kind: 'gallery', id: item.id, title: item.title, active: item.active }));
   const serviceUsage = content.services
     .filter((service) => service.mediaId === mediaId && !service.deletedAt)
     .map((service): MediaUsageEntry => ({ kind: 'service', id: service.id, title: service.title, active: service.active }));
-  return [...galleryUsage, ...serviceUsage];
+  return [...heroUsage, ...galleryUsage, ...serviceUsage];
+};
+
+const usageKindLabel = (kind: MediaUsageKind) => {
+  if (kind === 'gallery') return 'גלריה';
+  if (kind === 'service') return 'שירות';
+  return 'מסך פתיחה';
 };
 
 const getGalleryItemForMedia = (mediaId: string, content: ContentSnapshot) => (
@@ -3665,7 +3750,7 @@ const getGalleryItemForMedia = (mediaId: string, content: ContentSnapshot) => (
 );
 
 const formatMediaUsage = (usages: readonly MediaUsageEntry[]) => usages
-  .map((usage) => `- ${usage.kind === 'gallery' ? 'גלריה' : 'שירות'}: ${usage.title}`)
+  .map((usage) => `- ${usageKindLabel(usage.kind)}: ${usage.title}`)
   .join('\n');
 
 const makeGalleryItem = (content: ContentSnapshot, mediaId?: string): GalleryItemRecord => {

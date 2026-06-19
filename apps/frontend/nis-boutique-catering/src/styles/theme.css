@@ -34,7 +34,7 @@
 }
 
 .hero {
-  min-height: calc(100dvh - 68px);
+  min-height: calc(100dvh - 89px);
 }
 
 .hero::before {
@@ -69,9 +69,9 @@
 
 .hero-layout {
   grid-template-columns: minmax(0, 0.86fr) minmax(420px, 0.94fr);
-  gap: clamp(36px, 5.2vw, 78px);
+  gap: clamp(28px, 4.2vw, 58px);
   width: min(1320px, calc(100% - 48px));
-  padding-block: clamp(56px, 7vw, 92px);
+  padding-block: clamp(24px, 3vw, 32px);
 }
 
 .hero-content {
@@ -79,29 +79,39 @@
 }
 
 .hero-brand-lockup {
+  width: min(300px, 22vw);
+  margin-block-end: 14px;
   filter: drop-shadow(0 26px 54px rgba(0, 0, 0, 0.44));
 }
 
 .hero h1 {
-  font-size: clamp(3.25rem, 5.9vw, 6.25rem);
-  line-height: 0.91;
-  max-width: 10.2ch;
+  font-size: clamp(2.6rem, 3.32vw, 3.75rem);
+  line-height: 0.94;
+  max-width: 10.8ch;
 }
 
 .hero-kicker {
   max-width: 620px;
   color: var(--champagne);
-  font-size: clamp(1.34rem, 2vw, 2.16rem);
-  line-height: 1.14;
+  font-size: clamp(1.18rem, 1.48vw, 1.56rem);
+  line-height: 1.2;
+  margin-block-start: 18px;
 }
 
 .hero-text {
   max-width: 630px;
   color: rgba(255, 249, 242, 0.78);
+  margin-block-start: 14px;
+  line-height: 1.68;
+}
+
+.hero .microcopy {
+  display: none;
 }
 
 .hero-actions {
-  gap: 14px;
+  gap: 12px;
+  margin-block-start: 20px;
 }
 
 .button.primary,
@@ -131,6 +141,7 @@
 .hero-badges {
   gap: 12px;
   max-width: 700px;
+  margin-block-start: 12px;
 }
 
 .hero-badges span {
@@ -140,8 +151,7 @@
 }
 
 .hero-proof {
-  gap: 14px;
-  max-width: 720px;
+  display: none;
 }
 
 .hero-proof div {
@@ -168,7 +178,7 @@
 }
 
 .hero-showcase {
-  min-height: min(720px, calc(100dvh - 140px));
+  min-height: min(520px, calc(100dvh - 190px));
   perspective: 1600px;
 }
 
@@ -1032,7 +1042,7 @@
   }
 
   .hero-showcase {
-    min-height: 620px;
+    min-height: 430px;
     margin-block-start: 12px;
   }
 
@@ -1066,7 +1076,7 @@
   }
 
   .hero-showcase {
-    min-height: 520px;
+    min-height: 360px;
   }
 
   .hero-stage-frame {
@@ -1124,6 +1134,24 @@
 }
 
 @media (max-width: 640px) {
+  .hero {
+    min-height: calc(100dvh - 75px);
+  }
+
+  .hero-layout {
+    padding-block: 24px 12px;
+  }
+
+  .hero-brand-lockup {
+    width: min(220px, 66vw);
+    margin-block-end: 12px;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.35rem, 10.4vw, 3.15rem);
+    line-height: 0.98;
+  }
+
   .topbar {
     grid-template-columns: 1fr auto;
   }
@@ -1139,25 +1167,29 @@
   }
 
   .hero-kicker {
-    font-size: 1.22rem;
+    margin-block-start: 16px;
+    font-size: 1.04rem;
   }
 
   .hero-text {
-    font-size: 0.99rem;
-    line-height: 1.84;
+    margin-block-start: 12px;
+    font-size: 0.94rem;
+    line-height: 1.62;
   }
 
   .hero-badges {
-    gap: 8px;
+    gap: 6px;
+    margin-block-start: 12px;
   }
 
   .hero-badges span {
-    min-height: 34px;
-    font-size: 0.86rem;
+    min-height: 30px;
+    padding: 6px 9px;
+    font-size: 0.78rem;
   }
 
   .hero-showcase {
-    min-height: 470px;
+    min-height: 0;
   }
 
   .button.primary {

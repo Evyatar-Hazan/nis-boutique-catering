@@ -752,6 +752,20 @@ export const contentSnapshot = {
       "order": 4
     },
     {
+      "id": "hero-media",
+      "group": "hero-media",
+      "title": "תמונות מסך פתיחה",
+      "text": "התמונות שמרכיבות את הרקע והקומפוזיציה במסך הפתיחה.",
+      "items": [
+        "hosting-table-overview",
+        "salmon-skewers-lemon",
+        "dips-tray-close",
+        "table-setting-blue-gold"
+      ],
+      "active": true,
+      "order": 1
+    },
+    {
       "id": "hero-note-ready",
       "group": "hero-notes",
       "title": "אירוח מוכן להגשה",

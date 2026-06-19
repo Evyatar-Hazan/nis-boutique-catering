@@ -288,6 +288,14 @@ export interface GalleryImage {
 }
 
 const generatedMediaById = new Map(contentSnapshot.media.map((asset) => [asset.id, asset]));
+const getGeneratedMedia = (id: string | undefined, fallback: ImageAsset): ImageAsset => {
+  if (!id) {
+    return fallback;
+  }
+
+  const media = generatedMediaById.get(id);
+  return media ?? fallback;
+};
 
 const iconByName: Readonly<Record<string, LucideIcon>> = {
   CalendarDays,
@@ -830,6 +838,7 @@ export const galleryImages: readonly GalleryImage[] =
   generatedGalleryImages.length > 0 ? generatedGalleryImages : fallbackGalleryImages;
 
 const heroSection = getGeneratedSection('hero');
+const heroMediaSection = getGeneratedSection('hero-media');
 
 export const heroContent = {
   eyebrow: heroSection?.items[0] || 'מהרובע היהודי לביתר עילית',
@@ -838,6 +847,13 @@ export const heroContent = {
   text:
     heroSection?.text ||
     'רואים את הסגנון, בוחרים את סוג ההזמנה, ומשאירים פנייה מסודרת. Nis כבר תהפוך את זה לתפריט, מגשים או מארז שמתאימים לאירוח שלכם.',
+} as const;
+
+export const heroMedia = {
+  background: getGeneratedMedia(heroMediaSection?.items[0], foodMedia.hostingTableOverview),
+  primary: getGeneratedMedia(heroMediaSection?.items[1], foodMedia.salmonSkewersLemon),
+  side: getGeneratedMedia(heroMediaSection?.items[2], foodMedia.dipsTrayClose),
+  tall: getGeneratedMedia(heroMediaSection?.items[3], foodMedia.tableSettingBlueGold),
 } as const;
 
 export const siteMicrocopy: SiteMicrocopy = {
