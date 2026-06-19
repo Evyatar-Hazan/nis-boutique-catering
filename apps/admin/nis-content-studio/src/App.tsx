@@ -18,6 +18,8 @@ import {
   ListChecks,
   Lock,
   LogIn,
+  Mail,
+  MapPin,
   MessageCircle,
   MonitorCheck,
   PanelRightClose,
@@ -30,6 +32,7 @@ import {
   Rocket,
   Save,
   Search,
+  Send,
   ShieldAlert,
   ShieldCheck,
   Sparkles,
@@ -2186,40 +2189,134 @@ const PreviewBrowserBar = ({ device }: { readonly device: PreviewDevice }) => (
   </div>
 );
 
-const ContactPreview = ({ content, device }: { readonly content: ContentSnapshot; readonly device: PreviewDevice }) => (
-  <div className={device === 'mobile' ? 'preview-frame is-mobile' : 'preview-frame is-desktop'}>
-    <PreviewBrowserBar device={device} />
-    <div className="site-section-preview site-section-preview-frame contact-section-preview">
-      <div className="contact-preview-copy">
-        <p className="kicker">יצירת קשר</p>
-        <h3>אהבתם את הסגנון? שלחו פנייה מסודרת לוואטסאפ.</h3>
-        <p>הטופס נשאר קצר ומעשי: סוג הזמנה, תאריך, כמות והערה. אחרי השליחה נפתחת הודעת וואטסאפ מוכנה.</p>
-        <div className="contact-preview-actions">
-          <a className="preview-primary-cta" href={content.settings.whatsappBase} target="_blank" rel="noreferrer">
-            <MessageCircle aria-hidden="true" />
-            קבלו הצעה מותאמת בוואטסאפ
-          </a>
-          <a className="preview-secondary-cta" href={content.settings.phoneHref}>
-            <Phone aria-hidden="true" />
-            {content.settings.phoneDisplay}
-          </a>
-          <span className="contact-preview-line">{content.settings.email}</span>
+const getPreviewCopySection = (
+  content: ContentSnapshot,
+  id: string,
+  fallback: { readonly eyebrow: string; readonly title: string; readonly text: string; readonly extraText?: string },
+) => {
+  const section = content.sections.find((item) => item.id === `copy-${id}` && item.group === 'site-copy' && item.active && !item.deletedAt);
+  return {
+    eyebrow: section?.items[0] || fallback.eyebrow,
+    title: section?.title || fallback.title,
+    text: section?.text || fallback.text,
+    extraText: section?.items[1] || fallback.extraText,
+  };
+};
+
+const getPreviewMicrocopy = (content: ContentSnapshot, id: string, fallback: string) => (
+  content.sections.find((item) => item.id === `microcopy-${id}` && item.group === 'site-microcopy' && item.active && !item.deletedAt)?.text || fallback
+);
+
+const getPreviewMicrocopyItems = (content: ContentSnapshot, id: string, fallback: readonly string[]) => {
+  const items = content.sections.find((item) => item.id === `microcopy-${id}` && item.group === 'site-microcopy' && item.active && !item.deletedAt)?.items;
+  return items && items.length > 0 ? items : fallback;
+};
+
+const ContactPreview = ({ content, device }: { readonly content: ContentSnapshot; readonly device: PreviewDevice }) => {
+  const copy = getPreviewCopySection(content, 'contact', {
+    eyebrow: 'יצירת קשר',
+    title: 'אהבתם את הסגנון? שלחו פנייה מסודרת לוואטסאפ.',
+    text: 'הטופס נשאר קצר ומעשי: סוג הזמנה, תאריך, כמות והערה. אחרי השליחה נפתחת הודעת וואטסאפ מוכנה.',
+    extraText: 'שיחה קצרה, התאמה אישית, ואז סיכום ברור של תאריך, כמות וסגנון אירוח.',
+  });
+  const primaryCta = getPreviewMicrocopy(content, 'contact-primary-cta', 'קבלו הצעה מותאמת בוואטסאפ');
+  const phoneCta = getPreviewMicrocopy(content, 'contact-phone-cta', 'התקשרו עכשיו');
+  const location = getPreviewMicrocopy(content, 'contact-location', 'ביתר עילית');
+  const promiseHeading = getPreviewMicrocopy(content, 'contact-promise-heading', 'מה קורה אחרי הפנייה?');
+  const formLabels = {
+    name: getPreviewMicrocopy(content, 'form-name-label', 'שם מלא'),
+    phone: getPreviewMicrocopy(content, 'form-phone-label', 'טלפון'),
+    email: getPreviewMicrocopy(content, 'form-email-label', 'מייל'),
+    interest: getPreviewMicrocopy(content, 'form-interest-label', 'במה אתם מתעניינים?'),
+    date: getPreviewMicrocopy(content, 'form-date-label', 'תאריך רצוי'),
+    guests: getPreviewMicrocopy(content, 'form-guests-label', 'מספר סועדים'),
+    delivery: getPreviewMicrocopy(content, 'form-delivery-label', 'אופן קבלה מועדף'),
+    message: getPreviewMicrocopy(content, 'form-message-label', 'הודעה קצרה'),
+    submit: getPreviewMicrocopy(content, 'form-submit-label', 'שלחו פנייה בוואטסאפ'),
+  };
+  const interestOptions = getPreviewMicrocopyItems(content, 'contact-interest-options', ['ניס בטעם של שבת', 'ניס בכיס - מגשי אירוח', 'Travel Nis']);
+  const deliveryOptions = getPreviewMicrocopyItems(content, 'contact-delivery-options', ['נדבר ונבדוק יחד', 'איסוף מביתר עילית', 'משלוח בתיאום']);
+
+  return (
+    <div className={device === 'mobile' ? 'preview-frame is-mobile' : 'preview-frame is-desktop'}>
+      <PreviewBrowserBar device={device} />
+      <div className="site-section-preview site-section-preview-frame contact-section-preview">
+        <div className="contact-preview-copy">
+          <p className="kicker">{copy.eyebrow}</p>
+          <h3>{copy.title}</h3>
+          {copy.text && <p>{copy.text}</p>}
+          <div className="contact-preview-actions">
+            <a className="preview-primary-cta" href={content.settings.whatsappBase} target="_blank" rel="noreferrer">
+              <MessageCircle aria-hidden="true" />
+              {primaryCta}
+            </a>
+            <a className="preview-secondary-cta" href={content.settings.phoneHref}>
+              <Phone aria-hidden="true" />
+              {phoneCta}
+            </a>
+            <span className="contact-preview-line">
+              <Mail aria-hidden="true" />
+              {content.settings.email}
+            </span>
+            <span className="contact-preview-line">
+              <MapPin aria-hidden="true" />
+              {location}
+            </span>
+          </div>
+          <div className="contact-preview-promise">
+            <strong>{promiseHeading}</strong>
+            <span>{copy.extraText}</span>
+          </div>
+          <div className="metadata-preview-card">
+            <p className="kicker">SEO ושיתוף קישור</p>
+            <h4>{content.settings.seoTitle || 'Nis Boutique Catering'}</h4>
+            <p>{content.settings.seoDescription || 'תיאור קצר שיופיע במנועי חיפוש ובשיתוף קישורים.'}</p>
+            <span>{publicSiteOrigin.replace('https://', '')}</span>
+            <small>גרסת תוכן: {content.settings.siteVersion}</small>
+          </div>
         </div>
-        <div className="contact-preview-promise">
-          <strong>מה קורה אחרי הפנייה?</strong>
-          <span>שיחה קצרה, התאמה אישית, ואז סיכום ברור של תאריך, כמות וסגנון אירוח.</span>
+        <div className="contact-form-preview" aria-label="תצוגה מקדימה לטופס יצירת קשר">
+          <label>
+            {formLabels.name}
+            <span>יהודית ישראלי</span>
+          </label>
+          <label>
+            {formLabels.phone}
+            <span>{content.settings.phoneDisplay}</span>
+          </label>
+          <label>
+            {formLabels.email}
+            <span>name@example.com</span>
+          </label>
+          <label>
+            {formLabels.interest}
+            <span>{interestOptions[0]}</span>
+          </label>
+          <label>
+            {formLabels.date}
+            <span>יום חמישי הקרוב</span>
+          </label>
+          <label>
+            {formLabels.guests}
+            <span>18 סועדים</span>
+          </label>
+          <label>
+            {formLabels.delivery}
+            <span>{deliveryOptions[0]}</span>
+          </label>
+          <label className="full-field">
+            {formLabels.message}
+            <span>אשמח להבין מה מתאים לאירוח משפחתי קטן.</span>
+          </label>
+          <button className="preview-primary-cta full-field" type="button">
+            <Send aria-hidden="true" />
+            {formLabels.submit}
+          </button>
         </div>
-      </div>
-      <div className="metadata-preview-card">
-        <p className="kicker">SEO ושיתוף קישור</p>
-        <h4>{content.settings.seoTitle || 'Nis Boutique Catering'}</h4>
-        <p>{content.settings.seoDescription || 'תיאור קצר שיופיע במנועי חיפוש ובשיתוף קישורים.'}</p>
-        <span>{publicSiteOrigin.replace('https://', '')}</span>
-        <small>גרסת תוכן: {content.settings.siteVersion}</small>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 const LoginGate = ({
   authState,
