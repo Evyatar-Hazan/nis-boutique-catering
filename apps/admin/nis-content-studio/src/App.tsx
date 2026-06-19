@@ -639,6 +639,7 @@ export const App = () => {
       const siteVersion = nextContentVersion();
       return {
         ...next,
+        updatedAt: new Date().toISOString(),
         version: siteVersion,
         settings: {
           ...next.settings,
@@ -3387,9 +3388,18 @@ const validationErrorText = (
   referenceIssues: readonly string[],
 ) => {
   if (!validation.success) {
-    return validation.error.issues[0]?.message ?? 'יש שדות שצריך לתקן.';
+    const issue = validation.error.issues[0];
+    return issue ? formatValidationIssue(issue) : 'יש שדות שצריך לתקן.';
   }
   return referenceIssues[0] ?? 'יש שדות שצריך לתקן.';
+};
+
+// Exported for validation-message coverage.
+// eslint-disable-next-line react-refresh/only-export-components
+export const formatValidationIssue = (issue: { readonly path: readonly PropertyKey[]; readonly message: string }) => {
+  const path = issue.path.length > 0 ? issue.path.map(String).join('.') : 'התוכן הכללי';
+  const message = issue.message === 'Invalid input' ? 'ערך לא תקין' : issue.message;
+  return `שדה לא תקין: ${path} - ${message}`;
 };
 
 // Exported for the UX coverage test that keeps the editing flow understandable.

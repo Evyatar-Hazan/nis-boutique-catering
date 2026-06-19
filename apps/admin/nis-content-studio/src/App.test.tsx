@@ -1,6 +1,6 @@
 import { cleanup, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
-import { App, getOwnerVerificationChecklist, getStudioWorkflowSteps, managedSectionDefaults } from './App';
+import { App, formatValidationIssue, getOwnerVerificationChecklist, getStudioWorkflowSteps, managedSectionDefaults } from './App';
 import '@testing-library/jest-dom/vitest';
 
 describe('Content Studio', () => {
@@ -143,5 +143,10 @@ describe('Content Studio', () => {
       expect.objectContaining({ title: 'בדיקת האתר החי', state: 'done' }),
       expect.objectContaining({ title: 'Refresh ושחזור Session', state: 'pending' }),
     ]);
+  });
+
+  it('shows the exact field when content validation fails', () => {
+    expect(formatValidationIssue({ path: ['updatedAt'], message: 'Invalid input' })).toBe('שדה לא תקין: updatedAt - ערך לא תקין');
+    expect(formatValidationIssue({ path: ['services', 0, 'title'], message: 'Too small' })).toBe('שדה לא תקין: services.0.title - Too small');
   });
 });
