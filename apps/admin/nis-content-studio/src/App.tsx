@@ -102,6 +102,12 @@ type StudioWorkflowStep = {
   readonly state: PublishStepState;
 };
 
+type OwnerVerificationItem = {
+  readonly title: string;
+  readonly text: string;
+  readonly state: PublishStepState;
+};
+
 type PublishProgress = {
   readonly targetVersion: string;
   readonly liveUrl: string;
@@ -3018,6 +3024,12 @@ const PublishPanel = ({
         <Metric label="תמונות פעילות" value={String(content.gallery.filter((item) => item.active && !item.deletedAt).length)} />
         <Metric label="גרסה לפרסום" value={targetVersion} />
       </div>
+      <OwnerVerificationPanel
+        publishState={publishState}
+        hasErrors={hasErrors}
+        hasPublishUrl={hasPublishUrl}
+        liveUrl={liveUrl}
+      />
       <div className="topbar-actions">
         <button className="ghost-button" onClick={onSaveDraft} disabled={disabled}>
           <Save aria-hidden="true" />
@@ -3032,6 +3044,43 @@ const PublishPanel = ({
     </section>
   );
 };
+
+const OwnerVerificationPanel = ({
+  publishState,
+  hasErrors,
+  hasPublishUrl,
+  liveUrl,
+}: {
+  readonly publishState: PublishState;
+  readonly hasErrors: boolean;
+  readonly hasPublishUrl: boolean;
+  readonly liveUrl: string;
+}) => (
+  <section className="owner-verification-panel" aria-label="בדיקות בעלים בפרודקשיין">
+    <div className="owner-verification-heading">
+      <div>
+        <p className="kicker">בדיקות בעלים בפרודקשיין</p>
+        <h3>מה לבדוק אחרי Login ולפני שסוגרים משימה</h3>
+        <p>הסטודיו יכול לזהות סטטוס שמירה ופרסום. בדיקת התחברות אמיתית ושינוי תוכן בפועל עדיין צריכים להתבצע מחשבון Google מורשה.</p>
+      </div>
+      <a className="ghost-link" href={liveUrl} target="_blank" rel="noreferrer">
+        <ExternalLink aria-hidden="true" />
+        אתר חי
+      </a>
+    </div>
+    <div className="owner-checklist">
+      {getOwnerVerificationChecklist(publishState, hasErrors, hasPublishUrl).map((item) => (
+        <article className={`is-${item.state}`} key={item.title}>
+          {item.state === 'done' ? <CheckCircle2 aria-hidden="true" /> : <AlertTriangle aria-hidden="true" />}
+          <div>
+            <h4>{item.title}</h4>
+            <p>{item.text}</p>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+);
 
 const ItemActions = ({
   isArchived,
@@ -3391,6 +3440,54 @@ export const getStudioWorkflowSteps = (
       text: !hasPublishUrl ? 'חסר חיבור פרסום מאובטח' : publishState === 'live' ? 'האתר החי עודכן' : publishIsActive ? 'הענן בונה ובודק גרסה חיה' : 'מפרסם רק אחרי שמירה ובדיקה',
       state: !hasPublishUrl ? 'blocked' : publishState === 'live' ? 'done' : publishIsActive ? 'active' : isPublishView ? 'active' : 'pending',
     },
+  ];
+};
+
+// Exported for the owner verification coverage test.
+// eslint-disable-next-line react-refresh/only-export-components
+export const getOwnerVerificationChecklist = (
+  publishState: PublishState,
+  hasErrors: boolean,
+  hasPublishUrl: boolean,
+): readonly OwnerVerificationItem[] => {
+  const hasSavedDraft = publishState === 'draft' || publishState === 'publishing' || publishState === 'checking' || publishState === 'published' || publishState === 'live';
+  const isPublishing = publishState === 'publishing' || publishState === 'checking' || publishState === 'published';
+  const isLive = publishState === 'live';
+
+  if (hasErrors) {
+    return [
+      { title: 'Login מורשה', text: 'המסך הזה מופיע רק אחרי כניסה מורשית לסטודיו.', state: 'done' },
+      { title: 'שמירה אמיתית ל-Sheets', text: 'חסום עד שמתקנים את שגיאת התוכן שמופיעה למעלה.', state: 'blocked' },
+      { title: 'פרסום אמיתי', text: 'חסום עד שהתוכן תקין ואפשר לשמור.', state: 'blocked' },
+      { title: 'בדיקת האתר החי', text: 'תתבצע אחרי פרסום מוצלח.', state: 'pending' },
+      { title: 'Refresh ושחזור Session', text: 'אחרי Login, לרענן את הדף ולוודא שנשארים מחוברים.', state: 'pending' },
+    ];
+  }
+
+  if (!hasPublishUrl) {
+    return [
+      { title: 'Login מורשה', text: 'המסך הזה מופיע רק אחרי כניסה מורשית לסטודיו.', state: 'done' },
+      { title: 'שמירה אמיתית ל-Sheets', text: hasSavedDraft ? 'טיוטה נשמרה ל-Sheets.' : 'לחצו שמור כטיוטה אחרי שינוי קטן ומכוון.', state: hasSavedDraft ? 'done' : 'pending' },
+      { title: 'פרסום אמיתי', text: 'חסר חיבור פרסום מאובטח, לכן אי אפשר להפעיל עדכון אתר.', state: 'blocked' },
+      { title: 'בדיקת האתר החי', text: 'מחכה לחיבור פרסום.', state: 'pending' },
+      { title: 'Refresh ושחזור Session', text: 'אחרי Login, לרענן את הדף ולוודא שנשארים מחוברים.', state: 'pending' },
+    ];
+  }
+
+  return [
+    { title: 'Login מורשה', text: 'המסך הזה מופיע רק אחרי כניסה מורשית לסטודיו.', state: 'done' },
+    { title: 'שמירה אמיתית ל-Sheets', text: hasSavedDraft ? 'טיוטה נשמרה ל-Sheets.' : 'לחצו שמור כטיוטה אחרי שינוי קטן ומכוון.', state: hasSavedDraft ? 'done' : 'pending' },
+    {
+      title: 'פרסום אמיתי',
+      text: isLive ? 'הפרסום הסתיים והסטודיו זיהה את הגרסה באתר החי.' : isPublishing ? 'הפרסום נשלח והסטודיו עוקב אחרי האתר החי.' : 'לחצו עדכן אתר רק אחרי שמירה ובדיקת preview.',
+      state: isLive ? 'done' : isPublishing ? 'active' : 'pending',
+    },
+    {
+      title: 'בדיקת האתר החי',
+      text: isLive ? 'לפתוח את האתר ולוודא שהשינוי נראה גם ללקוח.' : isPublishing ? 'מחכה שהאתר החי יגיש את הגרסה החדשה.' : 'ייפתח אחרי פרסום אמיתי.',
+      state: isLive ? 'done' : isPublishing ? 'active' : 'pending',
+    },
+    { title: 'Refresh ושחזור Session', text: 'אחרי Login, לרענן את הדף ולוודא שנשארים מחוברים.', state: 'pending' },
   ];
 };
 

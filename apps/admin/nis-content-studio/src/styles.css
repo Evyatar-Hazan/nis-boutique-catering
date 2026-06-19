@@ -2638,9 +2638,91 @@ input[type="checkbox"] {
   border-color: rgba(120, 41, 41, 0.18);
 }
 
+.owner-verification-panel {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid #e4dccf;
+  border-radius: 8px;
+  background: #fffdf8;
+}
+
+.owner-verification-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.owner-verification-heading h3,
+.owner-verification-heading p {
+  margin: 0;
+}
+
+.owner-verification-heading p:not(.kicker) {
+  color: #6d6354;
+}
+
+.owner-checklist {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+}
+
+.owner-checklist article {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 9px;
+  padding: 12px;
+  border: 1px solid #ded7c9;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.owner-checklist article.is-done {
+  border-color: #b7d3bd;
+  background: #f1f8f1;
+}
+
+.owner-checklist article.is-active {
+  border-color: #d6ad4a;
+  background: #fff6dd;
+}
+
+.owner-checklist article.is-blocked,
+.owner-checklist article.is-error {
+  border-color: #e0b4aa;
+  color: #782929;
+  background: #fff0ec;
+}
+
+.owner-checklist article.is-pending svg {
+  color: #96702c;
+}
+
+.owner-checklist article.is-done svg {
+  color: #25875a;
+}
+
+.owner-checklist h4,
+.owner-checklist p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.owner-checklist h4 {
+  font-size: 14px;
+}
+
+.owner-checklist p {
+  color: #6d6354;
+  font-size: 12px;
+}
+
 .ghost-link {
   display: inline-flex;
   align-items: center;
+  gap: 8px;
   min-height: 40px;
   padding: 0 14px;
   border: 1px solid #d6d0c1;
@@ -2716,7 +2798,8 @@ input[type="checkbox"] {
 
   .topbar,
   .panel-header,
-  .card-heading {
+  .card-heading,
+  .owner-verification-heading {
     align-items: stretch;
     flex-direction: column;
   }

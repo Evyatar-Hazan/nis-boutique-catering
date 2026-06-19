@@ -1,6 +1,6 @@
 import { cleanup, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
-import { App, getStudioWorkflowSteps, managedSectionDefaults } from './App';
+import { App, getOwnerVerificationChecklist, getStudioWorkflowSteps, managedSectionDefaults } from './App';
 import '@testing-library/jest-dom/vitest';
 
 describe('Content Studio', () => {
@@ -123,5 +123,25 @@ describe('Content Studio', () => {
     expect(errorSteps.at(0)).toEqual(expect.objectContaining({ title: 'עריכה', state: 'error' }));
     expect(errorSteps.at(2)).toEqual(expect.objectContaining({ title: 'שמירת טיוטה', state: 'blocked' }));
     expect(liveSteps.at(3)).toEqual(expect.objectContaining({ title: 'עדכון האתר', state: 'done', text: 'האתר החי עודכן' }));
+  });
+
+  it('guides owner production verification without bypassing login-only actions', () => {
+    const blockedChecklist = getOwnerVerificationChecklist('draft', true, true);
+    const liveChecklist = getOwnerVerificationChecklist('live', false, true);
+
+    expect(blockedChecklist).toEqual([
+      expect.objectContaining({ title: 'Login מורשה', state: 'done' }),
+      expect.objectContaining({ title: 'שמירה אמיתית ל-Sheets', state: 'blocked' }),
+      expect.objectContaining({ title: 'פרסום אמיתי', state: 'blocked' }),
+      expect.objectContaining({ title: 'בדיקת האתר החי', state: 'pending' }),
+      expect.objectContaining({ title: 'Refresh ושחזור Session', state: 'pending' }),
+    ]);
+    expect(liveChecklist).toEqual([
+      expect.objectContaining({ title: 'Login מורשה', state: 'done' }),
+      expect.objectContaining({ title: 'שמירה אמיתית ל-Sheets', state: 'done' }),
+      expect.objectContaining({ title: 'פרסום אמיתי', state: 'done' }),
+      expect.objectContaining({ title: 'בדיקת האתר החי', state: 'done' }),
+      expect.objectContaining({ title: 'Refresh ושחזור Session', state: 'pending' }),
+    ]);
   });
 });
