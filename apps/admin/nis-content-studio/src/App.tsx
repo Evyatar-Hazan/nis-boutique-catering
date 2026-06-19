@@ -94,6 +94,20 @@ type MediaUsageKind = 'gallery' | 'service';
 type PublishStepState = 'done' | 'active' | 'pending' | 'blocked' | 'error';
 type GalleryPreviewCategory = GalleryItemRecord['category'] | 'all';
 
+type PublishProgress = {
+  readonly targetVersion: string;
+  readonly liveUrl: string;
+  readonly totalAttempts: number;
+  readonly attempt?: number;
+  readonly checkedAt?: string;
+  readonly lastBundleUrl?: string;
+};
+
+type LiveVersionCheckResult = {
+  readonly live: boolean;
+  readonly bundleUrl?: string;
+};
+
 type MediaUsageEntry = {
   readonly kind: MediaUsageKind;
   readonly id: string;
@@ -556,6 +570,7 @@ export const App = () => {
   const [isSidebarHidden, setIsSidebarHidden] = useState(false);
   const [previewDevice, setPreviewDevice] = useState<PreviewDevice>('desktop');
   const [publishState, setPublishState] = useState<PublishState>('clean');
+  const [publishProgress, setPublishProgress] = useState<PublishProgress | null>(null);
   const [status, setStatus] = useState('התחברו כדי לנהל את התוכן האמיתי של האתר.');
   const [isBusy, setIsBusy] = useState(false);
   const [query, setQuery] = useState('');
@@ -584,6 +599,7 @@ export const App = () => {
 
   const markDraft = () => {
     if (authState === 'authorized') {
+      setPublishProgress(null);
       setPublishState('draft');
       setStatus('יש שינויים שלא פורסמו עדיין. לחצו "עדכן אתר" כדי להעלות אותם לאתר החי.');
     }
@@ -622,6 +638,7 @@ export const App = () => {
     rememberSession(nextSession);
     setContent(remoteContent);
     setAuthState('authorized');
+    setPublishProgress(null);
     setPublishState('clean');
     setStatus('התוכן נטען מה-Sheets. אפשר לערוך וללחוץ "עדכן אתר" כדי לפרסם.');
     return nextSession;
@@ -729,6 +746,7 @@ export const App = () => {
     void runTask('מרעננים תוכן מ-Google Sheets', async () => {
       const accessToken = await getFreshAccessToken();
       setContent(ensureManagedSections(await readContentFromSheets(accessToken)));
+      setPublishProgress(null);
       setPublishState('clean');
       setStatus('התוכן רוענן מה-Sheets.');
     });
@@ -760,8 +778,14 @@ export const App = () => {
 
     void (async () => {
       const targetVersion = content.settings.siteVersion || content.version;
+      const initialProgress: PublishProgress = {
+        targetVersion,
+        liveUrl: publicSiteOrigin,
+        totalAttempts: liveVersionPollAttempts,
+      };
       setIsBusy(true);
-      setStatus('מעדכנים את האתר...');
+      setPublishProgress(initialProgress);
+      setStatus(`מכינים פרסום לגרסת ${targetVersion}. קודם שומרים טיוטה, אחר כך שולחים לבנייה.`);
       try {
         await saveDraft();
         setPublishState('publishing');
@@ -769,14 +793,34 @@ export const App = () => {
         const accessToken = await getFreshAccessToken();
         await triggerPublish(accessToken);
 
+        setPublishState('published');
+        setStatus(`הפרסום נשלח. Cloudflare קיבל את גרסת ${targetVersion} ומתחיל לבנות.`);
+        await wait(900);
+
         setPublishState('checking');
         setStatus(`הפרסום נשלח. Cloudflare בונה עכשיו את גרסת ${targetVersion}; הסטודיו בודק מתי האתר החי מגיש אותה.`);
         setIsBusy(false);
-        await waitForLiveSiteVersion(targetVersion, (message) => {
+        const liveProgress = await waitForLiveSiteVersion(targetVersion, ({ attempt, bundleUrl, checkedAt, message, totalAttempts }) => {
           setPublishState('checking');
+          setPublishProgress({
+            targetVersion,
+            liveUrl: publicSiteOrigin,
+            totalAttempts,
+            attempt,
+            checkedAt,
+            lastBundleUrl: bundleUrl,
+          });
           setStatus(message);
         });
         setPublishState('live');
+        setPublishProgress({
+          targetVersion,
+          liveUrl: publicSiteOrigin,
+          totalAttempts: liveProgress.totalAttempts,
+          attempt: liveProgress.attempt,
+          checkedAt: liveProgress.checkedAt,
+          lastBundleUrl: liveProgress.bundleUrl,
+        });
         setStatus(`האתר החי עודכן ומגיש עכשיו את גרסת ${targetVersion}.`);
       } catch (error) {
         setPublishState('error');
@@ -791,6 +835,7 @@ export const App = () => {
     clearRememberedSession();
     setSession(null);
     setAuthState('signed-out');
+    setPublishProgress(null);
     setPublishState('clean');
     setContent(emptyContent);
     setStatus('התנתקת מהסטודיו. אפשר להתחבר שוב עם Google.');
@@ -1208,6 +1253,8 @@ export const App = () => {
                 hasErrors={hasErrors}
                 status={hasErrors ? validationErrorText(validation, referenceIssues) : status}
                 publishState={publishState}
+                publishProgress={publishProgress}
+                hasPublishUrl={Boolean(studioConfig.publishUrl)}
                 onSaveDraft={handleSaveDraft}
                 onPublish={handleUpdateSite}
                 disabled={isBusy || !canUseGoogle || hasErrors}
@@ -1714,6 +1761,8 @@ export const App = () => {
             hasErrors={hasErrors}
             status={hasErrors ? validationErrorText(validation, referenceIssues) : status}
             publishState={publishState}
+            publishProgress={publishProgress}
+            hasPublishUrl={Boolean(studioConfig.publishUrl)}
             onSaveDraft={handleSaveDraft}
             onPublish={handleUpdateSite}
             disabled={isBusy || !canUseGoogle || hasErrors}
@@ -2824,6 +2873,8 @@ const PublishPanel = ({
   hasErrors,
   status,
   publishState,
+  publishProgress,
+  hasPublishUrl,
   onSaveDraft,
   onPublish,
   disabled,
@@ -2832,46 +2883,65 @@ const PublishPanel = ({
   readonly hasErrors: boolean;
   readonly status: string;
   readonly publishState: PublishState;
+  readonly publishProgress: PublishProgress | null;
+  readonly hasPublishUrl: boolean;
   readonly onSaveDraft: () => void;
   readonly onPublish: () => void;
   readonly disabled: boolean;
-}) => (
-  <section className="workspace-panel publish-panel-detail">
-    <PanelHeader title="פרסום ושינויים" text="כאן עושים בדיקה אחרונה. שמירה לבד לא משנה את האתר; עדכון אתר מפרסם את הכל." />
-    <div className="publish-flow">
-      {getPublishSteps(publishState, hasErrors).map(({ step, title, text, state }) => (
-        <article className={`is-${state}`} key={step}>
-          <strong>{step}</strong>
-          <div>
-            <h3>{title}</h3>
-            <p>{text}</p>
+}) => {
+  const statusIsError = hasErrors || publishState === 'error' || !hasPublishUrl;
+  const targetVersion = publishProgress?.targetVersion ?? content.settings.siteVersion ?? content.version;
+  const liveUrl = publishProgress?.liveUrl ?? publicSiteOrigin;
+  const checkedAt = publishProgress?.checkedAt ? formatPublishTime(publishProgress.checkedAt) : null;
+  const bundleFile = publishProgress?.lastBundleUrl ? getBundleFileName(publishProgress.lastBundleUrl) : null;
+
+  return (
+    <section className="workspace-panel publish-panel-detail">
+      <PanelHeader title="פרסום ושינויים" text="כאן עושים בדיקה אחרונה. שמירה לבד לא משנה את האתר; עדכון אתר מפרסם את הכל." />
+      <div className="publish-flow">
+        {getPublishSteps(publishState, hasErrors, hasPublishUrl).map(({ step, title, text, state }) => (
+          <article className={`is-${state}`} key={step}>
+            <strong>{step}</strong>
+            <div>
+              <h3>{title}</h3>
+              <p>{text}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+      <div className={statusIsError ? 'publish-summary is-error' : 'publish-summary'}>
+        <ShieldAlert aria-hidden="true" />
+        <div>
+          <span>{!hasPublishUrl ? 'חסר חיבור פרסום מאובטח. צריך להגדיר את כתובת הפרסום של Apps Script בסביבת הסטודיו.' : status}</span>
+          <div className="publish-status-details" aria-label="פרטי פרסום">
+            <span>גרסה לפרסום: {targetVersion}</span>
+            <a href={liveUrl} target="_blank" rel="noreferrer">אתר חי: {liveUrl.replace('https://', '')}</a>
+            {publishProgress?.attempt && <span>בדיקה: {publishProgress.attempt}/{publishProgress.totalAttempts}</span>}
+            {checkedAt && <span>נבדק לאחרונה: {checkedAt}</span>}
+            {bundleFile && <span>קובץ אתר שנבדק: {bundleFile}</span>}
           </div>
-        </article>
-      ))}
-    </div>
-    <div className={hasErrors ? 'publish-summary is-error' : 'publish-summary'}>
-      <ShieldAlert aria-hidden="true" />
-      <span>{status}</span>
-    </div>
-    <div className="overview-strip">
-      <Metric label="שירותים לא בארכיון" value={String(content.services.filter((item) => !item.deletedAt).length)} />
-      <Metric label="שאלות FAQ פעילות" value={String(content.sections.filter((item) => item.group === 'faq' && item.active && !item.deletedAt).length)} />
-      <Metric label="תמונות פעילות" value={String(content.gallery.filter((item) => item.active && !item.deletedAt).length)} />
-      <Metric label="גרסה לפרסום" value={content.settings.siteVersion || content.version} />
-    </div>
-    <div className="topbar-actions">
-      <button className="ghost-button" onClick={onSaveDraft} disabled={disabled}>
-        <Save aria-hidden="true" />
-        שמור כטיוטה
-      </button>
-      <button className="publish-button" onClick={onPublish} disabled={disabled}>
-        <Rocket aria-hidden="true" />
-        עדכן אתר
-      </button>
-      <a className="ghost-link" href={publicSiteOrigin} target="_blank" rel="noreferrer">פתיחת האתר החי</a>
-    </div>
-  </section>
-);
+        </div>
+      </div>
+      <div className="overview-strip">
+        <Metric label="שירותים לא בארכיון" value={String(content.services.filter((item) => !item.deletedAt).length)} />
+        <Metric label="שאלות FAQ פעילות" value={String(content.sections.filter((item) => item.group === 'faq' && item.active && !item.deletedAt).length)} />
+        <Metric label="תמונות פעילות" value={String(content.gallery.filter((item) => item.active && !item.deletedAt).length)} />
+        <Metric label="גרסה לפרסום" value={targetVersion} />
+      </div>
+      <div className="topbar-actions">
+        <button className="ghost-button" onClick={onSaveDraft} disabled={disabled}>
+          <Save aria-hidden="true" />
+          שמור כטיוטה
+        </button>
+        <button className="publish-button" onClick={onPublish} disabled={disabled || !hasPublishUrl}>
+          <Rocket aria-hidden="true" />
+          עדכן אתר
+        </button>
+        <a className="ghost-link" href={publicSiteOrigin} target="_blank" rel="noreferrer">פתיחת האתר החי</a>
+      </div>
+    </section>
+  );
+};
 
 const ItemActions = ({
   isArchived,
@@ -3177,6 +3247,7 @@ const validationErrorText = (
 const getPublishSteps = (
   publishState: PublishState,
   hasErrors: boolean,
+  hasPublishUrl: boolean,
 ): readonly { readonly step: string; readonly title: string; readonly text: string; readonly state: PublishStepState }[] => {
   if (hasErrors) {
     return [
@@ -3184,6 +3255,16 @@ const getPublishSteps = (
       { step: '2', title: 'שמירה', text: 'מחכה לתיקון', state: 'blocked' },
       { step: '3', title: 'שליחה לפרסום', text: 'חסום עד שהתוכן תקין', state: 'blocked' },
       { step: '4', title: 'בנייה בענן', text: 'עוד לא התחילה', state: 'pending' },
+      { step: '5', title: 'האתר החי', text: 'עוד לא עודכן', state: 'pending' },
+    ];
+  }
+
+  if (!hasPublishUrl) {
+    return [
+      { step: '1', title: 'בדיקת שגיאות', text: 'התוכן תקין לפרסום', state: 'done' },
+      { step: '2', title: 'שמירה ב-Sheets', text: 'אפשר לשמור טיוטה', state: publishState === 'saving' ? 'active' : 'pending' },
+      { step: '3', title: 'שליחה לפרסום', text: 'חסר חיבור פרסום מאובטח', state: 'blocked' },
+      { step: '4', title: 'Cloudflare בונה', text: 'מחכה לחיבור פרסום', state: 'pending' },
       { step: '5', title: 'האתר החי', text: 'עוד לא עודכן', state: 'pending' },
     ];
   }
@@ -3208,8 +3289,8 @@ const getPublishSteps = (
     {
       step: '4',
       title: 'Cloudflare בונה',
-      text: active('checking') ? 'בודק אם הגרסה כבר עלתה' : done(['live']) ? 'הסתיים' : 'יתחיל אחרי שליחה',
-      state: active('checking') ? 'active' : done(['live']) ? 'done' : 'pending',
+      text: done(['published']) ? 'נשלח ומחכה לבנייה' : active('checking') ? 'בודק אם הגרסה כבר עלתה' : done(['live']) ? 'הסתיים' : 'יתחיל אחרי שליחה',
+      state: done(['published']) || active('checking') ? 'active' : done(['live']) ? 'done' : 'pending',
     },
     {
       step: '5',
@@ -3218,6 +3299,21 @@ const getPublishSteps = (
       state: active('live') ? 'done' : 'pending',
     },
   ];
+};
+
+const formatPublishTime = (isoDate: string) =>
+  new Intl.DateTimeFormat('he-IL', {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  }).format(new Date(isoDate));
+
+const getBundleFileName = (bundleUrl: string) => {
+  try {
+    return new URL(bundleUrl).pathname.split('/').at(-1) ?? bundleUrl;
+  } catch {
+    return bundleUrl;
+  }
 };
 
 const wait = (milliseconds: number) => new Promise((resolve) => {
@@ -3239,30 +3335,62 @@ const findBundleUrl = (html: string) => {
   return match ? new URL(match[1] ?? '', publicSiteOrigin).href : null;
 };
 
-const isLiveSiteVersion = async (version: string) => {
+const isLiveSiteVersion = async (version: string): Promise<LiveVersionCheckResult> => {
   const html = await fetchPublicText(`${publicSiteOrigin}/`);
   const bundleUrl = findBundleUrl(html);
   if (!bundleUrl) {
-    return false;
+    return { live: false };
   }
 
   const bundle = await fetchPublicText(bundleUrl);
-  return bundle.includes(version) || bundle.includes(JSON.stringify(version));
+  return {
+    live: bundle.includes(version) || bundle.includes(JSON.stringify(version)),
+    bundleUrl,
+  };
 };
 
-const waitForLiveSiteVersion = async (version: string, onProgress: (message: string) => void) => {
+const waitForLiveSiteVersion = async (
+  version: string,
+  onProgress: (progress: {
+    readonly attempt: number;
+    readonly totalAttempts: number;
+    readonly checkedAt: string;
+    readonly bundleUrl?: string;
+    readonly message: string;
+  }) => void,
+) => {
   for (let attempt = 1; attempt <= liveVersionPollAttempts; attempt += 1) {
-    if (await isLiveSiteVersion(version)) {
-      return;
+    const checkedAt = new Date().toISOString();
+    const result = await isLiveSiteVersion(version);
+    if (result.live) {
+      onProgress({
+        attempt,
+        totalAttempts: liveVersionPollAttempts,
+        checkedAt,
+        bundleUrl: result.bundleUrl,
+        message: `האתר החי כבר מגיש את גרסת ${version}.`,
+      });
+      return {
+        attempt,
+        totalAttempts: liveVersionPollAttempts,
+        checkedAt,
+        bundleUrl: result.bundleUrl,
+      };
     }
 
     if (attempt < liveVersionPollAttempts) {
-      onProgress(`Cloudflare עדיין בונה או מפיץ את גרסת ${version}. בדיקה ${attempt}/${liveVersionPollAttempts}; נבדוק שוב בעוד כמה שניות.`);
+      onProgress({
+        attempt,
+        totalAttempts: liveVersionPollAttempts,
+        checkedAt,
+        bundleUrl: result.bundleUrl,
+        message: `Cloudflare עדיין בונה או מפיץ את גרסת ${version}. בדיקה ${attempt}/${liveVersionPollAttempts}; נבדוק שוב בעוד ${Math.round(liveVersionPollDelayMs / 1000)} שניות.`,
+      });
       await wait(liveVersionPollDelayMs);
     }
   }
 
-  throw new Error(`הפרסום נשלח, אבל הסטודיו עדיין לא רואה את גרסת ${version} באתר החי. לרוב זה אומר ש-Cloudflare עדיין בונה או שהפרסום נכשל בשרת.`);
+  throw new Error(`הפרסום נשלח, אבל אחרי ${liveVersionPollAttempts} בדיקות במשך בערך ${Math.round((liveVersionPollAttempts * liveVersionPollDelayMs) / 60000)} דקות הסטודיו עדיין לא רואה את גרסת ${version} באתר החי. לרוב זה אומר ש-Cloudflare עדיין בונה, או שהפרסום נכשל בשרת הפרסום.`);
 };
 
 const getMediaUsage = (mediaId: string, content: ContentSnapshot): readonly MediaUsageEntry[] => {
