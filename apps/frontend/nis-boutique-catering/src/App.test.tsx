@@ -16,6 +16,8 @@ describe('Nis boutique catering app', () => {
     render(<App />);
 
     expect(screen.getByRole('navigation')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'מה מזמינים' })).toHaveAttribute('href', '#experiences');
+    expect(screen.getByRole('link', { name: 'גלריה' })).toHaveAttribute('href', '#gallery');
     expect(
       screen.getByRole('heading', {
         name: /קייטרינג בוטיק ביתי/i,

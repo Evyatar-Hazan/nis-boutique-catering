@@ -230,6 +230,18 @@ export interface SectionCopy {
 }
 
 export interface SiteMicrocopy {
+  readonly navExperiencesLabel: string;
+  readonly navGalleryLabel: string;
+  readonly navProcessLabel: string;
+  readonly navSamplesLabel: string;
+  readonly navFaqLabel: string;
+  readonly navContactLabel: string;
+  readonly galleryAllLabel: string;
+  readonly galleryTablesLabel: string;
+  readonly galleryTraysLabel: string;
+  readonly gallerySaladsLabel: string;
+  readonly galleryCoffeeLabel: string;
+  readonly galleryFishLabel: string;
   readonly topbarWhatsappLabel: string;
   readonly footerTagline: string;
   readonly footerWhatsappLabel: string;
@@ -274,24 +286,6 @@ export interface GalleryImage {
   readonly category: GalleryCategory;
   readonly tall?: boolean;
 }
-
-export const navItems: readonly NavItem[] = [
-  { label: 'מה מזמינים', href: '#experiences' },
-  { label: 'גלריה', href: '#gallery' },
-  { label: 'איך זה עובד', href: '#process' },
-  { label: 'דוגמאות', href: '#samples' },
-  { label: 'שאלות', href: '#faq' },
-  { label: 'יצירת קשר', href: '#contact' },
-];
-
-export const galleryCategories: readonly Readonly<{ id: GalleryCategory; label: string }>[] = [
-  { id: 'all', label: 'הכל' },
-  { id: 'tables', label: 'שולחנות' },
-  { id: 'trays', label: 'מגשים' },
-  { id: 'salads', label: 'סלטים' },
-  { id: 'fish', label: 'דגים' },
-  { id: 'coffee', label: 'קפה' },
-];
 
 const generatedMediaById = new Map(contentSnapshot.media.map((asset) => [asset.id, asset]));
 
@@ -847,6 +841,18 @@ export const heroContent = {
 } as const;
 
 export const siteMicrocopy: SiteMicrocopy = {
+  navExperiencesLabel: getGeneratedMicrocopy('nav-experiences-label', 'מה מזמינים'),
+  navGalleryLabel: getGeneratedMicrocopy('nav-gallery-label', 'גלריה'),
+  navProcessLabel: getGeneratedMicrocopy('nav-process-label', 'איך זה עובד'),
+  navSamplesLabel: getGeneratedMicrocopy('nav-samples-label', 'דוגמאות'),
+  navFaqLabel: getGeneratedMicrocopy('nav-faq-label', 'שאלות'),
+  navContactLabel: getGeneratedMicrocopy('nav-contact-label', 'יצירת קשר'),
+  galleryAllLabel: getGeneratedMicrocopy('gallery-all-label', 'הכל'),
+  galleryTablesLabel: getGeneratedMicrocopy('gallery-tables-label', 'שולחנות'),
+  galleryTraysLabel: getGeneratedMicrocopy('gallery-trays-label', 'מגשים'),
+  gallerySaladsLabel: getGeneratedMicrocopy('gallery-salads-label', 'סלטים'),
+  galleryCoffeeLabel: getGeneratedMicrocopy('gallery-coffee-label', 'קפה'),
+  galleryFishLabel: getGeneratedMicrocopy('gallery-fish-label', 'דגים'),
   topbarWhatsappLabel: getGeneratedMicrocopy('topbar-whatsapp-label', 'וואטסאפ'),
   footerTagline: getGeneratedMicrocopy('footer-tagline', 'אוכל של בית, גימור של בוטיק.'),
   footerWhatsappLabel: getGeneratedMicrocopy('footer-whatsapp-label', 'וואטסאפ'),
@@ -881,6 +887,24 @@ export const siteMicrocopy: SiteMicrocopy = {
   whatsappFooterMessage: getGeneratedMicrocopy('whatsapp-footer-message', 'שלום Nis, אשמח לקבל פרטים.'),
   whatsappFloatingMessage: getGeneratedMicrocopy('whatsapp-floating-message', 'שלום Nis, אשמח לקבל פרטים דרך האתר.'),
 };
+
+export const navItems: readonly NavItem[] = [
+  { label: siteMicrocopy.navExperiencesLabel, href: '#experiences' },
+  { label: siteMicrocopy.navGalleryLabel, href: '#gallery' },
+  { label: siteMicrocopy.navProcessLabel, href: '#process' },
+  { label: siteMicrocopy.navSamplesLabel, href: '#samples' },
+  { label: siteMicrocopy.navFaqLabel, href: '#faq' },
+  { label: siteMicrocopy.navContactLabel, href: '#contact' },
+];
+
+export const galleryCategories: readonly Readonly<{ id: GalleryCategory; label: string }>[] = [
+  { id: 'all', label: siteMicrocopy.galleryAllLabel },
+  { id: 'tables', label: siteMicrocopy.galleryTablesLabel },
+  { id: 'trays', label: siteMicrocopy.galleryTraysLabel },
+  { id: 'salads', label: siteMicrocopy.gallerySaladsLabel },
+  { id: 'fish', label: siteMicrocopy.galleryFishLabel },
+  { id: 'coffee', label: siteMicrocopy.galleryCoffeeLabel },
+];
 
 export const contactInterestOptions: readonly string[] = getGeneratedMicrocopyList('contact-interest-options', [
   'ניס בטעם של שבת',
