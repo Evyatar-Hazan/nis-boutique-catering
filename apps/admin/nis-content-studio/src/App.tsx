@@ -95,6 +95,13 @@ type MediaUsageKind = 'gallery' | 'service';
 type PublishStepState = 'done' | 'active' | 'pending' | 'blocked' | 'error';
 type GalleryPreviewCategory = GalleryItemRecord['category'] | 'all';
 
+type StudioWorkflowStep = {
+  readonly step: string;
+  readonly title: string;
+  readonly text: string;
+  readonly state: PublishStepState;
+};
+
 type PublishProgress = {
   readonly targetVersion: string;
   readonly liveUrl: string;
@@ -1203,6 +1210,12 @@ export const App = () => {
           status={hasErrors ? validationErrorText(validation, referenceIssues) : status}
           hasErrors={hasErrors}
         />
+        <EditingWorkflow
+          activeView={activeView}
+          publishState={publishState}
+          hasErrors={hasErrors}
+          hasPublishUrl={Boolean(studioConfig.publishUrl)}
+        />
 
         <section className="overview-strip" aria-label="מצב התוכן">
           <Metric label="תמונות פעילות בגלריה" value={String(activeGalleryCount)} />
@@ -1244,9 +1257,12 @@ export const App = () => {
               <Field label="קישור WhatsApp" help="כל כפתורי הוואטסאפ באתר משתמשים בכתובת הזו.">
                 <TextInput value={content.settings.whatsappBase} onChange={(value) => updateContent((current) => ({ ...current, settings: { ...current.settings, whatsappBase: value } }))} />
               </Field>
-              <Field label="גרסת תוכן אוטומטית" help="מתעדכן לבד בכל שינוי. משתמשים בזה כדי לדעת שהפרסום האחרון באמת עלה.">
-                <TextInput value={content.settings.siteVersion} onChange={(value) => updateContent((current) => ({ ...current, settings: { ...current.settings, siteVersion: value } }))} />
-              </Field>
+              <details className="technical-details">
+                <summary>פרטי פרסום מתקדמים</summary>
+                <Field label="גרסת תוכן אוטומטית" help="מתעדכן לבד בכל שינוי. בדרך כלל אין צורך לשנות ידנית.">
+                  <TextInput value={content.settings.siteVersion} onChange={(value) => updateContent((current) => ({ ...current, settings: { ...current.settings, siteVersion: value } }))} />
+                </Field>
+              </details>
               <Field label="כותרת SEO" help="כותרת הדף שמופיעה בדפדפן ובשיתוף קישורים.">
                 <TextInput value={content.settings.seoTitle ?? ''} onChange={(value) => updateContent((current) => ({ ...current, settings: { ...current.settings, seoTitle: value || undefined } }))} />
               </Field>
@@ -1827,9 +1843,6 @@ export const App = () => {
                         onRestore={() => restoreMedia(media.id)}
                       />
                     </div>
-                    <Field label="שם תמונה בסטודיו" help="שם קצר באנגלית שמזהה את התמונה במערכת.">
-                      <TextInput value={media.id} onChange={(value) => renameMedia(media.id, value)} />
-                    </Field>
                     <div className="usage-list">
                       <strong>איפה זה משפיע באתר</strong>
                       <MediaUsageList mediaId={media.id} content={content} />
@@ -1862,7 +1875,10 @@ export const App = () => {
                       <button className="ghost-button" onClick={() => handlePickDriveFile(media.id)} disabled={!canUseGoogle}>בחירה מ-Drive</button>
                     </div>
                     <details className="technical-details">
-                      <summary>מקור טכני</summary>
+                      <summary>פרטים מתקדמים</summary>
+                      <Field label="שם תמונה בסטודיו" help="שם קצר באנגלית שמזהה את התמונה במערכת.">
+                        <TextInput value={media.id} onChange={(value) => renameMedia(media.id, value)} />
+                      </Field>
                       <TextInput value={media.src} onChange={(value) => updateMedia(media.id, { src: value })} />
                       <TextInput value={media.driveFileId ?? ''} onChange={(value) => updateMedia(media.id, { driveFileId: value || undefined })} />
                     </details>
@@ -2566,6 +2582,30 @@ const StatusPanel = ({ publishState, status, hasErrors }: { readonly publishStat
     </div>
   );
 };
+
+const EditingWorkflow = ({
+  activeView,
+  publishState,
+  hasErrors,
+  hasPublishUrl,
+}: {
+  readonly activeView: ActiveView;
+  readonly publishState: PublishState;
+  readonly hasErrors: boolean;
+  readonly hasPublishUrl: boolean;
+}) => (
+  <section className="editing-workflow" aria-label="זרימת עבודה">
+    {getStudioWorkflowSteps(activeView, publishState, hasErrors, hasPublishUrl).map(({ step, title, text, state }) => (
+      <article className={`is-${state}`} key={step}>
+        <strong>{step}</strong>
+        <div>
+          <h3>{title}</h3>
+          <p>{text}</p>
+        </div>
+      </article>
+    ))}
+  </section>
+);
 
 const SectionGroupEditor = ({
   title,
@@ -3301,6 +3341,57 @@ const validationErrorText = (
     return validation.error.issues[0]?.message ?? 'יש שדות שצריך לתקן.';
   }
   return referenceIssues[0] ?? 'יש שדות שצריך לתקן.';
+};
+
+// Exported for the UX coverage test that keeps the editing flow understandable.
+// eslint-disable-next-line react-refresh/only-export-components
+export const getStudioWorkflowSteps = (
+  activeView: ActiveView,
+  publishState: PublishState,
+  hasErrors: boolean,
+  hasPublishUrl: boolean,
+): readonly StudioWorkflowStep[] => {
+  if (hasErrors) {
+    return [
+      { step: '1', title: 'עריכה', text: 'יש שדה שצריך לתקן', state: 'error' },
+      { step: '2', title: 'תצוגה מקדימה', text: 'אפשר לבדוק מה השתנה', state: activeView === 'site-map' ? 'pending' : 'active' },
+      { step: '3', title: 'שמירת טיוטה', text: 'חסום עד שהתוכן תקין', state: 'blocked' },
+      { step: '4', title: 'עדכון האתר', text: 'חסום עד שאין שגיאות', state: 'blocked' },
+    ];
+  }
+
+  const isEditingView = activeView !== 'site-map' && activeView !== 'publish';
+  const isPublishView = activeView === 'publish' || publishState === 'publishing' || publishState === 'checking' || publishState === 'published' || publishState === 'live';
+  const isSaved = publishState === 'draft' || publishState === 'publishing' || publishState === 'checking' || publishState === 'published' || publishState === 'live';
+  const saveIsActive = publishState === 'saving';
+  const publishIsActive = publishState === 'publishing' || publishState === 'checking' || publishState === 'published';
+
+  return [
+    {
+      step: '1',
+      title: 'עריכה',
+      text: isEditingView ? 'כותבים ומשנים את האזור הנוכחי' : 'בחרו אזור לעריכה',
+      state: isEditingView ? 'active' : isSaved || isPublishView ? 'done' : 'pending',
+    },
+    {
+      step: '2',
+      title: 'תצוגה מקדימה',
+      text: isEditingView ? 'בדקו מחשב ומובייל לפני שמירה' : 'נפתחת בתוך כל מסך עריכה',
+      state: isEditingView ? 'active' : isSaved || isPublishView ? 'done' : 'pending',
+    },
+    {
+      step: '3',
+      title: 'שמירת טיוטה',
+      text: saveIsActive ? 'שומר עכשיו ל-Google Sheets' : isSaved ? 'הטיוטה נשמרה' : 'שומר ל-Sheets בלי לשנות את האתר',
+      state: saveIsActive ? 'active' : isSaved ? 'done' : 'pending',
+    },
+    {
+      step: '4',
+      title: 'עדכון האתר',
+      text: !hasPublishUrl ? 'חסר חיבור פרסום מאובטח' : publishState === 'live' ? 'האתר החי עודכן' : publishIsActive ? 'הענן בונה ובודק גרסה חיה' : 'מפרסם רק אחרי שמירה ובדיקה',
+      state: !hasPublishUrl ? 'blocked' : publishState === 'live' ? 'done' : publishIsActive ? 'active' : isPublishView ? 'active' : 'pending',
+    },
+  ];
 };
 
 const getPublishSteps = (

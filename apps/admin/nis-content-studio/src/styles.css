@@ -478,6 +478,86 @@ input:disabled {
   background: #fff0ec;
 }
 
+.editing-workflow {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin: -6px 0 18px;
+}
+
+.editing-workflow article {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid #ded7c9;
+  border-radius: 8px;
+  background: #fffdf8;
+}
+
+.editing-workflow article.is-done {
+  border-color: #b7d3bd;
+  background: #f1f8f1;
+}
+
+.editing-workflow article.is-active {
+  border-color: #d6ad4a;
+  background: #fff6dd;
+  box-shadow: inset 0 0 0 1px rgba(150, 112, 44, 0.18);
+}
+
+.editing-workflow article.is-blocked {
+  opacity: 0.72;
+}
+
+.editing-workflow article.is-error {
+  color: #782929;
+  border-color: #e0b4aa;
+  background: #fff0ec;
+}
+
+.editing-workflow article > strong {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border-radius: 999px;
+  color: #202520;
+  background: #e7c36a;
+}
+
+.editing-workflow article.is-done > strong {
+  color: #fffdf8;
+  background: #25875a;
+}
+
+.editing-workflow article.is-active > strong {
+  color: #fffdf8;
+  background: #96702c;
+}
+
+.editing-workflow article.is-blocked > strong,
+.editing-workflow article.is-error > strong {
+  color: #fffdf8;
+  background: #8b3a2f;
+}
+
+.editing-workflow h3,
+.editing-workflow p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.editing-workflow h3 {
+  font-size: 14px;
+}
+
+.editing-workflow p {
+  color: #6d6354;
+  font-size: 12px;
+}
+
 .overview-strip {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -2643,6 +2723,7 @@ input[type="checkbox"] {
 
   .inline-grid,
   .overview-strip,
+  .editing-workflow,
   .preview-services,
   .publish-flow,
   .split-editor {

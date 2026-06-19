@@ -1,6 +1,6 @@
 import { cleanup, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
-import { App, managedSectionDefaults } from './App';
+import { App, getStudioWorkflowSteps, managedSectionDefaults } from './App';
 import '@testing-library/jest-dom/vitest';
 
 describe('Content Studio', () => {
@@ -107,5 +107,21 @@ describe('Content Studio', () => {
 
     expect(requiredIds.filter((id) => !managedIds.has(id))).toEqual([]);
     expect(requiredGroups.filter((group) => !managedGroups.has(group))).toEqual([]);
+  });
+
+  it('keeps the studio editing workflow clear across editing and publish states', () => {
+    const editingSteps = getStudioWorkflowSteps('services', 'draft', false, true);
+    const errorSteps = getStudioWorkflowSteps('faq', 'draft', true, true);
+    const liveSteps = getStudioWorkflowSteps('publish', 'live', false, true);
+
+    expect(editingSteps).toEqual([
+      expect.objectContaining({ title: 'עריכה', state: 'active' }),
+      expect.objectContaining({ title: 'תצוגה מקדימה', state: 'active' }),
+      expect.objectContaining({ title: 'שמירת טיוטה', state: 'done' }),
+      expect.objectContaining({ title: 'עדכון האתר', state: 'pending' }),
+    ]);
+    expect(errorSteps.at(0)).toEqual(expect.objectContaining({ title: 'עריכה', state: 'error' }));
+    expect(errorSteps.at(2)).toEqual(expect.objectContaining({ title: 'שמירת טיוטה', state: 'blocked' }));
+    expect(liveSteps.at(3)).toEqual(expect.objectContaining({ title: 'עדכון האתר', state: 'done', text: 'האתר החי עודכן' }));
   });
 });
