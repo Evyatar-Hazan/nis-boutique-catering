@@ -62,7 +62,7 @@ export const sectionBlockSchema = z.object({
   text: z.string().min(1).optional(),
   items: z.array(z.string().min(1)).default([]),
   active: z.coerce.boolean().default(true),
-  order: z.coerce.number().int().nonnegative().default(0),
+  order: z.coerce.number().int().default(0),
   deletedAt: z.string().optional(),
 });
 
