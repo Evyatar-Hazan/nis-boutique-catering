@@ -28,6 +28,8 @@ describe('Nis boutique catering app', () => {
     ).toBeInTheDocument();
     expect(screen.getAllByText('מגשי אירוח')[0]).toBeInTheDocument();
     expect(screen.getAllByText('מומלץ לפנות מוקדם')[0]).toBeInTheDocument();
+    expect(screen.getByText('אירוח קטן')).toBeInTheDocument();
+    expect(screen.getByText('מארזים חכמים לדרך ולרגעים מיוחדים')).toBeInTheDocument();
   });
 
   it('filters the gallery by category', () => {

@@ -15,6 +15,7 @@ import {
   heroBadges,
   heroContent,
   heroSceneNotes,
+  heroStats,
   manifestoMoments,
   menuGroups,
   phoneHref,
@@ -152,6 +153,14 @@ export const HeroSection = ({ heroWhatsapp }: { readonly heroWhatsapp: string })
             );
           })}
         </div>
+        <dl className="hero-proof" aria-label="נתוני אירוח">
+          {heroStats.map((stat) => (
+            <div key={stat.value}>
+              <dt>{stat.value}</dt>
+              <dd>{stat.label}</dd>
+            </div>
+          ))}
+        </dl>
       </div>
       <div className="hero-showcase reveal is-visible" aria-label="תמונות אירוח של Nis">
         <div className="hero-stage-frame">

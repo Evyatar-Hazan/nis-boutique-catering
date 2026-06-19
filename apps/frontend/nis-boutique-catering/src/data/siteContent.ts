@@ -1032,11 +1032,26 @@ export const sectionCopy = {
   }),
 } as const;
 
-export const heroStats: readonly Readonly<{ value: string; label: string }>[] = [
+const fallbackHeroStats: readonly Readonly<{ value: string; label: string }>[] = [
   { value: 'שבתות', label: 'אוכל ביתי מוקפד, מוכן להגשה' },
   { value: 'אירוח קטן', label: 'מגשים ושולחנות שנראים כמו בוטיק' },
   { value: 'Travel Nis', label: 'מארזים חכמים לדרך ולרגעים מיוחדים' },
 ];
+
+export const heroStats: readonly Readonly<{ value: string; label: string }>[] = (() => {
+  const generated = getGeneratedSectionsByGroup('hero-stats');
+  if (generated.length === 0) {
+    return fallbackHeroStats;
+  }
+
+  return generated.map((section, index) => {
+    const base = fallbackHeroStats[index] ?? fallbackHeroStats[0];
+    return {
+      value: section.title ?? base.value,
+      label: section.text ?? base.label,
+    };
+  });
+})();
 
 const fallbackHeroSceneNotes: readonly Readonly<{ title: string; text: string }>[] = [
   {
