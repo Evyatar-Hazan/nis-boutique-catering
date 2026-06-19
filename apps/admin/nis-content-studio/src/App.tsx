@@ -1185,6 +1185,7 @@ export const App = () => {
                 onDeviceChange={setPreviewDevice}
               />
               <ContactPreview content={content} device={previewDevice} />
+              <MetadataSeoPreview content={content} device={previewDevice} />
               <PublishPanel
                 content={content}
                 hasErrors={hasErrors}
@@ -2212,6 +2213,25 @@ const getPreviewMicrocopyItems = (content: ContentSnapshot, id: string, fallback
   return items && items.length > 0 ? items : fallback;
 };
 
+const seoTitleFallback = 'Nis Boutique Catering';
+const seoDescriptionFallback = 'תיאור קצר שיופיע במנועי חיפוש ובשיתוף קישורים.';
+
+const getSeoStatus = (value: string, min: number, max: number) => {
+  if (!value.trim()) {
+    return { label: 'חסר', tone: 'warning' } as const;
+  }
+
+  if (value.length < min) {
+    return { label: 'קצר מדי', tone: 'warning' } as const;
+  }
+
+  if (value.length > max) {
+    return { label: 'ארוך מדי', tone: 'warning' } as const;
+  }
+
+  return { label: 'תקין', tone: 'good' } as const;
+};
+
 const ContactPreview = ({ content, device }: { readonly content: ContentSnapshot; readonly device: PreviewDevice }) => {
   const copy = getPreviewCopySection(content, 'contact', {
     eyebrow: 'יצירת קשר',
@@ -2267,13 +2287,6 @@ const ContactPreview = ({ content, device }: { readonly content: ContentSnapshot
             <strong>{promiseHeading}</strong>
             <span>{copy.extraText}</span>
           </div>
-          <div className="metadata-preview-card">
-            <p className="kicker">SEO ושיתוף קישור</p>
-            <h4>{content.settings.seoTitle || 'Nis Boutique Catering'}</h4>
-            <p>{content.settings.seoDescription || 'תיאור קצר שיופיע במנועי חיפוש ובשיתוף קישורים.'}</p>
-            <span>{publicSiteOrigin.replace('https://', '')}</span>
-            <small>גרסת תוכן: {content.settings.siteVersion}</small>
-          </div>
         </div>
         <div className="contact-form-preview" aria-label="תצוגה מקדימה לטופס יצירת קשר">
           <label>
@@ -2312,6 +2325,68 @@ const ContactPreview = ({ content, device }: { readonly content: ContentSnapshot
             <Send aria-hidden="true" />
             {formLabels.submit}
           </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const MetadataSeoPreview = ({ content, device }: { readonly content: ContentSnapshot; readonly device: PreviewDevice }) => {
+  const title = content.settings.seoTitle || seoTitleFallback;
+  const description = content.settings.seoDescription || seoDescriptionFallback;
+  const titleStatus = getSeoStatus(content.settings.seoTitle ?? '', 20, 60);
+  const descriptionStatus = getSeoStatus(content.settings.seoDescription ?? '', 70, 160);
+  const cleanUrl = publicSiteOrigin.replace('https://', '');
+
+  return (
+    <div className={device === 'mobile' ? 'preview-frame is-mobile' : 'preview-frame is-desktop'}>
+      <PreviewBrowserBar device={device} />
+      <div className="site-section-preview site-section-preview-frame metadata-site-preview">
+        <div className="metadata-preview-heading">
+          <p className="kicker">מטה דאטה ו-SEO</p>
+          <h3>כך האתר נראה כשמשתפים אותו או מוצאים אותו בגוגל.</h3>
+          <p>הכותרת והתיאור צריכים להיות ברורים, קצרים ומוכנים ללקוח. הסטטוס כאן עוזר לזהות בעיות לפני פרסום.</p>
+        </div>
+        <div className="metadata-preview-grid">
+          <article className="metadata-search-card" aria-label="תצוגת חיפוש Google">
+            <div className="metadata-card-heading">
+              <Search aria-hidden="true" />
+              <span>Google</span>
+            </div>
+            <span className="metadata-url">{cleanUrl}</span>
+            <h4>{title}</h4>
+            <p>{description}</p>
+          </article>
+          <article className="metadata-share-card" aria-label="תצוגת שיתוף קישור">
+            <div className="metadata-share-image">
+              <img src={`${publicSiteOrigin}/brand/nis-logo.svg`} alt="" />
+            </div>
+            <div>
+              <span>{cleanUrl}</span>
+              <h4>{title}</h4>
+              <p>{description}</p>
+            </div>
+          </article>
+          <article className="metadata-health-card" aria-label="בדיקת שדות SEO">
+            <div className="metadata-card-heading">
+              <Eye aria-hidden="true" />
+              <span>בדיקת שדות</span>
+            </div>
+            <div className="metadata-health-row">
+              <strong>כותרת SEO</strong>
+              <span>{title.length} תווים</span>
+              <mark className={`is-${titleStatus.tone}`}>{titleStatus.tone === 'good' ? <CheckCircle2 aria-hidden="true" /> : <AlertTriangle aria-hidden="true" />}{titleStatus.label}</mark>
+            </div>
+            <div className="metadata-health-row">
+              <strong>תיאור SEO</strong>
+              <span>{description.length} תווים</span>
+              <mark className={`is-${descriptionStatus.tone}`}>{descriptionStatus.tone === 'good' ? <CheckCircle2 aria-hidden="true" /> : <AlertTriangle aria-hidden="true" />}{descriptionStatus.label}</mark>
+            </div>
+            <div className="metadata-version-row">
+              <span>גרסת תוכן</span>
+              <strong>{content.settings.siteVersion || content.version}</strong>
+            </div>
+          </article>
         </div>
       </div>
     </div>
