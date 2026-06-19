@@ -1,6 +1,6 @@
 import { cleanup, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
-import { App } from './App';
+import { App, managedSectionDefaults } from './App';
 import '@testing-library/jest-dom/vitest';
 
 describe('Content Studio', () => {
@@ -20,5 +20,92 @@ describe('Content Studio', () => {
 
     expect(screen.getByText('כניסה למורשים בלבד')).toBeInTheDocument();
     expect(screen.getByText(/רק משתמשים שאושרו מראש/)).toBeInTheDocument();
+  });
+
+  it('keeps managed section defaults aligned with public site generated content', () => {
+    const requiredIds = [
+      'hero',
+      'hero-badges',
+      'hero-marquee',
+      'facts',
+      'seo-topics',
+      ...[
+        'intro-band',
+        'manifesto',
+        'editorial',
+        'audience',
+        'experience-lab',
+        'signature',
+        'boutique',
+        'services',
+        'process',
+        'story',
+        'samples',
+        'coordination',
+        'real-media',
+        'gallery',
+        'details',
+        'booking-basics',
+        'seo',
+        'trust',
+        'faq',
+        'contact',
+      ].map((id) => `copy-${id}`),
+      ...[
+        'nav-experiences-label',
+        'nav-gallery-label',
+        'nav-process-label',
+        'nav-samples-label',
+        'nav-faq-label',
+        'nav-contact-label',
+        'gallery-all-label',
+        'gallery-tables-label',
+        'gallery-trays-label',
+        'gallery-salads-label',
+        'gallery-fish-label',
+        'gallery-coffee-label',
+        'topbar-whatsapp-label',
+        'footer-tagline',
+        'footer-whatsapp-label',
+        'studio-login-label',
+        'floating-whatsapp-aria',
+        'mobile-actions-aria',
+        'mobile-whatsapp-label',
+        'mobile-phone-label',
+        'hero-primary-cta',
+        'hero-secondary-cta',
+        'hero-microcopy',
+        'hero-showcase-title',
+        'hero-showcase-text',
+        'hero-video-chip',
+        'experience-cta',
+        'contact-primary-cta',
+        'contact-phone-cta',
+        'contact-location',
+        'contact-promise-heading',
+        'form-name-label',
+        'form-phone-label',
+        'form-email-label',
+        'form-interest-label',
+        'form-date-label',
+        'form-guests-label',
+        'form-delivery-label',
+        'form-message-label',
+        'form-submit-label',
+        'whatsapp-topbar-message',
+        'whatsapp-hero-topic',
+        'whatsapp-contact-message',
+        'whatsapp-footer-message',
+        'whatsapp-floating-message',
+        'contact-interest-options',
+        'contact-delivery-options',
+      ].map((id) => `microcopy-${id}`),
+    ];
+    const requiredGroups = ['editorial', 'manifesto', 'audience', 'boutique', 'process', 'signature', 'story', 'samples', 'coordination', 'hero-notes', 'hero-stats', 'trust', 'faq'];
+    const managedIds = new Set(managedSectionDefaults.map((section) => section.id));
+    const managedGroups = new Set(managedSectionDefaults.map((section) => section.group));
+
+    expect(requiredIds.filter((id) => !managedIds.has(id))).toEqual([]);
+    expect(requiredGroups.filter((group) => !managedGroups.has(group))).toEqual([]);
   });
 });

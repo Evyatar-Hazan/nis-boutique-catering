@@ -1314,6 +1314,34 @@ input[type="checkbox"] {
   font-weight: 800;
 }
 
+.nested-editor-list {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid #ded5c4;
+  border-radius: 8px;
+  background: #fffaf0;
+}
+
+.nested-editor-list > strong {
+  color: #4a3720;
+}
+
+.nested-editor-list > span {
+  color: #6f6558;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.nested-editor-list article {
+  display: grid;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid #e5dccb;
+  border-radius: 8px;
+  background: #fff;
+}
+
 .usage-list,
 .media-selection-usage,
 .asset-path {

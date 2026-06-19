@@ -274,7 +274,10 @@ const makeSection = (
   order,
 });
 
-const managedSectionDefaults: readonly SectionBlockRecord[] = [
+// Exported for the coverage test that keeps public generated content aligned with studio defaults.
+// eslint-disable-next-line react-refresh/only-export-components
+export const managedSectionDefaults: readonly SectionBlockRecord[] = [
+  makeSection('hero', 'hero', 'קייטרינג בוטיק ביתי\nלשבתות ואירועים קטנים', 'רואים את הסגנון, בוחרים את סוג ההזמנה, ומשאירים פנייה מסודרת. Nis כבר תהפוך את זה לתפריט, מגשים או מארז שמתאימים לאירוח שלכם.', ['מהרובע היהודי לביתר עילית', 'שבתות, מגשי אירוח ו־Travel Nis, עם אוכל מוקפד, נראות יפה ושיחה קצרה שסוגרת כיוון.'], 0),
   makeCopySection('intro-band', 'אוכל ביתי מוקפד, בהגשה של בוטיק, לאירוח קטן שמרגיש גדול.', 'במקום לנסות להיות הכול, Nis בנויה סביב שלוש חוויות ברורות: שבתות, אירועים קטנים ומארזים לדרך. החוט שמחבר ביניהן הוא אותו חוט: אוכל שמרגיש חם וביתי, נראות נקייה ומכובדת, ושירות אישי שלא משאיר אתכם לבד עם הפרטים.', 'רעיון אחד ברור', 1),
   makeCopySection('manifesto', 'לא עוד מגש.\nחוויית אירוח שנראית\nכמו מחשבה.', 'כש־Nis נראית נכון, זה מרגיש מיד אחרת: יותר שקט למארח, יותר כבוד לשולחן, ויותר תחושה שמישהו החזיק את כל הפרטים יחד.', 'השפה של Nis', 2),
   makeCopySection('editorial', 'שלוש קטגוריות ברורות. שפה אחת של אירוח.', undefined, 'מה מזמינים אצלנו', 3),
@@ -374,6 +377,15 @@ const managedSectionDefaults: readonly SectionBlockRecord[] = [
   makeSection('coordination-time', 'coordination', 'זמן פנייה מומלץ', 'לשבתות, חגים ואירועים כדאי לפנות כמה שיותר מוקדם כדי להשאיר מקום להתאמה אישית.', ['CalendarDays'], 2),
   makeSection('coordination-price', 'coordination', 'הצעת מחיר', 'מקבלים הצעה מותאמת אחרי שמבינים את סוג האירוח, הכמות, התאריך ורמת ההגשה הרצויה.', ['Users'], 3),
   makeSection('coordination-confirm', 'coordination', 'אישור תפריט', 'אחרי שיחה קצרה מסכמים כיוון, התאמות, תאריך ואופן קבלה לפני סגירת ההזמנה.', ['ClipboardList'], 4),
+  makeSection('trust-ready', 'trust', 'אסתטיקה שמגיעה מוכנה', 'המנות נארזות ומסודרות כך שהשולחן נראה מוקפד בלי עבודה מיותרת מצדכם.', ['Sparkles'], 1),
+  makeSection('trust-personal', 'trust', 'התאמה לפני סגירה', 'לפני שמתקדמים עוברים יחד על סוג האירוח, מספר הסועדים והעדפות חשובות.', ['ClipboardList'], 2),
+  makeSection('trust-human', 'trust', 'שיחה אישית, לא תפריט גנרי', 'כל פנייה מקבלת מענה לפי התאריך, המיקום והחוויה שאתם רוצים ליצור.', ['HeartHandshake'], 3),
+  makeSection('faq-timing', 'faq', 'כמה זמן מראש צריך להזמין?', 'מומלץ לפנות כמה שיותר מוקדם, במיוחד לפני שבתות, חגים ואירועים עם מספר סועדים גדול.', [], 1),
+  makeSection('faq-delivery', 'faq', 'האם יש משלוחים?', 'העסק פועל מביתר עילית. משלוח או איסוף בסביבה נבדקים מול הלקוח לפי מיקום, תאריך וסוג הזמנה.', [], 2),
+  makeSection('faq-custom-menu', 'faq', 'האם אפשר להרכיב תפריט אישי?', 'כן. כל הזמנה נבנית אחרי שיחה קצרה כדי להתאים את התפריט לאירוח, לסועדים ולסגנון המבוקש.', [], 3),
+  makeSection('faq-preferences', 'faq', 'האם אפשר להתחשב ברגישויות או בהעדפות?', 'כן. מעלים רגישויות, אלרגיות או העדפות בתחילת השיחה, ובודקים יחד מה אפשר להתאים בפועל.', [], 4),
+  makeSection('faq-business-events', 'faq', 'האם אפשר להזמין לאירועים עסקיים?', 'כן. Nis בכיס מתאימה גם להרמות כוסית, ישיבות, אירוח עסקי ושולחנות קטנים ומוקפדים.', [], 5),
+  makeSection('faq-minimum-order', 'faq', 'האם יש מינימום הזמנה?', 'מינימום הזמנה ייקבע בשיחה לפי סוג השירות, התאריך והיקף האירוח.', [], 6),
   makeSection('hero-badges', 'hero-badges', 'תגיות אמון במסך הפתיחה', undefined, ['שבתות', 'מגשי אירוח', 'Travel Nis', 'מומלץ לפנות מוקדם'], 1),
   makeSection('hero-stat-shabbat', 'hero-stats', 'שבתות', 'אוכל ביתי מוקפד, מוכן להגשה', [], 1),
   makeSection('hero-stat-events', 'hero-stats', 'אירוח קטן', 'מגשים ושולחנות שנראים כמו בוטיק', [], 2),
@@ -597,6 +609,8 @@ export const App = () => {
         .sort((left, right) => left.order - right.order),
     [content.gallery, query],
   );
+  const factsSection = content.sections.find((section) => section.id === 'facts');
+  const seoTopicsSection = content.sections.find((section) => section.id === 'seo-topics');
 
   const markDraft = () => {
     if (authState === 'authorized') {
@@ -1239,6 +1253,16 @@ export const App = () => {
               <Field label="תיאור SEO" help="תיאור קצר למנועי חיפוש ושיתופים.">
                 <textarea value={content.settings.seoDescription ?? ''} onChange={(event) => updateContent((current) => ({ ...current, settings: { ...current.settings, seoDescription: event.target.value || undefined } }))} />
               </Field>
+              {seoTopicsSection && (
+                <Field label="תגיות תחומי שירות" help="מופיע באזור SEO באתר כתגיות קצרות. מפרידים עם |">
+                  <TextInput value={joinPipeList(seoTopicsSection.items)} onChange={(value) => updateSection(seoTopicsSection.id, { items: splitPipeList(value) })} />
+                </Field>
+              )}
+              {factsSection && (
+                <Field label="פרטים שחשוב לדעת" help="מופיע באזור “פרטים שחשוב לדעת” באתר. מפרידים כל פרט עם |">
+                  <TextInput value={joinPipeList(factsSection.items)} onChange={(value) => updateSection(factsSection.id, { items: splitPipeList(value) })} />
+                </Field>
+              )}
             </div>
             <div className="preview-column">
               <PreviewHeader
@@ -1945,6 +1969,10 @@ const HeroEditor = ({
   readonly addSection: (group?: string) => void;
 }) => {
   const hero = content.sections.find((section) => section.id === 'hero') ?? content.sections.find((section) => section.group === 'hero');
+  const heroBadges = content.sections.find((section) => section.id === 'hero-badges');
+  const heroStats = content.sections
+    .filter((section) => section.group === 'hero-stats')
+    .sort((left, right) => left.order - right.order);
 
   if (!hero) {
     return (
@@ -1972,6 +2000,27 @@ const HeroEditor = ({
         <Field label="שורות קטנות במסך הפתיחה" help="הפריט הראשון הוא טקסט מעל הכותרת. השני הוא משפט מודגש קצר. מפרידים עם |">
           <TextInput value={joinPipeList(hero.items)} onChange={(value) => updateSection(hero.id, { items: splitPipeList(value) })} />
         </Field>
+        {heroBadges && (
+          <Field label="תגיות אמון ב-Hero" help="התגיות הקטנות מתחת לכפתורים במסך הפתיחה. מפרידים עם |">
+            <TextInput value={joinPipeList(heroBadges.items)} onChange={(value) => updateSection(heroBadges.id, { items: splitPipeList(value) })} />
+          </Field>
+        )}
+        {heroStats.length > 0 && (
+          <div className="nested-editor-list">
+            <strong>נתוני Hero</strong>
+            <span>מופיע בשורת הנתונים שמתחת למסך הפתיחה.</span>
+            {heroStats.map((stat) => (
+              <article key={stat.id}>
+                <Field label="ערך קצר" help="לדוגמה: שבתות, אירוח קטן, Travel Nis.">
+                  <TextInput value={stat.title ?? ''} onChange={(value) => updateSection(stat.id, { title: value || undefined })} />
+                </Field>
+                <Field label="הסבר קצר" help="משפט שמסביר את הערך.">
+                  <TextInput value={stat.text ?? ''} onChange={(value) => updateSection(stat.id, { text: value || undefined })} />
+                </Field>
+              </article>
+            ))}
+          </div>
+        )}
       </div>
       <div className="preview-column">
         <PreviewHeader
@@ -2644,7 +2693,7 @@ const SectionGroupSitePreview = ({
     title,
     text: 'כך האזור הזה יופיע באתר אחרי פרסום.',
   };
-  const managedCopy = allSections.find((section) => section.group === 'site-copy' && section.id === group && section.active && !section.deletedAt);
+  const managedCopy = allSections.find((section) => section.group === 'site-copy' && section.id === `copy-${group}` && section.active && !section.deletedAt);
   const copy = {
     eyebrow: managedCopy?.items[0] || fallbackCopy.eyebrow,
     title: managedCopy?.title || fallbackCopy.title,
