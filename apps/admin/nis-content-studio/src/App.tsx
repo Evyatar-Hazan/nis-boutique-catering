@@ -247,7 +247,6 @@ const sectionGroupLabels: Readonly<Record<string, string>> = {
   coordination: 'תיאום וזמינות',
   faq: 'שאלות ותשובות',
   trust: 'אמון',
-  facts: 'נתונים',
   'hero-notes': 'נקודות Hero',
   'hero-marquee': 'טקסט רץ Hero',
   general: 'כללי',
@@ -305,7 +304,6 @@ export const managedSectionDefaults: readonly SectionBlockRecord[] = [
   makeCopySection('coordination', 'הפרטים שעוזרים להתקדם בביטחון.', undefined, 'תיאום וזמינות', 12),
   makeCopySection('real-media', 'ככה נראית תשומת לב לפני שהאירוח בכלל פוגש את האורחים.', 'מנות אישיות, אריזה נקייה, מדבקת Nis ופרטים קטנים שמסדרים את החוויה עוד לפני הביס הראשון. התמונות והווידאו כאן הם מהכנות אמיתיות של Nis.', 'וידאו אמיתי', 13),
   makeCopySection('gallery', 'קודם רואים. אחר כך הרבה יותר קל לפנות.', 'שולחנות, מגשים, סלטים, קפה ופרטים קטנים שמראים את הסגנון לפני שמתחילים לדבר על תפריט.', 'גלריה', 14),
-  makeCopySection('details', 'שומרים על ציפיות ברורות כבר מהשיחה הראשונה.', undefined, 'פרטים שחשוב לדעת', 15),
   makeCopySection('booking-basics', 'כל מה שצריך לדעת כדי לשלוח פנייה בלי להתלבט.', 'מספיק לדעת מה סוג האירוח, בערך כמה סועדים ומה התאריך הרצוי. משם אפשר לדייק יחד את התפריט, ההגשה ואופן הקבלה.', 'לפני שפונים', 16),
   makeCopySection('seo', 'קייטרינג בוטיק מביתר עילית לשבת, אירוח קטן ומארזים לדרך.', 'Nis נותנת מענה למי שמחפש קייטרינג בוטיק בביתר עילית והסביבה: תפריט שבת מוכן, מגשי אירוח לאירועים קטנים, פינגר פוד, בראנץ׳ משפחתי ומארזי פיקניק או דרך. כל פנייה מתחילה בשיחה קצרה כדי להבין את סוג האירוח, כמות הסועדים, התאריך והתחושה שרוצים ליצור.', 'מה אפשר להזמין', 17),
   makeCopySection('trust', 'פחות סימני שאלה, יותר תחושה שיש עם מי לדבר.', undefined, 'מה מרגיע לפני שסוגרים', 18),
@@ -358,7 +356,6 @@ export const managedSectionDefaults: readonly SectionBlockRecord[] = [
   makeMicrocopySection('whatsapp-floating-message', 'הודעת וואטסאפ מהכפתור הצף', 'שלום Nis, אשמח לקבל פרטים דרך האתר.', 33),
   makeMicrocopySection('contact-interest-options', 'אפשרויות שדה סוג הזמנה', undefined, 34, ['ניס בטעם של שבת', 'ניס בכיס - מגשי אירוח', 'Travel Nis', 'אירוע קטן', 'אחר']),
   makeMicrocopySection('contact-delivery-options', 'אפשרויות שדה אופן קבלה', undefined, 35, ['נדבר ונבדוק יחד', 'איסוף מביתר עילית', 'משלוח בתיאום']),
-  makeSection('facts', 'facts', 'פרטים שחשוב לדעת', undefined, ['אזור פעילות: ביתר עילית והסביבה, בתיאום לפי תאריך ומיקום.', 'להזמנות שבת ואירועים מומלץ לפנות מוקדם ככל האפשר.', 'כל הזמנה מקבלת הצעה מותאמת אחרי שיחה קצרה והבנת הצורך.', 'אפשר לדבר על העדפות, רגישויות והתאמות תפריט לפי הצורך.'], 1),
   makeSection('seo-topics', 'seo-topics', 'תגיות תחומי שירות לאזור SEO', undefined, ['קייטרינג בוטיק בביתר עילית', 'תפריט שבת מוכן ומסודר', 'מגשי אירוח לאירועים קטנים', 'פינגר פוד והרמות כוסית', 'מארזי פיקניק ומארזי דרך', 'אירוח משפחתי בהתאמה אישית'], 1),
   makeSection('editorial-shabbat', 'editorial', 'אוכל ביתי מוקפד לשבת שנכנסת ברוגע', 'תפריטי שבת עשירים, מסודרים ויפים להגשה, כדי שהבית ירגיש מלא בלי שכל העומס יישב עליכם.', ['שבתות', 'ChefHat'], 1),
   makeSection('editorial-events', 'editorial', 'שולחן שנפתח יפה ומייצר רושם כבר בדקה הראשונה', 'מגשי אירוח, פינגר פוד ושולחנות קטנים עם הגשה אסתטית שמתאימה למשפחה, מפגש או אירוח עסקי.', ['אירועים קטנים', 'Sparkles'], 2),
@@ -622,7 +619,6 @@ export const App = () => {
         .sort((left, right) => left.order - right.order),
     [content.gallery, query],
   );
-  const factsSection = content.sections.find((section) => section.id === 'facts');
   const seoTopicsSection = content.sections.find((section) => section.id === 'seo-topics');
 
   const markDraft = () => {
@@ -1279,11 +1275,6 @@ export const App = () => {
               {seoTopicsSection && (
                 <Field label="תגיות תחומי שירות" help="מופיע באזור SEO באתר כתגיות קצרות. מפרידים עם |">
                   <TextInput value={joinPipeList(seoTopicsSection.items)} onChange={(value) => updateSection(seoTopicsSection.id, { items: splitPipeList(value) })} />
-                </Field>
-              )}
-              {factsSection && (
-                <Field label="פרטים שחשוב לדעת" help="מופיע באזור “פרטים שחשוב לדעת” באתר. מפרידים כל פרט עם |">
-                  <TextInput value={joinPipeList(factsSection.items)} onChange={(value) => updateSection(factsSection.id, { items: splitPipeList(value) })} />
                 </Field>
               )}
             </div>

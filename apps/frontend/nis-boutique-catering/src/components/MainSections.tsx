@@ -8,7 +8,6 @@ import {
   contactInterestOptions,
   coordinationCards,
   editorialCards,
-  facts,
   faqs,
   foodMedia,
   galleryCategories,
@@ -669,25 +668,6 @@ export const GallerySection = ({
   );
 };
 
-export const DetailsSection = () => (
-  <section className="section details-section" aria-labelledby="details-title">
-    <div className="container split-section">
-      <div className="reveal">
-        <p className="eyebrow">{sectionCopy.details.eyebrow}</p>
-        <h2 id="details-title">{sectionCopy.details.title}</h2>
-      </div>
-      <ul className="fact-list reveal">
-        {facts.map((fact) => (
-          <li key={fact}>
-            <CheckCircle2 aria-hidden="true" />
-            <span>{fact}</span>
-          </li>
-        ))}
-      </ul>
-    </div>
-  </section>
-);
-
 export const BookingBasicsSection = () => (
   <section className="section booking-basics-section soft-section" aria-labelledby="booking-basics-title">
     <div className="container booking-basics-grid">
@@ -697,7 +677,7 @@ export const BookingBasicsSection = () => (
         <TextParagraphs text={sectionCopy.bookingBasics.text} />
       </div>
       <div className="booking-basics-content">
-        <div className="compact-grid booking-facts">
+        <div className="compact-grid booking-basics-cards">
           {coordinationCards.map((card) => {
             const Icon = card.icon;
             return (

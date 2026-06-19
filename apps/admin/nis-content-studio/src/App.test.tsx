@@ -27,7 +27,6 @@ describe('Content Studio', () => {
       'hero',
       'hero-badges',
       'hero-marquee',
-      'facts',
       'seo-topics',
       ...[
         'intro-band',
@@ -44,7 +43,6 @@ describe('Content Studio', () => {
         'coordination',
         'real-media',
         'gallery',
-        'details',
         'booking-basics',
         'seo',
         'trust',

@@ -999,10 +999,6 @@ export const sectionCopy = {
     text:
       'שולחנות, מגשים, סלטים, קפה ופרטים קטנים שמראים את הסגנון לפני שמתחילים לדבר על תפריט.',
   }),
-  details: getGeneratedSectionCopy('details', {
-    eyebrow: 'פרטים שחשוב לדעת',
-    title: 'שומרים על ציפיות ברורות כבר מהשיחה הראשונה.',
-  }),
   bookingBasics: getGeneratedSectionCopy('booking-basics', {
     eyebrow: 'לפני שפונים',
     title: 'כל מה שצריך לדעת כדי לשלוח פנייה בלי להתלבט.',
@@ -1122,17 +1118,6 @@ export const signatureMoments: readonly Readonly<{ title: string; text: string; 
     };
   });
 })();
-
-const factsSection = getGeneratedSection('facts');
-
-export const facts: readonly string[] = factsSection?.items.length
-  ? factsSection.items
-  : [
-  'אזור פעילות: ביתר עילית והסביבה, בתיאום לפי תאריך ומיקום.',
-  'להזמנות שבת ואירועים מומלץ לפנות מוקדם ככל האפשר.',
-  'כל הזמנה מקבלת הצעה מותאמת אחרי שיחה קצרה והבנת הצורך.',
-  'אפשר לדבר על העדפות, רגישויות והתאמות תפריט לפי הצורך.',
-];
 
 const fallbackSeoTopics: readonly string[] = [
   'קייטרינג בוטיק בביתר עילית',

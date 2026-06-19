@@ -5,7 +5,6 @@ import {
   BoutiqueSection,
   ContactSection,
   CoordinationSection,
-  DetailsSection,
   EditorialSection,
   ExperienceLabSection,
   FaqSection,
@@ -136,7 +135,6 @@ function App() {
         <StorySection />
         <SamplesSection />
         <CoordinationSection />
-        <DetailsSection />
         <BookingBasicsSection />
         <SeoSection />
         <TrustSection />

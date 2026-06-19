@@ -1260,7 +1260,7 @@ details p {
   gap: 20px;
 }
 
-.booking-facts {
+.booking-basics-cards {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
@@ -1312,7 +1312,6 @@ details p {
 
 .story-section .section h2,
 .story-section h2,
-.details-section h2,
 .contact-section h2 {
   color: var(--ivory);
 }
@@ -1591,36 +1590,6 @@ details p {
 .gallery-item:hover span {
   transform: translateY(-3px);
   background: rgba(24, 16, 12, 0.84);
-}
-
-.details-section {
-  background:
-    radial-gradient(circle at 82% 10%, rgba(216, 187, 132, 0.16), transparent 24rem),
-    var(--espresso);
-  color: var(--ivory);
-}
-
-.fact-list {
-  display: grid;
-  gap: 14px;
-  padding: 0;
-  margin: 0;
-  list-style: none;
-}
-
-.fact-list li {
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
-  color: rgba(255, 250, 242, 0.82);
-  font-size: 1.06rem;
-  line-height: 1.7;
-}
-
-.fact-list svg {
-  flex: 0 0 auto;
-  color: var(--gold);
-  margin-block-start: 4px;
 }
 
 .testimonial-card {
