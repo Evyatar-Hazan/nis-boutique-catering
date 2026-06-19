@@ -45,7 +45,7 @@ export interface ImageAsset {
 
 export const brandMedia = {
   logo: {
-    src: '/brand/nis-logo.svg',
+    src: '/brand/nis-logo-20260619.svg',
     width: 1060,
     height: 610,
   },
