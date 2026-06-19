@@ -617,6 +617,7 @@ export const manifestoMoments: readonly Readonly<{
       label: section.items[0] ?? base.label,
       title: section.title ?? base.title,
       text: section.text ?? base.text,
+      image: getGeneratedMedia(section.items[1], base.image),
     };
   });
 })();

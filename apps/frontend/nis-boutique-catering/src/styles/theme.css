@@ -412,6 +412,7 @@
 .manifesto-section {
   position: relative;
   overflow: hidden;
+  padding-block: clamp(40px, 4.6vw, 64px);
   background:
     linear-gradient(135deg, rgba(15, 10, 13, 0.98), rgba(33, 22, 28, 0.94)),
     radial-gradient(circle at 78% 28%, rgba(216, 187, 132, 0.12), transparent 18rem);
@@ -437,13 +438,15 @@
   z-index: 1;
   display: grid;
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-  gap: clamp(26px, 5vw, 76px);
-  align-items: start;
+  gap: clamp(24px, 4.2vw, 64px);
+  align-items: center;
 }
 
 .manifesto-copy h2 {
   color: var(--ivory);
   max-width: 8.5ch;
+  font-size: clamp(2.25rem, 4vw, 4rem);
+  line-height: 0.98;
 }
 
 .manifesto-copy p:not(.eyebrow) {
@@ -455,7 +458,7 @@
 
 .manifesto-stack {
   display: grid;
-  gap: 18px;
+  gap: clamp(12px, 1.45vw, 18px);
 }
 
 .manifesto-card {
@@ -463,6 +466,7 @@
   display: grid;
   grid-template-columns: minmax(190px, 0.8fr) minmax(0, 1fr);
   gap: 0;
+  height: clamp(170px, 15vw, 218px);
   overflow: hidden;
   border: 1px solid rgba(255, 239, 214, 0.12);
   border-radius: 10px;
@@ -490,10 +494,18 @@
   box-shadow: 0 38px 94px rgba(0, 0, 0, 0.32);
 }
 
+.manifesto-card .optimized-picture {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: clamp(150px, 14vw, 210px);
+  overflow: hidden;
+}
+
 .manifesto-card img {
   width: 100%;
   height: 100%;
-  min-height: 240px;
+  min-height: 0;
   object-fit: cover;
   transition: transform 0.7s var(--lift-ease), filter 0.7s var(--lift-ease);
 }
@@ -506,8 +518,8 @@
 .manifesto-card-copy {
   display: grid;
   align-content: center;
-  gap: 12px;
-  padding: 24px 24px 24px 28px;
+  gap: clamp(8px, 1vw, 12px);
+  padding: clamp(16px, 1.5vw, 22px) clamp(18px, 1.6vw, 26px);
 }
 
 .manifesto-card-copy span {
@@ -521,19 +533,19 @@
   margin: 0;
   color: var(--ivory);
   font-family: 'Playfair Display', Georgia, serif;
-  font-size: clamp(1.56rem, 2vw, 2.1rem);
+  font-size: clamp(1.32rem, 1.75vw, 1.86rem);
   line-height: 1.08;
 }
 
 .manifesto-card-copy p {
   margin: 0;
   color: rgba(255, 249, 242, 0.72);
-  line-height: 1.75;
+  line-height: 1.58;
 }
 
 .editorial-grid {
   align-items: end;
-  gap: 26px;
+  gap: clamp(18px, 2vw, 26px);
 }
 
 .editorial-card:nth-child(2) {
@@ -575,12 +587,16 @@
 }
 
 .experience-frame {
-  min-height: min(680px, 76vh);
+  height: clamp(360px, 40vw, 520px);
+  min-height: clamp(360px, 40vw, 520px);
   border-radius: 10px;
 }
 
+.experience-frame .optimized-picture,
+.experience-frame .optimized-picture > img,
 .experience-frame img {
-  min-height: min(680px, 76vh);
+  height: 100%;
+  min-height: 0;
 }
 
 .experience-overlay {
@@ -656,6 +672,17 @@
   transition: transform 0.8s var(--lift-ease), filter 0.8s var(--lift-ease);
 }
 
+.service-card .optimized-picture {
+  aspect-ratio: 4 / 2.85;
+  max-height: 252px;
+}
+
+.service-card .optimized-picture > img {
+  height: 100%;
+  max-width: none;
+  min-height: 0;
+}
+
 .service-card:hover img {
   transform: scale(1.05);
   filter: saturate(1.06) contrast(1.02);
@@ -688,10 +715,24 @@
   color: rgba(255, 249, 242, 0.76);
 }
 
+.story-grid .optimized-picture,
+.story-grid .optimized-picture > img,
 .story-grid img {
+  height: clamp(340px, 35vw, 500px);
+  min-height: 0;
+}
+
+.story-grid .optimized-picture {
+  overflow: hidden;
   border-radius: 10px;
   border: 1px solid rgba(255, 239, 214, 0.12);
   box-shadow: 0 34px 90px rgba(0, 0, 0, 0.32);
+}
+
+.story-grid img {
+  min-height: 0;
+  border: 0;
+  box-shadow: none;
 }
 
 .story-moments article {
@@ -732,6 +773,112 @@
 .real-media-section {
   background:
     linear-gradient(180deg, #fff9f5 0%, #f8efe6 100%);
+}
+
+@media (min-width: 981px) {
+  .story-section,
+  .booking-basics-section,
+  #experiences {
+    padding-block: clamp(42px, 4.2vw, 56px);
+  }
+
+  .story-section h2,
+  .booking-basics-section h2,
+  #experiences h2 {
+    font-size: clamp(2.35rem, 3.25vw, 3.35rem);
+    line-height: 1.03;
+  }
+
+  #experiences .section-heading {
+    gap: 12px;
+    margin-block-end: 30px;
+  }
+
+  #experiences .section-heading p:last-child {
+    font-size: 1rem;
+    line-height: 1.55;
+  }
+
+  .service-card .optimized-picture {
+    max-height: 220px;
+  }
+
+  .story-copy p,
+  .booking-basics-grid > div:first-child p {
+    font-size: 1rem;
+    line-height: 1.62;
+  }
+
+  .story-copy p {
+    margin-block-start: 12px;
+  }
+
+  .story-moments {
+    gap: 10px;
+    margin-block-start: 18px;
+  }
+
+  .story-moments article {
+    padding: 12px 14px;
+  }
+
+  .story-moments p {
+    margin-block-start: 6px;
+    font-size: 0.92rem;
+    line-height: 1.48;
+  }
+
+  .service-body {
+    padding: 16px;
+  }
+
+  .service-body h3 {
+    margin-block: 8px 5px;
+    font-size: 1.14rem;
+  }
+
+  .service-body p,
+  .service-proof p {
+    font-size: 0.94rem;
+    line-height: 1.42;
+  }
+
+  .service-body ul {
+    gap: 6px;
+    margin-block: 12px;
+  }
+
+  .service-body li {
+    padding: 5px 9px;
+    font-size: 0.88rem;
+  }
+
+  .service-proof {
+    gap: 8px;
+    margin-block-start: 12px;
+    padding: 10px;
+  }
+
+  .booking-basics-content {
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .booking-basics-cards {
+    gap: 14px;
+  }
+
+  .booking-basics-cards .compact-card {
+    padding: 15px;
+  }
+
+  .booking-faq {
+    gap: 8px;
+  }
+
+  .booking-faq details {
+    padding: 12px 14px;
+  }
 }
 
 .real-media-grid video {
@@ -1117,6 +1264,7 @@
 
   .manifesto-card {
     grid-template-columns: 1fr;
+    height: auto;
   }
 
   .manifesto-card img {

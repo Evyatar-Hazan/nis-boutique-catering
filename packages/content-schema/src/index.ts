@@ -200,5 +200,23 @@ export const validateContentReferences = (snapshot: ContentSnapshot) => {
     }
   }
 
+  for (const section of snapshot.sections) {
+    if (section.deletedAt) {
+      continue;
+    }
+
+    if (section.group === 'hero-media') {
+      for (const mediaId of section.items) {
+        if (!mediaIds.has(mediaId)) {
+          issues.push(`תמונות מסך הפתיחה מצביעות לתמונה שלא קיימת: ${mediaId}`);
+        }
+      }
+    }
+
+    if (section.group === 'manifesto' && section.items[1] && !mediaIds.has(section.items[1])) {
+      issues.push(`הכרטיס "${section.title ?? section.id}" באזור השפה של Nis מצביע לתמונה שלא קיימת: ${section.items[1]}`);
+    }
+  }
+
   return issues;
 };

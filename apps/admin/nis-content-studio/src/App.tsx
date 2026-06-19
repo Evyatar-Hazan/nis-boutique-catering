@@ -70,10 +70,12 @@ import {
 type ActiveView =
   | 'site-map'
   | 'hero'
+  | 'intro-band'
   | 'contact'
   | 'editorial'
   | 'manifesto'
   | 'services'
+  | 'experience-lab'
   | 'site-copy'
   | 'site-microcopy'
   | 'audience'
@@ -83,6 +85,9 @@ type ActiveView =
   | 'story'
   | 'samples'
   | 'coordination'
+  | 'real-media'
+  | 'booking-basics'
+  | 'seo'
   | 'gallery'
   | 'trust'
   | 'faq'
@@ -91,7 +96,7 @@ type ActiveView =
 type AuthState = 'signed-out' | 'loading' | 'authorized' | 'denied';
 type PublishState = 'clean' | 'draft' | 'saving' | 'publishing' | 'checking' | 'published' | 'live' | 'error';
 type PreviewDevice = 'desktop' | 'mobile';
-type MediaUsageKind = 'gallery' | 'service' | 'hero';
+type MediaUsageKind = 'gallery' | 'service' | 'hero' | 'manifesto';
 type PublishStepState = 'done' | 'active' | 'pending' | 'blocked' | 'error';
 type GalleryPreviewCategory = GalleryItemRecord['category'] | 'all';
 
@@ -165,6 +170,7 @@ const heroMediaSlots = [
   { key: 'side', label: 'תמונה צדדית', help: 'תמונה קטנה שמוסיפה עומק לתצוגת האירוח.', fallbackMediaId: 'dips-tray-close' },
   { key: 'tall', label: 'תמונה גבוהה', help: 'תמונה אנכית נוספת באזור התצוגה.', fallbackMediaId: 'table-setting-blue-gold' },
 ] as const;
+const manifestoMediaFallbacks = ['hosting-table-overview', 'dips-tray-close', 'table-setting-blue-gold'] as const;
 
 const isSessionShape = (value: unknown): value is Session => {
   if (!value || typeof value !== 'object') {
@@ -363,9 +369,9 @@ export const managedSectionDefaults: readonly SectionBlockRecord[] = [
   makeSection('editorial-shabbat', 'editorial', 'אוכל ביתי מוקפד לשבת שנכנסת ברוגע', 'תפריטי שבת עשירים, מסודרים ויפים להגשה, כדי שהבית ירגיש מלא בלי שכל העומס יישב עליכם.', ['שבתות', 'ChefHat'], 1),
   makeSection('editorial-events', 'editorial', 'שולחן שנפתח יפה ומייצר רושם כבר בדקה הראשונה', 'מגשי אירוח, פינגר פוד ושולחנות קטנים עם הגשה אסתטית שמתאימה למשפחה, מפגש או אירוח עסקי.', ['אירועים קטנים', 'Sparkles'], 2),
   makeSection('editorial-travel', 'editorial', 'Travel Nis לפינוקים שלוקחים אתכם הלאה', 'מארזים נוחים, חכמים ויפים לנסיעות, טיולים וימי כיף, כך שהחוויה מתחילה כבר בדרך.', ['מארזים ודרך', 'Gift'], 3),
-  makeSection('manifesto-table', 'manifesto', 'שולחן שנראה מסודר עוד לפני שנוגעים בו', 'ההגשה, הצבעים והקצב של השולחן הם חלק מהחוויה, לא רק הרקע של האוכל.', ['01'], 1),
-  makeSection('manifesto-home', 'manifesto', 'אוכל שמרגיש ביתי, אבל לא יומיומי', 'הטעם נשאר חם ומוכר, אבל ההופעה, האריזה והדיוק נותנים תחושת occasion.', ['02'], 2),
-  makeSection('manifesto-custom', 'manifesto', 'התאמה אישית במקום פס ייצור', 'החוויה נבנית סביב האירוח שלכם, לא סביב קטלוג אחיד שצריך להסתדר איתו.', ['03'], 3),
+  makeSection('manifesto-table', 'manifesto', 'שולחן שנראה מסודר עוד לפני שנוגעים בו', 'ההגשה, הצבעים והקצב של השולחן הם חלק מהחוויה, לא רק הרקע של האוכל.', ['01', 'hosting-table-overview'], 1),
+  makeSection('manifesto-home', 'manifesto', 'אוכל שמרגיש ביתי, אבל לא יומיומי', 'הטעם נשאר חם ומוכר, אבל ההופעה, האריזה והדיוק נותנים תחושת occasion.', ['02', 'dips-tray-close'], 2),
+  makeSection('manifesto-custom', 'manifesto', 'התאמה אישית במקום פס ייצור', 'החוויה נבנית סביב האירוח שלכם, לא סביב קטלוג אחיד שצריך להסתדר איתו.', ['03', 'table-setting-blue-gold'], 3),
   makeSection('audience-shabbat', 'audience', 'למשפחות שמארחות שבת', 'למי שרוצה שולחן מכובד, מלא ויפה בלי לעמוד שעות במטבח ובלי להיכנס ללחץ לפני שבת.', ['Users'], 1),
   makeSection('audience-events', 'audience', 'לאירועים קטנים ומוקפדים', 'לזוגות, משפחות ומארחים שמתכננים שמחה קטנה, ברית, שבע ברכות או מפגש משפחתי עם נראות טובה ושקט תפעולי.', ['HeartHandshake'], 2),
   makeSection('audience-travel', 'audience', 'למארזים, דרך ומתנה', 'למי שרוצה לשלוח או לקחת משהו יפה, טעים ומכובד לדרך, לשבת, לאורחים או ליום מיוחד.', ['Gift'], 3),
@@ -460,6 +466,13 @@ const areaDefinitions: readonly {
     icon: <Home aria-hidden="true" />,
   },
   {
+    id: 'intro-band',
+    title: 'רעיון אחד ברור',
+    location: 'הפתיח שאחרי מסך הפתיחה',
+    help: 'מסביר ללקוח בשני משפטים למי Nis מיועדת ולמה שלושת השירותים שייכים לאותה שפה.',
+    icon: <FileText aria-hidden="true" />,
+  },
+  {
     id: 'manifesto',
     title: 'השפה של Nis',
     location: 'אחרי פתיח הבידול, לפני קטגוריות הפתיחה',
@@ -479,6 +492,13 @@ const areaDefinitions: readonly {
     location: 'אחרי קטגוריות הפתיחה',
     help: 'מי אמור להבין מיד שהשירות מתאים לו.',
     icon: <Users aria-hidden="true" />,
+  },
+  {
+    id: 'experience-lab',
+    title: 'בחרו את החוויה',
+    location: 'אחרי קהל היעד ולפני רגעי הבוטיק',
+    help: 'טקסט ההסבר שמלווה את בחירת סוג האירוח באתר.',
+    icon: <Sparkles aria-hidden="true" />,
   },
   {
     id: 'signature',
@@ -509,6 +529,13 @@ const areaDefinitions: readonly {
     icon: <Images aria-hidden="true" />,
   },
   {
+    id: 'real-media',
+    title: 'וידאו אמיתי',
+    location: 'אחרי הגלריה ולפני השלבים',
+    help: 'כותרת וטקסט לאזור הווידאו והתיעוד האמיתי מההכנות.',
+    icon: <Images aria-hidden="true" />,
+  },
+  {
     id: 'process',
     title: 'איך זה עובד',
     location: 'אחרי אזור המדיה והגלריה',
@@ -535,6 +562,20 @@ const areaDefinitions: readonly {
     location: 'אחרי כיוונים להזמנה ולפני פרטי ההזמנה',
     help: 'אזור פעילות, זמן פנייה, הצעת מחיר ואישור תפריט.',
     icon: <Phone aria-hidden="true" />,
+  },
+  {
+    id: 'booking-basics',
+    title: 'לפני שפונים',
+    location: 'אחרי תיאום וזמינות',
+    help: 'טקסט פתיחה לאזור שמסביר מה כדאי לדעת לפני שליחת פנייה.',
+    icon: <ListChecks aria-hidden="true" />,
+  },
+  {
+    id: 'seo',
+    title: 'אזור SEO',
+    location: 'אחרי לפני שפונים ולפני אמון',
+    help: 'כותרת, טקסט ותגיות שמחזקים חיפוש והבנת השירות באתר.',
+    icon: <Tag aria-hidden="true" />,
   },
   {
     id: 'trust',
@@ -895,7 +936,11 @@ export const App = () => {
       media: current.media.map((media) => (media.id === id ? { ...media, id: cleanId, src: media.driveFileId ? cmsSrcFor(cleanId) : media.src } : media)),
       gallery: current.gallery.map((item) => (item.mediaId === id ? { ...item, mediaId: cleanId } : item)),
       services: current.services.map((service) => (service.mediaId === id ? { ...service, mediaId: cleanId } : service)),
-      sections: current.sections.map((section) => (section.group === 'hero-media' ? { ...section, items: section.items.map((item) => (item === id ? cleanId : item)) } : section)),
+      sections: current.sections.map((section) => (
+        section.group === 'hero-media' || section.group === 'manifesto'
+          ? { ...section, items: section.items.map((item) => (item === id ? cleanId : item)) }
+          : section
+      )),
     }));
   };
 
@@ -1259,6 +1304,28 @@ export const App = () => {
           />
         )}
 
+        {activeView === 'intro-band' && (
+          <IntroBandEditor
+            content={content}
+            previewDevice={previewDevice}
+            onPreviewDeviceChange={setPreviewDevice}
+            updateSection={updateSection}
+            addSection={addSection}
+          />
+        )}
+
+        {activeView === 'experience-lab' && (
+          <CopyOnlySectionEditor
+            content={content}
+            sectionId="experience-lab"
+            title="בחרו את החוויה"
+            text="הטקסט שמלווה את אזור בחירת החוויה באתר. כאן מסבירים למה לבחור קודם את סוג האירוח ומה קורה אחר כך."
+            previewDevice={previewDevice}
+            onPreviewDeviceChange={setPreviewDevice}
+            updateSection={updateSection}
+          />
+        )}
+
         {activeView === 'contact' && (
           <section className="workspace-panel split-editor">
             <div className="editor-column settings-grid">
@@ -1287,11 +1354,6 @@ export const App = () => {
               <Field label="תיאור SEO" help="תיאור קצר למנועי חיפוש ושיתופים.">
                 <textarea value={content.settings.seoDescription ?? ''} onChange={(event) => updateContent((current) => ({ ...current, settings: { ...current.settings, seoDescription: event.target.value || undefined } }))} />
               </Field>
-              {seoTopicsSection && (
-                <Field label="תגיות תחומי שירות" help="מופיע באזור SEO באתר כתגיות קצרות. מפרידים עם |">
-                  <TextInput value={joinPipeList(seoTopicsSection.items)} onChange={(value) => updateSection(seoTopicsSection.id, { items: splitPipeList(value) })} />
-                </Field>
-              )}
             </div>
             <div className="preview-column">
               <PreviewHeader
@@ -1601,6 +1663,18 @@ export const App = () => {
           </section>
         )}
 
+        {activeView === 'real-media' && (
+          <CopyOnlySectionEditor
+            content={content}
+            sectionId="real-media"
+            title="וידאו אמיתי"
+            text="כותרת וטקסט לאזור הווידאו. אם האזור לא משרת את האתר, אפשר לכבות אותו כאן במקום להשאיר אותו לא ברור."
+            previewDevice={previewDevice}
+            onPreviewDeviceChange={setPreviewDevice}
+            updateSection={updateSection}
+          />
+        )}
+
         {activeView === 'audience' && (
           <SectionGroupEditor
             title="למי זה מתאים"
@@ -1666,11 +1740,10 @@ export const App = () => {
         )}
 
         {activeView === 'manifesto' && (
-          <SectionGroupEditor
-            title="השפה של Nis"
-            text="האזור שמסביר את תחושת הבוטיק: נראות, ביתיות והתאמה אישית. נקודה ראשונה יכולה להיות מספר כמו 01."
-            group="manifesto"
-            sections={content.sections}
+          <ManifestoEditor
+            content={content}
+            mediaById={mediaById}
+            accessToken={session.accessToken}
             updateSection={updateSection}
             addSection={addSection}
             duplicateSection={duplicateSection}
@@ -1774,6 +1847,31 @@ export const App = () => {
             restoreSection={restoreSection}
             previewDevice={previewDevice}
             onPreviewDeviceChange={setPreviewDevice}
+          />
+        )}
+
+        {activeView === 'booking-basics' && (
+          <CopyOnlySectionEditor
+            content={content}
+            sectionId="booking-basics"
+            title="לפני שפונים"
+            text="הטקסט שמסביר ללקוח מה כדאי לדעת לפני שליחת פנייה: סוג אירוח, כמות ותאריך."
+            previewDevice={previewDevice}
+            onPreviewDeviceChange={setPreviewDevice}
+            updateSection={updateSection}
+          />
+        )}
+
+        {activeView === 'seo' && (
+          <CopyOnlySectionEditor
+            content={content}
+            sectionId="seo"
+            title="אזור SEO"
+            text="כאן עורכים את אזור הטקסט שמיועד גם להבנת השירות וגם לחיפוש. התגיות מוצגות באתר כתוויות קצרות."
+            previewDevice={previewDevice}
+            onPreviewDeviceChange={setPreviewDevice}
+            updateSection={updateSection}
+            tagsSection={seoTopicsSection}
           />
         )}
 
@@ -2113,6 +2211,244 @@ const HeroEditor = ({
   );
 };
 
+const IntroBandEditor = ({
+  content,
+  previewDevice,
+  onPreviewDeviceChange,
+  updateSection,
+  addSection,
+}: {
+  readonly content: ContentSnapshot;
+  readonly previewDevice: PreviewDevice;
+  readonly onPreviewDeviceChange: (device: PreviewDevice) => void;
+  readonly updateSection: (id: string, patch: Partial<SectionBlockRecord>) => void;
+  readonly addSection: (group?: string) => void;
+}) => {
+  const section = content.sections.find((item) => item.id === 'intro-band' && !item.deletedAt);
+
+  if (!section) {
+    return (
+      <section className="workspace-panel">
+        <PanelHeader title="רעיון אחד ברור" text="האזור הזה עדיין לא קיים ב-Sheets." />
+        <button className="compact-button" onClick={() => addSection('site-copy')}>
+          <Plus aria-hidden="true" />
+          צור אזור פתיח
+        </button>
+      </section>
+    );
+  }
+
+  return (
+    <section className="workspace-panel split-editor">
+      <div className="editor-column">
+        <PanelHeader
+          title="רעיון אחד ברור"
+          text="זה הפתיח הקצר שאחרי מסך הפתיחה. הוא מיועד להסביר במהירות למי Nis מתאימה ולמה שבתות, אירוח קטן ו-Travel Nis הם אותו עולם."
+        />
+        <Toggle checked={section.active && !section.deletedAt} label="האזור מוצג באתר" onChange={(checked) => updateSection(section.id, { active: checked })} />
+        <Field label="תווית קטנה מעל הכותרת" help="לדוגמה: רעיון אחד ברור.">
+          <TextInput value={section.items[0] ?? ''} onChange={(value) => updateSection(section.id, patchSectionItem(section, 0, value, 'רעיון אחד ברור'))} />
+        </Field>
+        <Field label="כותרת האזור" help="משפט אחד שמחדד את ההבטחה של Nis.">
+          <textarea value={section.title ?? ''} onChange={(event) => updateSection(section.id, { title: event.target.value || undefined })} />
+        </Field>
+        <Field label="טקסט הסבר" help="פסקה קצרה שמסבירה למי האזור מיועד ולמה הוא חשוב.">
+          <textarea value={section.text ?? ''} onChange={(event) => updateSection(section.id, { text: event.target.value || undefined })} />
+        </Field>
+      </div>
+      <div className="preview-column">
+        <PreviewHeader
+          title="תצוגה מקדימה כמו באתר"
+          text="האזור הזה אמור להיות קצר, ברור וללא גלילה בדסקטופ."
+          device={previewDevice}
+          onDeviceChange={onPreviewDeviceChange}
+        />
+        <IntroBandPreview section={section} device={previewDevice} />
+      </div>
+    </section>
+  );
+};
+
+const CopyOnlySectionEditor = ({
+  content,
+  sectionId,
+  title,
+  text,
+  previewDevice,
+  onPreviewDeviceChange,
+  updateSection,
+  tagsSection,
+}: {
+  readonly content: ContentSnapshot;
+  readonly sectionId: string;
+  readonly title: string;
+  readonly text: string;
+  readonly previewDevice: PreviewDevice;
+  readonly onPreviewDeviceChange: (device: PreviewDevice) => void;
+  readonly updateSection: (id: string, patch: Partial<SectionBlockRecord>) => void;
+  readonly tagsSection?: SectionBlockRecord;
+}) => {
+  const section = content.sections.find((item) => item.id === sectionId && !item.deletedAt);
+
+  if (!section) {
+    return (
+      <section className="workspace-panel">
+        <PanelHeader title={title} text="האזור הזה עדיין לא קיים ב-Sheets. רענון מה-Sheets יוסיף ברירות מחדל אם הן חסרות." />
+      </section>
+    );
+  }
+
+  return (
+    <section className="workspace-panel split-editor">
+      <div className="editor-column">
+        <PanelHeader title={title} text={text} />
+        <Toggle checked={section.active && !section.deletedAt} label="האזור מוצג באתר" onChange={(checked) => updateSection(section.id, { active: checked })} />
+        <Field label="תווית קטנה מעל הכותרת" help="מופיעה מעל הכותרת של האזור באתר.">
+          <TextInput value={section.items[0] ?? ''} onChange={(value) => updateSection(section.id, patchSectionItem(section, 0, value, title))} />
+        </Field>
+        <Field label="כותרת האזור" help="הכותרת הגדולה שמופיעה באתר.">
+          <textarea value={section.title ?? ''} onChange={(event) => updateSection(section.id, { title: event.target.value || undefined })} />
+        </Field>
+        <Field label="טקסט הסבר" help="אפשר להשתמש ב-| כדי לחלק לפסקאות באתר.">
+          <textarea value={section.text ?? ''} onChange={(event) => updateSection(section.id, { text: event.target.value || undefined })} />
+        </Field>
+        {tagsSection && (
+          <Field label="תגיות תחומי שירות" help="מופיע באזור SEO באתר כתגיות קצרות. מפרידים עם |">
+            <TextInput value={joinPipeList(tagsSection.items)} onChange={(value) => updateSection(tagsSection.id, { items: splitPipeList(value) })} />
+          </Field>
+        )}
+      </div>
+      <div className="preview-column">
+        <PreviewHeader
+          title="תצוגה מקדימה כמו באתר"
+          text="האזור הזה צריך להישאר קצר וברור בדסקטופ ובמובייל."
+          device={previewDevice}
+          onDeviceChange={onPreviewDeviceChange}
+        />
+        <CopyOnlySectionPreview section={section} tagsSection={tagsSection} device={previewDevice} />
+      </div>
+    </section>
+  );
+};
+
+const ManifestoEditor = ({
+  content,
+  mediaById,
+  accessToken,
+  updateSection,
+  addSection,
+  duplicateSection,
+  archiveSection,
+  restoreSection,
+  previewDevice,
+  onPreviewDeviceChange,
+}: {
+  readonly content: ContentSnapshot;
+  readonly mediaById: ReadonlyMap<string, ImageAssetRecord>;
+  readonly accessToken: string;
+  readonly updateSection: (id: string, patch: Partial<SectionBlockRecord>) => void;
+  readonly addSection: (group?: string) => void;
+  readonly duplicateSection: (section: SectionBlockRecord) => void;
+  readonly archiveSection: (id: string) => void;
+  readonly restoreSection: (id: string) => void;
+  readonly previewDevice: PreviewDevice;
+  readonly onPreviewDeviceChange: (device: PreviewDevice) => void;
+}) => {
+  const copy = content.sections.find((section) => section.id === 'manifesto' && section.group === 'site-copy');
+  const moments = content.sections
+    .filter((section) => section.group === 'manifesto')
+    .sort((left, right) => left.order - right.order);
+  const visibleMedia = content.media.filter((media) => !media.deletedAt);
+
+  return (
+    <section className="workspace-panel split-editor">
+      <div className="editor-column">
+        <PanelHeader
+          title="השפה של Nis"
+          text="האזור הזה מסביר את תחושת הבוטיק: נראות, ביתיות והתאמה אישית. כאן עורכים גם את הטקסט הראשי וגם את התמונות של הכרטיסים."
+          action={
+            <button className="compact-button" onClick={() => addSection('manifesto')}>
+              <Plus aria-hidden="true" />
+              הוסף כרטיס
+            </button>
+          }
+        />
+        {copy && (
+          <div className="editor-group">
+            <div className="editor-group-heading">
+              <strong>כותרת האזור</strong>
+              <span>החלק הימני באתר: תווית, כותרת גדולה ופסקת הסבר.</span>
+            </div>
+            <Toggle checked={copy.active && !copy.deletedAt} label="האזור מוצג באתר" onChange={(checked) => updateSection(copy.id, { active: checked })} />
+            <Field label="תווית קטנה" help="לדוגמה: השפה של Nis.">
+              <TextInput value={copy.items[0] ?? ''} onChange={(value) => updateSection(copy.id, patchSectionItem(copy, 0, value, 'השפה של Nis'))} />
+            </Field>
+            <Field label="כותרת גדולה" help="אפשר לרדת שורה עם Enter.">
+              <textarea value={copy.title ?? ''} onChange={(event) => updateSection(copy.id, { title: event.target.value || undefined })} />
+            </Field>
+            <Field label="טקסט מתחת לכותרת" help="משפט קצר שמסביר את התחושה שהאזור אמור להעביר.">
+              <textarea value={copy.text ?? ''} onChange={(event) => updateSection(copy.id, { text: event.target.value || undefined })} />
+            </Field>
+          </div>
+        )}
+        <div className="cards-list">
+          {moments.map((moment, index) => {
+            const selectedMediaId = moment.items[1] ?? manifestoMediaFallbacks[index % manifestoMediaFallbacks.length];
+            return (
+              <article className={moment.deletedAt ? 'edit-card is-archived' : 'edit-card'} key={moment.id}>
+                <div className="card-heading">
+                  <div>
+                    <p className="kicker">כרטיס בשפה של Nis</p>
+                    <h3>{moment.title || 'כרטיס ללא כותרת'}</h3>
+                  </div>
+                  <ItemActions
+                    isArchived={Boolean(moment.deletedAt)}
+                    onDuplicate={() => duplicateSection(moment)}
+                    onArchive={() => archiveSection(moment.id)}
+                    onRestore={() => restoreSection(moment.id)}
+                  />
+                </div>
+                <Toggle checked={moment.active && !moment.deletedAt} label="מוצג באתר" onChange={(checked) => updateSection(moment.id, { active: checked })} />
+                <Field label="מספר/תווית בכרטיס" help="לדוגמה: 01, 02, 03.">
+                  <TextInput value={moment.items[0] ?? ''} onChange={(value) => updateSection(moment.id, patchSectionItem(moment, 0, value, String(index + 1).padStart(2, '0')))} />
+                </Field>
+                <Field label="כותרת הכרטיס" help="הכותרת שמופיעה בתוך הכרטיס באתר.">
+                  <textarea value={moment.title ?? ''} onChange={(event) => updateSection(moment.id, { title: event.target.value || undefined })} />
+                </Field>
+                <Field label="טקסט הכרטיס" help="הסבר קצר שמופיע מתחת לכותרת.">
+                  <textarea value={moment.text ?? ''} onChange={(event) => updateSection(moment.id, { text: event.target.value || undefined })} />
+                </Field>
+                <Field label="תמונה לכרטיס" help="התמונה שמופיעה בצד הכרטיס באזור השפה של Nis.">
+                  <select value={selectedMediaId} onChange={(event) => updateSection(moment.id, patchSectionItem(moment, 1, event.target.value, manifestoMediaFallbacks[index % manifestoMediaFallbacks.length]))}>
+                    {visibleMedia.map((media) => <option key={media.id} value={media.id}>{mediaLabel(media, content)}</option>)}
+                  </select>
+                  <MediaQuickPicker
+                    label="בחירה מהירה לתמונה"
+                    mediaItems={visibleMedia}
+                    selectedMediaId={selectedMediaId}
+                    content={content}
+                    onSelect={(mediaId) => updateSection(moment.id, patchSectionItem(moment, 1, mediaId, manifestoMediaFallbacks[index % manifestoMediaFallbacks.length]))}
+                  />
+                  <MediaSelectionUsageNotice mediaId={selectedMediaId} content={content} currentUsage={{ kind: 'manifesto', id: moment.id }} />
+                </Field>
+              </article>
+            );
+          })}
+        </div>
+      </div>
+      <div className="preview-column">
+        <PreviewHeader
+          title="תצוגה מקדימה כמו באתר"
+          text="אפשר לעבור בין מחשב למובייל ולבדוק שהאזור נכנס נכון בלי חיתוך מיותר."
+          device={previewDevice}
+          onDeviceChange={onPreviewDeviceChange}
+        />
+        <ManifestoSitePreview copy={copy} moments={moments} mediaById={mediaById} accessToken={accessToken} device={previewDevice} />
+      </div>
+    </section>
+  );
+};
+
 const PreviewHeader = ({
   title,
   text,
@@ -2232,6 +2568,99 @@ const HeroSitePreview = ({
           </div>
         </div>
       </section>
+    </div>
+  );
+};
+
+const IntroBandPreview = ({ section, device }: { readonly section: SectionBlockRecord; readonly device: PreviewDevice }) => (
+  <div className={device === 'mobile' ? 'preview-frame is-mobile' : 'preview-frame is-desktop'}>
+    <PreviewBrowserBar device={device} />
+    <div className="site-section-preview site-section-preview-frame intro-band-preview">
+      <div>
+        <p className="kicker">{section.items[0] || 'רעיון אחד ברור'}</p>
+        <h3>{section.title}</h3>
+      </div>
+      <p>{section.text}</p>
+    </div>
+  </div>
+);
+
+const CopyOnlySectionPreview = ({
+  section,
+  tagsSection,
+  device,
+}: {
+  readonly section: SectionBlockRecord;
+  readonly tagsSection?: SectionBlockRecord;
+  readonly device: PreviewDevice;
+}) => (
+  <div className={device === 'mobile' ? 'preview-frame is-mobile' : 'preview-frame is-desktop'}>
+    <PreviewBrowserBar device={device} />
+    <div className="site-section-preview site-section-preview-frame copy-only-section-preview">
+      <p className="kicker">{section.items[0] || section.title}</p>
+      <h3>{section.title}</h3>
+      <div className="copy-only-preview-text">
+        {section.text?.split('|').filter(Boolean).map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+      </div>
+      {tagsSection && (
+        <div className="preview-mini-tags">
+          {tagsSection.items.map((item) => <span key={item}>{item}</span>)}
+        </div>
+      )}
+    </div>
+  </div>
+);
+
+const ManifestoSitePreview = ({
+  copy,
+  moments,
+  mediaById,
+  accessToken,
+  device,
+}: {
+  readonly copy: SectionBlockRecord | undefined;
+  readonly moments: readonly SectionBlockRecord[];
+  readonly mediaById: ReadonlyMap<string, ImageAssetRecord>;
+  readonly accessToken: string;
+  readonly device: PreviewDevice;
+}) => {
+  const activeMoments = moments.filter((moment) => moment.active && !moment.deletedAt);
+
+  return (
+    <div className={device === 'mobile' ? 'preview-frame is-mobile' : 'preview-frame is-desktop'}>
+      <PreviewBrowserBar device={device} />
+      <div className="site-section-preview site-section-preview-frame manifesto-site-preview">
+        <div className="manifesto-preview-copy">
+          <p className="kicker">{copy?.items[0] || 'השפה של Nis'}</p>
+          <h3>
+            {(copy?.title || 'לא עוד מגש.\nחוויית אירוח שנראית\nכמו מחשבה.').split('\n').map((line, index) => (
+              <span key={`${line}-${index}`}>{line}</span>
+            ))}
+          </h3>
+          <p>{copy?.text || 'כש-Nis נראית נכון, זה מרגיש מיד אחרת: יותר שקט למארח, יותר כבוד לשולחן, ויותר תחושה שמישהו החזיק את כל הפרטים יחד.'}</p>
+        </div>
+        <div className="manifesto-preview-stack">
+          {activeMoments.map((moment, index) => {
+            const media = mediaById.get(moment.items[1] ?? manifestoMediaFallbacks[index % manifestoMediaFallbacks.length]);
+            return (
+              <article key={moment.id} className="manifesto-preview-card">
+                {media?.driveFileId ? (
+                  <DrivePreviewImage media={media} accessToken={accessToken} />
+                ) : media ? (
+                  <img src={publicAssetSrcFor(media.src)} alt="" />
+                ) : (
+                  <div className="empty-preview">אין תמונה</div>
+                )}
+                <div>
+                  <span>{moment.items[0] ?? String(index + 1).padStart(2, '0')}</span>
+                  <h3>{moment.title}</h3>
+                  <p>{moment.text}</p>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 };
@@ -3730,18 +4159,22 @@ const getMediaUsage = (mediaId: string, content: ContentSnapshot): readonly Medi
       .filter((_, index) => heroMediaIdAt(heroMedia, index) === mediaId)
       .map((slot): MediaUsageEntry => ({ kind: 'hero', id: slot.key, title: slot.label, active: heroMedia.active }))
     : [];
+  const manifestoUsage = content.sections
+    .filter((section) => section.group === 'manifesto' && !section.deletedAt && section.items[1] === mediaId)
+    .map((section): MediaUsageEntry => ({ kind: 'manifesto', id: section.id, title: section.title ?? 'השפה של Nis', active: section.active }));
   const galleryUsage = content.gallery
     .filter((item) => item.mediaId === mediaId && !item.deletedAt)
     .map((item): MediaUsageEntry => ({ kind: 'gallery', id: item.id, title: item.title, active: item.active }));
   const serviceUsage = content.services
     .filter((service) => service.mediaId === mediaId && !service.deletedAt)
     .map((service): MediaUsageEntry => ({ kind: 'service', id: service.id, title: service.title, active: service.active }));
-  return [...heroUsage, ...galleryUsage, ...serviceUsage];
+  return [...heroUsage, ...manifestoUsage, ...galleryUsage, ...serviceUsage];
 };
 
 const usageKindLabel = (kind: MediaUsageKind) => {
   if (kind === 'gallery') return 'גלריה';
   if (kind === 'service') return 'שירות';
+  if (kind === 'manifesto') return 'השפה של Nis';
   return 'מסך פתיחה';
 };
 
@@ -3795,6 +4228,10 @@ const areaStatus = (area: ActiveView, content: ContentSnapshot) => {
   if (area === 'hero') {
     const hero = content.sections.find((section) => section.id === 'hero' || section.group === 'hero');
     return hero?.active && !hero.deletedAt ? 'פעיל באתר' : 'כבוי או חסר';
+  }
+  if (['intro-band', 'experience-lab', 'real-media', 'booking-basics', 'seo'].includes(area)) {
+    const copySection = content.sections.find((section) => section.id === area && !section.deletedAt);
+    return copySection?.active ? 'פעיל באתר' : 'כבוי או חסר';
   }
   if (area === 'services') {
     return `${content.services.filter((service) => service.active && !service.deletedAt).length} שירותים פעילים`;

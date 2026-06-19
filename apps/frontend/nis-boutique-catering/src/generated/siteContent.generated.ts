@@ -460,7 +460,8 @@ export const contentSnapshot = {
       "title": "שולחן שנראה מסודר עוד לפני שנוגעים בו",
       "text": "ההגשה, הצבעים והקצב של השולחן הם חלק מהחוויה, לא רק הרקע של האוכל.",
       "items": [
-        "01"
+        "01",
+        "hosting-table-overview"
       ],
       "active": true,
       "order": 1
@@ -471,7 +472,8 @@ export const contentSnapshot = {
       "title": "אוכל שמרגיש ביתי, אבל לא יומיומי",
       "text": "הטעם נשאר חם ומוכר, אבל ההופעה, האריזה והדיוק נותנים תחושת occasion.",
       "items": [
-        "02"
+        "02",
+        "dips-tray-close"
       ],
       "active": true,
       "order": 2
@@ -482,7 +484,8 @@ export const contentSnapshot = {
       "title": "התאמה אישית במקום פס ייצור",
       "text": "החוויה נבנית סביב האירוח שלכם, לא סביב קטלוג אחיד שצריך להסתדר איתו.",
       "items": [
-        "03"
+        "03",
+        "table-setting-blue-gold"
       ],
       "active": true,
       "order": 3
