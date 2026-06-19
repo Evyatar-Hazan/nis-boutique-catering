@@ -911,6 +911,8 @@ input[type="checkbox"] {
 .preview-trust-grid,
 .preview-content-grid,
 .preview-faq-site-grid {
+  display: grid;
+  gap: 14px;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 }
 
@@ -2680,6 +2682,243 @@ input[type="checkbox"] {
   width: fit-content;
   text-decoration: none;
   font-weight: 800;
+}
+
+.preview-frame.is-desktop .site-section-preview-frame {
+  align-content: start;
+  gap: clamp(7px, 1.45cqw, 16px);
+  padding: clamp(12px, 2.4cqw, 26px);
+  scrollbar-width: thin;
+}
+
+.preview-frame.is-desktop .site-section-preview-frame > .kicker,
+.preview-frame.is-desktop .preview-faq-copy .kicker,
+.preview-frame.is-desktop .preview-trust-heading .kicker,
+.preview-frame.is-desktop .contact-preview-copy .kicker,
+.preview-frame.is-desktop .metadata-preview-heading .kicker {
+  font-size: clamp(0.62rem, 1.25cqw, 0.8rem);
+}
+
+.preview-frame.is-desktop .site-section-preview-frame > h3,
+.preview-frame.is-desktop .preview-faq-copy h3,
+.preview-frame.is-desktop .preview-trust-heading h3,
+.preview-frame.is-desktop .contact-preview-copy h3,
+.preview-frame.is-desktop .metadata-preview-heading h3 {
+  font-size: clamp(1.2rem, 3.5cqw, 2.25rem);
+  line-height: 1.08;
+}
+
+.preview-frame.is-desktop .site-section-preview-frame > p,
+.preview-frame.is-desktop .preview-faq-copy p,
+.preview-frame.is-desktop .preview-trust-heading p,
+.preview-frame.is-desktop .contact-preview-copy p,
+.preview-frame.is-desktop .metadata-preview-heading p {
+  font-size: clamp(0.68rem, 1.35cqw, 0.92rem);
+  line-height: 1.45;
+}
+
+.preview-frame.is-desktop .preview-services,
+.preview-frame.is-desktop .preview-process-list,
+.preview-frame.is-desktop .preview-trust-grid,
+.preview-frame.is-desktop .preview-content-grid {
+  gap: clamp(7px, 1.45cqw, 14px);
+}
+
+.preview-frame.is-desktop .preview-services {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.preview-frame.is-desktop .preview-process-list,
+.preview-frame.is-desktop .preview-trust-grid,
+.preview-frame.is-desktop .preview-content-grid {
+  grid-template-columns: repeat(auto-fit, minmax(clamp(110px, 19cqw, 170px), 1fr));
+}
+
+.preview-frame.is-desktop .preview-faq-site-grid,
+.preview-frame.is-desktop .contact-section-preview,
+.preview-frame.is-desktop .metadata-preview-grid {
+  gap: clamp(8px, 1.65cqw, 18px);
+}
+
+.preview-frame.is-desktop .preview-faq-site-grid {
+  grid-template-columns: minmax(150px, 0.74fr) minmax(210px, 1.26fr);
+}
+
+.preview-frame.is-desktop .contact-section-preview {
+  grid-template-columns: minmax(0, 1.12fr) minmax(210px, 0.88fr);
+}
+
+.preview-frame.is-desktop .metadata-preview-grid {
+  grid-template-columns: minmax(230px, 1fr) minmax(210px, 0.86fr);
+}
+
+.preview-frame.is-desktop .preview-gallery {
+  columns: 3 clamp(120px, 19cqw, 180px);
+  column-gap: clamp(7px, 1.45cqw, 14px);
+}
+
+.preview-frame.is-desktop .preview-gallery-item {
+  margin-block-end: clamp(7px, 1.45cqw, 14px);
+  border-radius: 8px;
+}
+
+.preview-frame.is-desktop .preview-services article,
+.preview-frame.is-desktop .preview-faq article,
+.preview-frame.is-desktop .preview-process-list article,
+.preview-frame.is-desktop .preview-trust-grid article,
+.preview-frame.is-desktop .preview-content-grid article,
+.preview-frame.is-desktop .metadata-search-card,
+.preview-frame.is-desktop .metadata-share-card,
+.preview-frame.is-desktop .metadata-health-card,
+.preview-frame.is-desktop .contact-form-preview,
+.preview-frame.is-desktop .contact-preview-promise,
+.preview-frame.is-desktop .metadata-preview-card {
+  gap: clamp(6px, 1.1cqw, 10px);
+  padding: clamp(8px, 1.65cqw, 14px);
+}
+
+.preview-frame.is-desktop .preview-service-body {
+  gap: clamp(6px, 1.1cqw, 10px);
+  padding: clamp(9px, 1.8cqw, 16px);
+}
+
+.preview-frame.is-desktop .preview-services article .media-preview,
+.preview-frame.is-desktop .preview-services article .media-preview img,
+.preview-frame.is-desktop .preview-gallery-item .media-preview,
+.preview-frame.is-desktop .preview-gallery-item .media-preview img {
+  min-height: clamp(82px, 15cqw, 150px);
+}
+
+.preview-frame.is-desktop .preview-gallery-item.is-tall .media-preview,
+.preview-frame.is-desktop .preview-gallery-item.is-tall .media-preview img {
+  min-height: clamp(125px, 23cqw, 230px);
+}
+
+.preview-frame.is-desktop .preview-service-body h3,
+.preview-frame.is-desktop .preview-process-list h3,
+.preview-frame.is-desktop .preview-trust-grid h3,
+.preview-frame.is-desktop .preview-content-grid h3,
+.preview-frame.is-desktop .metadata-search-card h4,
+.preview-frame.is-desktop .metadata-share-card h4 {
+  font-size: clamp(0.86rem, 1.75cqw, 1.12rem);
+  line-height: 1.22;
+}
+
+.preview-frame.is-desktop .preview-services p,
+.preview-frame.is-desktop .preview-faq p,
+.preview-frame.is-desktop .preview-process-list p,
+.preview-frame.is-desktop .preview-trust-grid p,
+.preview-frame.is-desktop .preview-content-grid p,
+.preview-frame.is-desktop .preview-faq-list p,
+.preview-frame.is-desktop .metadata-search-card p,
+.preview-frame.is-desktop .metadata-share-card p,
+.preview-frame.is-desktop .contact-form-preview label span,
+.preview-frame.is-desktop .contact-preview-promise span {
+  font-size: clamp(0.64rem, 1.25cqw, 0.82rem);
+  line-height: 1.42;
+}
+
+.preview-frame.is-desktop .preview-process-list article,
+.preview-frame.is-desktop .preview-trust-grid article {
+  min-height: clamp(118px, 22cqw, 190px);
+}
+
+.preview-frame.is-desktop .preview-process-list article > span {
+  width: clamp(25px, 4.2cqw, 34px);
+  height: clamp(25px, 4.2cqw, 34px);
+  font-size: clamp(0.68rem, 1.25cqw, 0.85rem);
+}
+
+.preview-frame.is-desktop .preview-process-list svg,
+.preview-frame.is-desktop .preview-trust-grid svg,
+.preview-frame.is-desktop .preview-content-grid svg,
+.preview-frame.is-desktop .preview-card-icon {
+  width: clamp(15px, 2.8cqw, 22px);
+  height: clamp(15px, 2.8cqw, 22px);
+}
+
+.preview-frame.is-desktop .preview-mini-tags {
+  gap: clamp(4px, 0.8cqw, 6px);
+}
+
+.preview-frame.is-desktop .preview-mini-tags span,
+.preview-frame.is-desktop .preview-faq-meta span,
+.preview-frame.is-desktop .preview-trust-summary span,
+.preview-frame.is-desktop .gallery-preview-tab {
+  min-height: clamp(22px, 3.5cqw, 32px);
+  padding: clamp(4px, 0.85cqw, 7px) clamp(6px, 1.2cqw, 10px);
+  font-size: clamp(0.58rem, 1.1cqw, 0.74rem);
+}
+
+.preview-frame.is-desktop .gallery-preview-tabs {
+  gap: clamp(5px, 1cqw, 8px);
+  margin-block: 0 clamp(5px, 1cqw, 8px);
+}
+
+.preview-frame.is-desktop .preview-faq-list {
+  gap: clamp(6px, 1.1cqw, 10px);
+}
+
+.preview-frame.is-desktop .preview-faq-list summary {
+  min-height: clamp(38px, 6.2cqw, 54px);
+  padding: clamp(10px, 1.7cqw, 16px) clamp(12px, 2cqw, 18px) clamp(10px, 1.7cqw, 16px) clamp(34px, 5.2cqw, 46px);
+  font-size: clamp(0.7rem, 1.35cqw, 0.9rem);
+}
+
+.preview-frame.is-desktop .preview-faq-list p {
+  padding: 0 clamp(12px, 2cqw, 18px) clamp(10px, 1.7cqw, 16px);
+}
+
+.preview-frame.is-desktop .contact-form-preview {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(7px, 1.35cqw, 12px);
+}
+
+.preview-frame.is-desktop .contact-form-preview label {
+  gap: clamp(4px, 0.8cqw, 7px);
+  font-size: clamp(0.62rem, 1.2cqw, 0.8rem);
+}
+
+.preview-frame.is-desktop .contact-form-preview label span {
+  min-height: clamp(30px, 5cqw, 42px);
+  padding: clamp(6px, 1.2cqw, 9px) clamp(8px, 1.5cqw, 11px);
+}
+
+.preview-frame.is-desktop .preview-primary-cta,
+.preview-frame.is-desktop .preview-secondary-cta,
+.preview-frame.is-desktop .contact-preview-line {
+  min-height: clamp(28px, 4.4cqw, 38px);
+  padding: clamp(6px, 1.15cqw, 10px) clamp(8px, 1.45cqw, 13px);
+  font-size: clamp(0.64rem, 1.25cqw, 0.84rem);
+}
+
+.preview-frame.is-desktop .metadata-share-card {
+  grid-template-columns: clamp(62px, 11cqw, 96px) minmax(0, 1fr);
+}
+
+.preview-frame.is-desktop .metadata-share-image {
+  min-height: clamp(62px, 11cqw, 96px);
+}
+
+.preview-frame.is-desktop .metadata-share-image img {
+  width: clamp(48px, 8cqw, 72px);
+  max-height: clamp(44px, 7.5cqw, 64px);
+}
+
+@container (max-width: 700px) {
+  .preview-frame.is-desktop .site-section-preview-frame {
+    font-size: 0.92em;
+  }
+
+  .preview-frame.is-desktop .preview-services {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .preview-frame.is-desktop .preview-faq-site-grid,
+  .preview-frame.is-desktop .contact-section-preview,
+  .preview-frame.is-desktop .metadata-preview-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(190px, 0.9fr);
+  }
 }
 
 .empty-state {
