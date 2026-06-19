@@ -1063,6 +1063,17 @@ export const heroMarquee: readonly string[] = heroMarqueeSection?.items.length ?
   'אריזה שנראית כמו מותג',
 ];
 
+const fallbackHeroBadges: readonly string[] = [
+  'שבתות',
+  'מגשי אירוח',
+  'Travel Nis',
+  'מומלץ לפנות מוקדם',
+];
+
+const heroBadgesSection = getGeneratedSection('hero-badges');
+
+export const heroBadges: readonly string[] = heroBadgesSection?.items.length ? heroBadgesSection.items : fallbackHeroBadges;
+
 const fallbackSignatureMoments: readonly Readonly<{ title: string; text: string; image: ImageAsset }>[] = [
   {
     title: 'שולחן שנפתח יפה',

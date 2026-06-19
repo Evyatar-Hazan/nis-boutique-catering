@@ -12,6 +12,7 @@ import {
   faqs,
   foodMedia,
   galleryCategories,
+  heroBadges,
   heroContent,
   heroSceneNotes,
   manifestoMoments,
@@ -76,6 +77,8 @@ const TextParagraphs = ({ text }: { readonly text?: string }) => (
   </>
 );
 
+const heroBadgeIcons = [ChefHat, Utensils, Package, Clock] as const;
+
 export const HeroSection = ({ heroWhatsapp }: { readonly heroWhatsapp: string }) => (
   <section
     id="top"
@@ -139,22 +142,15 @@ export const HeroSection = ({ heroWhatsapp }: { readonly heroWhatsapp: string })
         </div>
         <p className="microcopy">{siteMicrocopy.heroMicrocopy}</p>
         <div className="hero-badges" aria-label="נקודות אמון">
-          <span>
-            <ChefHat aria-hidden="true" size={16} />
-            שבתות
-          </span>
-          <span>
-            <Utensils aria-hidden="true" size={16} />
-            מגשי אירוח
-          </span>
-          <span>
-            <Package aria-hidden="true" size={16} />
-            Travel Nis
-          </span>
-          <span>
-            <Clock aria-hidden="true" size={16} />
-            מומלץ לפנות מוקדם
-          </span>
+          {heroBadges.map((badge, index) => {
+            const Icon = heroBadgeIcons[index % heroBadgeIcons.length];
+            return (
+              <span key={badge}>
+                <Icon aria-hidden="true" size={16} />
+                {badge}
+              </span>
+            );
+          })}
         </div>
       </div>
       <div className="hero-showcase reveal is-visible" aria-label="תמונות אירוח של Nis">
@@ -193,9 +189,9 @@ export const HeroSection = ({ heroWhatsapp }: { readonly heroWhatsapp: string })
           ))}
         </div>
         <div className="hero-mini-proof" aria-hidden="true">
-          <span>שבתות</span>
-          <span>מגשי אירוח</span>
-          <span>Travel Nis</span>
+          {heroBadges.slice(0, 3).map((badge) => (
+            <span key={badge}>{badge}</span>
+          ))}
         </div>
         <a className="video-chip" href="#gallery">
           <Play aria-hidden="true" size={18} />
