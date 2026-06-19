@@ -1108,7 +1108,7 @@ export const facts: readonly string[] = factsSection?.items.length
   'אפשר לדבר על העדפות, רגישויות והתאמות תפריט לפי הצורך.',
 ];
 
-export const seoTopics: readonly string[] = [
+const fallbackSeoTopics: readonly string[] = [
   'קייטרינג בוטיק בביתר עילית',
   'תפריט שבת מוכן ומסודר',
   'מגשי אירוח לאירועים קטנים',
@@ -1116,6 +1116,10 @@ export const seoTopics: readonly string[] = [
   'מארזי פיקניק ומארזי דרך',
   'אירוח משפחתי בהתאמה אישית',
 ];
+
+const seoTopicsSection = getGeneratedSection('seo-topics');
+
+export const seoTopics: readonly string[] = seoTopicsSection?.items.length ? seoTopicsSection.items : fallbackSeoTopics;
 
 const fallbackTrustCards: readonly SimpleCard[] = [
   {

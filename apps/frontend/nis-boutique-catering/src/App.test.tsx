@@ -76,6 +76,13 @@ describe('Nis boutique catering app', () => {
     expect(serviceCards.getByRole('heading', { name: 'Travel Nis' })).toBeInTheDocument();
   });
 
+  it('renders the managed SEO service topics', () => {
+    render(<App />);
+
+    expect(screen.getByText('קייטרינג בוטיק בביתר עילית')).toBeInTheDocument();
+    expect(screen.getByText('מגשי אירוח לאירועים קטנים')).toBeInTheDocument();
+  });
+
   it('builds a whatsapp inquiry from the contact form submit', () => {
     const locationMock = {
       ...window.location,
