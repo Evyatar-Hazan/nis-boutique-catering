@@ -9,6 +9,7 @@ import {
   Cloud,
   Copy,
   Eye,
+  ExternalLink,
   FileText,
   HeartHandshake,
   HelpCircle,
@@ -3023,6 +3024,8 @@ const DrivePreviewImage = ({ media, accessToken }: { readonly media?: ImageAsset
   const isLoadingDrive = Boolean(media?.driveFileId && !drivePreview);
   const isShowingDrive = Boolean(drivePreview?.objectUrl);
   const isShowingFallbackAfterDriveFailure = Boolean(drivePreview?.failed && src && !isShowingDrive);
+  const driveFileUrl = media?.driveFileId ? getDriveFileViewUrl(media.driveFileId) : null;
+  const sourceIdLabel = media?.driveFileId ? shortSourceId(media.driveFileId) : media?.src ? 'קובץ אתר' : 'אין מקור';
   const statusLabel = isShowingDrive
     ? 'מקור בדרייב'
     : isShowingFallbackAfterDriveFailure
@@ -3064,6 +3067,13 @@ const DrivePreviewImage = ({ media, accessToken }: { readonly media?: ImageAsset
           <span className={isShowingDrive ? 'source-pill is-drive' : isShowingFallbackAfterDriveFailure ? 'source-pill is-warning' : 'source-pill'}>
             {statusLabel}
           </span>
+          <span className={media.driveFileId ? 'source-pill is-source-id' : 'source-pill'}>{sourceIdLabel}</span>
+          {driveFileUrl && (
+            <a className="preview-drive-link" href={driveFileUrl} target="_blank" rel="noreferrer" title="פתיחת קובץ המקור ב-Google Drive">
+              <ExternalLink aria-hidden="true" />
+              Drive
+            </a>
+          )}
           {drivePreview?.failed && media.driveFileId && (
             <button
               type="button"
@@ -3314,6 +3324,15 @@ const getBundleFileName = (bundleUrl: string) => {
   } catch {
     return bundleUrl;
   }
+};
+
+const getDriveFileViewUrl = (fileId: string) => `https://drive.google.com/file/d/${encodeURIComponent(fileId)}/view`;
+
+const shortSourceId = (sourceId: string) => {
+  if (sourceId.length <= 12) {
+    return sourceId;
+  }
+  return `${sourceId.slice(0, 6)}...${sourceId.slice(-4)}`;
 };
 
 const wait = (milliseconds: number) => new Promise((resolve) => {

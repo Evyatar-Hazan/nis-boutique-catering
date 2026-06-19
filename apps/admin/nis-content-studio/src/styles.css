@@ -1253,6 +1253,17 @@ input[type="checkbox"] {
   background: rgba(255, 230, 166, 0.94);
 }
 
+.source-pill.is-source-id {
+  max-width: 118px;
+  overflow: hidden;
+  color: #fffdf8;
+  background: rgba(31, 37, 35, 0.62);
+  direction: ltr;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.preview-drive-link,
 .preview-retry-button {
   display: inline-flex;
   align-items: center;
@@ -1266,12 +1277,15 @@ input[type="checkbox"] {
   cursor: pointer;
   font-size: 12px;
   font-weight: 800;
+  text-decoration: none;
 }
 
+.preview-drive-link:hover,
 .preview-retry-button:hover {
   background: rgba(31, 37, 35, 0.88);
 }
 
+.preview-drive-link svg,
 .preview-retry-button svg {
   width: 14px;
   height: 14px;
