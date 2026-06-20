@@ -33,6 +33,7 @@ import {
 } from '../data/siteContent';
 import { buildInquiryWhatsappLink } from '../utils/contact';
 import { OptimizedImage } from './OptimizedImage';
+import { IntroBandSectionContent } from './sections/IntroBandSection';
 
 const SectionHeading = ({
   eyebrow,
@@ -211,17 +212,7 @@ export const HeroSection = ({ heroWhatsapp }: { readonly heroWhatsapp: string })
   </section>
 );
 
-export const IntroBandSection = () => (
-  <section className="section intro-band reveal" aria-label="בידול">
-    <div className="container intro-grid">
-      <div>
-        <p className="eyebrow">{sectionCopy.introBand.eyebrow}</p>
-        <h2>{sectionCopy.introBand.title}</h2>
-      </div>
-      <TextParagraphs text={sectionCopy.introBand.text} />
-    </div>
-  </section>
-);
+export const IntroBandSection = () => <IntroBandSectionContent {...sectionCopy.introBand} />;
 
 export const ManifestoSection = () => (
   <section className="section manifesto-section" aria-labelledby="manifesto-title">

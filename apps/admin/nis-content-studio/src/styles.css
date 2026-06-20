@@ -1709,6 +1709,15 @@ input[type="checkbox"] {
   overflow: auto;
 }
 
+.shared-site-preview,
+.shared-site-preview-shadow-host {
+  min-height: 100%;
+}
+
+.shared-site-preview-shadow-host {
+  display: block;
+}
+
 .preview-frame.is-mobile {
   width: min(390px, 100%);
   height: min(734px, calc(100dvh - 170px));

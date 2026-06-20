@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState, type ChangeEvent, type CSSProperties, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import {
   ArrowDown,
   ArrowLeft,
@@ -66,6 +67,9 @@ import {
   uploadImageToDrive,
   type GoogleAccessToken,
 } from './googleApi';
+import { IntroBandSectionContent } from '../../../frontend/nis-boutique-catering/src/components/sections/IntroBandSection';
+import siteBaseCss from '../../../frontend/nis-boutique-catering/src/styles/base.css?raw';
+import siteThemeCss from '../../../frontend/nis-boutique-catering/src/styles/theme.css?raw';
 
 type ActiveView =
   | 'site-map'
@@ -2582,19 +2586,102 @@ const HeroSitePreview = ({
 const IntroBandPreview = ({ section, device }: { readonly section: SectionBlockRecord; readonly device: PreviewDevice }) => (
   <div className={device === 'mobile' ? 'preview-frame is-mobile' : 'preview-frame is-desktop'}>
     <PreviewBrowserBar device={device} />
-    <div className="site-section-preview site-section-preview-frame intro-band-preview-shell">
-      <div className="intro-band-preview">
-        <div className="intro-band-preview-copy">
-          <p className="kicker">{section.items[0] || 'רעיון אחד ברור'}</p>
-          <h3>{section.title}</h3>
-        </div>
-        <div className="intro-band-preview-text">
-          {section.text?.split('|').filter(Boolean).map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
-        </div>
+    <ShadowSitePreview device={device}>
+      <div className="site-shell studio-site-preview-shell">
+        <IntroBandSectionContent
+          eyebrow={section.items[0] || 'רעיון אחד ברור'}
+          title={section.title ?? ''}
+          text={section.text}
+          className="section intro-band reveal is-visible"
+        />
       </div>
-    </div>
+    </ShadowSitePreview>
   </div>
 );
+
+const shadowPreviewCss = `
+${siteBaseCss}
+${siteThemeCss}
+
+:host {
+  display: block;
+  min-height: 100%;
+  color: var(--ink);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+.studio-site-preview-shell {
+  min-height: 100%;
+}
+
+.studio-site-preview-shell::before,
+.studio-site-preview-shell::after {
+  position: absolute;
+}
+
+.studio-site-preview-shell .section {
+  min-height: 100%;
+  display: grid;
+  align-items: center;
+}
+
+.studio-site-preview-shell .intro-band {
+  min-height: 100%;
+}
+
+.studio-site-preview-shell .reveal {
+  opacity: 1;
+  transform: none;
+}
+
+@media (max-width: 720px) {
+  .studio-site-preview-shell .section {
+    align-items: start;
+  }
+}
+`;
+
+const ShadowSitePreview = ({
+  device,
+  children,
+}: {
+  readonly device: PreviewDevice;
+  readonly children: ReactNode;
+}) => {
+  const [shadowRoot, setShadowRoot] = useState<ShadowRoot | null>(null);
+  const setShadowHost = useCallback((node: HTMLDivElement | null) => {
+    if (!node) {
+      return;
+    }
+
+    const root = node.shadowRoot ?? node.attachShadow({ mode: 'open' });
+    setShadowRoot(root);
+  }, []);
+
+  useEffect(() => {
+    if (!shadowRoot) {
+      return;
+    }
+
+    let styleTag = shadowRoot.querySelector('style[data-site-preview="true"]') as HTMLStyleElement | null;
+    if (!styleTag) {
+      styleTag = document.createElement('style');
+      styleTag.dataset.sitePreview = 'true';
+      shadowRoot.prepend(styleTag);
+    }
+    styleTag.textContent = shadowPreviewCss;
+  }, [shadowRoot]);
+
+  return (
+    <div className={`shared-site-preview ${device === 'mobile' ? 'is-mobile' : 'is-desktop'}`}>
+      <div ref={setShadowHost} className="shared-site-preview-shadow-host" />
+      {shadowRoot ? createPortal(children, shadowRoot) : null}
+    </div>
+  );
+};
 
 const CopyOnlySectionPreview = ({
   section,
