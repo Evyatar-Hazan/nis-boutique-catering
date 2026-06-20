@@ -2703,8 +2703,12 @@ const IframeSitePreview = ({
   readonly children: ReactNode;
 }) => {
   const [mountNode, setMountNode] = useState<HTMLElement | null>(null);
+  const [iframeNode, setIframeNode] = useState<HTMLIFrameElement | null>(null);
+  const [contentHeight, setContentHeight] = useState<number>(previewViewportByDevice[device].height);
   const setIframeRef = useCallback((node: HTMLIFrameElement | null) => {
     if (!node) {
+      setIframeNode(null);
+      setMountNode(null);
       return;
     }
 
@@ -2714,16 +2718,108 @@ const IframeSitePreview = ({
     }
 
     doc.open();
-    doc.write(`<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><style>${shadowPreviewCss}</style></head><body><div id="preview-root"></div></body></html>`);
+    doc.write(`<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8" /><base href="${publicSiteOrigin}/" /><meta name="viewport" content="width=device-width, initial-scale=1" /><style>${shadowPreviewCss}</style></head><body><div id="preview-root"></div></body></html>`);
     doc.close();
+    setIframeNode(node);
     setMountNode(doc.getElementById('preview-root'));
   }, []);
   const viewport = previewViewportByDevice[device];
 
+  useEffect(() => {
+    if (!iframeNode || !mountNode) {
+      return undefined;
+    }
+
+    const doc = iframeNode.contentDocument;
+    const root = doc?.documentElement;
+    const body = doc?.body;
+    if (!doc || !root || !body) {
+      return undefined;
+    }
+
+    let cancelled = false;
+
+    const syncPreviewHeight = () => {
+      if (cancelled) {
+        return;
+      }
+
+      doc.querySelectorAll('img').forEach((image) => {
+        image.setAttribute('loading', 'eager');
+        image.setAttribute('decoding', 'sync');
+        image.setAttribute('fetchpriority', 'high');
+      });
+
+      const nextHeight = Math.max(
+        viewport.height,
+        root.scrollHeight,
+        body.scrollHeight,
+        mountNode.scrollHeight,
+      );
+      setContentHeight(nextHeight);
+    };
+
+    const blockExternalPreviewNavigation = (event: MouseEvent) => {
+      const target = event.target;
+      if (!(target instanceof Element)) {
+        return;
+      }
+
+      const link = target.closest('a[href]');
+      if (!link) {
+        return;
+      }
+
+      const href = link.getAttribute('href') ?? '';
+      if (href.startsWith('#')) {
+        return;
+      }
+
+      event.preventDefault();
+    };
+
+    const resizeObserver = new ResizeObserver(() => {
+      syncPreviewHeight();
+    });
+
+    resizeObserver.observe(root);
+    resizeObserver.observe(body);
+    resizeObserver.observe(mountNode);
+    doc.addEventListener('click', blockExternalPreviewNavigation, true);
+
+    const loadListeners = Array.from(doc.images).map((image) => {
+      const handleLoad = () => syncPreviewHeight();
+      image.addEventListener('load', handleLoad);
+      image.addEventListener('error', handleLoad);
+      return { image, handleLoad };
+    });
+
+    const rafId = window.requestAnimationFrame(() => {
+      syncPreviewHeight();
+    });
+    const timeoutId = window.setTimeout(syncPreviewHeight, 120);
+
+    return () => {
+      cancelled = true;
+      window.cancelAnimationFrame(rafId);
+      window.clearTimeout(timeoutId);
+      resizeObserver.disconnect();
+      doc.removeEventListener('click', blockExternalPreviewNavigation, true);
+      loadListeners.forEach(({ image, handleLoad }) => {
+        image.removeEventListener('load', handleLoad);
+        image.removeEventListener('error', handleLoad);
+      });
+    };
+  }, [device, iframeNode, mountNode, viewport.height]);
+
   return (
     <div
       className={`iframe-site-preview ${device === 'mobile' ? 'is-mobile' : 'is-desktop'}`}
-      style={{ '--preview-viewport-width': `${viewport.width}px`, '--preview-viewport-height': `${viewport.height}px` } as CSSProperties}
+      style={{
+        '--preview-viewport-width': `${viewport.width}px`,
+        '--preview-viewport-height': `${viewport.height}px`,
+        '--preview-content-height': `${contentHeight}px`,
+      } as CSSProperties}
     >
       <iframe ref={setIframeRef} className="iframe-site-preview-frame" title={`site-preview-${device}`} />
       {mountNode ? createPortal(children, mountNode) : null}
