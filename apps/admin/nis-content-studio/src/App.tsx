@@ -2586,7 +2586,7 @@ const HeroSitePreview = ({
 const IntroBandPreview = ({ section, device }: { readonly section: SectionBlockRecord; readonly device: PreviewDevice }) => (
   <div className={device === 'mobile' ? 'preview-frame is-mobile' : 'preview-frame is-desktop'}>
     <PreviewBrowserBar device={device} />
-    <ShadowSitePreview device={device}>
+    <IframeSitePreview device={device}>
       <div className="site-shell studio-site-preview-shell">
         <IntroBandSectionContent
           eyebrow={section.items[0] || 'רעיון אחד ברור'}
@@ -2595,7 +2595,7 @@ const IntroBandPreview = ({ section, device }: { readonly section: SectionBlockR
           className="section intro-band reveal is-visible"
         />
       </div>
-    </ShadowSitePreview>
+    </IframeSitePreview>
   </div>
 );
 
@@ -2603,10 +2603,24 @@ const shadowPreviewCss = `
 ${siteBaseCss}
 ${siteThemeCss}
 
-:host {
-  display: block;
+:root {
+  color-scheme: light;
+}
+
+html, body {
+  margin: 0;
   min-height: 100%;
+  width: 100%;
+}
+
+body {
+  display: block;
   color: var(--ink);
+}
+
+#preview-root {
+  min-height: 100%;
+  width: 100%;
   container-type: inline-size;
 }
 
@@ -2687,41 +2701,43 @@ ${siteThemeCss}
 }
 `;
 
-const ShadowSitePreview = ({
+const previewViewportByDevice: Readonly<Record<PreviewDevice, { width: number; height: number }>> = {
+  desktop: { width: 1440, height: 810 },
+  mobile: { width: 390, height: 844 },
+};
+
+const IframeSitePreview = ({
   device,
   children,
 }: {
   readonly device: PreviewDevice;
   readonly children: ReactNode;
 }) => {
-  const [shadowRoot, setShadowRoot] = useState<ShadowRoot | null>(null);
-  const setShadowHost = useCallback((node: HTMLDivElement | null) => {
+  const [mountNode, setMountNode] = useState<HTMLElement | null>(null);
+  const setIframeRef = useCallback((node: HTMLIFrameElement | null) => {
     if (!node) {
       return;
     }
 
-    const root = node.shadowRoot ?? node.attachShadow({ mode: 'open' });
-    setShadowRoot(root);
-  }, []);
-
-  useEffect(() => {
-    if (!shadowRoot) {
+    const doc = node.contentDocument;
+    if (!doc) {
       return;
     }
 
-    let styleTag = shadowRoot.querySelector('style[data-site-preview="true"]') as HTMLStyleElement | null;
-    if (!styleTag) {
-      styleTag = document.createElement('style');
-      styleTag.dataset.sitePreview = 'true';
-      shadowRoot.prepend(styleTag);
-    }
-    styleTag.textContent = shadowPreviewCss;
-  }, [shadowRoot]);
+    doc.open();
+    doc.write(`<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><style>${shadowPreviewCss}</style></head><body><div id="preview-root"></div></body></html>`);
+    doc.close();
+    setMountNode(doc.getElementById('preview-root'));
+  }, []);
+  const viewport = previewViewportByDevice[device];
 
   return (
-    <div className={`shared-site-preview ${device === 'mobile' ? 'is-mobile' : 'is-desktop'}`}>
-      <div ref={setShadowHost} className="shared-site-preview-shadow-host" />
-      {shadowRoot ? createPortal(children, shadowRoot) : null}
+    <div
+      className={`iframe-site-preview ${device === 'mobile' ? 'is-mobile' : 'is-desktop'}`}
+      style={{ '--preview-viewport-width': `${viewport.width}px`, '--preview-viewport-height': `${viewport.height}px` } as CSSProperties}
+    >
+      <iframe ref={setIframeRef} className="iframe-site-preview-frame" title={`site-preview-${device}`} />
+      {mountNode ? createPortal(children, mountNode) : null}
     </div>
   );
 };

@@ -1709,13 +1709,44 @@ input[type="checkbox"] {
   overflow: auto;
 }
 
-.shared-site-preview,
-.shared-site-preview-shadow-host {
+.iframe-site-preview {
+  position: relative;
+  min-height: 100%;
+  overflow: hidden;
+  background: #fffdf8;
+}
+
+.iframe-site-preview,
+.iframe-site-preview-frame {
   min-height: 100%;
 }
 
-.shared-site-preview-shadow-host {
+.iframe-site-preview-frame {
   display: block;
+  width: var(--preview-viewport-width);
+  height: var(--preview-viewport-height);
+  border: 0;
+  background: #fffdf8;
+  transform-origin: top right;
+  pointer-events: none;
+}
+
+.iframe-site-preview.is-desktop .iframe-site-preview-frame {
+  width: var(--preview-viewport-width);
+  height: var(--preview-viewport-height);
+  transform: scale(calc(100cqw / var(--preview-viewport-width)));
+}
+
+.iframe-site-preview.is-mobile {
+  overflow-y: auto;
+}
+
+.iframe-site-preview.is-mobile .iframe-site-preview-frame {
+  width: min(100%, var(--preview-viewport-width));
+  max-width: 100%;
+  height: var(--preview-viewport-height);
+  margin-inline: auto;
+  transform: none;
 }
 
 .preview-frame.is-mobile {
