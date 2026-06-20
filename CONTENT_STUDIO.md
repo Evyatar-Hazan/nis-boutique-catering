@@ -14,6 +14,18 @@ Content Studio is a private admin app for managing the public Nis site with free
 - Public site sync scripts: `apps/frontend/nis-boutique-catering/scripts/sync-content.mjs`
 - Fallback content: `apps/frontend/nis-boutique-catering/content/fallback-content.json`
 - Generated public content: `apps/frontend/nis-boutique-catering/src/generated/siteContent.generated.ts`
+- Preview parity skill: `PREVIEW_PARITY_SKILL.md`
+
+## Studio Preview Rule
+
+Studio previews for real public-site sections must follow the project preview-parity skill in [PREVIEW_PARITY_SKILL.md](/Users/evyatarhazan/Desktop/project/nis-boutique-catering/PREVIEW_PARITY_SKILL.md).
+
+Short version:
+
+- render the real site component
+- use the real site CSS
+- use a real viewport, usually through `iframe`
+- visually compare Studio vs site before calling the task done
 
 ## Google Sheet Tabs
 
