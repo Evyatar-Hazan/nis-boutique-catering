@@ -1,6 +1,14 @@
 import { cleanup, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
-import { App, ensureManagedSections, formatValidationIssue, getOwnerVerificationChecklist, getStudioWorkflowSteps, managedSectionDefaults } from './App';
+import {
+  App,
+  ensureManagedSections,
+  formatValidationIssue,
+  getOwnerVerificationChecklist,
+  getStudioWorkflowSteps,
+  managedSectionDefaults,
+} from './App';
+import { exactPreviewCopySectionIds, exactPreviewSectionGroupIds, exactPreviewViewIds } from './previewParityContract';
 import '@testing-library/jest-dom/vitest';
 
 describe('Content Studio', () => {
@@ -200,5 +208,30 @@ describe('Content Studio', () => {
   it('shows the exact field when content validation fails', () => {
     expect(formatValidationIssue({ path: ['updatedAt'], message: 'Invalid input' })).toBe('שדה לא תקין: updatedAt - ערך לא תקין');
     expect(formatValidationIssue({ path: ['services', 0, 'title'], message: 'Too small' })).toBe('שדה לא תקין: services.0.title - Too small');
+  });
+
+  it('keeps a single exact-preview contract for all public sections that must match the site', () => {
+    expect(exactPreviewViewIds).toEqual(['hero', 'intro-band', 'manifesto', 'services', 'gallery', 'contact']);
+    expect(exactPreviewCopySectionIds).toEqual(['experience-lab', 'real-media', 'booking-basics', 'seo']);
+    expect(exactPreviewSectionGroupIds).toEqual([
+      'editorial',
+      'audience',
+      'boutique',
+      'signature',
+      'process',
+      'story',
+      'samples',
+      'coordination',
+      'trust',
+      'faq',
+    ]);
+  });
+
+  it('tracks exact-preview sections as managed content so the studio cannot drift silently', () => {
+    const managedIds = new Set(managedSectionDefaults.map((section) => section.id));
+    const managedGroups = new Set(managedSectionDefaults.map((section) => section.group));
+
+    expect(exactPreviewCopySectionIds.every((id) => managedIds.has(`copy-${id}`))).toBe(true);
+    expect(exactPreviewSectionGroupIds.every((group) => managedGroups.has(group))).toBe(true);
   });
 });

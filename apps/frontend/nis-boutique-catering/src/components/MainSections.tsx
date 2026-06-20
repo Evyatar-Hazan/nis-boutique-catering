@@ -1,38 +1,12 @@
 import { type CSSProperties, type FormEventHandler, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from 'react';
 import { ArrowLeft, Camera, CheckCircle2, ChefHat, Clock, Mail, MapPin, MessageCircle, Package, Phone, Play, Send, Utensils } from 'lucide-react';
 import {
-  audienceCards,
-  brandMedia,
-  boutiqueReasons,
-  contactDeliveryOptions,
-  contactInterestOptions,
-  coordinationCards,
-  editorialCards,
-  faqs,
-  foodMedia,
-  galleryCategories,
-  heroBadges,
-  heroContent,
-  heroMedia,
-  heroSceneNotes,
-  heroStats,
-  manifestoMoments,
-  menuGroups,
-  phoneHref,
-  processSteps,
-  sectionCopy,
-  siteMicrocopy,
-  seoTopics,
-  services,
-  signatureMoments,
-  storyMoments,
-  trustCards,
-  videoMedia,
   type GalleryCategory,
   type GalleryImage,
 } from '../data/siteContent';
 import { buildInquiryWhatsappLink } from '../utils/contact';
 import { OptimizedImage } from './OptimizedImage';
+import { useSiteSectionPreviewData } from './SiteSectionPreviewData';
 import { IntroBandSectionContent } from './sections/IntroBandSection';
 
 const SectionHeading = ({
@@ -81,13 +55,16 @@ const TextParagraphs = ({ text }: { readonly text?: string }) => (
 
 const heroBadgeIcons = [ChefHat, Utensils, Package, Clock] as const;
 
-export const HeroSection = ({ heroWhatsapp }: { readonly heroWhatsapp: string }) => (
-  <section
-    id="top"
-    className="hero"
-    aria-labelledby="hero-title"
-    style={{ '--hero-media-image': `url('${heroMedia.background.src}')` } as CSSProperties}
-  >
+export const HeroSection = ({ heroWhatsapp }: { readonly heroWhatsapp: string }) => {
+  const { brandMedia, heroBadges, heroContent, heroMedia, heroSceneNotes, heroStats, siteMicrocopy, videoMedia } = useSiteSectionPreviewData();
+
+  return (
+    <section
+      id="top"
+      className="hero"
+      aria-labelledby="hero-title"
+      style={{ '--hero-media-image': `url('${heroMedia.background.src}')` } as CSSProperties}
+    >
     <div className="hero-media" aria-hidden="true" />
     <video
       className="hero-video"
@@ -209,13 +186,19 @@ export const HeroSection = ({ heroWhatsapp }: { readonly heroWhatsapp: string })
         </a>
       </div>
     </div>
-  </section>
-);
+    </section>
+  );
+};
 
-export const IntroBandSection = () => <IntroBandSectionContent {...sectionCopy.introBand} />;
+export const IntroBandSection = () => {
+  const { sectionCopy } = useSiteSectionPreviewData();
+  return <IntroBandSectionContent {...sectionCopy.introBand} />;
+};
 
-export const ManifestoSection = () => (
-  <section className="section manifesto-section" aria-labelledby="manifesto-title">
+export const ManifestoSection = () => {
+  const { manifestoMoments, sectionCopy } = useSiteSectionPreviewData();
+  return (
+    <section className="section manifesto-section" aria-labelledby="manifesto-title">
     <div className="container manifesto-layout">
       <div className="manifesto-copy reveal">
         <p className="eyebrow">{sectionCopy.manifesto.eyebrow}</p>
@@ -241,11 +224,14 @@ export const ManifestoSection = () => (
         ))}
       </div>
     </div>
-  </section>
-);
+    </section>
+  );
+};
 
-export const EditorialSection = () => (
-  <section className="section editorial-section" aria-labelledby="editorial-title">
+export const EditorialSection = () => {
+  const { editorialCards, sectionCopy } = useSiteSectionPreviewData();
+  return (
+    <section className="section editorial-section" aria-labelledby="editorial-title">
     <div className="container">
       <SectionHeading eyebrow={sectionCopy.editorial.eyebrow} title={sectionCopy.editorial.title} id="editorial-title" />
       <div className="editorial-grid">
@@ -270,11 +256,14 @@ export const EditorialSection = () => (
         })}
       </div>
     </div>
-  </section>
-);
+    </section>
+  );
+};
 
-export const AudienceSection = () => (
-  <section className="section" aria-labelledby="audience-title">
+export const AudienceSection = () => {
+  const { audienceCards, sectionCopy } = useSiteSectionPreviewData();
+  return (
+    <section className="section" aria-labelledby="audience-title">
     <div className="container">
       <SectionHeading eyebrow={sectionCopy.audience.eyebrow} title={sectionCopy.audience.title} id="audience-title">
         <TextParagraphs text={sectionCopy.audience.text} />
@@ -292,8 +281,9 @@ export const AudienceSection = () => (
         })}
       </div>
     </div>
-  </section>
-);
+    </section>
+  );
+};
 
 interface ExperienceLabSectionProps {
   readonly activeExperienceIndex: number;
@@ -304,6 +294,7 @@ export const ExperienceLabSection = ({
   activeExperienceIndex,
   onChangeExperience,
 }: ExperienceLabSectionProps) => {
+  const { foodMedia, sectionCopy, services, siteMicrocopy } = useSiteSectionPreviewData();
   const handleTabNavigation = (event: ReactKeyboardEvent<HTMLButtonElement>, index: number) => {
     if (event.key === 'ArrowRight') {
       event.preventDefault();
@@ -404,8 +395,10 @@ export const ExperienceLabSection = ({
   );
 };
 
-export const SignatureSection = () => (
-  <section className="section signature-section" aria-labelledby="signature-title">
+export const SignatureSection = () => {
+  const { sectionCopy, signatureMoments } = useSiteSectionPreviewData();
+  return (
+    <section className="section signature-section" aria-labelledby="signature-title">
     <div className="container">
       <SectionHeading eyebrow={sectionCopy.signature.eyebrow} title={sectionCopy.signature.title} id="signature-title" />
       <div className="signature-grid">
@@ -425,11 +418,14 @@ export const SignatureSection = () => (
         ))}
       </div>
     </div>
-  </section>
-);
+    </section>
+  );
+};
 
-export const BoutiqueSection = () => (
-  <section className="section boutique-section" aria-labelledby="boutique-title">
+export const BoutiqueSection = () => {
+  const { boutiqueReasons, sectionCopy } = useSiteSectionPreviewData();
+  return (
+    <section className="section boutique-section" aria-labelledby="boutique-title">
     <div className="container boutique-layout">
       <div className="boutique-copy reveal">
         <p className="eyebrow">{sectionCopy.boutique.eyebrow}</p>
@@ -453,11 +449,14 @@ export const BoutiqueSection = () => (
         })}
       </div>
     </div>
-  </section>
-);
+    </section>
+  );
+};
 
-export const ServicesSection = () => (
-  <section id="experiences" className="section" aria-labelledby="experiences-title">
+export const ServicesSection = () => {
+  const { sectionCopy, services } = useSiteSectionPreviewData();
+  return (
+    <section id="experiences" className="section" aria-labelledby="experiences-title">
     <div className="container">
       <SectionHeading eyebrow={sectionCopy.services.eyebrow} title={sectionCopy.services.title} id="experiences-title">
         <TextParagraphs text={sectionCopy.services.text} />
@@ -488,11 +487,14 @@ export const ServicesSection = () => (
         })}
       </div>
     </div>
-  </section>
-);
+    </section>
+  );
+};
 
-export const ProcessSection = () => (
-  <section id="process" className="section" aria-labelledby="process-title">
+export const ProcessSection = () => {
+  const { processSteps, sectionCopy } = useSiteSectionPreviewData();
+  return (
+    <section id="process" className="section" aria-labelledby="process-title">
     <div className="container">
       <SectionHeading eyebrow={sectionCopy.process.eyebrow} title={sectionCopy.process.title} id="process-title" />
       <div className="process-list">
@@ -509,11 +511,14 @@ export const ProcessSection = () => (
         })}
       </div>
     </div>
-  </section>
-);
+    </section>
+  );
+};
 
-export const StorySection = () => (
-  <section className="section story-section" aria-labelledby="story-title">
+export const StorySection = () => {
+  const { foodMedia, sectionCopy, storyMoments } = useSiteSectionPreviewData();
+  return (
+    <section className="section story-section" aria-labelledby="story-title">
     <div className="container story-grid">
       <div className="story-copy reveal">
         <p className="eyebrow">{sectionCopy.story.eyebrow}</p>
@@ -537,11 +542,14 @@ export const StorySection = () => (
         decoding="async"
       />
     </div>
-  </section>
-);
+    </section>
+  );
+};
 
-export const SamplesSection = () => (
-  <section id="samples" className="section soft-section" aria-labelledby="samples-title">
+export const SamplesSection = () => {
+  const { menuGroups, sectionCopy } = useSiteSectionPreviewData();
+  return (
+    <section id="samples" className="section soft-section" aria-labelledby="samples-title">
     <div className="container">
       <SectionHeading
         eyebrow={sectionCopy.samples.eyebrow}
@@ -568,11 +576,14 @@ export const SamplesSection = () => (
         ))}
       </div>
     </div>
-  </section>
-);
+    </section>
+  );
+};
 
-export const CoordinationSection = () => (
-  <section className="section coordination-section" aria-labelledby="coordination-title">
+export const CoordinationSection = () => {
+  const { coordinationCards, sectionCopy } = useSiteSectionPreviewData();
+  return (
+    <section className="section coordination-section" aria-labelledby="coordination-title">
     <div className="container">
       <SectionHeading eyebrow={sectionCopy.coordination.eyebrow} title={sectionCopy.coordination.title} id="coordination-title" />
       <div className="compact-grid">
@@ -588,11 +599,14 @@ export const CoordinationSection = () => (
         })}
       </div>
     </div>
-  </section>
-);
+    </section>
+  );
+};
 
-export const RealMediaSection = () => (
-  <section className="section real-media-section" aria-labelledby="real-media-title">
+export const RealMediaSection = () => {
+  const { foodMedia, sectionCopy, videoMedia } = useSiteSectionPreviewData();
+  return (
+    <section className="section real-media-section" aria-labelledby="real-media-title">
     <div className="container real-media-grid">
       <div className="reveal">
         <p className="eyebrow">{sectionCopy.realMedia.eyebrow}</p>
@@ -603,8 +617,9 @@ export const RealMediaSection = () => (
         <source src={videoMedia.eventVideo} type="video/mp4" />
       </video>
     </div>
-  </section>
-);
+    </section>
+  );
+};
 
 interface GallerySectionProps {
   readonly activeCategory: GalleryCategory;
@@ -619,6 +634,7 @@ export const GallerySection = ({
   onFilterChange,
   onOpenImage,
 }: GallerySectionProps) => {
+  const { galleryCategories, sectionCopy } = useSiteSectionPreviewData();
   const visibleImages = activeCategory === 'all' ? images.slice(0, 6) : images;
 
   return (
@@ -660,8 +676,10 @@ export const GallerySection = ({
   );
 };
 
-export const BookingBasicsSection = () => (
-  <section className="section booking-basics-section soft-section" aria-labelledby="booking-basics-title">
+export const BookingBasicsSection = () => {
+  const { coordinationCards, faqs, sectionCopy } = useSiteSectionPreviewData();
+  return (
+    <section className="section booking-basics-section soft-section" aria-labelledby="booking-basics-title">
     <div className="container booking-basics-grid">
       <div className="reveal">
         <p className="eyebrow">{sectionCopy.bookingBasics.eyebrow}</p>
@@ -691,11 +709,14 @@ export const BookingBasicsSection = () => (
         </div>
       </div>
     </div>
-  </section>
-);
+    </section>
+  );
+};
 
-export const SeoSection = () => (
-  <section className="section seo-section" aria-labelledby="seo-title">
+export const SeoSection = () => {
+  const { sectionCopy, seoTopics } = useSiteSectionPreviewData();
+  return (
+    <section className="section seo-section" aria-labelledby="seo-title">
     <div className="container split-section">
       <div className="reveal">
         <p className="eyebrow">{sectionCopy.seo.eyebrow}</p>
@@ -710,11 +731,14 @@ export const SeoSection = () => (
         </div>
       </div>
     </div>
-  </section>
-);
+    </section>
+  );
+};
 
-export const TrustSection = () => (
-  <section className="section trust-section" aria-labelledby="trust-title">
+export const TrustSection = () => {
+  const { sectionCopy, trustCards } = useSiteSectionPreviewData();
+  return (
+    <section className="section trust-section" aria-labelledby="trust-title">
     <div className="container">
       <SectionHeading eyebrow={sectionCopy.trust.eyebrow} title={sectionCopy.trust.title} id="trust-title" />
       <div className="testimonial-grid">
@@ -730,11 +754,14 @@ export const TrustSection = () => (
         })}
       </div>
     </div>
-  </section>
-);
+    </section>
+  );
+};
 
-export const FaqSection = () => (
-  <section id="faq" className="section soft-section" aria-labelledby="faq-title">
+export const FaqSection = () => {
+  const { faqs, sectionCopy } = useSiteSectionPreviewData();
+  return (
+    <section id="faq" className="section soft-section" aria-labelledby="faq-title">
     <div className="container faq-grid">
       <div className="reveal">
         <p className="eyebrow">{sectionCopy.faq.eyebrow}</p>
@@ -749,8 +776,9 @@ export const FaqSection = () => (
         ))}
       </div>
     </div>
-  </section>
-);
+    </section>
+  );
+};
 
 interface ContactSectionProps {
   readonly contactWhatsapp: string;
@@ -766,13 +794,16 @@ export const ContactSection = ({
   leadSource,
   onLeadSourceChange,
   onSubmit,
-}: ContactSectionProps) => (
-  <section
-    id="contact"
-    className="section contact-section"
-    aria-labelledby="contact-title"
-    style={{ '--contact-media-image': `url('${foodMedia.tableSettingBlueGold.src}')` } as CSSProperties}
-  >
+}: ContactSectionProps) => {
+  const { contactDeliveryOptions, contactInterestOptions, foodMedia, phoneHref, sectionCopy, siteMicrocopy } = useSiteSectionPreviewData();
+
+  return (
+    <section
+      id="contact"
+      className="section contact-section"
+      aria-labelledby="contact-title"
+      style={{ '--contact-media-image': `url('${foodMedia.tableSettingBlueGold.src}')` } as CSSProperties}
+    >
     <div className="container contact-grid">
       <div className="contact-copy reveal">
         <p className="eyebrow">{sectionCopy.contact.eyebrow}</p>
@@ -852,5 +883,6 @@ export const ContactSection = ({
         </button>
       </form>
     </div>
-  </section>
-);
+    </section>
+  );
+};

@@ -2,10 +2,8 @@ import { useCallback, useEffect, useMemo, useState, type ChangeEvent, type CSSPr
 import { createPortal } from 'react-dom';
 import {
   ArrowDown,
-  ArrowLeft,
   ArrowUp,
   AlertTriangle,
-  ChefHat,
   CheckCircle2,
   Cloud,
   Copy,
@@ -20,28 +18,22 @@ import {
   ListChecks,
   Lock,
   LogIn,
-  Mail,
-  MapPin,
-  MessageCircle,
   MonitorCheck,
   PanelRightClose,
   PanelRightOpen,
   Phone,
   Plus,
-  Package,
   RefreshCw,
   RotateCcw,
   Rocket,
   Save,
   Search,
-  Send,
   ShieldAlert,
   ShieldCheck,
   Sparkles,
   Tag,
   Trash2,
   Upload,
-  Utensils,
   Users,
   Wand2,
 } from 'lucide-react';
@@ -67,7 +59,37 @@ import {
   uploadImageToDrive,
   type GoogleAccessToken,
 } from './googleApi';
-import { IntroBandSectionContent } from '../../../frontend/nis-boutique-catering/src/components/sections/IntroBandSection';
+import {
+  AudienceSection,
+  BookingBasicsSection,
+  BoutiqueSection,
+  ContactSection,
+  CoordinationSection,
+  EditorialSection,
+  ExperienceLabSection,
+  FaqSection,
+  GallerySection,
+  HeroSection,
+  IntroBandSection,
+  ManifestoSection,
+  ProcessSection,
+  RealMediaSection,
+  SamplesSection,
+  SeoSection,
+  ServicesSection,
+  SignatureSection,
+  StorySection,
+  TrustSection,
+} from '../../../frontend/nis-boutique-catering/src/components/MainSections';
+import {
+  SiteSectionPreviewDataProvider,
+  defaultSiteSectionPreviewData,
+  type SiteSectionPreviewData,
+} from '../../../frontend/nis-boutique-catering/src/components/SiteSectionPreviewData';
+import {
+  exactPreviewCopySectionIds,
+  exactPreviewSectionGroupIds,
+} from './previewParityContract';
 import siteBaseCss from '../../../frontend/nis-boutique-catering/src/styles/base.css?raw';
 import siteThemeCss from '../../../frontend/nis-boutique-catering/src/styles/theme.css?raw';
 
@@ -102,7 +124,6 @@ type PublishState = 'clean' | 'draft' | 'saving' | 'publishing' | 'checking' | '
 type PreviewDevice = 'desktop' | 'mobile';
 type MediaUsageKind = 'gallery' | 'service' | 'hero' | 'manifesto';
 type PublishStepState = 'done' | 'active' | 'pending' | 'blocked' | 'error';
-type GalleryPreviewCategory = GalleryItemRecord['category'] | 'all';
 
 type StudioWorkflowStep = {
   readonly step: string;
@@ -1307,7 +1328,6 @@ export const App = () => {
           <HeroEditor
             content={content}
             mediaById={mediaById}
-            accessToken={session.accessToken}
             previewDevice={previewDevice}
             onPreviewDeviceChange={setPreviewDevice}
             updateSection={updateSection}
@@ -1318,6 +1338,7 @@ export const App = () => {
         {activeView === 'intro-band' && (
           <IntroBandEditor
             content={content}
+            mediaById={mediaById}
             previewDevice={previewDevice}
             onPreviewDeviceChange={setPreviewDevice}
             updateSection={updateSection}
@@ -1328,6 +1349,7 @@ export const App = () => {
         {activeView === 'experience-lab' && (
           <CopyOnlySectionEditor
             content={content}
+            mediaById={mediaById}
             sectionId="experience-lab"
             title="בחרו את החוויה"
             text="הטקסט שמלווה את אזור בחירת החוויה באתר. כאן מסבירים למה לבחור קודם את סוג האירוח ומה קורה אחר כך."
@@ -1373,7 +1395,7 @@ export const App = () => {
                 device={previewDevice}
                 onDeviceChange={setPreviewDevice}
               />
-              <ContactPreview content={content} device={previewDevice} />
+              <ContactPreview content={content} mediaById={mediaById} device={previewDevice} />
               <MetadataSeoPreview content={content} device={previewDevice} />
               <PublishPanel
                 content={content}
@@ -1481,7 +1503,7 @@ export const App = () => {
                 device={previewDevice}
                 onDeviceChange={setPreviewDevice}
               />
-              <ServicesPreview content={content} mediaById={mediaById} accessToken={session.accessToken} device={previewDevice} />
+              <ServicesPreview content={content} mediaById={mediaById} device={previewDevice} />
             </div>
           </section>
         )}
@@ -1510,7 +1532,7 @@ export const App = () => {
               device={previewDevice}
               onDeviceChange={setPreviewDevice}
             />
-            <GallerySitePreview content={content} mediaById={mediaById} accessToken={session.accessToken} device={previewDevice} />
+              <GallerySitePreview content={content} mediaById={mediaById} device={previewDevice} />
             <label className="search-box">
               <Search aria-hidden="true" />
               <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="חיפוש לפי שם, תיאור או קטגוריה" />
@@ -1677,6 +1699,7 @@ export const App = () => {
         {activeView === 'real-media' && (
           <CopyOnlySectionEditor
             content={content}
+            mediaById={mediaById}
             sectionId="real-media"
             title="וידאו אמיתי"
             text="כותרת וטקסט לאזור הווידאו. אם האזור לא משרת את האתר, אפשר לכבות אותו כאן במקום להשאיר אותו לא ברור."
@@ -1691,6 +1714,8 @@ export const App = () => {
             title="למי זה מתאים"
             text="כרטיסים שמסבירים למבקר באתר אם השירות מתאים לו. אם עדיין אין כאלה ב-Sheets, אפשר להוסיף כאן."
             group="audience"
+            content={content}
+            mediaById={mediaById}
             sections={content.sections}
             updateSection={updateSection}
             addSection={addSection}
@@ -1707,6 +1732,8 @@ export const App = () => {
             title="קטגוריות פתיחה"
             text="שלושת הכרטיסים הראשונים באתר שמסבירים מהר מה אפשר להזמין. בשדה נקודות נוספות: נקודה ראשונה היא התווית הקטנה, נקודה שנייה יכולה להיות שם אייקון."
             group="editorial"
+            content={content}
+            mediaById={mediaById}
             sections={content.sections}
             updateSection={updateSection}
             addSection={addSection}
@@ -1723,6 +1750,8 @@ export const App = () => {
             title="טקסטי מעטפת"
             text="כותרות, תוויות ופתיחים של אזורי האתר. הכותרת היא H2, הטקסט הוא ההסבר, ונקודה ראשונה היא התווית הקטנה מעל הכותרת."
             group="site-copy"
+            content={content}
+            mediaById={mediaById}
             sections={content.sections}
             updateSection={updateSection}
             addSection={addSection}
@@ -1739,6 +1768,8 @@ export const App = () => {
             title="טקסטים קטנים"
             text="כפתורים, תוויות בטופס, הודעות וואטסאפ וטקסטי עזר קצרים. השם הפנימי עוזר להבין איפה הטקסט מופיע; השדה טקסט הוא מה שהלקוח יראה."
             group="site-microcopy"
+            content={content}
+            mediaById={mediaById}
             sections={content.sections}
             updateSection={updateSection}
             addSection={addSection}
@@ -1754,7 +1785,6 @@ export const App = () => {
           <ManifestoEditor
             content={content}
             mediaById={mediaById}
-            accessToken={session.accessToken}
             updateSection={updateSection}
             addSection={addSection}
             duplicateSection={duplicateSection}
@@ -1770,6 +1800,8 @@ export const App = () => {
             title="למה זה בוטיק"
             text="כרטיסים קצרים שמסבירים את הערך: התאמה, נראות, יחס אישי וטעם ביתי."
             group="boutique"
+            content={content}
+            mediaById={mediaById}
             sections={content.sections}
             updateSection={updateSection}
             addSection={addSection}
@@ -1786,6 +1818,8 @@ export const App = () => {
             title="רגעי בוטיק"
             text="כרטיסי תמונה וטקסט שמחזקים את האופי הוויזואלי של האתר. כרגע התמונות נשמרות מהאתר והטקסט מנוהל כאן."
             group="signature"
+            content={content}
+            mediaById={mediaById}
             sections={content.sections}
             updateSection={updateSection}
             addSection={addSection}
@@ -1802,6 +1836,8 @@ export const App = () => {
             title="איך זה עובד"
             text="שלבים פשוטים שמסבירים ללקוח מה קורה מהרגע שהוא פונה ועד שהאוכל מוכן."
             group="process"
+            content={content}
+            mediaById={mediaById}
             sections={content.sections}
             updateSection={updateSection}
             addSection={addSection}
@@ -1818,6 +1854,8 @@ export const App = () => {
             title="הסיפור של המותג"
             text="התחנות הקצרות שמופיעות באזור הסיפור: מאיפה Nis באה, מה המטבח מביא, ומה מגיע לשולחן."
             group="story"
+            content={content}
+            mediaById={mediaById}
             sections={content.sections}
             updateSection={updateSection}
             addSection={addSection}
@@ -1834,6 +1872,8 @@ export const App = () => {
             title="כיוונים להזמנה"
             text="כל כרטיס הוא כיוון תפריט. הכותרת היא שם הכיוון, הטקסט הוא הפתיח, והנקודות הן הפריטים שמופיעים ברשימה."
             group="samples"
+            content={content}
+            mediaById={mediaById}
             sections={content.sections}
             updateSection={updateSection}
             addSection={addSection}
@@ -1850,6 +1890,8 @@ export const App = () => {
             title="תיאום וזמינות"
             text="פרטים מעשיים שמרגיעים את הלקוח לפני פנייה: אזור פעילות, זמן פנייה, הצעת מחיר ואישור תפריט."
             group="coordination"
+            content={content}
+            mediaById={mediaById}
             sections={content.sections}
             updateSection={updateSection}
             addSection={addSection}
@@ -1864,6 +1906,7 @@ export const App = () => {
         {activeView === 'booking-basics' && (
           <CopyOnlySectionEditor
             content={content}
+            mediaById={mediaById}
             sectionId="booking-basics"
             title="לפני שפונים"
             text="הטקסט שמסביר ללקוח מה כדאי לדעת לפני שליחת פנייה: סוג אירוח, כמות ותאריך."
@@ -1876,6 +1919,7 @@ export const App = () => {
         {activeView === 'seo' && (
           <CopyOnlySectionEditor
             content={content}
+            mediaById={mediaById}
             sectionId="seo"
             title="אזור SEO"
             text="כאן עורכים את אזור הטקסט שמיועד גם להבנת השירות וגם לחיפוש. התגיות מוצגות באתר כתוויות קצרות."
@@ -1891,6 +1935,8 @@ export const App = () => {
             title="אמון ועובדות"
             text="נקודות שמרגיעות לקוח לפני שהוא פונה: זמינות, התאמה אישית, אזור פעילות ועוד."
             group="trust"
+            content={content}
+            mediaById={mediaById}
             sections={content.sections}
             updateSection={updateSection}
             addSection={addSection}
@@ -1907,6 +1953,8 @@ export const App = () => {
             title="שאלות ותשובות"
             text="כל כרטיס הוא שאלה באתר. הכותרת היא השאלה, והטקסט הוא התשובה."
             group="faq"
+            content={content}
+            mediaById={mediaById}
             sections={content.sections}
             updateSection={updateSection}
             addSection={addSection}
@@ -2092,7 +2140,6 @@ const AreaMiniPreview = ({
 const HeroEditor = ({
   content,
   mediaById,
-  accessToken,
   previewDevice,
   onPreviewDeviceChange,
   updateSection,
@@ -2100,7 +2147,6 @@ const HeroEditor = ({
 }: {
   readonly content: ContentSnapshot;
   readonly mediaById: ReadonlyMap<string, ImageAssetRecord>;
-  readonly accessToken: string;
   readonly previewDevice: PreviewDevice;
   readonly onPreviewDeviceChange: (device: PreviewDevice) => void;
   readonly updateSection: (id: string, patch: Partial<SectionBlockRecord>) => void;
@@ -2216,7 +2262,7 @@ const HeroEditor = ({
           device={previewDevice}
           onDeviceChange={onPreviewDeviceChange}
         />
-        <HeroSitePreview content={content} hero={hero} device={previewDevice} accessToken={accessToken} mediaById={mediaById} />
+        <HeroSitePreview content={content} hero={hero} device={previewDevice} mediaById={mediaById} />
       </div>
     </section>
   );
@@ -2228,12 +2274,14 @@ const IntroBandEditor = ({
   onPreviewDeviceChange,
   updateSection,
   addSection,
+  mediaById,
 }: {
   readonly content: ContentSnapshot;
   readonly previewDevice: PreviewDevice;
   readonly onPreviewDeviceChange: (device: PreviewDevice) => void;
   readonly updateSection: (id: string, patch: Partial<SectionBlockRecord>) => void;
   readonly addSection: (group?: string) => void;
+  readonly mediaById: ReadonlyMap<string, ImageAssetRecord>;
 }) => {
   const section = getManagedCopySection(content, 'intro-band');
 
@@ -2274,7 +2322,7 @@ const IntroBandEditor = ({
           device={previewDevice}
           onDeviceChange={onPreviewDeviceChange}
         />
-        <IntroBandPreview section={section} device={previewDevice} />
+        <IntroBandPreview content={content} mediaById={mediaById} device={previewDevice} />
       </div>
     </section>
   );
@@ -2289,6 +2337,7 @@ const CopyOnlySectionEditor = ({
   onPreviewDeviceChange,
   updateSection,
   tagsSection,
+  mediaById,
 }: {
   readonly content: ContentSnapshot;
   readonly sectionId: string;
@@ -2298,6 +2347,7 @@ const CopyOnlySectionEditor = ({
   readonly onPreviewDeviceChange: (device: PreviewDevice) => void;
   readonly updateSection: (id: string, patch: Partial<SectionBlockRecord>) => void;
   readonly tagsSection?: SectionBlockRecord;
+  readonly mediaById: ReadonlyMap<string, ImageAssetRecord>;
 }) => {
   const section = getManagedCopySection(content, sectionId);
 
@@ -2336,7 +2386,25 @@ const CopyOnlySectionEditor = ({
           device={previewDevice}
           onDeviceChange={onPreviewDeviceChange}
         />
-        <CopyOnlySectionPreview section={section} tagsSection={tagsSection} device={previewDevice} />
+        {exactPreviewCopySectionIds.includes(sectionId as typeof exactPreviewCopySectionIds[number]) ? (
+          sectionId === 'experience-lab' ? (
+          <ActualExperienceLabPreview content={content} mediaById={mediaById} device={previewDevice} />
+          ) : sectionId === 'real-media' ? (
+          <ActualSiteSectionFrame content={content} mediaById={mediaById} device={previewDevice}>
+            <RealMediaSection />
+          </ActualSiteSectionFrame>
+          ) : sectionId === 'booking-basics' ? (
+          <ActualSiteSectionFrame content={content} mediaById={mediaById} device={previewDevice}>
+            <BookingBasicsSection />
+          </ActualSiteSectionFrame>
+          ) : (
+          <ActualSiteSectionFrame content={content} mediaById={mediaById} device={previewDevice}>
+            <SeoSection />
+          </ActualSiteSectionFrame>
+          )
+        ) : (
+          <CopyOnlySectionPreview section={section} tagsSection={tagsSection} device={previewDevice} />
+        )}
       </div>
     </section>
   );
@@ -2345,7 +2413,6 @@ const CopyOnlySectionEditor = ({
 const ManifestoEditor = ({
   content,
   mediaById,
-  accessToken,
   updateSection,
   addSection,
   duplicateSection,
@@ -2356,7 +2423,6 @@ const ManifestoEditor = ({
 }: {
   readonly content: ContentSnapshot;
   readonly mediaById: ReadonlyMap<string, ImageAssetRecord>;
-  readonly accessToken: string;
   readonly updateSection: (id: string, patch: Partial<SectionBlockRecord>) => void;
   readonly addSection: (group?: string) => void;
   readonly duplicateSection: (section: SectionBlockRecord) => void;
@@ -2454,7 +2520,7 @@ const ManifestoEditor = ({
           device={previewDevice}
           onDeviceChange={onPreviewDeviceChange}
         />
-        <ManifestoSitePreview copy={copy} moments={moments} mediaById={mediaById} accessToken={accessToken} device={previewDevice} />
+        <ManifestoSitePreview content={content} mediaById={mediaById} device={previewDevice} />
       </div>
     </section>
   );
@@ -2493,110 +2559,33 @@ const HeroSitePreview = ({
   content,
   hero,
   device,
-  accessToken,
   mediaById,
 }: {
   readonly content: ContentSnapshot;
   readonly hero: SectionBlockRecord;
   readonly device: PreviewDevice;
-  readonly accessToken: string;
   readonly mediaById: ReadonlyMap<string, ImageAssetRecord>;
 }) => {
-  const heroNotes = content.sections
-    .filter((section) => section.group === 'hero-notes' && section.active && !section.deletedAt)
-    .sort((left, right) => left.order - right.order)
-    .slice(0, 2);
-  const heroMedia = content.sections.find((section) => section.id === 'hero-media');
-  const heroBadges = content.sections.find((section) => section.id === 'hero-badges');
-  const backgroundMedia = mediaById.get(heroMediaIdAt(heroMedia, 0));
-  const primaryMedia = mediaById.get(heroMediaIdAt(heroMedia, 1));
-  const sideMedia = mediaById.get(heroMediaIdAt(heroMedia, 2));
-  const tallMedia = mediaById.get(heroMediaIdAt(heroMedia, 3));
-  const title = hero.title ?? 'קייטרינג בוטיק ביתי\nלשבתות ואירועים קטנים';
-  const kicker = hero.items[1] ?? 'שבתות, מגשי אירוח ו־Travel Nis, עם אוכל מוקפד, נראות יפה ושיחה קצרה שסוגרת כיוון.';
-  const text = hero.text ?? 'רואים את הסגנון, בוחרים את סוג ההזמנה, ומשאירים פנייה מסודרת. Nis כבר תהפוך את זה לתפריט, מגשים או מארז שמתאימים לאירוח שלכם.';
-  const backgroundSrc = backgroundMedia?.src ? publicAssetSrcFor(backgroundMedia.src) : publicAssetSrcFor('/media/food/events/quiche-tart-clean.webp');
-  const sideSrc = sideMedia?.src ? publicAssetSrcFor(sideMedia.src) : publicAssetSrcFor('/media/food/events/dips-tray-close.webp');
-  const tallSrc = tallMedia?.src ? publicAssetSrcFor(tallMedia.src) : publicAssetSrcFor('/media/food/events/table-setting-blue-gold.webp');
-  const badges = heroBadges?.items.length ? heroBadges.items : ['שבתות', 'מגשי אירוח', 'Travel Nis', 'מומלץ לפנות מוקדם'];
-
+  const heroWhatsapp = buildPreviewWhatsappLink(content.settings.whatsappBase, `שלום Nis, אשמח לשמוע פרטים על ${hero.items[1] || hero.title || 'קייטרינג בוטיק לאירוח'}.`);
   return (
-    <div className={device === 'mobile' ? 'preview-frame is-mobile' : 'preview-frame is-desktop'}>
-      <div className="preview-browser-bar">
-        <span>{device === 'mobile' ? '390px מובייל' : 'אתר במחשב'}</span>
-        <strong>nisboutiquecatering.com</strong>
-      </div>
-      <section className="hero-site-preview" style={{ '--hero-preview-bg': `url('${backgroundSrc}')` } as CSSProperties}>
-        <div className="hero-preview-media" aria-hidden="true" />
-        <div className="hero-preview-texture" aria-hidden="true" />
-        <div className="hero-preview-layout">
-          <div className="hero-preview-content">
-            <img className="hero-preview-logo" src={publicAssetSrcFor('/brand/nis-logo.svg')} alt="Nis boutique catering" />
-            <p className="hero-preview-eyebrow">{hero.items[0] ?? 'מהרובע היהודי לביתר עילית'}</p>
-            <h3>
-              {title.split('\n').map((line, index) => (
-                <span key={`${line}-${index}`}>{line}</span>
-              ))}
-            </h3>
-            <p className="hero-preview-kicker">{kicker}</p>
-            <p className="hero-preview-text">{text}</p>
-            <div className="hero-preview-actions">
-              <span>
-                <MessageCircle aria-hidden="true" />
-                דברו איתנו בוואטסאפ
-              </span>
-              <span>
-                <Eye aria-hidden="true" />
-                ראו איך זה נראה
-              </span>
-            </div>
-            <div className="hero-preview-badges" aria-label="נקודות Hero">
-              {badges.map((badge) => <span key={badge}>{badge}</span>)}
-            </div>
-          </div>
-          <div className="hero-preview-showcase" aria-label="תמונות Hero">
-            <div className="hero-preview-stage">
-              {primaryMedia?.driveFileId ? (
-                <DrivePreviewImage media={primaryMedia} accessToken={accessToken} />
-              ) : (
-                <img className="hero-preview-plate primary-plate" src={primaryMedia?.src ? publicAssetSrcFor(primaryMedia.src) : publicAssetSrcFor('/media/food/events/salmon-skewers-lemon.webp')} alt="" />
-              )}
-              <div className="hero-preview-caption">
-                <strong>שבתות, אירוח קטן ומארזים</strong>
-                <span>אותה שפה של טעם, נראות ושקט למארח.</span>
-              </div>
-            </div>
-            <img className="hero-preview-plate side-plate" src={sideSrc} alt="" />
-            <img className="hero-preview-plate tall-plate" src={tallSrc} alt="" />
-            <div className="hero-preview-notes">
-              {heroNotes.map((note) => (
-                <article key={note.id}>
-                  <strong>{note.title}</strong>
-                  <span>{note.text}</span>
-                </article>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
+    <ActualSiteSectionFrame content={content} mediaById={mediaById} device={device}>
+      <HeroSection heroWhatsapp={heroWhatsapp} />
+    </ActualSiteSectionFrame>
   );
 };
 
-const IntroBandPreview = ({ section, device }: { readonly section: SectionBlockRecord; readonly device: PreviewDevice }) => (
-  <div className={device === 'mobile' ? 'preview-frame is-mobile' : 'preview-frame is-desktop'}>
-    <PreviewBrowserBar device={device} />
-    <IframeSitePreview device={device}>
-      <div className="site-shell studio-site-preview-shell">
-        <IntroBandSectionContent
-          eyebrow={section.items[0] || 'רעיון אחד ברור'}
-          title={section.title ?? ''}
-          text={section.text}
-          className="section intro-band reveal is-visible"
-        />
-      </div>
-    </IframeSitePreview>
-  </div>
+const IntroBandPreview = ({
+  content,
+  device,
+  mediaById,
+}: {
+  readonly content: ContentSnapshot;
+  readonly device: PreviewDevice;
+  readonly mediaById: ReadonlyMap<string, ImageAssetRecord>;
+}) => (
+  <ActualSiteSectionFrame content={content} mediaById={mediaById} device={device}>
+    <IntroBandSection />
+  </ActualSiteSectionFrame>
 );
 
 const shadowPreviewCss = `
@@ -2742,6 +2731,111 @@ const IframeSitePreview = ({
   );
 };
 
+const ActualSiteSectionFrame = ({
+  content,
+  mediaById,
+  device,
+  children,
+}: {
+  readonly content: ContentSnapshot;
+  readonly mediaById: ReadonlyMap<string, ImageAssetRecord>;
+  readonly device: PreviewDevice;
+  readonly children: ReactNode;
+}) => {
+  const previewData = useMemo(() => buildSiteSectionPreviewData(content, mediaById), [content, mediaById]);
+
+  return (
+    <div className={device === 'mobile' ? 'preview-frame is-mobile' : 'preview-frame is-desktop'}>
+      <PreviewBrowserBar device={device} />
+      <IframeSitePreview device={device}>
+        <SiteSectionPreviewDataProvider value={previewData}>
+          <div className="site-shell studio-site-preview-shell">{children}</div>
+        </SiteSectionPreviewDataProvider>
+      </IframeSitePreview>
+    </div>
+  );
+};
+
+const ActualExperienceLabPreview = ({
+  content,
+  mediaById,
+  device,
+}: {
+  readonly content: ContentSnapshot;
+  readonly mediaById: ReadonlyMap<string, ImageAssetRecord>;
+  readonly device: PreviewDevice;
+}) => {
+  const [activeExperienceIndex, setActiveExperienceIndex] = useState(0);
+  return (
+    <ActualSiteSectionFrame content={content} mediaById={mediaById} device={device}>
+      <ExperienceLabSection activeExperienceIndex={activeExperienceIndex} onChangeExperience={setActiveExperienceIndex} />
+    </ActualSiteSectionFrame>
+  );
+};
+
+const ActualGalleryPreview = ({
+  content,
+  mediaById,
+  device,
+}: {
+  readonly content: ContentSnapshot;
+  readonly mediaById: ReadonlyMap<string, ImageAssetRecord>;
+  readonly device: PreviewDevice;
+}) => {
+  const previewData = useMemo(() => buildSiteSectionPreviewData(content, mediaById), [content, mediaById]);
+  const [activeCategory, setActiveCategory] = useState<typeof previewData.galleryImages[number]['category'] | 'all'>('all');
+  const visibleImages = useMemo(
+    () => (activeCategory === 'all' ? previewData.galleryImages : previewData.galleryImages.filter((image) => image.category === activeCategory)),
+    [activeCategory, previewData.galleryImages],
+  );
+
+  return (
+    <div className={device === 'mobile' ? 'preview-frame is-mobile' : 'preview-frame is-desktop'}>
+      <PreviewBrowserBar device={device} />
+      <IframeSitePreview device={device}>
+        <SiteSectionPreviewDataProvider value={previewData}>
+          <div className="site-shell studio-site-preview-shell">
+            <GallerySection activeCategory={activeCategory} images={visibleImages} onFilterChange={setActiveCategory} onOpenImage={() => undefined} />
+          </div>
+        </SiteSectionPreviewDataProvider>
+      </IframeSitePreview>
+    </div>
+  );
+};
+
+const ActualContactPreview = ({
+  content,
+  mediaById,
+  device,
+}: {
+  readonly content: ContentSnapshot;
+  readonly mediaById: ReadonlyMap<string, ImageAssetRecord>;
+  readonly device: PreviewDevice;
+}) => {
+  const previewData = useMemo(() => buildSiteSectionPreviewData(content, mediaById), [content, mediaById]);
+  const [leadSource, setLeadSource] = useState(previewData.contactInterestOptions[0] ?? 'ניס בטעם של שבת');
+  const contactWhatsapp = buildPreviewWhatsappLink(content.settings.whatsappBase, previewData.siteMicrocopy.whatsappContactMessage);
+
+  return (
+    <div className={device === 'mobile' ? 'preview-frame is-mobile' : 'preview-frame is-desktop'}>
+      <PreviewBrowserBar device={device} />
+      <IframeSitePreview device={device}>
+        <SiteSectionPreviewDataProvider value={previewData}>
+          <div className="site-shell studio-site-preview-shell">
+            <ContactSection
+              contactWhatsapp={contactWhatsapp}
+              email={content.settings.email}
+              leadSource={leadSource}
+              onLeadSourceChange={setLeadSource}
+              onSubmit={(event) => event.preventDefault()}
+            />
+          </div>
+        </SiteSectionPreviewDataProvider>
+      </IframeSitePreview>
+    </div>
+  );
+};
+
 const CopyOnlySectionPreview = ({
   section,
   tagsSection,
@@ -2769,208 +2863,42 @@ const CopyOnlySectionPreview = ({
 );
 
 const ManifestoSitePreview = ({
-  copy,
-  moments,
+  content,
   mediaById,
-  accessToken,
   device,
 }: {
-  readonly copy: SectionBlockRecord | undefined;
-  readonly moments: readonly SectionBlockRecord[];
+  readonly content: ContentSnapshot;
   readonly mediaById: ReadonlyMap<string, ImageAssetRecord>;
-  readonly accessToken: string;
   readonly device: PreviewDevice;
-}) => {
-  const activeMoments = moments.filter((moment) => moment.active && !moment.deletedAt);
-
-  return (
-    <div className={device === 'mobile' ? 'preview-frame is-mobile' : 'preview-frame is-desktop'}>
-      <PreviewBrowserBar device={device} />
-      <div className="site-section-preview site-section-preview-frame manifesto-site-preview">
-        <div className="manifesto-preview-copy">
-          <p className="kicker">{copy?.items[0] || 'השפה של Nis'}</p>
-          <h3>
-            {(copy?.title || 'לא עוד מגש.\nחוויית אירוח שנראית\nכמו מחשבה.').split('\n').map((line, index) => (
-              <span key={`${line}-${index}`}>{line}</span>
-            ))}
-          </h3>
-          <p>{copy?.text || 'כש-Nis נראית נכון, זה מרגיש מיד אחרת: יותר שקט למארח, יותר כבוד לשולחן, ויותר תחושה שמישהו החזיק את כל הפרטים יחד.'}</p>
-        </div>
-        <div className="manifesto-preview-stack">
-          {activeMoments.map((moment, index) => {
-            const media = mediaById.get(moment.items[1] ?? manifestoMediaFallbacks[index % manifestoMediaFallbacks.length]);
-            return (
-              <article key={moment.id} className="manifesto-preview-card">
-                {media?.driveFileId ? (
-                  <DrivePreviewImage media={media} accessToken={accessToken} />
-                ) : media ? (
-                  <img src={publicAssetSrcFor(media.src)} alt="" />
-                ) : (
-                  <div className="empty-preview">אין תמונה</div>
-                )}
-                <div>
-                  <span>{moment.items[0] ?? String(index + 1).padStart(2, '0')}</span>
-                  <h3>{moment.title}</h3>
-                  <p>{moment.text}</p>
-                </div>
-              </article>
-            );
-          })}
-        </div>
-      </div>
-    </div>
-  );
-};
+}) => (
+  <ActualSiteSectionFrame content={content} mediaById={mediaById} device={device}>
+    <ManifestoSection />
+  </ActualSiteSectionFrame>
+);
 
 const ServicesPreview = ({
   content,
   mediaById,
-  accessToken,
   device,
 }: {
   readonly content: ContentSnapshot;
   readonly mediaById: ReadonlyMap<string, ImageAssetRecord>;
-  readonly accessToken: string;
   readonly device: PreviewDevice;
-}) => {
-  const services = [...content.services]
-    .filter((service) => service.active && !service.deletedAt)
-    .sort((left, right) => left.order - right.order);
-  const servicesCopy = content.sections.find((section) => section.id === 'copy-services' && section.active && !section.deletedAt);
-  const eyebrow = servicesCopy?.items[0] ?? 'מה אפשר להזמין';
-  const title = servicesCopy?.title ?? 'שלוש אפשרויות ברורות. בוחרים כיוון וממשיכים לפנייה.';
-  const text = servicesCopy?.text ?? 'שבת, אירוח קטן או דרך: שלושת השירותים מקבלים משקל שווה, וכל אחד מהם נבנה לפי כמות, תאריך והתחושה שרוצים ליצור.';
-
-  return (
-    <div className={device === 'mobile' ? 'preview-frame is-mobile' : 'preview-frame is-desktop'}>
-      <PreviewBrowserBar device={device} />
-      <div className="site-section-preview site-section-preview-frame services-section-preview">
-        <p className="kicker">{eyebrow}</p>
-        <h3>{title}</h3>
-        {text && <p>{text}</p>}
-        <div className="preview-services">
-          {services.map((service) => {
-            const icon = getServicePreviewIcon(service.icon);
-            return (
-              <article key={service.id}>
-                <DrivePreviewImage media={mediaById.get(service.mediaId)} accessToken={accessToken} />
-                <div className="preview-service-body">
-                  {icon}
-                  <h3>{service.title}</h3>
-                  <p className="preview-service-subtitle">{service.subtitle}</p>
-                  <p>{service.description}</p>
-                  {service.promise && <strong className="preview-service-promise">{service.promise}</strong>}
-                  {service.details.length > 0 && (
-                    <ul>
-                      {service.details.slice(0, 4).map((detail) => <li key={detail}>{detail}</li>)}
-                    </ul>
-                  )}
-                  <span className="preview-text-link">
-                    {service.cta}
-                    <ArrowLeft aria-hidden="true" />
-                  </span>
-                </div>
-              </article>
-            );
-          })}
-          {services.length === 0 && (
-            <div className="empty-state">
-              <Sparkles aria-hidden="true" />
-              <strong>אין שירותים פעילים</strong>
-              <span>הדליקו שירות אחד לפחות כדי שיופיע באתר.</span>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const getServicePreviewIcon = (icon: string) => {
-  if (icon === 'ChefHat') {
-    return <ChefHat aria-hidden="true" className="preview-card-icon" />;
-  }
-  if (icon === 'Utensils') {
-    return <Utensils aria-hidden="true" className="preview-card-icon" />;
-  }
-  if (icon === 'Package') {
-    return <Package aria-hidden="true" className="preview-card-icon" />;
-  }
-  return <Sparkles aria-hidden="true" className="preview-card-icon" />;
-};
+}) => (
+  <ActualSiteSectionFrame content={content} mediaById={mediaById} device={device}>
+    <ServicesSection />
+  </ActualSiteSectionFrame>
+);
 
 const GallerySitePreview = ({
   content,
   mediaById,
-  accessToken,
   device,
 }: {
   readonly content: ContentSnapshot;
   readonly mediaById: ReadonlyMap<string, ImageAssetRecord>;
-  readonly accessToken: string;
   readonly device: PreviewDevice;
-}) => {
-  const [activeCategory, setActiveCategory] = useState<GalleryPreviewCategory>('all');
-  const activeItems = [...content.gallery]
-    .filter((item) => item.active && !item.deletedAt)
-    .sort((left, right) => left.order - right.order);
-  const visibleItems = (activeCategory === 'all' ? activeItems.slice(0, 6) : activeItems.filter((item) => item.category === activeCategory));
-  const galleryCopy = content.sections.find((section) => section.id === 'copy-gallery' && section.active && !section.deletedAt);
-  const eyebrow = galleryCopy?.items[0] ?? 'גלריה';
-  const title = galleryCopy?.title ?? 'קודם רואים. אחר כך הרבה יותר קל לפנות.';
-  const text = galleryCopy?.text ?? 'שולחנות, מגשים, סלטים, קפה ופרטים קטנים שמראים את הסגנון לפני שמתחילים לדבר על תפריט.';
-  const previewCategories: readonly { readonly id: GalleryPreviewCategory; readonly label: string; readonly count: number }[] = [
-    { id: 'all', label: 'הכול', count: activeItems.length },
-    ...editableCategories.map((category) => ({
-      id: category,
-      label: categoryLabels[category],
-      count: activeItems.filter((item) => item.category === category).length,
-    })),
-  ];
-
-  return (
-    <div className={device === 'mobile' ? 'preview-frame is-mobile' : 'preview-frame is-desktop'}>
-      <PreviewBrowserBar device={device} />
-      <div className="site-section-preview site-section-preview-frame gallery-section-preview">
-        <p className="kicker">{eyebrow}</p>
-        <h3>{title}</h3>
-        {text && <p>{text}</p>}
-        <div className="gallery-preview-tabs" aria-label="סינון תצוגת גלריה">
-          {previewCategories.map((category) => (
-            <button
-              type="button"
-              className={category.id === activeCategory ? 'gallery-preview-tab is-active' : 'gallery-preview-tab'}
-              key={category.id}
-              onClick={() => setActiveCategory(category.id)}
-              aria-pressed={category.id === activeCategory}
-            >
-              <span>{category.label}</span>
-              <small>{category.count}</small>
-            </button>
-          ))}
-        </div>
-        <div className="preview-gallery">
-          {visibleItems.map((item) => (
-            <article className={item.tall ? 'preview-gallery-item is-tall' : 'preview-gallery-item'} key={item.id}>
-              <DrivePreviewImage media={mediaById.get(item.mediaId)} accessToken={accessToken} />
-              <div className="preview-gallery-caption">
-                <strong>{item.title}</strong>
-                <span>{categoryLabels[item.category]}</span>
-              </div>
-            </article>
-          ))}
-          {visibleItems.length === 0 && (
-            <div className="empty-state">
-              <Images aria-hidden="true" />
-              <strong>{activeItems.length === 0 ? 'אין תמונות פעילות בגלריה' : 'אין תמונות בפילטר הזה'}</strong>
-              <span>{activeItems.length === 0 ? 'הדליקו תמונות כדי שיופיעו באתר.' : 'בחרו קטגוריה אחרת או חברו תמונה פעילה לקטגוריה הזאת.'}</span>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
+}) => <ActualGalleryPreview content={content} mediaById={mediaById} device={device} />;
 
 const PreviewBrowserBar = ({ device }: { readonly device: PreviewDevice }) => (
   <div className="preview-browser-bar">
@@ -2982,7 +2910,7 @@ const PreviewBrowserBar = ({ device }: { readonly device: PreviewDevice }) => (
 const getPreviewCopySection = (
   content: ContentSnapshot,
   id: string,
-  fallback: { readonly eyebrow: string; readonly title: string; readonly text: string; readonly extraText?: string },
+  fallback: { readonly eyebrow: string; readonly title: string; readonly text?: string; readonly extraText?: string },
 ) => {
   const section = content.sections.find((item) => item.id === `copy-${id}` && item.group === 'site-copy' && item.active && !item.deletedAt);
   return {
@@ -3001,6 +2929,265 @@ const getPreviewMicrocopyItems = (content: ContentSnapshot, id: string, fallback
   const items = content.sections.find((item) => item.id === `microcopy-${id}` && item.group === 'site-microcopy' && item.active && !item.deletedAt)?.items;
   return items && items.length > 0 ? items : fallback;
 };
+
+const getActiveSectionsByGroup = (content: ContentSnapshot, group: string) =>
+  content.sections
+    .filter((section) => section.group === group && section.active && !section.deletedAt)
+    .sort((left, right) => left.order - right.order);
+
+const resolvePreviewImage = (
+  mediaById: ReadonlyMap<string, ImageAssetRecord>,
+  mediaId: string | undefined,
+  fallback: { readonly src: string; readonly width: number; readonly height: number; readonly sizes?: string; readonly responsive?: boolean },
+) => {
+  const media = mediaId ? mediaById.get(mediaId) : null;
+  if (!media?.src) {
+    return fallback;
+  }
+
+  return {
+    src: publicAssetSrcFor(media.src),
+    width: media.width,
+    height: media.height,
+    sizes: media.sizes || fallback.sizes,
+    responsive: media.responsive ?? fallback.responsive,
+  };
+};
+
+const buildSiteSectionPreviewData = (
+  content: ContentSnapshot,
+  mediaById: ReadonlyMap<string, ImageAssetRecord>,
+): SiteSectionPreviewData => {
+  const defaults = defaultSiteSectionPreviewData;
+  const hero = content.sections.find((section) => section.id === 'hero' && section.active && !section.deletedAt);
+  const heroMedia = content.sections.find((section) => section.id === 'hero-media' && section.active && !section.deletedAt);
+  const heroBadges = content.sections.find((section) => section.id === 'hero-badges' && section.active && !section.deletedAt);
+  const heroStatsSections = getActiveSectionsByGroup(content, 'hero-stats');
+  const heroNoteSections = getActiveSectionsByGroup(content, 'hero-notes');
+  const manifestoSections = getActiveSectionsByGroup(content, 'manifesto');
+  const editorialSections = getActiveSectionsByGroup(content, 'editorial');
+  const audienceSections = getActiveSectionsByGroup(content, 'audience');
+  const boutiqueSections = getActiveSectionsByGroup(content, 'boutique');
+  const processSections = getActiveSectionsByGroup(content, 'process');
+  const storySections = getActiveSectionsByGroup(content, 'story');
+  const signatureSections = getActiveSectionsByGroup(content, 'signature');
+  const coordinationSections = getActiveSectionsByGroup(content, 'coordination');
+  const trustSections = getActiveSectionsByGroup(content, 'trust');
+  const faqSections = getActiveSectionsByGroup(content, 'faq');
+  const samplesSections = getActiveSectionsByGroup(content, 'samples');
+  const seoTopicsSection = content.sections.find((section) => section.id === 'seo-topics' && section.active && !section.deletedAt);
+
+  const services = [...content.services]
+    .filter((service) => service.active && !service.deletedAt)
+    .sort((left, right) => left.order - right.order)
+    .map((service, index) => {
+      const base = defaults.services[index] ?? defaults.services[0];
+      return {
+        ...base,
+        title: service.title,
+        subtitle: service.subtitle,
+        description: service.description,
+        bestFor: service.bestFor,
+        promise: service.promise,
+        details: service.details,
+        cta: service.cta,
+        image: resolvePreviewImage(mediaById, service.mediaId, base.image),
+      };
+    });
+
+  const galleryImages = [...content.gallery]
+    .filter((item) => item.active && !item.deletedAt)
+    .sort((left, right) => left.order - right.order)
+    .map((item) => {
+      const fallbackImage = defaultSiteSectionPreviewData.foodMedia.hostingTableOverview;
+      return {
+        title: item.title,
+        alt: item.alt,
+        image: resolvePreviewImage(mediaById, item.mediaId, fallbackImage),
+        category: item.category as 'all' | 'tables' | 'trays' | 'salads' | 'coffee' | 'fish',
+        tall: item.tall,
+      };
+    });
+
+  return {
+    ...defaults,
+    phoneHref: content.settings.phoneHref || defaults.phoneHref,
+    heroContent: {
+      eyebrow: hero?.items[0] || defaults.heroContent.eyebrow,
+      title: hero?.title || defaults.heroContent.title,
+      kicker: hero?.items[1] || defaults.heroContent.kicker,
+      text: hero?.text || defaults.heroContent.text,
+    },
+    heroMedia: {
+      background: resolvePreviewImage(mediaById, heroMedia?.items[0], defaults.heroMedia.background),
+      primary: resolvePreviewImage(mediaById, heroMedia?.items[1], defaults.heroMedia.primary),
+      side: resolvePreviewImage(mediaById, heroMedia?.items[2], defaults.heroMedia.side),
+      tall: resolvePreviewImage(mediaById, heroMedia?.items[3], defaults.heroMedia.tall),
+    },
+    heroBadges: heroBadges?.items.length ? heroBadges.items : defaults.heroBadges,
+    heroStats: heroStatsSections.length
+      ? heroStatsSections.map((section, index) => ({
+          value: section.title || defaults.heroStats[index]?.value || defaults.heroStats[0].value,
+          label: section.text || defaults.heroStats[index]?.label || defaults.heroStats[0].label,
+        }))
+      : defaults.heroStats,
+    heroSceneNotes: heroNoteSections.length
+      ? heroNoteSections.map((section, index) => ({
+          title: section.title || defaults.heroSceneNotes[index]?.title || defaults.heroSceneNotes[0].title,
+          text: section.text || defaults.heroSceneNotes[index]?.text || defaults.heroSceneNotes[0].text,
+        }))
+      : defaults.heroSceneNotes,
+    siteMicrocopy: {
+      ...defaults.siteMicrocopy,
+      heroPrimaryCta: getPreviewMicrocopy(content, 'hero-primary-cta', defaults.siteMicrocopy.heroPrimaryCta),
+      heroSecondaryCta: getPreviewMicrocopy(content, 'hero-secondary-cta', defaults.siteMicrocopy.heroSecondaryCta),
+      heroMicrocopy: getPreviewMicrocopy(content, 'hero-microcopy', defaults.siteMicrocopy.heroMicrocopy),
+      heroShowcaseTitle: getPreviewMicrocopy(content, 'hero-showcase-title', defaults.siteMicrocopy.heroShowcaseTitle),
+      heroShowcaseText: getPreviewMicrocopy(content, 'hero-showcase-text', defaults.siteMicrocopy.heroShowcaseText),
+      heroVideoChip: getPreviewMicrocopy(content, 'hero-video-chip', defaults.siteMicrocopy.heroVideoChip),
+      topbarWhatsappLabel: getPreviewMicrocopy(content, 'topbar-whatsapp-label', defaults.siteMicrocopy.topbarWhatsappLabel),
+      galleryAllLabel: getPreviewMicrocopy(content, 'gallery-all-label', defaults.siteMicrocopy.galleryAllLabel),
+      galleryTablesLabel: getPreviewMicrocopy(content, 'gallery-tables-label', defaults.siteMicrocopy.galleryTablesLabel),
+      galleryTraysLabel: getPreviewMicrocopy(content, 'gallery-trays-label', defaults.siteMicrocopy.galleryTraysLabel),
+      gallerySaladsLabel: getPreviewMicrocopy(content, 'gallery-salads-label', defaults.siteMicrocopy.gallerySaladsLabel),
+      galleryCoffeeLabel: getPreviewMicrocopy(content, 'gallery-coffee-label', defaults.siteMicrocopy.galleryCoffeeLabel),
+      galleryFishLabel: getPreviewMicrocopy(content, 'gallery-fish-label', defaults.siteMicrocopy.galleryFishLabel),
+      contactPrimaryCta: getPreviewMicrocopy(content, 'contact-primary-cta', defaults.siteMicrocopy.contactPrimaryCta),
+      contactPhoneCta: getPreviewMicrocopy(content, 'contact-phone-cta', defaults.siteMicrocopy.contactPhoneCta),
+      contactLocation: getPreviewMicrocopy(content, 'contact-location', defaults.siteMicrocopy.contactLocation),
+      contactPromiseHeading: getPreviewMicrocopy(content, 'contact-promise-heading', defaults.siteMicrocopy.contactPromiseHeading),
+      formNameLabel: getPreviewMicrocopy(content, 'form-name-label', defaults.siteMicrocopy.formNameLabel),
+      formPhoneLabel: getPreviewMicrocopy(content, 'form-phone-label', defaults.siteMicrocopy.formPhoneLabel),
+      formEmailLabel: getPreviewMicrocopy(content, 'form-email-label', defaults.siteMicrocopy.formEmailLabel),
+      formInterestLabel: getPreviewMicrocopy(content, 'form-interest-label', defaults.siteMicrocopy.formInterestLabel),
+      formDateLabel: getPreviewMicrocopy(content, 'form-date-label', defaults.siteMicrocopy.formDateLabel),
+      formGuestsLabel: getPreviewMicrocopy(content, 'form-guests-label', defaults.siteMicrocopy.formGuestsLabel),
+      formDeliveryLabel: getPreviewMicrocopy(content, 'form-delivery-label', defaults.siteMicrocopy.formDeliveryLabel),
+      formMessageLabel: getPreviewMicrocopy(content, 'form-message-label', defaults.siteMicrocopy.formMessageLabel),
+      formSubmitLabel: getPreviewMicrocopy(content, 'form-submit-label', defaults.siteMicrocopy.formSubmitLabel),
+      whatsappHeroTopic: getPreviewMicrocopy(content, 'whatsapp-hero-topic', defaults.siteMicrocopy.whatsappHeroTopic),
+    },
+    galleryCategories: [
+      { id: 'all', label: getPreviewMicrocopy(content, 'gallery-all-label', defaults.galleryCategories[0].label) },
+      { id: 'tables', label: getPreviewMicrocopy(content, 'gallery-tables-label', defaults.galleryCategories[1].label) },
+      { id: 'trays', label: getPreviewMicrocopy(content, 'gallery-trays-label', defaults.galleryCategories[2].label) },
+      { id: 'salads', label: getPreviewMicrocopy(content, 'gallery-salads-label', defaults.galleryCategories[3].label) },
+      { id: 'fish', label: getPreviewMicrocopy(content, 'gallery-fish-label', defaults.galleryCategories[4].label) },
+      { id: 'coffee', label: getPreviewMicrocopy(content, 'gallery-coffee-label', defaults.galleryCategories[5].label) },
+    ],
+    contactInterestOptions: getPreviewMicrocopyItems(content, 'contact-interest-options', defaults.contactInterestOptions),
+    contactDeliveryOptions: getPreviewMicrocopyItems(content, 'contact-delivery-options', defaults.contactDeliveryOptions),
+    sectionCopy: {
+      ...defaults.sectionCopy,
+      introBand: getPreviewCopySection(content, 'intro-band', defaults.sectionCopy.introBand),
+      manifesto: getPreviewCopySection(content, 'manifesto', defaults.sectionCopy.manifesto),
+      editorial: getPreviewCopySection(content, 'editorial', defaults.sectionCopy.editorial),
+      audience: getPreviewCopySection(content, 'audience', defaults.sectionCopy.audience),
+      experienceLab: getPreviewCopySection(content, 'experience-lab', defaults.sectionCopy.experienceLab),
+      signature: getPreviewCopySection(content, 'signature', defaults.sectionCopy.signature),
+      boutique: getPreviewCopySection(content, 'boutique', defaults.sectionCopy.boutique),
+      services: getPreviewCopySection(content, 'services', defaults.sectionCopy.services),
+      process: getPreviewCopySection(content, 'process', defaults.sectionCopy.process),
+      story: getPreviewCopySection(content, 'story', defaults.sectionCopy.story),
+      samples: getPreviewCopySection(content, 'samples', defaults.sectionCopy.samples),
+      coordination: getPreviewCopySection(content, 'coordination', defaults.sectionCopy.coordination),
+      realMedia: getPreviewCopySection(content, 'real-media', defaults.sectionCopy.realMedia),
+      gallery: getPreviewCopySection(content, 'gallery', defaults.sectionCopy.gallery),
+      bookingBasics: getPreviewCopySection(content, 'booking-basics', defaults.sectionCopy.bookingBasics),
+      seo: getPreviewCopySection(content, 'seo', defaults.sectionCopy.seo),
+      trust: getPreviewCopySection(content, 'trust', defaults.sectionCopy.trust),
+      faq: getPreviewCopySection(content, 'faq', defaults.sectionCopy.faq),
+      contact: getPreviewCopySection(content, 'contact', defaults.sectionCopy.contact),
+    },
+    manifestoMoments: manifestoSections.length
+      ? manifestoSections.map((section, index) => {
+          const base = defaults.manifestoMoments[index] ?? defaults.manifestoMoments[0];
+          return {
+            ...base,
+            label: section.items[0] || base.label,
+            title: section.title || base.title,
+            text: section.text || base.text,
+            image: resolvePreviewImage(mediaById, section.items[1], base.image),
+          };
+        })
+      : defaults.manifestoMoments,
+    editorialCards: editorialSections.length
+      ? editorialSections.map((section, index) => {
+          const base = defaults.editorialCards[index] ?? defaults.editorialCards[0];
+          return {
+            ...base,
+            label: section.items[0] || base.label,
+            title: section.title || base.title,
+            text: section.text || base.text,
+          };
+        })
+      : defaults.editorialCards,
+    audienceCards: audienceSections.length
+      ? audienceSections.map((section, index) => {
+          const base = defaults.audienceCards[index] ?? defaults.audienceCards[0];
+          return { ...base, title: section.title || base.title, text: section.text || base.text };
+        })
+      : defaults.audienceCards,
+    boutiqueReasons: boutiqueSections.length
+      ? boutiqueSections.map((section, index) => {
+          const base = defaults.boutiqueReasons[index] ?? defaults.boutiqueReasons[0];
+          return { ...base, title: section.title || base.title, text: section.text || base.text };
+        })
+      : defaults.boutiqueReasons,
+    services: services.length ? services : defaults.services,
+    processSteps: processSections.length
+      ? processSections.map((section, index) => {
+          const base = defaults.processSteps[index] ?? defaults.processSteps[0];
+          return { ...base, title: section.title || base.title, text: section.text || base.text };
+        })
+      : defaults.processSteps,
+    storyMoments: storySections.length
+      ? storySections.map((section, index) => {
+          const base = defaults.storyMoments[index] ?? defaults.storyMoments[0];
+          return { title: section.title || base.title, text: section.text || base.text };
+        })
+      : defaults.storyMoments,
+    signatureMoments: signatureSections.length
+      ? signatureSections.map((section, index) => {
+          const base = defaults.signatureMoments[index] ?? defaults.signatureMoments[0];
+          return { ...base, title: section.title || base.title, text: section.text || base.text };
+        })
+      : defaults.signatureMoments,
+    menuGroups: samplesSections.length
+      ? samplesSections.map((section, index) => {
+          const base = defaults.menuGroups[index] ?? defaults.menuGroups[0];
+          return {
+            ...base,
+            title: section.title || base.title,
+            intro: section.text || base.intro,
+            items: section.items.length ? section.items : base.items,
+          };
+        })
+      : defaults.menuGroups,
+    coordinationCards: coordinationSections.length
+      ? coordinationSections.map((section, index) => {
+          const base = defaults.coordinationCards[index] ?? defaults.coordinationCards[0];
+          return { ...base, title: section.title || base.title, text: section.text || base.text };
+        })
+      : defaults.coordinationCards,
+    galleryImages: galleryImages.length ? galleryImages : defaults.galleryImages,
+    seoTopics: seoTopicsSection?.items.length ? seoTopicsSection.items : defaults.seoTopics,
+    trustCards: trustSections.length
+      ? trustSections.map((section, index) => {
+          const base = defaults.trustCards[index] ?? defaults.trustCards[0];
+          return { ...base, title: section.title || base.title, text: section.text || base.text };
+        })
+      : defaults.trustCards,
+    faqs: faqSections.length
+      ? faqSections.map((section, index) => {
+          const base = defaults.faqs[index] ?? defaults.faqs[0];
+          return { question: section.title || base.question, answer: section.text || base.answer };
+        })
+      : defaults.faqs,
+  };
+};
+
+const buildPreviewWhatsappLink = (base: string, message: string) => `${base}?text=${encodeURIComponent(message)}`;
 
 const seoTitleFallback = 'Nis Boutique Catering';
 const seoDescriptionFallback = 'תיאור קצר שיופיע במנועי חיפוש ובשיתוף קישורים.';
@@ -3021,104 +3208,15 @@ const getSeoStatus = (value: string, min: number, max: number) => {
   return { label: 'תקין', tone: 'good' } as const;
 };
 
-const ContactPreview = ({ content, device }: { readonly content: ContentSnapshot; readonly device: PreviewDevice }) => {
-  const copy = getPreviewCopySection(content, 'contact', {
-    eyebrow: 'יצירת קשר',
-    title: 'אהבתם את הסגנון? שלחו פנייה מסודרת לוואטסאפ.',
-    text: 'הטופס נשאר קצר ומעשי: סוג הזמנה, תאריך, כמות והערה. אחרי השליחה נפתחת הודעת וואטסאפ מוכנה.',
-    extraText: 'שיחה קצרה, התאמה אישית, ואז סיכום ברור של תאריך, כמות וסגנון אירוח.',
-  });
-  const primaryCta = getPreviewMicrocopy(content, 'contact-primary-cta', 'קבלו הצעה מותאמת בוואטסאפ');
-  const phoneCta = getPreviewMicrocopy(content, 'contact-phone-cta', 'התקשרו עכשיו');
-  const location = getPreviewMicrocopy(content, 'contact-location', 'ביתר עילית');
-  const promiseHeading = getPreviewMicrocopy(content, 'contact-promise-heading', 'מה קורה אחרי הפנייה?');
-  const formLabels = {
-    name: getPreviewMicrocopy(content, 'form-name-label', 'שם מלא'),
-    phone: getPreviewMicrocopy(content, 'form-phone-label', 'טלפון'),
-    email: getPreviewMicrocopy(content, 'form-email-label', 'מייל'),
-    interest: getPreviewMicrocopy(content, 'form-interest-label', 'במה אתם מתעניינים?'),
-    date: getPreviewMicrocopy(content, 'form-date-label', 'תאריך רצוי'),
-    guests: getPreviewMicrocopy(content, 'form-guests-label', 'מספר סועדים'),
-    delivery: getPreviewMicrocopy(content, 'form-delivery-label', 'אופן קבלה מועדף'),
-    message: getPreviewMicrocopy(content, 'form-message-label', 'הודעה קצרה'),
-    submit: getPreviewMicrocopy(content, 'form-submit-label', 'שלחו פנייה בוואטסאפ'),
-  };
-  const interestOptions = getPreviewMicrocopyItems(content, 'contact-interest-options', ['ניס בטעם של שבת', 'ניס בכיס - מגשי אירוח', 'Travel Nis']);
-  const deliveryOptions = getPreviewMicrocopyItems(content, 'contact-delivery-options', ['נדבר ונבדוק יחד', 'איסוף מביתר עילית', 'משלוח בתיאום']);
-
-  return (
-    <div className={device === 'mobile' ? 'preview-frame is-mobile' : 'preview-frame is-desktop'}>
-      <PreviewBrowserBar device={device} />
-      <div className="site-section-preview site-section-preview-frame contact-section-preview">
-        <div className="contact-preview-copy">
-          <p className="kicker">{copy.eyebrow}</p>
-          <h3>{copy.title}</h3>
-          {copy.text && <p>{copy.text}</p>}
-          <div className="contact-preview-actions">
-            <a className="preview-primary-cta" href={content.settings.whatsappBase} target="_blank" rel="noreferrer">
-              <MessageCircle aria-hidden="true" />
-              {primaryCta}
-            </a>
-            <a className="preview-secondary-cta" href={content.settings.phoneHref}>
-              <Phone aria-hidden="true" />
-              {phoneCta}
-            </a>
-            <span className="contact-preview-line">
-              <Mail aria-hidden="true" />
-              {content.settings.email}
-            </span>
-            <span className="contact-preview-line">
-              <MapPin aria-hidden="true" />
-              {location}
-            </span>
-          </div>
-          <div className="contact-preview-promise">
-            <strong>{promiseHeading}</strong>
-            <span>{copy.extraText}</span>
-          </div>
-        </div>
-        <div className="contact-form-preview" aria-label="תצוגה מקדימה לטופס יצירת קשר">
-          <label>
-            {formLabels.name}
-            <span>יהודית ישראלי</span>
-          </label>
-          <label>
-            {formLabels.phone}
-            <span>{content.settings.phoneDisplay}</span>
-          </label>
-          <label>
-            {formLabels.email}
-            <span>name@example.com</span>
-          </label>
-          <label>
-            {formLabels.interest}
-            <span>{interestOptions[0]}</span>
-          </label>
-          <label>
-            {formLabels.date}
-            <span>יום חמישי הקרוב</span>
-          </label>
-          <label>
-            {formLabels.guests}
-            <span>18 סועדים</span>
-          </label>
-          <label>
-            {formLabels.delivery}
-            <span>{deliveryOptions[0]}</span>
-          </label>
-          <label className="full-field">
-            {formLabels.message}
-            <span>אשמח להבין מה מתאים לאירוח משפחתי קטן.</span>
-          </label>
-          <button className="preview-primary-cta full-field" type="button">
-            <Send aria-hidden="true" />
-            {formLabels.submit}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
+const ContactPreview = ({
+  content,
+  device,
+  mediaById,
+}: {
+  readonly content: ContentSnapshot;
+  readonly device: PreviewDevice;
+  readonly mediaById: ReadonlyMap<string, ImageAssetRecord>;
+}) => <ActualContactPreview content={content} mediaById={mediaById} device={device} />;
 
 const MetadataSeoPreview = ({ content, device }: { readonly content: ContentSnapshot; readonly device: PreviewDevice }) => {
   const title = content.settings.seoTitle || seoTitleFallback;
@@ -3268,6 +3366,8 @@ const SectionGroupEditor = ({
   title,
   text,
   group,
+  content,
+  mediaById,
   sections,
   updateSection,
   addSection,
@@ -3280,6 +3380,8 @@ const SectionGroupEditor = ({
   readonly title: string;
   readonly text: string;
   readonly group: string;
+  readonly content: ContentSnapshot;
+  readonly mediaById: ReadonlyMap<string, ImageAssetRecord>;
   readonly sections: readonly SectionBlockRecord[];
   readonly updateSection: (id: string, patch: Partial<SectionBlockRecord>) => void;
   readonly addSection: (group?: string) => void;
@@ -3365,7 +3467,7 @@ const SectionGroupEditor = ({
           device={previewDevice}
           onDeviceChange={onPreviewDeviceChange}
         />
-        <SectionGroupSitePreview group={group} title={title} sections={groupSections} allSections={sections} device={previewDevice} />
+        <SectionGroupSitePreview group={group} title={title} content={content} mediaById={mediaById} sections={groupSections} allSections={sections} device={previewDevice} />
       </div>
     </section>
   );
@@ -3374,12 +3476,16 @@ const SectionGroupEditor = ({
 const SectionGroupSitePreview = ({
   group,
   title,
+  content,
+  mediaById,
   sections,
   allSections,
   device,
 }: {
   readonly group: string;
   readonly title: string;
+  readonly content: ContentSnapshot;
+  readonly mediaById: ReadonlyMap<string, ImageAssetRecord>;
   readonly sections: readonly SectionBlockRecord[];
   readonly allSections: readonly SectionBlockRecord[];
   readonly device: PreviewDevice;
@@ -3396,6 +3502,32 @@ const SectionGroupSitePreview = ({
     title: managedCopy?.title || fallbackCopy.title,
     text: managedCopy?.text || fallbackCopy.text,
   };
+
+  const actualSection = (() => {
+    const exactGroup = exactPreviewSectionGroupIds.find((item) => item === group);
+    if (!exactGroup) {
+      return null;
+    }
+
+    const sectionByGroup: Record<typeof exactPreviewSectionGroupIds[number], ReactNode> = {
+      editorial: <EditorialSection />,
+      audience: <AudienceSection />,
+      boutique: <BoutiqueSection />,
+      signature: <SignatureSection />,
+      process: <ProcessSection />,
+      story: <StorySection />,
+      samples: <SamplesSection />,
+      coordination: <CoordinationSection />,
+      trust: <TrustSection />,
+      faq: <FaqSection />,
+    };
+
+    return sectionByGroup[exactGroup];
+  })();
+
+  if (actualSection) {
+    return <ActualSiteSectionFrame content={content} mediaById={mediaById} device={device}>{actualSection}</ActualSiteSectionFrame>;
+  }
 
   return (
     <div className={device === 'mobile' ? 'preview-frame is-mobile' : 'preview-frame is-desktop'}>
