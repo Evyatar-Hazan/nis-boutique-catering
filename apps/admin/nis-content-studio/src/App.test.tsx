@@ -113,8 +113,15 @@ describe('Content Studio', () => {
     expect(introBand).toBeDefined();
 
     const snapshot = ensureManagedSections({
+      version: 'test',
       updatedAt: '2026-06-20T00:00:00.000Z',
-      settings: {},
+      settings: {
+        phoneDisplay: '',
+        phoneHref: 'tel:',
+        email: 'studio@nisboutiquecatering.com',
+        whatsappBase: 'https://wa.me/',
+        siteVersion: 'draft',
+      },
       media: [],
       gallery: [],
       services: [],
