@@ -450,6 +450,11 @@ const patchHeroMediaId = (heroMedia: SectionBlockRecord, index: number, mediaId:
   return { items };
 };
 
+const managedCopySectionId = (id: string) => `copy-${id}`;
+
+const getManagedCopySection = (content: ContentSnapshot, id: string) =>
+  content.sections.find((section) => section.id === managedCopySectionId(id) && section.group === 'site-copy' && !section.deletedAt);
+
 const normalizeMediaId = (value: string) =>
   value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'media-new';
 
@@ -2226,7 +2231,7 @@ const IntroBandEditor = ({
   readonly updateSection: (id: string, patch: Partial<SectionBlockRecord>) => void;
   readonly addSection: (group?: string) => void;
 }) => {
-  const section = content.sections.find((item) => item.id === 'intro-band' && !item.deletedAt);
+  const section = getManagedCopySection(content, 'intro-band');
 
   if (!section) {
     return (
@@ -2290,7 +2295,7 @@ const CopyOnlySectionEditor = ({
   readonly updateSection: (id: string, patch: Partial<SectionBlockRecord>) => void;
   readonly tagsSection?: SectionBlockRecord;
 }) => {
-  const section = content.sections.find((item) => item.id === sectionId && !item.deletedAt);
+  const section = getManagedCopySection(content, sectionId);
 
   if (!section) {
     return (
@@ -4232,7 +4237,7 @@ const areaStatus = (area: ActiveView, content: ContentSnapshot) => {
     return hero?.active && !hero.deletedAt ? 'פעיל באתר' : 'כבוי או חסר';
   }
   if (['intro-band', 'experience-lab', 'real-media', 'booking-basics', 'seo'].includes(area)) {
-    const copySection = content.sections.find((section) => section.id === area && !section.deletedAt);
+    const copySection = getManagedCopySection(content, area);
     return copySection?.active ? 'פעיל באתר' : 'כבוי או חסר';
   }
   if (area === 'services') {

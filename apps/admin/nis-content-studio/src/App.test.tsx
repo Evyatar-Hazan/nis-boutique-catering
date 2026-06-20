@@ -139,6 +139,28 @@ describe('Content Studio', () => {
     expect(visibleIntroBands[0]?.title).toBe(introBand?.title);
   });
 
+  it('keeps site-copy managed sections addressable via their copy-prefixed ids', () => {
+    const snapshot = ensureManagedSections({
+      version: 'test',
+      updatedAt: '2026-06-20T00:00:00.000Z',
+      settings: {
+        phoneDisplay: '',
+        phoneHref: 'tel:',
+        email: 'studio@nisboutiquecatering.com',
+        whatsappBase: 'https://wa.me/',
+        siteVersion: 'draft',
+      },
+      media: [],
+      gallery: [],
+      services: [],
+      sections: [],
+    });
+
+    expect(snapshot.sections.some((section) => section.id === 'copy-intro-band' && section.group === 'site-copy')).toBe(true);
+    expect(snapshot.sections.some((section) => section.id === 'copy-experience-lab' && section.group === 'site-copy')).toBe(true);
+    expect(snapshot.sections.some((section) => section.id === 'copy-booking-basics' && section.group === 'site-copy')).toBe(true);
+  });
+
   it('keeps the studio editing workflow clear across editing and publish states', () => {
     const editingSteps = getStudioWorkflowSteps('services', 'draft', false, true);
     const errorSteps = getStudioWorkflowSteps('faq', 'draft', true, true);
