@@ -415,8 +415,8 @@ export const managedSectionDefaults: readonly SectionBlockRecord[] = [
   makeSection('hero-marquee', 'hero-marquee', 'טקסט רץ במסך הפתיחה', undefined, ['שולחן שנפתח יפה', 'אוכל ביתי מוקפד', 'מגשי אירוח אלגנטיים', 'Travel Nis', 'ביתר עילית', 'אריזה שנראית כמו מותג'], 1),
 ];
 
-const ensureManagedSections = (snapshot: ContentSnapshot): ContentSnapshot => {
-  const existingIds = new Set(snapshot.sections.map((section) => section.id));
+export const ensureManagedSections = (snapshot: ContentSnapshot): ContentSnapshot => {
+  const existingIds = new Set(snapshot.sections.filter((section) => !section.deletedAt).map((section) => section.id));
   const missing = managedSectionDefaults.filter((section) => !existingIds.has(section.id));
   if (missing.length === 0) {
     return snapshot;

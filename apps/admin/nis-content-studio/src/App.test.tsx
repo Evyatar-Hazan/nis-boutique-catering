@@ -1,6 +1,6 @@
 import { cleanup, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
-import { App, formatValidationIssue, getOwnerVerificationChecklist, getStudioWorkflowSteps, managedSectionDefaults } from './App';
+import { App, ensureManagedSections, formatValidationIssue, getOwnerVerificationChecklist, getStudioWorkflowSteps, managedSectionDefaults } from './App';
 import '@testing-library/jest-dom/vitest';
 
 describe('Content Studio', () => {
@@ -105,6 +105,31 @@ describe('Content Studio', () => {
 
     expect(requiredIds.filter((id) => !managedIds.has(id))).toEqual([]);
     expect(requiredGroups.filter((group) => !managedGroups.has(group))).toEqual([]);
+  });
+
+  it('recreates missing managed sections when only archived copies exist in Sheets', () => {
+    const introBand = managedSectionDefaults.find((section) => section.id === 'copy-intro-band');
+
+    expect(introBand).toBeDefined();
+
+    const snapshot = ensureManagedSections({
+      updatedAt: '2026-06-20T00:00:00.000Z',
+      settings: {},
+      media: [],
+      gallery: [],
+      services: [],
+      sections: [
+        {
+          ...introBand!,
+          deletedAt: '2026-06-20T00:00:00.000Z',
+        },
+      ],
+    });
+
+    const visibleIntroBands = snapshot.sections.filter((section) => section.id === 'copy-intro-band' && !section.deletedAt);
+
+    expect(visibleIntroBands).toHaveLength(1);
+    expect(visibleIntroBands[0]?.title).toBe(introBand?.title);
   });
 
   it('keeps the studio editing workflow clear across editing and publish states', () => {
