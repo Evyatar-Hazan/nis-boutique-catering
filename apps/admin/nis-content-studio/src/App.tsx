@@ -415,6 +415,8 @@ export const managedSectionDefaults: readonly SectionBlockRecord[] = [
   makeSection('hero-marquee', 'hero-marquee', 'טקסט רץ במסך הפתיחה', undefined, ['שולחן שנפתח יפה', 'אוכל ביתי מוקפד', 'מגשי אירוח אלגנטיים', 'Travel Nis', 'ביתר עילית', 'אריזה שנראית כמו מותג'], 1),
 ];
 
+// Exported for the regression test that covers archived managed sections recovery.
+// eslint-disable-next-line react-refresh/only-export-components
 export const ensureManagedSections = (snapshot: ContentSnapshot): ContentSnapshot => {
   const existingIds = new Set(snapshot.sections.filter((section) => !section.deletedAt).map((section) => section.id));
   const missing = managedSectionDefaults.filter((section) => !existingIds.has(section.id));
