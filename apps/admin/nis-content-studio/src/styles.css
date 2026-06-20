@@ -2192,6 +2192,25 @@ input[type="checkbox"] {
   padding: 22px 16px 26px;
 }
 
+.preview-frame.is-mobile .intro-band-preview {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 18px;
+}
+
+.preview-frame.is-mobile .intro-band-preview-copy {
+  gap: 8px;
+}
+
+.preview-frame.is-mobile .intro-band-preview-copy h3 {
+  font-size: 29px;
+  line-height: 1.05;
+}
+
+.preview-frame.is-mobile .intro-band-preview-text p {
+  font-size: 0.94rem;
+  line-height: 1.72;
+}
+
 .preview-frame.is-mobile .site-section-preview > h3 {
   font-size: 29px;
   line-height: 1.05;
@@ -2684,23 +2703,57 @@ input[type="checkbox"] {
   font-weight: 800;
 }
 
+.intro-band-preview-shell {
+  position: relative;
+  overflow: hidden;
+  color: #fffaf6;
+  background:
+    linear-gradient(120deg, rgba(17, 13, 16, 0.96), rgba(32, 22, 26, 0.94)),
+    radial-gradient(circle at 24% 30%, rgba(216, 187, 132, 0.14), transparent 18rem);
+}
+
+.intro-band-preview-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, transparent, rgba(255, 248, 238, 0.04), transparent),
+    linear-gradient(180deg, transparent 70%, rgba(255, 248, 238, 0.06));
+}
+
 .intro-band-preview {
-  grid-template-columns: minmax(220px, 0.82fr) minmax(0, 1.18fr);
-  align-items: center;
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 0.98fr) minmax(0, 0.88fr);
+  gap: clamp(18px, 3cqw, 44px);
+  align-items: start;
 }
 
-.intro-band-preview h3 {
-  margin: 0;
-  color: #202520;
-  font-size: clamp(1.35rem, 3.2cqw, 2.4rem);
-  line-height: 1.08;
+.intro-band-preview-copy,
+.intro-band-preview-text {
+  display: grid;
+  gap: clamp(10px, 1.4cqw, 16px);
 }
 
-.intro-band-preview p {
+.intro-band-preview-shell > .kicker,
+.intro-band-preview-copy > .kicker {
+  color: #d8bb84;
+}
+
+.intro-band-preview-copy h3 {
   margin: 0;
-  color: #6d6354;
-  font-size: clamp(0.72rem, 1.35cqw, 0.96rem);
-  line-height: 1.6;
+  color: #fffaf6;
+  font-size: clamp(1.45rem, 4.2cqw, 3rem);
+  line-height: 1.02;
+}
+
+.intro-band-preview-text p {
+  margin: 0;
+  color: rgba(255, 249, 242, 0.74);
+  font-size: clamp(0.76rem, 1.4cqw, 1rem);
+  line-height: 1.78;
 }
 
 .copy-only-section-preview {
@@ -3056,6 +3109,10 @@ input[type="checkbox"] {
   .preview-frame.is-desktop .manifesto-site-preview,
   .preview-frame.is-desktop .intro-band-preview {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .preview-frame.is-desktop .intro-band-preview-copy h3 {
+    font-size: clamp(1.3rem, 3.2cqw, 2.2rem);
   }
 }
 

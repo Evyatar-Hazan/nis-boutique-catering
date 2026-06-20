@@ -2582,12 +2582,16 @@ const HeroSitePreview = ({
 const IntroBandPreview = ({ section, device }: { readonly section: SectionBlockRecord; readonly device: PreviewDevice }) => (
   <div className={device === 'mobile' ? 'preview-frame is-mobile' : 'preview-frame is-desktop'}>
     <PreviewBrowserBar device={device} />
-    <div className="site-section-preview site-section-preview-frame intro-band-preview">
-      <div>
-        <p className="kicker">{section.items[0] || 'רעיון אחד ברור'}</p>
-        <h3>{section.title}</h3>
+    <div className="site-section-preview site-section-preview-frame intro-band-preview-shell">
+      <div className="intro-band-preview">
+        <div className="intro-band-preview-copy">
+          <p className="kicker">{section.items[0] || 'רעיון אחד ברור'}</p>
+          <h3>{section.title}</h3>
+        </div>
+        <div className="intro-band-preview-text">
+          {section.text?.split('|').filter(Boolean).map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+        </div>
       </div>
-      <p>{section.text}</p>
     </div>
   </div>
 );
