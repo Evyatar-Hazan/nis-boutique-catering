@@ -595,8 +595,8 @@ input:disabled {
 
 .site-map-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 14px;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 20px;
 }
 
 .site-area-card {
@@ -615,6 +615,41 @@ input:disabled {
 
 .site-area-card p:not(.kicker) {
   color: #665e53;
+}
+
+.site-area-card-rich {
+  padding: 22px;
+}
+
+.site-area-card-header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.site-area-card-copy {
+  display: flex;
+  align-items: start;
+  gap: 16px;
+  min-width: 0;
+}
+
+.site-area-card-copy > div:last-child {
+  display: grid;
+  gap: 6px;
+}
+
+.site-area-card-actions {
+  display: grid;
+  justify-items: end;
+  gap: 12px;
+  flex: 0 0 auto;
+}
+
+.site-area-card-actions span {
+  color: #42624b;
+  font-weight: 800;
 }
 
 .site-area-icon {
@@ -678,6 +713,180 @@ input:disabled {
 .area-status-row span {
   color: #42624b;
   font-weight: 800;
+}
+
+.site-map-preview-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 390px);
+  gap: 18px;
+  align-items: start;
+}
+
+.site-map-preview-pane {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.site-map-preview-label {
+  margin: 0;
+  color: #6d6354;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.site-map-preview-placeholder {
+  display: grid;
+  gap: 8px;
+  min-height: 180px;
+  align-content: center;
+  padding: 18px;
+  border: 1px dashed #d6d0c1;
+  border-radius: 8px;
+  color: #4e5d53;
+  background: #faf6ed;
+}
+
+.site-map-preview-placeholder strong,
+.site-map-preview-placeholder span {
+  margin: 0;
+}
+
+.site-map-embedded-preview {
+  min-width: 0;
+}
+
+.site-map-embedded-preview .preview-frame {
+  box-shadow: 0 18px 54px rgba(44, 34, 18, 0.1);
+}
+
+.site-map-embedded-preview .preview-frame.is-desktop {
+  max-height: none;
+  overflow: visible;
+}
+
+.site-map-embedded-preview .preview-frame.is-desktop > :not(.preview-browser-bar) {
+  overflow: visible;
+}
+
+.site-map-embedded-preview .preview-frame.is-mobile {
+  width: min(390px, 100%);
+  height: auto;
+  overflow: visible;
+}
+
+.site-map-embedded-preview .preview-frame.is-mobile::after {
+  display: none;
+}
+
+.site-map-embedded-preview .iframe-site-preview.is-mobile {
+  overflow: visible;
+}
+
+.site-copy-overview-preview,
+.site-microcopy-overview-preview {
+  display: grid;
+  gap: 18px;
+}
+
+.site-copy-overview-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.site-copy-overview-grid article {
+  display: grid;
+  gap: 6px;
+  padding: 14px;
+  border: 1px solid rgba(214, 208, 193, 0.72);
+  border-radius: 8px;
+  background: rgba(255, 253, 248, 0.88);
+}
+
+.site-copy-overview-grid span {
+  color: #8a672d;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.site-copy-overview-grid strong {
+  color: #202520;
+  font-size: 21px;
+  line-height: 1.1;
+}
+
+.site-copy-overview-grid p {
+  margin: 0;
+  color: #4f473d;
+}
+
+.microcopy-preview-topbar,
+.microcopy-preview-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.microcopy-preview-topbar {
+  justify-content: space-between;
+  padding: 12px 14px;
+  border: 1px solid rgba(214, 208, 193, 0.72);
+  border-radius: 8px;
+  background: rgba(255, 253, 248, 0.88);
+}
+
+.microcopy-preview-topbar span {
+  color: #8a672d;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.microcopy-preview-topbar button,
+.microcopy-primary-action,
+.microcopy-secondary-action {
+  min-height: 40px;
+  border-radius: 8px;
+  padding: 0 14px;
+  font-weight: 800;
+}
+
+.microcopy-preview-topbar button,
+.microcopy-secondary-action {
+  border: 1px solid #d6d0c1;
+  color: #202520;
+  background: #fffdf8;
+}
+
+.microcopy-primary-action {
+  border: 1px solid #158c81;
+  color: #fffdf8;
+  background: #158c81;
+}
+
+.microcopy-preview-actions span {
+  color: #6d6354;
+  font-size: 13px;
+}
+
+.microcopy-preview-form {
+  display: grid;
+  gap: 12px;
+}
+
+.microcopy-preview-form label {
+  display: grid;
+  gap: 6px;
+}
+
+.microcopy-preview-form label span {
+  color: #4f473d;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.microcopy-preview-form input {
+  background: #fffdf8;
 }
 
 .split-editor {
@@ -1734,7 +1943,14 @@ input[type="checkbox"] {
 .iframe-site-preview.is-desktop .iframe-site-preview-frame {
   width: var(--preview-viewport-width);
   height: var(--preview-content-height, var(--preview-viewport-height));
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
   transform: scale(calc(100cqw / var(--preview-viewport-width)));
+}
+
+.iframe-site-preview.is-desktop {
+  min-height: calc(var(--preview-content-height, var(--preview-viewport-height)) * (100cqw / var(--preview-viewport-width)));
 }
 
 .iframe-site-preview.is-mobile {
@@ -3412,6 +3628,14 @@ input[type="checkbox"] {
 }
 
 @media (max-width: 1080px) {
+  .site-map-preview-shell {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .site-map-preview-pane-mobile {
+    max-width: 390px;
+  }
+
   .overview-strip,
   .preview-services {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -3471,6 +3695,15 @@ input[type="checkbox"] {
     flex-direction: column;
   }
 
+  .site-area-card-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .site-area-card-actions {
+    justify-items: start;
+  }
+
   .inline-grid,
   .overview-strip,
   .editing-workflow,
@@ -3490,5 +3723,43 @@ input[type="checkbox"] {
 
   .area-heading-actions {
     justify-content: flex-start;
+  }
+}
+
+@media (max-width: 780px) {
+  .site-area-card-rich {
+    padding: 16px;
+  }
+
+  .site-area-card-copy {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .site-area-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .site-map-preview-placeholder,
+  .site-map-preview-pane {
+    width: 100%;
+  }
+
+  .site-map-embedded-preview .preview-frame.is-mobile {
+    margin-inline: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .microcopy-preview-topbar,
+  .microcopy-preview-actions {
+    align-items: stretch;
+  }
+
+  .microcopy-preview-topbar button,
+  .microcopy-primary-action,
+  .microcopy-secondary-action {
+    width: 100%;
   }
 }

@@ -2073,66 +2073,279 @@ const SiteMapPanel = ({
   readonly onOpen: (view: ActiveView) => void;
 }) => (
   <section className="workspace-panel">
-    <PanelHeader title="מפת האתר" text="בחרו אזור באתר. כל כרטיס מסביר איפה השינוי יופיע ומה אפשר לעשות שם." />
+    <PanelHeader title="מפת האתר" text="כל כרטיס מציג תיאור קצר ובצידו תצוגת דסקטופ ותצוגת מובייל של אותו אזור, כדי לראות את התוצאה בלי להיכנס קודם למסך העריכה." />
     <div className="site-map-grid">
-      {areaDefinitions.map((area) => (
-        <article className="site-area-card" key={area.id}>
-          <div className="site-area-icon">{area.icon}</div>
-          <div>
-            <p className="kicker">{area.location}</p>
-            <h3>{area.title}</h3>
-            <p>{area.help}</p>
+      {areaDefinitions.map((area, index) => (
+        <article className="site-area-card site-area-card-rich" key={area.id}>
+          <div className="site-area-card-header">
+            <div className="site-area-card-copy">
+              <div className="site-area-icon">{area.icon}</div>
+              <div>
+                <p className="kicker">{area.location}</p>
+                <h3>{area.title}</h3>
+                <p>{area.help}</p>
+              </div>
+            </div>
+            <div className="site-area-card-actions">
+              <span>{areaStatus(area.id, content)}</span>
+              <button className="compact-button" onClick={() => onOpen(area.id)}>עריכה</button>
+            </div>
           </div>
-          <AreaMiniPreview area={area.id} content={content} mediaById={mediaById} />
-          <div className="area-status-row">
-            <span>{areaStatus(area.id, content)}</span>
-            <button className="compact-button" onClick={() => onOpen(area.id)}>עריכה</button>
-          </div>
+          <SiteMapAreaPreview area={area.id} content={content} mediaById={mediaById} priority={index < 2} />
         </article>
       ))}
     </div>
   </section>
 );
 
-const AreaMiniPreview = ({
+const useSiteMapPreviewActivation = (priority: boolean) => {
+  const [node, setNode] = useState<HTMLDivElement | null>(null);
+  const [active, setActive] = useState(priority || typeof IntersectionObserver === 'undefined');
+
+  useEffect(() => {
+    if (priority || active) {
+      return undefined;
+    }
+
+    if (!node || typeof IntersectionObserver === 'undefined') {
+      return undefined;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          setActive(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '420px 0px' },
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [active, node, priority]);
+
+  return { active, setNode };
+};
+
+const SiteMapAreaPreview = ({
   area,
   content,
   mediaById,
+  priority,
 }: {
   readonly area: ActiveView;
   readonly content: ContentSnapshot;
   readonly mediaById: ReadonlyMap<string, ImageAssetRecord>;
+  readonly priority: boolean;
 }) => {
-  if (area === 'gallery') {
-    const item = content.gallery.find((galleryItem) => galleryItem.active && !galleryItem.deletedAt);
-    const media = item ? mediaById.get(item.mediaId) : undefined;
-    return <div className="area-mini-preview">{media ? <img src={publicAssetSrcFor(media.src)} alt="" /> : <span>עדיין אין תמונה פעילה</span>}</div>;
+  const { active, setNode } = useSiteMapPreviewActivation(priority);
+
+  return (
+    <div ref={setNode} className="site-map-preview-shell">
+      {active ? (
+        <>
+          <div className="site-map-preview-pane site-map-preview-pane-desktop">
+            <p className="site-map-preview-label">תצוגת מחשב</p>
+            <div className="site-map-embedded-preview">
+              <SiteMapAreaPreviewSurface area={area} content={content} mediaById={mediaById} device="desktop" />
+            </div>
+          </div>
+          <div className="site-map-preview-pane site-map-preview-pane-mobile">
+            <p className="site-map-preview-label">תצוגת מובייל</p>
+            <div className="site-map-embedded-preview">
+              <SiteMapAreaPreviewSurface area={area} content={content} mediaById={mediaById} device="mobile" />
+            </div>
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="site-map-preview-placeholder">
+            <strong>תצוגת מחשב תיטען כאן</strong>
+            <span>הפריוויו משתמש בקומפוננטה האמיתית של האתר ונטען כשהכרטיס מתקרב לאזור הצפייה.</span>
+          </div>
+          <div className="site-map-preview-placeholder is-mobile">
+            <strong>תצוגת מובייל תיטען כאן</strong>
+            <span>כך אפשר לשמור על מסך ניהול האתר מהיר גם כשכל האזורים מציגים preview אמיתי.</span>
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
+
+const SiteMapAreaPreviewSurface = ({
+  area,
+  content,
+  mediaById,
+  device,
+}: {
+  readonly area: ActiveView;
+  readonly content: ContentSnapshot;
+  readonly mediaById: ReadonlyMap<string, ImageAssetRecord>;
+  readonly device: PreviewDevice;
+}) => {
+  const allSections = content.sections.filter((section) => !section.deletedAt);
+  const title = areaDefinitions.find((definition) => definition.id === area)?.title ?? 'אזור באתר';
+  const hero = content.sections.find((section) => section.id === 'hero' && section.active && !section.deletedAt);
+
+  if (area === 'hero' && hero) {
+    return <HeroSitePreview content={content} hero={hero} device={device} mediaById={mediaById} />;
+  }
+
+  if (area === 'intro-band') {
+    return <IntroBandPreview content={content} device={device} mediaById={mediaById} />;
+  }
+
+  if (area === 'manifesto') {
+    return <ManifestoSitePreview content={content} mediaById={mediaById} device={device} />;
+  }
+
+  if (area === 'experience-lab') {
+    return <ActualExperienceLabPreview content={content} mediaById={mediaById} device={device} />;
   }
 
   if (area === 'services') {
-    const service = content.services.find((item) => item.active && !item.deletedAt);
+    return <ServicesPreview content={content} mediaById={mediaById} device={device} />;
+  }
+
+  if (area === 'gallery') {
+    return <GallerySitePreview content={content} mediaById={mediaById} device={device} />;
+  }
+
+  if (area === 'real-media') {
     return (
-      <div className="area-mini-preview text-preview">
-        <strong>{service?.title ?? 'אין שירות פעיל'}</strong>
-        <span>{service?.description ?? 'הוסיפו או הפעילו שירות כדי שיופיע באתר.'}</span>
-      </div>
+      <ActualSiteSectionFrame content={content} mediaById={mediaById} device={device}>
+        <RealMediaSection />
+      </ActualSiteSectionFrame>
     );
   }
 
-  if (area === 'hero') {
-    const hero = content.sections.find((section) => section.id === 'hero' && !section.deletedAt);
+  if (area === 'booking-basics') {
     return (
-      <div className="area-mini-preview text-preview">
-        <strong>{hero?.title ?? 'כותרת מסך פתיחה'}</strong>
-        <span>{hero?.text ?? 'הטקסט הראשון שהלקוח רואה באתר.'}</span>
-      </div>
+      <ActualSiteSectionFrame content={content} mediaById={mediaById} device={device}>
+        <BookingBasicsSection />
+      </ActualSiteSectionFrame>
     );
   }
+
+  if (area === 'seo') {
+    return (
+      <ActualSiteSectionFrame content={content} mediaById={mediaById} device={device}>
+        <SeoSection />
+      </ActualSiteSectionFrame>
+    );
+  }
+
+  if (area === 'contact') {
+    return <ContactPreview content={content} device={device} mediaById={mediaById} />;
+  }
+
+  if (exactPreviewSectionGroupIds.some((group) => group === area)) {
+    const group = area as typeof exactPreviewSectionGroupIds[number];
+    const sections = content.sections
+      .filter((section) => section.group === group)
+      .sort((left, right) => left.order - right.order);
+    return (
+      <SectionGroupSitePreview
+        group={group}
+        title={title}
+        content={content}
+        mediaById={mediaById}
+        sections={sections}
+        allSections={allSections}
+        device={device}
+      />
+    );
+  }
+
+  if (area === 'site-copy') {
+    return <SiteCopyOverviewPreview content={content} device={device} />;
+  }
+
+  if (area === 'site-microcopy') {
+    return <SiteMicrocopyOverviewPreview content={content} device={device} />;
+  }
+
+  return <MetadataSeoPreview content={content} device={device} />;
+};
+
+const SiteCopyOverviewPreview = ({
+  content,
+  device,
+}: {
+  readonly content: ContentSnapshot;
+  readonly device: PreviewDevice;
+}) => {
+  const sections = content.sections
+    .filter((section) => section.group === 'site-copy' && section.active && !section.deletedAt)
+    .sort((left, right) => left.order - right.order)
+    .slice(0, device === 'mobile' ? 4 : 6);
 
   return (
-    <div className="area-mini-preview text-preview">
-      <strong>{areaStatus(area, content)}</strong>
-      <span>לחצו עריכה כדי לראות ולשנות את האזור.</span>
+    <div className={device === 'mobile' ? 'preview-frame is-mobile' : 'preview-frame is-desktop'}>
+      <PreviewBrowserBar device={device} />
+      <div className="site-section-preview site-section-preview-frame site-copy-overview-preview">
+        <p className="kicker">טקסטי מעטפת</p>
+        <h3>כותרות הפתיחה שמחזיקות את כל האזורים באתר.</h3>
+        <p>כך נראות כותרות, תוויות ופסקאות פתיחה של כמה אזורים מרכזיים, כדי לראות אם השפה הכללית של האתר נשארת עקבית.</p>
+        <div className="site-copy-overview-grid">
+          {sections.map((section) => (
+            <article key={section.id}>
+              <span>{section.items[0] || sectionGroupLabels[section.id.replace(/^copy-/, '')] || 'אזור באתר'}</span>
+              <strong>{section.title}</strong>
+              {section.text && <p>{section.text}</p>}
+            </article>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const SiteMicrocopyOverviewPreview = ({
+  content,
+  device,
+}: {
+  readonly content: ContentSnapshot;
+  readonly device: PreviewDevice;
+}) => {
+  const topbarWhatsapp = getPreviewMicrocopy(content, 'topbar-whatsapp-label', 'וואטסאפ');
+  const heroPrimary = getPreviewMicrocopy(content, 'hero-primary-cta', 'דברו איתנו בוואטסאפ');
+  const heroSecondary = getPreviewMicrocopy(content, 'hero-secondary-cta', 'ראו איך זה נראה');
+  const floatingWhatsapp = getPreviewMicrocopy(content, 'floating-whatsapp-aria', 'דברו איתנו בוואטסאפ');
+  const formLabels = [
+    getPreviewMicrocopy(content, 'form-name-label', 'שם מלא'),
+    getPreviewMicrocopy(content, 'form-phone-label', 'טלפון'),
+    getPreviewMicrocopy(content, 'form-interest-label', 'במה אתם מתעניינים?'),
+    getPreviewMicrocopy(content, 'form-submit-label', 'שלחו פנייה בוואטסאפ'),
+  ];
+
+  return (
+    <div className={device === 'mobile' ? 'preview-frame is-mobile' : 'preview-frame is-desktop'}>
+      <PreviewBrowserBar device={device} />
+      <div className="site-section-preview site-section-preview-frame site-microcopy-overview-preview">
+        <p className="kicker">טקסטים קטנים</p>
+        <h3>כפתורים, תפריטים והודעות קצרות שהלקוח ממש לוחץ עליהן.</h3>
+        <p>התצוגה כאן לא מחליפה את כל האתר, אבל כן מראה איך אותם טקסטים נראים בתוך UI אמיתי: תפריט, CTA וטופס.</p>
+        <div className="microcopy-preview-topbar">
+          <span>nis</span>
+          <button type="button">{topbarWhatsapp}</button>
+        </div>
+        <div className="microcopy-preview-actions">
+          <button type="button" className="microcopy-primary-action">{heroPrimary}</button>
+          <button type="button" className="microcopy-secondary-action">{heroSecondary}</button>
+          <span>{floatingWhatsapp}</span>
+        </div>
+        <div className="microcopy-preview-form">
+          {formLabels.slice(0, device === 'mobile' ? 3 : 4).map((label) => (
+            <label key={label}>
+              <span>{label}</span>
+              <input type="text" value="" readOnly aria-label={label} />
+            </label>
+          ))}
+        </div>
+      </div>
     </div>
   );
 };
