@@ -2075,7 +2075,7 @@ const SiteMapPanel = ({
   <section className="workspace-panel">
     <PanelHeader title="מפת האתר" text="כל כרטיס מציג תיאור קצר ובצידו תצוגת דסקטופ ותצוגת מובייל של אותו אזור, כדי לראות את התוצאה בלי להיכנס קודם למסך העריכה." />
     <div className="site-map-grid">
-      {areaDefinitions.map((area, index) => (
+      {areaDefinitions.map((area) => (
         <article className="site-area-card site-area-card-rich" key={area.id}>
           <div className="site-area-card-header">
             <div className="site-area-card-copy">
@@ -2091,88 +2091,37 @@ const SiteMapPanel = ({
               <button className="compact-button" onClick={() => onOpen(area.id)}>עריכה</button>
             </div>
           </div>
-          <SiteMapAreaPreview area={area.id} content={content} mediaById={mediaById} priority={index < 2} />
+          <SiteMapAreaPreview area={area.id} content={content} mediaById={mediaById} />
         </article>
       ))}
     </div>
   </section>
 );
 
-const useSiteMapPreviewActivation = (priority: boolean) => {
-  const [node, setNode] = useState<HTMLDivElement | null>(null);
-  const [active, setActive] = useState(priority || typeof IntersectionObserver === 'undefined');
-
-  useEffect(() => {
-    if (priority || active) {
-      return undefined;
-    }
-
-    if (!node || typeof IntersectionObserver === 'undefined') {
-      return undefined;
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries.some((entry) => entry.isIntersecting)) {
-          setActive(true);
-          observer.disconnect();
-        }
-      },
-      { rootMargin: '420px 0px' },
-    );
-
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, [active, node, priority]);
-
-  return { active, setNode };
-};
-
 const SiteMapAreaPreview = ({
   area,
   content,
   mediaById,
-  priority,
 }: {
   readonly area: ActiveView;
   readonly content: ContentSnapshot;
   readonly mediaById: ReadonlyMap<string, ImageAssetRecord>;
-  readonly priority: boolean;
-}) => {
-  const { active, setNode } = useSiteMapPreviewActivation(priority);
-
-  return (
-    <div ref={setNode} className="site-map-preview-shell">
-      {active ? (
-        <>
-          <div className="site-map-preview-pane site-map-preview-pane-desktop">
-            <p className="site-map-preview-label">תצוגת מחשב</p>
-            <div className="site-map-embedded-preview">
-              <SiteMapAreaPreviewSurface area={area} content={content} mediaById={mediaById} device="desktop" />
-            </div>
-          </div>
-          <div className="site-map-preview-pane site-map-preview-pane-mobile">
-            <p className="site-map-preview-label">תצוגת מובייל</p>
-            <div className="site-map-embedded-preview">
-              <SiteMapAreaPreviewSurface area={area} content={content} mediaById={mediaById} device="mobile" />
-            </div>
-          </div>
-        </>
-      ) : (
-        <>
-          <div className="site-map-preview-placeholder">
-            <strong>תצוגת מחשב תיטען כאן</strong>
-            <span>הפריוויו משתמש בקומפוננטה האמיתית של האתר ונטען כשהכרטיס מתקרב לאזור הצפייה.</span>
-          </div>
-          <div className="site-map-preview-placeholder is-mobile">
-            <strong>תצוגת מובייל תיטען כאן</strong>
-            <span>כך אפשר לשמור על מסך ניהול האתר מהיר גם כשכל האזורים מציגים preview אמיתי.</span>
-          </div>
-        </>
-      )}
+}) => (
+  <div className="site-map-preview-shell">
+    <div className="site-map-preview-pane site-map-preview-pane-desktop">
+      <p className="site-map-preview-label">תצוגת מחשב</p>
+      <div className="site-map-embedded-preview">
+        <SiteMapAreaPreviewSurface area={area} content={content} mediaById={mediaById} device="desktop" />
+      </div>
     </div>
-  );
-};
+    <div className="site-map-preview-pane site-map-preview-pane-mobile">
+      <p className="site-map-preview-label">תצוגת מובייל</p>
+      <div className="site-map-embedded-preview">
+        <SiteMapAreaPreviewSurface area={area} content={content} mediaById={mediaById} device="mobile" />
+      </div>
+    </div>
+  </div>
+);
 
 const SiteMapAreaPreviewSurface = ({
   area,
