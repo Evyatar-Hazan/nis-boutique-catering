@@ -43,7 +43,6 @@ describe('Content Studio', () => {
         'audience',
         'experience-lab',
         'signature',
-        'boutique',
         'services',
         'process',
         'story',
@@ -51,7 +50,6 @@ describe('Content Studio', () => {
         'coordination',
         'real-media',
         'gallery',
-        'booking-basics',
         'seo',
         'trust',
         'faq',
@@ -107,7 +105,7 @@ describe('Content Studio', () => {
         'contact-delivery-options',
       ].map((id) => `microcopy-${id}`),
     ];
-    const requiredGroups = ['editorial', 'manifesto', 'audience', 'boutique', 'process', 'signature', 'story', 'samples', 'coordination', 'hero-notes', 'hero-stats', 'trust', 'faq'];
+    const requiredGroups = ['editorial', 'manifesto', 'audience', 'process', 'signature', 'story', 'samples', 'coordination', 'hero-notes', 'hero-stats', 'trust', 'faq'];
     const managedIds = new Set(managedSectionDefaults.map((section) => section.id));
     const managedGroups = new Set(managedSectionDefaults.map((section) => section.group));
 
@@ -166,7 +164,7 @@ describe('Content Studio', () => {
 
     expect(snapshot.sections.some((section) => section.id === 'copy-intro-band' && section.group === 'site-copy')).toBe(true);
     expect(snapshot.sections.some((section) => section.id === 'copy-experience-lab' && section.group === 'site-copy')).toBe(true);
-    expect(snapshot.sections.some((section) => section.id === 'copy-booking-basics' && section.group === 'site-copy')).toBe(true);
+    expect(snapshot.sections.some((section) => section.id === 'copy-seo' && section.group === 'site-copy')).toBe(true);
   });
 
   it('keeps the studio editing workflow clear across editing and publish states', () => {
@@ -212,11 +210,10 @@ describe('Content Studio', () => {
 
   it('keeps a single exact-preview contract for all public sections that must match the site', () => {
     expect(exactPreviewViewIds).toEqual(['hero', 'intro-band', 'manifesto', 'services', 'gallery', 'contact']);
-    expect(exactPreviewCopySectionIds).toEqual(['experience-lab', 'real-media', 'booking-basics', 'seo']);
+    expect(exactPreviewCopySectionIds).toEqual(['experience-lab', 'real-media', 'seo']);
     expect(exactPreviewSectionGroupIds).toEqual([
       'editorial',
       'audience',
-      'boutique',
       'signature',
       'process',
       'story',

@@ -65,19 +65,26 @@ describe('Nis boutique catering app', () => {
     expect(triggerButton).toHaveFocus();
   });
 
-  it('gives equal weight to the three services', () => {
+  it('lets visitors choose between the three service experiences', () => {
     render(<App />);
 
-    const servicesSection = screen.getByRole('heading', { name: /שלוש אפשרויות ברורות/i }).closest('section');
-    expect(servicesSection).not.toBeNull();
-    if (!servicesSection) {
-      throw new Error('Services section was not found');
+    const experienceSection = screen.getByRole('heading', { name: /מהרגע שבוחרים כיוון/i }).closest('section');
+    expect(experienceSection).not.toBeNull();
+    if (!experienceSection) {
+      throw new Error('Experience section was not found');
     }
 
-    const serviceCards = within(servicesSection);
-    expect(serviceCards.getByRole('heading', { name: 'ניס בטעם של שבת' })).toBeInTheDocument();
-    expect(serviceCards.getByRole('heading', { name: 'ניס בכיס' })).toBeInTheDocument();
-    expect(serviceCards.getByRole('heading', { name: 'Travel Nis' })).toBeInTheDocument();
+    const experienceChooser = within(experienceSection);
+    expect(experienceChooser.getByRole('tab', { name: 'ניס בטעם של שבת' })).toBeInTheDocument();
+    expect(experienceChooser.getByRole('tab', { name: 'ניס בכיס' })).toBeInTheDocument();
+    expect(experienceChooser.getByRole('tab', { name: 'Travel Nis' })).toBeInTheDocument();
+  });
+
+  it('does not render duplicated booking basics or boutique sections', () => {
+    render(<App />);
+
+    expect(screen.queryByRole('heading', { name: 'הפרטים הקטנים שעוזרים להחליט מהר יותר.' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'כל מה שצריך לדעת כדי לשלוח פנייה בלי להתלבט.' })).not.toBeInTheDocument();
   });
 
   it('renders the managed SEO service topics', () => {

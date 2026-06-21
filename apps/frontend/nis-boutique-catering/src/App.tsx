@@ -1,8 +1,6 @@
 import { type CSSProperties, type FormEvent, useCallback, useMemo, useState } from 'react';
 import {
   AudienceSection,
-  BookingBasicsSection,
-  BoutiqueSection,
   ContactSection,
   CoordinationSection,
   EditorialSection,
@@ -120,7 +118,6 @@ function App() {
         />
         <SignatureSection />
         <ServicesSection />
-        <BoutiqueSection />
         <GallerySection
           activeCategory={activeGalleryCategory}
           images={filteredGalleryImages}
@@ -135,7 +132,6 @@ function App() {
         <StorySection />
         <SamplesSection />
         <CoordinationSection />
-        <BookingBasicsSection />
         <SeoSection />
         <TrustSection />
         <FaqSection />

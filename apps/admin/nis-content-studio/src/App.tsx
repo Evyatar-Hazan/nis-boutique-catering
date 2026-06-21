@@ -61,8 +61,6 @@ import {
 } from './googleApi';
 import {
   AudienceSection,
-  BookingBasicsSection,
-  BoutiqueSection,
   ContactSection,
   CoordinationSection,
   EditorialSection,
@@ -105,14 +103,12 @@ type ActiveView =
   | 'site-copy'
   | 'site-microcopy'
   | 'audience'
-  | 'boutique'
   | 'signature'
   | 'process'
   | 'story'
   | 'samples'
   | 'coordination'
   | 'real-media'
-  | 'booking-basics'
   | 'seo'
   | 'gallery'
   | 'trust'
@@ -273,7 +269,6 @@ const sectionGroupLabels: Readonly<Record<string, string>> = {
   editorial: 'מה מזמינים אצלנו',
   manifesto: 'השפה של Nis',
   process: 'איך זה עובד',
-  boutique: 'למה זה בוטיק',
   signature: 'רגעי בוטיק',
   story: 'הסיפור של המותג',
   samples: 'כיוונים להזמנה',
@@ -330,7 +325,6 @@ export const managedSectionDefaults: readonly SectionBlockRecord[] = [
   makeCopySection('audience', 'כשרוצים לארח יפה, טעים ומכובד בלי לסחוב הכול לבד.', 'Nis מתאימה למי שרוצה לזהות את עצמו מהר: שבת רגועה יותר, אירוע קטן שנראה נכון, או מארז יפה שלוקחים לדרך או שולחים הלאה.', 'למי זה מתאים', 4),
   makeCopySection('experience-lab', 'מהרגע שבוחרים כיוון, האירוח מתחיל לקבל צורה.', 'בוחרים את סוג האירוח ומבינים מהר איך זה יכול להיראות אצלכם: מה נפתח על השולחן, מה מתאים לאופי האירוע, ואיך ממשיכים לשיחה קצרה.', 'בחרו את החוויה', 5),
   makeCopySection('signature', 'בוטיק זו לא מילה. זו הדרך שבה כל פרט מרגיש נכון יותר.', undefined, 'למה זה בוטיק', 6),
-  makeCopySection('boutique', 'הפרטים הקטנים שעוזרים להחליט מהר יותר.', 'התאמה אישית, נראות מוכנה לשולחן, יחס אנושי וטעם שמרגיש ביתי אבל חגיגי. אלה הפרטים שעוזרים לאירוח להרגיש רגוע ומדויק יותר.', 'למה זה מרגיש בוטיק', 7),
   makeCopySection('services', 'שלוש אפשרויות ברורות. בוחרים כיוון וממשיכים לפנייה.', 'שבת, אירוח קטן או דרך: שלושת השירותים מקבלים משקל שווה, וכל אחד מהם נבנה לפי כמות, תאריך והתחושה שרוצים ליצור.', 'מה אפשר להזמין', 8),
   makeCopySection('process', 'ארבעה צעדים קצרים מהרעיון ועד אוכל שמוכן להגשה.', undefined, 'איך זה עובד', 9),
   makeCopySection('story', 'Nis נולדה מתוך אהבה לאירוח יפה, אוכל ביתי מדויק ותשומת לב לפרטים הקטנים.', 'מאחורי Nis עומדת יהודית ניסטנפובר, עם אהבה עמוקה לאירוח, לאוכל מוקפד ולרגעים הקטנים שהופכים ארוחה לחוויה.', 'הסיפור של המותג', 10, 'אחרי שנים של חיים ברובע היהודי, בין סמטאות אבן, בתים מלאי ריח של שבת ושולחנות שנפתחים לאנשים שאוהבים, יהודית מביאה למטבח של Nis חיבור בין ביתיות, אסתטיקה ושירות אישי.|כל הזמנה נבנית מתוך תשומת לב לפרטים הקטנים: חומרי גלם טריים, טעמים מדויקים, אריזה אסתטית ותחושה שמישהו חשב עליכם באמת.'),
@@ -338,7 +332,6 @@ export const managedSectionDefaults: readonly SectionBlockRecord[] = [
   makeCopySection('coordination', 'הפרטים שעוזרים להתקדם בביטחון.', undefined, 'תיאום וזמינות', 12),
   makeCopySection('real-media', 'ככה נראית תשומת לב לפני שהאירוח בכלל פוגש את האורחים.', 'מנות אישיות, אריזה נקייה, מדבקת Nis ופרטים קטנים שמסדרים את החוויה עוד לפני הביס הראשון. התמונות והווידאו כאן הם מהכנות אמיתיות של Nis.', 'וידאו אמיתי', 13),
   makeCopySection('gallery', 'קודם רואים. אחר כך הרבה יותר קל לפנות.', 'שולחנות, מגשים, סלטים, קפה ופרטים קטנים שמראים את הסגנון לפני שמתחילים לדבר על תפריט.', 'גלריה', 14),
-  makeCopySection('booking-basics', 'כל מה שצריך לדעת כדי לשלוח פנייה בלי להתלבט.', 'מספיק לדעת מה סוג האירוח, בערך כמה סועדים ומה התאריך הרצוי. משם אפשר לדייק יחד את התפריט, ההגשה ואופן הקבלה.', 'לפני שפונים', 16),
   makeCopySection('seo', 'קייטרינג בוטיק מביתר עילית לשבת, אירוח קטן ומארזים לדרך.', 'Nis נותנת מענה למי שמחפש קייטרינג בוטיק בביתר עילית והסביבה: תפריט שבת מוכן, מגשי אירוח לאירועים קטנים, פינגר פוד, בראנץ׳ משפחתי ומארזי פיקניק או דרך. כל פנייה מתחילה בשיחה קצרה כדי להבין את סוג האירוח, כמות הסועדים, התאריך והתחושה שרוצים ליצור.', 'מה אפשר להזמין', 17),
   makeCopySection('trust', 'פחות סימני שאלה, יותר תחושה שיש עם מי לדבר.', undefined, 'מה מרגיע לפני שסוגרים', 18),
   makeCopySection('faq', 'התשובות שמקלות על הפנייה הראשונה.', undefined, 'שאלות נפוצות', 19),
@@ -400,10 +393,6 @@ export const managedSectionDefaults: readonly SectionBlockRecord[] = [
   makeSection('audience-shabbat', 'audience', 'למשפחות שמארחות שבת', 'למי שרוצה שולחן מכובד, מלא ויפה בלי לעמוד שעות במטבח ובלי להיכנס ללחץ לפני שבת.', ['Users'], 1),
   makeSection('audience-events', 'audience', 'לאירועים קטנים ומוקפדים', 'לזוגות, משפחות ומארחים שמתכננים שמחה קטנה, ברית, שבע ברכות או מפגש משפחתי עם נראות טובה ושקט תפעולי.', ['HeartHandshake'], 2),
   makeSection('audience-travel', 'audience', 'למארזים, דרך ומתנה', 'למי שרוצה לשלוח או לקחת משהו יפה, טעים ומכובד לדרך, לשבת, לאורחים או ליום מיוחד.', ['Gift'], 3),
-  makeSection('boutique-custom', 'boutique', 'התאמה בשיחה קצרה', 'סוג האירוח, מספר הסועדים והתאריך הופכים מהר לכיוון ברור שאפשר להתקדם איתו.', ['ClipboardList'], 1),
-  makeSection('boutique-ready', 'boutique', 'נראות שמוכנה לשולחן', 'מגשים, מארזים וסידור שמרגישים יפים כבר בפתיחה, בלי עבודה מיותרת מצד המארח.', ['Sparkles'], 2),
-  makeSection('boutique-personal', 'boutique', 'יחס אישי ולא תעשייתי', 'אין מסלול גנרי. יש תיאום, הקשבה ותשומת לב לפרטים שחשובים לאירוח שלכם.', ['HeartHandshake'], 3),
-  makeSection('boutique-home', 'boutique', 'טעם ביתי בגימור בוטיק', 'החיבור בין אוכל חם ומוכר לבין אריזה, צבעים וסידור שמרגישים חגיגיים יותר.', ['Package'], 4),
   makeSection('process-whatsapp', 'process', 'שולחים הודעה בוואטסאפ', 'אפשר ללחוץ על וואטסאפ או לשלוח את הטופס המסודר בתחתית האתר.', ['MessageCircle'], 1),
   makeSection('process-details', 'process', 'מחדדים סוג אירוח וכמות', 'בוחרים שבת, מגשי אירוח או Travel Nis, ומוסיפים תאריך, כמות וכיוון כללי.', ['CalendarDays'], 2),
   makeSection('process-offer', 'process', 'מקבלים הצעה או תפריט מותאם', 'מקבלים כיוון שמתאים לאירוח, למספר הסועדים ולרמת ההגשה הרצויה.', ['ClipboardList'], 3),
@@ -547,16 +536,9 @@ const areaDefinitions: readonly {
     icon: <Sparkles aria-hidden="true" />,
   },
   {
-    id: 'boutique',
-    title: 'למה זה בוטיק',
-    location: 'אחרי כרטיסי השירותים באתר',
-    help: 'כרטיסי הסבר קצרים שעוזרים ללקוח להבין למה זה מרגיש מוקפד.',
-    icon: <Sparkles aria-hidden="true" />,
-  },
-  {
     id: 'gallery',
     title: 'תמונות וגלריה',
-    location: 'אחרי אזור הבוטיק ולפני הווידאו',
+    location: 'אחרי כרטיסי השירותים ולפני הווידאו',
     help: 'כאן מנהלים גם את מאגר התמונות וגם את הגלריה הציבורית במקום אחד.',
     icon: <Images aria-hidden="true" />,
   },
@@ -596,16 +578,9 @@ const areaDefinitions: readonly {
     icon: <Phone aria-hidden="true" />,
   },
   {
-    id: 'booking-basics',
-    title: 'לפני שפונים',
-    location: 'אחרי תיאום וזמינות',
-    help: 'טקסט פתיחה לאזור שמסביר מה כדאי לדעת לפני שליחת פנייה.',
-    icon: <ListChecks aria-hidden="true" />,
-  },
-  {
     id: 'seo',
     title: 'אזור SEO',
-    location: 'אחרי לפני שפונים ולפני אמון',
+    location: 'אחרי תיאום וזמינות ולפני אמון',
     help: 'כותרת, טקסט ותגיות שמחזקים חיפוש והבנת השירות באתר.',
     icon: <Tag aria-hidden="true" />,
   },
@@ -1795,24 +1770,6 @@ export const App = () => {
           />
         )}
 
-        {activeView === 'boutique' && (
-          <SectionGroupEditor
-            title="למה זה בוטיק"
-            text="כרטיסים קצרים שמסבירים את הערך: התאמה, נראות, יחס אישי וטעם ביתי."
-            group="boutique"
-            content={content}
-            mediaById={mediaById}
-            sections={content.sections}
-            updateSection={updateSection}
-            addSection={addSection}
-            duplicateSection={duplicateSection}
-            archiveSection={archiveSection}
-            restoreSection={restoreSection}
-            previewDevice={previewDevice}
-            onPreviewDeviceChange={setPreviewDevice}
-          />
-        )}
-
         {activeView === 'signature' && (
           <SectionGroupEditor
             title="רגעי בוטיק"
@@ -1900,19 +1857,6 @@ export const App = () => {
             restoreSection={restoreSection}
             previewDevice={previewDevice}
             onPreviewDeviceChange={setPreviewDevice}
-          />
-        )}
-
-        {activeView === 'booking-basics' && (
-          <CopyOnlySectionEditor
-            content={content}
-            mediaById={mediaById}
-            sectionId="booking-basics"
-            title="לפני שפונים"
-            text="הטקסט שמסביר ללקוח מה כדאי לדעת לפני שליחת פנייה: סוג אירוח, כמות ותאריך."
-            previewDevice={previewDevice}
-            onPreviewDeviceChange={setPreviewDevice}
-            updateSection={updateSection}
           />
         )}
 
@@ -2166,14 +2110,6 @@ const SiteMapAreaPreviewSurface = ({
     return (
       <ActualSiteSectionFrame content={content} mediaById={mediaById} device={device}>
         <RealMediaSection />
-      </ActualSiteSectionFrame>
-    );
-  }
-
-  if (area === 'booking-basics') {
-    return (
-      <ActualSiteSectionFrame content={content} mediaById={mediaById} device={device}>
-        <BookingBasicsSection />
       </ActualSiteSectionFrame>
     );
   }
@@ -2554,10 +2490,6 @@ const CopyOnlySectionEditor = ({
           ) : sectionId === 'real-media' ? (
           <ActualSiteSectionFrame content={content} mediaById={mediaById} device={previewDevice}>
             <RealMediaSection />
-          </ActualSiteSectionFrame>
-          ) : sectionId === 'booking-basics' ? (
-          <ActualSiteSectionFrame content={content} mediaById={mediaById} device={previewDevice}>
-            <BookingBasicsSection />
           </ActualSiteSectionFrame>
           ) : (
           <ActualSiteSectionFrame content={content} mediaById={mediaById} device={previewDevice}>
@@ -3225,7 +3157,6 @@ const buildSiteSectionPreviewData = (
   const manifestoSections = getActiveSectionsByGroup(content, 'manifesto');
   const editorialSections = getActiveSectionsByGroup(content, 'editorial');
   const audienceSections = getActiveSectionsByGroup(content, 'audience');
-  const boutiqueSections = getActiveSectionsByGroup(content, 'boutique');
   const processSections = getActiveSectionsByGroup(content, 'process');
   const storySections = getActiveSectionsByGroup(content, 'story');
   const signatureSections = getActiveSectionsByGroup(content, 'signature');
@@ -3343,7 +3274,6 @@ const buildSiteSectionPreviewData = (
       audience: getPreviewCopySection(content, 'audience', defaults.sectionCopy.audience),
       experienceLab: getPreviewCopySection(content, 'experience-lab', defaults.sectionCopy.experienceLab),
       signature: getPreviewCopySection(content, 'signature', defaults.sectionCopy.signature),
-      boutique: getPreviewCopySection(content, 'boutique', defaults.sectionCopy.boutique),
       services: getPreviewCopySection(content, 'services', defaults.sectionCopy.services),
       process: getPreviewCopySection(content, 'process', defaults.sectionCopy.process),
       story: getPreviewCopySection(content, 'story', defaults.sectionCopy.story),
@@ -3351,7 +3281,6 @@ const buildSiteSectionPreviewData = (
       coordination: getPreviewCopySection(content, 'coordination', defaults.sectionCopy.coordination),
       realMedia: getPreviewCopySection(content, 'real-media', defaults.sectionCopy.realMedia),
       gallery: getPreviewCopySection(content, 'gallery', defaults.sectionCopy.gallery),
-      bookingBasics: getPreviewCopySection(content, 'booking-basics', defaults.sectionCopy.bookingBasics),
       seo: getPreviewCopySection(content, 'seo', defaults.sectionCopy.seo),
       trust: getPreviewCopySection(content, 'trust', defaults.sectionCopy.trust),
       faq: getPreviewCopySection(content, 'faq', defaults.sectionCopy.faq),
@@ -3386,12 +3315,6 @@ const buildSiteSectionPreviewData = (
           return { ...base, title: section.title || base.title, text: section.text || base.text };
         })
       : defaults.audienceCards,
-    boutiqueReasons: boutiqueSections.length
-      ? boutiqueSections.map((section, index) => {
-          const base = defaults.boutiqueReasons[index] ?? defaults.boutiqueReasons[0];
-          return { ...base, title: section.title || base.title, text: section.text || base.text };
-        })
-      : defaults.boutiqueReasons,
     services: services.length ? services : defaults.services,
     processSteps: processSections.length
       ? processSections.map((section, index) => {
@@ -3770,7 +3693,6 @@ const SectionGroupSitePreview = ({
     const sectionByGroup: Record<typeof exactPreviewSectionGroupIds[number], ReactNode> = {
       editorial: <EditorialSection />,
       audience: <AudienceSection />,
-      boutique: <BoutiqueSection />,
       signature: <SignatureSection />,
       process: <ProcessSection />,
       story: <StorySection />,
@@ -4776,7 +4698,7 @@ const areaStatus = (area: ActiveView, content: ContentSnapshot) => {
     const hero = content.sections.find((section) => section.id === 'hero' || section.group === 'hero');
     return hero?.active && !hero.deletedAt ? 'פעיל באתר' : 'כבוי או חסר';
   }
-  if (['intro-band', 'experience-lab', 'real-media', 'booking-basics', 'seo'].includes(area)) {
+  if (['intro-band', 'experience-lab', 'real-media', 'seo'].includes(area)) {
     const copySection = getManagedCopySection(content, area);
     return copySection?.active ? 'פעיל באתר' : 'כבוי או חסר';
   }
