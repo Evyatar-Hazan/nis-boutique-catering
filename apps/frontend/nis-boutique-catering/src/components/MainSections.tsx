@@ -377,6 +377,11 @@ export const ExperienceLabSection = ({
                     <span>0{index + 1}</span>
                     <h3>{service.title}</h3>
                     <p>{service.promise}</p>
+                    <ul className="experience-detail-list" aria-label={`מה כולל ${service.title}`}>
+                      {service.details.slice(0, 3).map((detail) => (
+                        <li key={detail}>{detail}</li>
+                      ))}
+                    </ul>
                     <a href={buildInquiryWhatsappLink(service.title)}>
                       {siteMicrocopy.experienceCta}
                       <ArrowLeft aria-hidden="true" size={16} />
@@ -766,6 +771,7 @@ export const FaqSection = () => {
       <div className="reveal">
         <p className="eyebrow">{sectionCopy.faq.eyebrow}</p>
         <h2 id="faq-title">{sectionCopy.faq.title}</h2>
+        <TextParagraphs text={sectionCopy.faq.text} />
       </div>
       <div className="faq-list reveal">
         {faqs.map((faq) => (

@@ -32,31 +32,26 @@ describe('Content Studio', () => {
 
   it('keeps managed section defaults aligned with public site generated content', () => {
     const requiredIds = [
-      'hero',
-      'hero-badges',
-      'hero-marquee',
-      ...[
-        'intro-band',
-        'manifesto',
-        'editorial',
-        'audience',
-        'experience-lab',
-        'signature',
-        'process',
-        'story',
-        'samples',
-        'coordination',
-        'real-media',
-        'gallery',
-        'trust',
-        'faq',
-        'contact',
-      ].map((id) => `copy-${id}`),
+        'hero',
+        'hero-badges',
+        'hero-marquee',
+        ...[
+          'intro-band',
+          'manifesto',
+          'audience',
+          'experience-lab',
+          'process',
+          'story',
+          'coordination',
+          'real-media',
+          'gallery',
+          'faq',
+          'contact',
+        ].map((id) => `copy-${id}`),
       ...[
         'nav-experiences-label',
         'nav-gallery-label',
         'nav-process-label',
-        'nav-samples-label',
         'nav-faq-label',
         'nav-contact-label',
         'gallery-all-label',
@@ -102,7 +97,7 @@ describe('Content Studio', () => {
         'contact-delivery-options',
       ].map((id) => `microcopy-${id}`),
     ];
-    const requiredGroups = ['editorial', 'manifesto', 'audience', 'process', 'signature', 'story', 'samples', 'coordination', 'hero-notes', 'hero-stats', 'trust', 'faq'];
+    const requiredGroups = ['manifesto', 'audience', 'process', 'story', 'coordination', 'hero-notes', 'hero-stats', 'faq'];
     const managedIds = new Set(managedSectionDefaults.map((section) => section.id));
     const managedGroups = new Set(managedSectionDefaults.map((section) => section.group));
 
@@ -209,14 +204,10 @@ describe('Content Studio', () => {
     expect(exactPreviewViewIds).toEqual(['hero', 'intro-band', 'manifesto', 'gallery', 'contact']);
     expect(exactPreviewCopySectionIds).toEqual(['experience-lab', 'real-media']);
     expect(exactPreviewSectionGroupIds).toEqual([
-      'editorial',
       'audience',
-      'signature',
       'process',
       'story',
-      'samples',
       'coordination',
-      'trust',
       'faq',
     ]);
   });

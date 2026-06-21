@@ -3,7 +3,6 @@ import {
   AudienceSection,
   ContactSection,
   CoordinationSection,
-  EditorialSection,
   ExperienceLabSection,
   FaqSection,
   GallerySection,
@@ -12,10 +11,7 @@ import {
   ManifestoSection,
   ProcessSection,
   RealMediaSection,
-  SamplesSection,
-  SignatureSection,
   StorySection,
-  TrustSection,
 } from './components/MainSections';
 import { FloatingActions, Footer, LightboxDialog, Topbar } from './components/SiteChrome';
 import { contactInterestOptions, email, galleryImages, sectionIds, siteMicrocopy, siteVersion, type GalleryCategory } from './data/siteContent';
@@ -108,13 +104,11 @@ function App() {
         <HeroSection heroWhatsapp={heroWhatsapp} />
         <IntroBandSection />
         <ManifestoSection />
-        <EditorialSection />
         <AudienceSection />
         <ExperienceLabSection
           activeExperienceIndex={activeExperienceIndex}
           onChangeExperience={setActiveExperienceIndex}
         />
-        <SignatureSection />
         <GallerySection
           activeCategory={activeGalleryCategory}
           images={filteredGalleryImages}
@@ -127,9 +121,7 @@ function App() {
         <RealMediaSection />
         <ProcessSection />
         <StorySection />
-        <SamplesSection />
         <CoordinationSection />
-        <TrustSection />
         <FaqSection />
         <ContactSection
           contactWhatsapp={contactWhatsapp}

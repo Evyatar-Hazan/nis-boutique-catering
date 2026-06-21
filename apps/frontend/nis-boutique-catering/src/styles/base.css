@@ -805,6 +805,25 @@ summary:focus-visible {
   line-height: 1.7;
 }
 
+.experience-detail-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.experience-detail-list li {
+  padding: 6px 10px;
+  border: 1px solid rgba(255, 250, 242, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 250, 242, 0.08);
+  color: rgba(255, 250, 242, 0.88);
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
 .experience-overlay a {
   display: inline-flex;
   align-items: center;

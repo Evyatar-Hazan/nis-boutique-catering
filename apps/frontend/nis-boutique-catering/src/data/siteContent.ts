@@ -33,7 +33,7 @@ export const email = generatedSettings.email || 'nisboutiquecatering@gmail.com';
 export const whatsappBase = generatedSettings.whatsappBase || 'https://wa.me/972503502615';
 export const siteVersion = generatedSettings.siteVersion || 'v0.1.1';
 
-export const sectionIds = ['top', 'experiences', 'gallery', 'process', 'samples', 'faq', 'contact'] as const;
+export const sectionIds = ['top', 'experiences', 'gallery', 'process', 'faq', 'contact'] as const;
 
 export interface ImageAsset {
   readonly src: string;
@@ -233,7 +233,6 @@ export interface SiteMicrocopy {
   readonly navExperiencesLabel: string;
   readonly navGalleryLabel: string;
   readonly navProcessLabel: string;
-  readonly navSamplesLabel: string;
   readonly navFaqLabel: string;
   readonly navContactLabel: string;
   readonly galleryAllLabel: string;
@@ -861,7 +860,6 @@ export const siteMicrocopy: SiteMicrocopy = {
   navExperiencesLabel: getGeneratedMicrocopy('nav-experiences-label', 'מה מזמינים'),
   navGalleryLabel: getGeneratedMicrocopy('nav-gallery-label', 'גלריה'),
   navProcessLabel: getGeneratedMicrocopy('nav-process-label', 'איך זה עובד'),
-  navSamplesLabel: getGeneratedMicrocopy('nav-samples-label', 'דוגמאות'),
   navFaqLabel: getGeneratedMicrocopy('nav-faq-label', 'שאלות'),
   navContactLabel: getGeneratedMicrocopy('nav-contact-label', 'יצירת קשר'),
   galleryAllLabel: getGeneratedMicrocopy('gallery-all-label', 'הכל'),
@@ -909,7 +907,6 @@ export const navItems: readonly NavItem[] = [
   { label: siteMicrocopy.navExperiencesLabel, href: '#experiences' },
   { label: siteMicrocopy.navGalleryLabel, href: '#gallery' },
   { label: siteMicrocopy.navProcessLabel, href: '#process' },
-  { label: siteMicrocopy.navSamplesLabel, href: '#samples' },
   { label: siteMicrocopy.navFaqLabel, href: '#faq' },
   { label: siteMicrocopy.navContactLabel, href: '#contact' },
 ];
@@ -964,7 +961,7 @@ export const sectionCopy = {
     eyebrow: 'בחרו את החוויה',
     title: 'מהרגע שבוחרים כיוון, האירוח מתחיל לקבל צורה.',
     text:
-      'בוחרים את סוג האירוח ומבינים מהר איך זה יכול להיראות אצלכם: מה נפתח על השולחן, מה מתאים לאופי האירוע, ואיך ממשיכים לשיחה קצרה.',
+      'בוחרים את סוג האירוח ומבינים מהר איך זה יכול להיראות אצלכם: מה נפתח על השולחן, מה מתאים לאופי האירוע, ואיך ממשיכים לשיחה קצרה. שלוש הקטגוריות והכיוונים לדוגמה כבר משולבים כאן כדי שיהיה קל להתחיל מאותו מקום.',
   }),
   signature: getGeneratedSectionCopy('signature', {
     eyebrow: 'למה זה בוטיק',
@@ -1035,6 +1032,8 @@ export const sectionCopy = {
   faq: getGeneratedSectionCopy('faq', {
     eyebrow: 'שאלות נפוצות',
     title: 'התשובות שמקלות על הפנייה הראשונה.',
+    text:
+      'לפני השאלות עצמן, חשוב לדעת שהאירוח מגיע מסודר, מתואם אישית ועם מענה אנושי שמכוון לסוג האירוע, לכמות הסועדים ולהעדפות שלכם.',
   }),
   contact: getGeneratedSectionCopy('contact', {
     eyebrow: 'יצירת קשר',

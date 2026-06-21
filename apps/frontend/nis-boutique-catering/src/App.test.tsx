@@ -80,13 +80,17 @@ describe('Nis boutique catering app', () => {
     expect(experienceChooser.getByRole('tab', { name: 'Travel Nis' })).toBeInTheDocument();
   });
 
-  it('does not render duplicated booking basics or boutique sections', () => {
+  it('does not render removed duplicate sections', () => {
     render(<App />);
 
     expect(screen.queryByRole('heading', { name: 'הפרטים הקטנים שעוזרים להחליט מהר יותר.' })).not.toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: 'כל מה שצריך לדעת כדי לשלוח פנייה בלי להתלבט.' })).not.toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: 'שלוש אפשרויות ברורות. בוחרים כיוון וממשיכים לפנייה.' })).not.toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: 'קייטרינג בוטיק מביתר עילית לשבת, אירוח קטן ומארזים לדרך.' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'שלוש קטגוריות ברורות. שפה אחת של אירוח.' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'בוטיק זו לא מילה. זו הדרך שבה כל פרט מרגיש נכון יותר.' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'כיוונים טעימים שקל להתחיל מהם שיחה.' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'פחות סימני שאלה, יותר תחושה שיש עם מי לדבר.' })).not.toBeInTheDocument();
   });
 
   it('builds a whatsapp inquiry from the contact form submit', () => {
