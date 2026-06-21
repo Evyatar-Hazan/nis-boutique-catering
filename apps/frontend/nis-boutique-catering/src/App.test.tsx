@@ -85,13 +85,8 @@ describe('Nis boutique catering app', () => {
 
     expect(screen.queryByRole('heading', { name: 'הפרטים הקטנים שעוזרים להחליט מהר יותר.' })).not.toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: 'כל מה שצריך לדעת כדי לשלוח פנייה בלי להתלבט.' })).not.toBeInTheDocument();
-  });
-
-  it('renders the managed SEO service topics', () => {
-    render(<App />);
-
-    expect(screen.getByText('קייטרינג בוטיק בביתר עילית')).toBeInTheDocument();
-    expect(screen.getByText('מגשי אירוח לאירועים קטנים')).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'שלוש אפשרויות ברורות. בוחרים כיוון וממשיכים לפנייה.' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'קייטרינג בוטיק מביתר עילית לשבת, אירוח קטן ומארזים לדרך.' })).not.toBeInTheDocument();
   });
 
   it('builds a whatsapp inquiry from the contact form submit', () => {

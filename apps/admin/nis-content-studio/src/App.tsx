@@ -73,8 +73,6 @@ import {
   ProcessSection,
   RealMediaSection,
   SamplesSection,
-  SeoSection,
-  ServicesSection,
   SignatureSection,
   StorySection,
   TrustSection,
@@ -109,7 +107,6 @@ type ActiveView =
   | 'samples'
   | 'coordination'
   | 'real-media'
-  | 'seo'
   | 'gallery'
   | 'trust'
   | 'faq'
@@ -325,14 +322,12 @@ export const managedSectionDefaults: readonly SectionBlockRecord[] = [
   makeCopySection('audience', 'כשרוצים לארח יפה, טעים ומכובד בלי לסחוב הכול לבד.', 'Nis מתאימה למי שרוצה לזהות את עצמו מהר: שבת רגועה יותר, אירוע קטן שנראה נכון, או מארז יפה שלוקחים לדרך או שולחים הלאה.', 'למי זה מתאים', 4),
   makeCopySection('experience-lab', 'מהרגע שבוחרים כיוון, האירוח מתחיל לקבל צורה.', 'בוחרים את סוג האירוח ומבינים מהר איך זה יכול להיראות אצלכם: מה נפתח על השולחן, מה מתאים לאופי האירוע, ואיך ממשיכים לשיחה קצרה.', 'בחרו את החוויה', 5),
   makeCopySection('signature', 'בוטיק זו לא מילה. זו הדרך שבה כל פרט מרגיש נכון יותר.', undefined, 'למה זה בוטיק', 6),
-  makeCopySection('services', 'שלוש אפשרויות ברורות. בוחרים כיוון וממשיכים לפנייה.', 'שבת, אירוח קטן או דרך: שלושת השירותים מקבלים משקל שווה, וכל אחד מהם נבנה לפי כמות, תאריך והתחושה שרוצים ליצור.', 'מה אפשר להזמין', 8),
   makeCopySection('process', 'ארבעה צעדים קצרים מהרעיון ועד אוכל שמוכן להגשה.', undefined, 'איך זה עובד', 9),
   makeCopySection('story', 'Nis נולדה מתוך אהבה לאירוח יפה, אוכל ביתי מדויק ותשומת לב לפרטים הקטנים.', 'מאחורי Nis עומדת יהודית ניסטנפובר, עם אהבה עמוקה לאירוח, לאוכל מוקפד ולרגעים הקטנים שהופכים ארוחה לחוויה.', 'הסיפור של המותג', 10, 'אחרי שנים של חיים ברובע היהודי, בין סמטאות אבן, בתים מלאי ריח של שבת ושולחנות שנפתחים לאנשים שאוהבים, יהודית מביאה למטבח של Nis חיבור בין ביתיות, אסתטיקה ושירות אישי.|כל הזמנה נבנית מתוך תשומת לב לפרטים הקטנים: חומרי גלם טריים, טעמים מדויקים, אריזה אסתטית ותחושה שמישהו חשב עליכם באמת.'),
   makeCopySection('samples', 'כיוונים טעימים שקל להתחיל מהם שיחה.', 'אפשר להתחיל מכיוון כללי ולהתאים אותו לשבת, לאירוח קטן או למארז לדרך. בשיחה קצרה מדייקים יחד כמויות, תאריך וסגנון הגשה.', 'כיוונים שאפשר להתחיל מהם', 11),
   makeCopySection('coordination', 'הפרטים שעוזרים להתקדם בביטחון.', undefined, 'תיאום וזמינות', 12),
   makeCopySection('real-media', 'ככה נראית תשומת לב לפני שהאירוח בכלל פוגש את האורחים.', 'מנות אישיות, אריזה נקייה, מדבקת Nis ופרטים קטנים שמסדרים את החוויה עוד לפני הביס הראשון. התמונות והווידאו כאן הם מהכנות אמיתיות של Nis.', 'וידאו אמיתי', 13),
   makeCopySection('gallery', 'קודם רואים. אחר כך הרבה יותר קל לפנות.', 'שולחנות, מגשים, סלטים, קפה ופרטים קטנים שמראים את הסגנון לפני שמתחילים לדבר על תפריט.', 'גלריה', 14),
-  makeCopySection('seo', 'קייטרינג בוטיק מביתר עילית לשבת, אירוח קטן ומארזים לדרך.', 'Nis נותנת מענה למי שמחפש קייטרינג בוטיק בביתר עילית והסביבה: תפריט שבת מוכן, מגשי אירוח לאירועים קטנים, פינגר פוד, בראנץ׳ משפחתי ומארזי פיקניק או דרך. כל פנייה מתחילה בשיחה קצרה כדי להבין את סוג האירוח, כמות הסועדים, התאריך והתחושה שרוצים ליצור.', 'מה אפשר להזמין', 17),
   makeCopySection('trust', 'פחות סימני שאלה, יותר תחושה שיש עם מי לדבר.', undefined, 'מה מרגיע לפני שסוגרים', 18),
   makeCopySection('faq', 'התשובות שמקלות על הפנייה הראשונה.', undefined, 'שאלות נפוצות', 19),
   makeCopySection('contact', 'אהבתם את הסגנון? שלחו פנייה מסודרת לוואטסאפ.', 'הטופס נשאר קצר ומעשי: סוג הזמנה, תאריך, כמות והערה. אחרי השליחה נפתחת הודעת וואטסאפ מוכנה, כדי שיהיה קל להמשיך לשיחה אישית.', 'יצירת קשר', 20, 'שיחה קצרה, התאמה אישית, ואז סיכום ברור של תאריך, כמות וסגנון אירוח.'),
@@ -383,7 +378,6 @@ export const managedSectionDefaults: readonly SectionBlockRecord[] = [
   makeMicrocopySection('whatsapp-floating-message', 'הודעת וואטסאפ מהכפתור הצף', 'שלום Nis, אשמח לקבל פרטים דרך האתר.', 33),
   makeMicrocopySection('contact-interest-options', 'אפשרויות שדה סוג הזמנה', undefined, 34, ['ניס בטעם של שבת', 'ניס בכיס - מגשי אירוח', 'Travel Nis', 'אירוע קטן', 'אחר']),
   makeMicrocopySection('contact-delivery-options', 'אפשרויות שדה אופן קבלה', undefined, 35, ['נדבר ונבדוק יחד', 'איסוף מביתר עילית', 'משלוח בתיאום']),
-  makeSection('seo-topics', 'seo-topics', 'תגיות תחומי שירות לאזור SEO', undefined, ['קייטרינג בוטיק בביתר עילית', 'תפריט שבת מוכן ומסודר', 'מגשי אירוח לאירועים קטנים', 'פינגר פוד והרמות כוסית', 'מארזי פיקניק ומארזי דרך', 'אירוח משפחתי בהתאמה אישית'], 1),
   makeSection('editorial-shabbat', 'editorial', 'אוכל ביתי מוקפד לשבת שנכנסת ברוגע', 'תפריטי שבת עשירים, מסודרים ויפים להגשה, כדי שהבית ירגיש מלא בלי שכל העומס יישב עליכם.', ['שבתות', 'ChefHat'], 1),
   makeSection('editorial-events', 'editorial', 'שולחן שנפתח יפה ומייצר רושם כבר בדקה הראשונה', 'מגשי אירוח, פינגר פוד ושולחנות קטנים עם הגשה אסתטית שמתאימה למשפחה, מפגש או אירוח עסקי.', ['אירועים קטנים', 'Sparkles'], 2),
   makeSection('editorial-travel', 'editorial', 'Travel Nis לפינוקים שלוקחים אתכם הלאה', 'מארזים נוחים, חכמים ויפים לנסיעות, טיולים וימי כיף, כך שהחוויה מתחילה כבר בדרך.', ['מארזים ודרך', 'Gift'], 3),
@@ -530,9 +524,9 @@ const areaDefinitions: readonly {
   },
   {
     id: 'services',
-    title: 'מה מזמינים',
-    location: 'כרטיסי השירות המרכזיים בעמוד',
-    help: 'שבת, אירועים, Travel Nis וכל שירות נוסף שתוסיפו.',
+    title: 'חוויות אירוח',
+    location: 'מקור הנתונים המשותף של בחירת החוויה באתר',
+    help: 'השירותים כאן מזינים את Experience Lab, גם אחרי שהסקשן הכפול ירד מהעמוד.',
     icon: <Sparkles aria-hidden="true" />,
   },
   {
@@ -576,13 +570,6 @@ const areaDefinitions: readonly {
     location: 'אחרי כיוונים להזמנה ולפני פרטי ההזמנה',
     help: 'אזור פעילות, זמן פנייה, הצעת מחיר ואישור תפריט.',
     icon: <Phone aria-hidden="true" />,
-  },
-  {
-    id: 'seo',
-    title: 'אזור SEO',
-    location: 'אחרי תיאום וזמינות ולפני אמון',
-    help: 'כותרת, טקסט ותגיות שמחזקים חיפוש והבנת השירות באתר.',
-    icon: <Tag aria-hidden="true" />,
   },
   {
     id: 'trust',
@@ -681,8 +668,6 @@ export const App = () => {
         .sort((left, right) => left.order - right.order),
     [content.gallery, query],
   );
-  const seoTopicsSection = content.sections.find((section) => section.id === 'seo-topics');
-
   const markDraft = () => {
     if (authState === 'authorized') {
       setPublishProgress(null);
@@ -1391,8 +1376,8 @@ export const App = () => {
           <section className="workspace-panel split-editor">
             <div className="editor-column">
               <PanelHeader
-                title="מה מזמינים"
-                text="כל כרטיס כאן הוא שירות שמופיע באזור המרכזי באתר. אפשר לכבות, לשכפל, להוסיף או להעביר לארכיון."
+                title="חוויות אירוח"
+                text="הנתונים כאן מזינים את Experience Lab באתר. אפשר לכבות, לשכפל, להוסיף או להעביר לארכיון בלי להחזיר את הסקשן הכפול שהוסר."
                 action={
                   <button className="compact-button" onClick={addService}>
                     <Plus aria-hidden="true" />
@@ -1406,7 +1391,7 @@ export const App = () => {
                   <DrivePreviewImage media={mediaById.get(service.mediaId)} accessToken={session.accessToken} />
                   <div className="card-heading">
                     <div>
-                      <p className="kicker">כרטיס שירות באתר</p>
+                      <p className="kicker">חוויית אירוח באתר</p>
                       <h3>{service.title}</h3>
                     </div>
                     <ItemActions
@@ -1419,13 +1404,13 @@ export const App = () => {
                   <div className="toggle-row">
                     <Toggle checked={service.active && !service.deletedAt} label="מוצג באתר" onChange={(checked) => updateService(service.id, { active: checked })} />
                   </div>
-                  <Field label="שם השירות" help="הכותרת הראשית של כרטיס השירות.">
+                  <Field label="שם החוויה" help="הכותרת הראשית של החוויה בבחירת האירוח.">
                     <TextInput value={service.title} onChange={(value) => updateService(service.id, { title: value })} />
                   </Field>
-                  <Field label="כותרת משנה" help="שורת ההסבר הקצרה מתחת לשם השירות.">
+                  <Field label="כותרת משנה" help="שורת ההסבר הקצרה שמתחת לשם החוויה.">
                     <TextInput value={service.subtitle} onChange={(value) => updateService(service.id, { subtitle: value })} />
                   </Field>
-                  <Field label="תיאור" help="הטקסט המרכזי בכרטיס השירות.">
+                  <Field label="תיאור" help="הטקסט המרכזי של החוויה.">
                     <textarea value={service.description} onChange={(event) => updateService(service.id, { description: event.target.value })} />
                   </Field>
                   <div className="inline-grid">
@@ -1472,12 +1457,12 @@ export const App = () => {
               </div>
             </div>
             <div className="preview-column">
-              <PreviewHeader
-                title="תצוגה מקדימה כמו באתר"
-                text="אפשר לעבור בין מחשב למובייל ולראות איך כרטיסי השירות ירגישו ללקוח."
-                device={previewDevice}
-                onDeviceChange={setPreviewDevice}
-              />
+                <PreviewHeader
+                  title="תצוגה מקדימה כמו באתר"
+                text="אפשר לעבור בין מחשב למובייל ולראות איך בחירת החוויה תרגיש ללקוח באתר החי."
+                  device={previewDevice}
+                  onDeviceChange={setPreviewDevice}
+                />
               <ServicesPreview content={content} mediaById={mediaById} device={previewDevice} />
             </div>
           </section>
@@ -1860,20 +1845,6 @@ export const App = () => {
           />
         )}
 
-        {activeView === 'seo' && (
-          <CopyOnlySectionEditor
-            content={content}
-            mediaById={mediaById}
-            sectionId="seo"
-            title="אזור SEO"
-            text="כאן עורכים את אזור הטקסט שמיועד גם להבנת השירות וגם לחיפוש. התגיות מוצגות באתר כתוויות קצרות."
-            previewDevice={previewDevice}
-            onPreviewDeviceChange={setPreviewDevice}
-            updateSection={updateSection}
-            tagsSection={seoTopicsSection}
-          />
-        )}
-
         {activeView === 'trust' && (
           <SectionGroupEditor
             title="אמון ועובדות"
@@ -2110,14 +2081,6 @@ const SiteMapAreaPreviewSurface = ({
     return (
       <ActualSiteSectionFrame content={content} mediaById={mediaById} device={device}>
         <RealMediaSection />
-      </ActualSiteSectionFrame>
-    );
-  }
-
-  if (area === 'seo') {
-    return (
-      <ActualSiteSectionFrame content={content} mediaById={mediaById} device={device}>
-        <SeoSection />
       </ActualSiteSectionFrame>
     );
   }
@@ -2491,11 +2454,7 @@ const CopyOnlySectionEditor = ({
           <ActualSiteSectionFrame content={content} mediaById={mediaById} device={previewDevice}>
             <RealMediaSection />
           </ActualSiteSectionFrame>
-          ) : (
-          <ActualSiteSectionFrame content={content} mediaById={mediaById} device={previewDevice}>
-            <SeoSection />
-          </ActualSiteSectionFrame>
-          )
+          ) : null
         ) : (
           <CopyOnlySectionPreview section={section} tagsSection={tagsSection} device={previewDevice} />
         )}
@@ -3074,11 +3033,7 @@ const ServicesPreview = ({
   readonly content: ContentSnapshot;
   readonly mediaById: ReadonlyMap<string, ImageAssetRecord>;
   readonly device: PreviewDevice;
-}) => (
-  <ActualSiteSectionFrame content={content} mediaById={mediaById} device={device}>
-    <ServicesSection />
-  </ActualSiteSectionFrame>
-);
+}) => <ActualExperienceLabPreview content={content} mediaById={mediaById} device={device} />;
 
 const GallerySitePreview = ({
   content,
@@ -3164,8 +3119,6 @@ const buildSiteSectionPreviewData = (
   const trustSections = getActiveSectionsByGroup(content, 'trust');
   const faqSections = getActiveSectionsByGroup(content, 'faq');
   const samplesSections = getActiveSectionsByGroup(content, 'samples');
-  const seoTopicsSection = content.sections.find((section) => section.id === 'seo-topics' && section.active && !section.deletedAt);
-
   const services = [...content.services]
     .filter((service) => service.active && !service.deletedAt)
     .sort((left, right) => left.order - right.order)
@@ -3274,14 +3227,12 @@ const buildSiteSectionPreviewData = (
       audience: getPreviewCopySection(content, 'audience', defaults.sectionCopy.audience),
       experienceLab: getPreviewCopySection(content, 'experience-lab', defaults.sectionCopy.experienceLab),
       signature: getPreviewCopySection(content, 'signature', defaults.sectionCopy.signature),
-      services: getPreviewCopySection(content, 'services', defaults.sectionCopy.services),
       process: getPreviewCopySection(content, 'process', defaults.sectionCopy.process),
       story: getPreviewCopySection(content, 'story', defaults.sectionCopy.story),
       samples: getPreviewCopySection(content, 'samples', defaults.sectionCopy.samples),
       coordination: getPreviewCopySection(content, 'coordination', defaults.sectionCopy.coordination),
       realMedia: getPreviewCopySection(content, 'real-media', defaults.sectionCopy.realMedia),
       gallery: getPreviewCopySection(content, 'gallery', defaults.sectionCopy.gallery),
-      seo: getPreviewCopySection(content, 'seo', defaults.sectionCopy.seo),
       trust: getPreviewCopySection(content, 'trust', defaults.sectionCopy.trust),
       faq: getPreviewCopySection(content, 'faq', defaults.sectionCopy.faq),
       contact: getPreviewCopySection(content, 'contact', defaults.sectionCopy.contact),
@@ -3352,7 +3303,6 @@ const buildSiteSectionPreviewData = (
         })
       : defaults.coordinationCards,
     galleryImages: galleryImages.length ? galleryImages : defaults.galleryImages,
-    seoTopics: seoTopicsSection?.items.length ? seoTopicsSection.items : defaults.seoTopics,
     trustCards: trustSections.length
       ? trustSections.map((section, index) => {
           const base = defaults.trustCards[index] ?? defaults.trustCards[0];
@@ -4698,7 +4648,7 @@ const areaStatus = (area: ActiveView, content: ContentSnapshot) => {
     const hero = content.sections.find((section) => section.id === 'hero' || section.group === 'hero');
     return hero?.active && !hero.deletedAt ? 'פעיל באתר' : 'כבוי או חסר';
   }
-  if (['intro-band', 'experience-lab', 'real-media', 'seo'].includes(area)) {
+  if (['intro-band', 'experience-lab', 'real-media'].includes(area)) {
     const copySection = getManagedCopySection(content, area);
     return copySection?.active ? 'פעיל באתר' : 'כבוי או חסר';
   }

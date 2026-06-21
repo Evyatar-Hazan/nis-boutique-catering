@@ -13,11 +13,9 @@ import {
   ProcessSection,
   RealMediaSection,
   SamplesSection,
-  SeoSection,
   SignatureSection,
   StorySection,
   TrustSection,
-  ServicesSection,
 } from './components/MainSections';
 import { FloatingActions, Footer, LightboxDialog, Topbar } from './components/SiteChrome';
 import { contactInterestOptions, email, galleryImages, sectionIds, siteMicrocopy, siteVersion, type GalleryCategory } from './data/siteContent';
@@ -117,7 +115,6 @@ function App() {
           onChangeExperience={setActiveExperienceIndex}
         />
         <SignatureSection />
-        <ServicesSection />
         <GallerySection
           activeCategory={activeGalleryCategory}
           images={filteredGalleryImages}
@@ -132,7 +129,6 @@ function App() {
         <StorySection />
         <SamplesSection />
         <CoordinationSection />
-        <SeoSection />
         <TrustSection />
         <FaqSection />
         <ContactSection

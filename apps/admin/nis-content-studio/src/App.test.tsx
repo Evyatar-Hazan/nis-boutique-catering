@@ -35,7 +35,6 @@ describe('Content Studio', () => {
       'hero',
       'hero-badges',
       'hero-marquee',
-      'seo-topics',
       ...[
         'intro-band',
         'manifesto',
@@ -43,14 +42,12 @@ describe('Content Studio', () => {
         'audience',
         'experience-lab',
         'signature',
-        'services',
         'process',
         'story',
         'samples',
         'coordination',
         'real-media',
         'gallery',
-        'seo',
         'trust',
         'faq',
         'contact',
@@ -164,7 +161,7 @@ describe('Content Studio', () => {
 
     expect(snapshot.sections.some((section) => section.id === 'copy-intro-band' && section.group === 'site-copy')).toBe(true);
     expect(snapshot.sections.some((section) => section.id === 'copy-experience-lab' && section.group === 'site-copy')).toBe(true);
-    expect(snapshot.sections.some((section) => section.id === 'copy-seo' && section.group === 'site-copy')).toBe(true);
+    expect(snapshot.sections.some((section) => section.id === 'copy-gallery' && section.group === 'site-copy')).toBe(true);
   });
 
   it('keeps the studio editing workflow clear across editing and publish states', () => {
@@ -209,8 +206,8 @@ describe('Content Studio', () => {
   });
 
   it('keeps a single exact-preview contract for all public sections that must match the site', () => {
-    expect(exactPreviewViewIds).toEqual(['hero', 'intro-band', 'manifesto', 'services', 'gallery', 'contact']);
-    expect(exactPreviewCopySectionIds).toEqual(['experience-lab', 'real-media', 'seo']);
+    expect(exactPreviewViewIds).toEqual(['hero', 'intro-band', 'manifesto', 'gallery', 'contact']);
+    expect(exactPreviewCopySectionIds).toEqual(['experience-lab', 'real-media']);
     expect(exactPreviewSectionGroupIds).toEqual([
       'editorial',
       'audience',
