@@ -16,7 +16,7 @@ const hasFormatVariants = (image: ImageAsset, format: 'avif' | 'webp') => {
 
   // CMS images are generated from Drive during the Linux Cloudflare build.
   // The current build toolchain creates WebP variants there, but not AVIF.
-  return !image.src.startsWith('/media/cms/');
+  return !image.src.includes('/media/cms/');
 };
 
 export const getImageSrcSet = (image: ImageAsset, format: 'avif' | 'webp') => {

@@ -2156,89 +2156,8 @@ const HeroEditor = ({
   }
 
   return (
-    <section className="workspace-panel split-editor">
-      <div className="editor-column">
-        <PanelHeader title="מסך פתיחה" text="זה הדבר הראשון שרואים באתר. כתבו כותרת פשוטה וברורה." />
-        <Toggle checked={hero.active && !hero.deletedAt} label="מסך הפתיחה פעיל" onChange={(checked) => updateSection(hero.id, { active: checked })} />
-        <div className="editor-group">
-          <div className="editor-group-heading">
-            <strong>טקסטים במסך הראשון</strong>
-            <span>כל שדה כאן מופיע במקום אחד ברור במסך הפתיחה.</span>
-          </div>
-          <Field label="טקסט קטן מעל הכותרת" help="מופיע מעל הכותרת הגדולה, ליד הקו הזהוב.">
-            <TextInput
-              value={hero.items[0] ?? ''}
-              onChange={(value) => updateSection(hero.id, patchSectionItem(hero, 0, value, 'מהרובע היהודי לביתר עילית'))}
-            />
-          </Field>
-          <Field label="כותרת גדולה" help="מופיעה במרכז המסך הראשון. אפשר לרדת שורה עם Enter.">
-            <textarea value={hero.title ?? ''} onChange={(event) => updateSection(hero.id, { title: event.target.value || undefined })} />
-          </Field>
-          <Field label="משפט מודגש מתחת לכותרת" help="זה המשפט: שבתות, מגשי אירוח ו-Travel Nis...">
-            <textarea
-              value={hero.items[1] ?? ''}
-              onChange={(event) => updateSection(hero.id, patchSectionItem(hero, 1, event.target.value, 'שבתות, מגשי אירוח ו־Travel Nis, עם אוכל מוקפד, נראות יפה ושיחה קצרה שסוגרת כיוון.'))}
-            />
-          </Field>
-          <Field label="פסקת הסבר קצרה" help="הטקסט הקטן שמתחת למשפט המודגש.">
-            <textarea value={hero.text ?? ''} onChange={(event) => updateSection(hero.id, { text: event.target.value || undefined })} />
-          </Field>
-        </div>
-        {heroBadges && (
-          <div className="editor-group">
-            <div className="editor-group-heading">
-              <strong>תגיות וכפתורי אמון</strong>
-              <span>התגיות הקטנות שמופיעות מתחת לטקסטים במסך הפתיחה.</span>
-            </div>
-            <Field label="תגיות קצרות" help="מפרידים עם | לדוגמה: שבתות | מגשי אירוח | Travel Nis">
-              <TextInput value={joinPipeList(heroBadges.items)} onChange={(value) => updateSection(heroBadges.id, { items: splitPipeList(value) })} />
-            </Field>
-          </div>
-        )}
-        {heroMedia && (
-          <div className="editor-group hero-media-editor">
-            <div className="editor-group-heading">
-              <strong>תמונות מסך פתיחה</strong>
-              <span>בחרו איזו תמונה תשמש לרקע ולכל שכבת תמונה ב-Hero.</span>
-            </div>
-            {heroMediaSlots.map((slot, index) => {
-              const selectedMediaId = heroMediaIdAt(heroMedia, index);
-              return (
-                <Field key={slot.key} label={slot.label} help={slot.help}>
-                  <select value={selectedMediaId} onChange={(event) => updateSection(heroMedia.id, patchHeroMediaId(heroMedia, index, event.target.value))}>
-                    {visibleMedia.map((media) => <option key={media.id} value={media.id}>{mediaLabel(media, content)}</option>)}
-                  </select>
-                  <MediaQuickPicker
-                    label={`בחירה מהירה - ${slot.label}`}
-                    mediaItems={visibleMedia}
-                    selectedMediaId={selectedMediaId}
-                    content={content}
-                    onSelect={(mediaId) => updateSection(heroMedia.id, patchHeroMediaId(heroMedia, index, mediaId))}
-                  />
-                  <MediaSelectionUsageNotice mediaId={selectedMediaId} content={content} currentUsage={{ kind: 'hero', id: slot.key }} />
-                </Field>
-              );
-            })}
-          </div>
-        )}
-        {heroStats.length > 0 && (
-          <div className="nested-editor-list">
-            <strong>נתוני Hero</strong>
-            <span>מופיע בשורת הנתונים שמתחת למסך הפתיחה.</span>
-            {heroStats.map((stat) => (
-              <article key={stat.id}>
-                <Field label="ערך קצר" help="לדוגמה: שבתות, אירוח קטן, Travel Nis.">
-                  <TextInput value={stat.title ?? ''} onChange={(value) => updateSection(stat.id, { title: value || undefined })} />
-                </Field>
-                <Field label="הסבר קצר" help="משפט שמסביר את הערך.">
-                  <TextInput value={stat.text ?? ''} onChange={(value) => updateSection(stat.id, { text: value || undefined })} />
-                </Field>
-              </article>
-            ))}
-          </div>
-        )}
-      </div>
-      <div className="preview-column">
+    <section className="workspace-panel split-editor split-editor-priority-preview">
+      <div className="preview-column preview-column-full-width">
         <PreviewHeader
           title="תצוגה מקדימה כמו באתר"
           text="אפשר לעבור בין מחשב למובייל ולראות איך מסך הפתיחה ירגיש ללקוח."
@@ -2246,6 +2165,117 @@ const HeroEditor = ({
           onDeviceChange={onPreviewDeviceChange}
         />
         <HeroSitePreview content={content} hero={hero} device={previewDevice} mediaById={mediaById} />
+      </div>
+      <div className="editor-column editor-column-sections">
+        <PanelHeader title="מסך פתיחה" text="כאן עורכים את המסר הראשון שהלקוח פוגש. כל אזור מחולק לפי המשמעות שלו באתר." />
+        <div className="hero-editor-status-card">
+          <div className="hero-editor-status-copy">
+            <strong>מצב המסך</strong>
+            <span>הדליקו או כבו את מסך הפתיחה, ואז ערכו רק את הקבוצה שאתם צריכים.</span>
+          </div>
+          <Toggle checked={hero.active && !hero.deletedAt} label="מסך הפתיחה פעיל" onChange={(checked) => updateSection(hero.id, { active: checked })} />
+        </div>
+
+        <details className="editor-section-card" open>
+          <summary>
+            <div>
+              <strong>כותרת וטקסט ראשי</strong>
+              <span>המסר העליון, הכותרת הגדולה והטקסט שמסביר את ההבטחה.</span>
+            </div>
+          </summary>
+          <div className="editor-section-body">
+            <Field label="טקסט קטן מעל הכותרת" help="מופיע מעל הכותרת הגדולה, ליד הקו הזהוב.">
+              <TextInput
+                value={hero.items[0] ?? ''}
+                onChange={(value) => updateSection(hero.id, patchSectionItem(hero, 0, value, 'מהרובע היהודי לביתר עילית'))}
+              />
+            </Field>
+            <Field label="כותרת גדולה" help="מופיעה במרכז המסך הראשון. אפשר לרדת שורה עם Enter.">
+              <textarea value={hero.title ?? ''} onChange={(event) => updateSection(hero.id, { title: event.target.value || undefined })} />
+            </Field>
+            <Field label="משפט מודגש מתחת לכותרת" help="זה המשפט שבולט מיד מתחת לכותרת.">
+              <textarea
+                value={hero.items[1] ?? ''}
+                onChange={(event) => updateSection(hero.id, patchSectionItem(hero, 1, event.target.value, 'שבתות, מגשי אירוח ו־Travel Nis, עם אוכל מוקפד, נראות יפה ושיחה קצרה שסוגרת כיוון.'))}
+              />
+            </Field>
+            <Field label="פסקת הסבר קצרה" help="הטקסט הקטן שמתחת למשפט המודגש.">
+              <textarea value={hero.text ?? ''} onChange={(event) => updateSection(hero.id, { text: event.target.value || undefined })} />
+            </Field>
+          </div>
+        </details>
+
+        {heroBadges && (
+          <details className="editor-section-card" open>
+            <summary>
+              <div>
+                <strong>תגיות קצרות</strong>
+                <span>הצ'יפים הקטנים שמופיעים מתחת לכפתורים ומחזקים את ההצעה.</span>
+              </div>
+            </summary>
+            <div className="editor-section-body">
+              <Field label="תגיות קצרות" help="מפרידים עם | לדוגמה: שבתות | מגשי אירוח | Travel Nis">
+                <TextInput value={joinPipeList(heroBadges.items)} onChange={(value) => updateSection(heroBadges.id, { items: splitPipeList(value) })} />
+              </Field>
+            </div>
+          </details>
+        )}
+
+        {heroMedia && (
+          <details className="editor-section-card hero-media-editor" open>
+            <summary>
+              <div>
+                <strong>תמונות מסך פתיחה</strong>
+                <span>הרקע והתמונות שבונות את התחושה הוויזואלית של המסך הראשון.</span>
+              </div>
+            </summary>
+            <div className="editor-section-body">
+              {heroMediaSlots.map((slot, index) => {
+                const selectedMediaId = heroMediaIdAt(heroMedia, index);
+                return (
+                  <Field key={slot.key} label={slot.label} help={slot.help}>
+                    <select value={selectedMediaId} onChange={(event) => updateSection(heroMedia.id, patchHeroMediaId(heroMedia, index, event.target.value))}>
+                      {visibleMedia.map((media) => <option key={media.id} value={media.id}>{mediaLabel(media, content)}</option>)}
+                    </select>
+                    <MediaQuickPicker
+                      label={`בחירה מהירה - ${slot.label}`}
+                      mediaItems={visibleMedia}
+                      selectedMediaId={selectedMediaId}
+                      content={content}
+                      onSelect={(mediaId) => updateSection(heroMedia.id, patchHeroMediaId(heroMedia, index, mediaId))}
+                    />
+                    <MediaSelectionUsageNotice mediaId={selectedMediaId} content={content} currentUsage={{ kind: 'hero', id: slot.key }} />
+                  </Field>
+                );
+              })}
+            </div>
+          </details>
+        )}
+
+        {heroStats.length > 0 && (
+          <details className="editor-section-card editor-section-card-advanced" open>
+            <summary>
+              <div>
+                <strong>נתוני אירוח שמופיעים במסך</strong>
+                <span>הכרטיסים הקצרים שמופיעים בתוך מסך הפתיחה עצמו, מתחת לתגיות.</span>
+              </div>
+            </summary>
+            <div className="editor-section-body">
+              <div className="nested-editor-list">
+                {heroStats.map((stat) => (
+                  <article key={stat.id}>
+                    <Field label="ערך קצר" help="לדוגמה: שבתות, אירוח קטן, Travel Nis.">
+                      <TextInput value={stat.title ?? ''} onChange={(value) => updateSection(stat.id, { title: value || undefined })} />
+                    </Field>
+                    <Field label="הסבר קצר" help="משפט שמסביר את הערך.">
+                      <TextInput value={stat.text ?? ''} onChange={(value) => updateSection(stat.id, { text: value || undefined })} />
+                    </Field>
+                  </article>
+                ))}
+              </div>
+            </div>
+          </details>
+        )}
       </div>
     </section>
   );
@@ -2542,6 +2572,7 @@ const HeroSitePreview = ({
   readonly mediaById: ReadonlyMap<string, ImageAssetRecord>;
 }) => {
   const heroWhatsapp = buildPreviewWhatsappLink(content.settings.whatsappBase, `שלום Nis, אשמח לשמוע פרטים על ${hero.items[1] || hero.title || 'קייטרינג בוטיק לאירוח'}.`);
+
   return (
     <ActualSiteSectionFrame content={content} mediaById={mediaById} device={device}>
       <HeroSection heroWhatsapp={heroWhatsapp} />
