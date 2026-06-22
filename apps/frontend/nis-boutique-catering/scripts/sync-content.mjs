@@ -71,6 +71,7 @@ const readRemoteSnapshot = async (accessToken) => {
     },
     media: rowsToObjects(mediaRows).map((row) => ({
       id: row.id,
+      title: row.title || undefined,
       src: row.src,
       width: Number(row.width),
       height: Number(row.height),

@@ -84,10 +84,11 @@ await Promise.all([
     ['seoTitle', snapshot.settings.seoTitle ?? ''],
     ['seoDescription', snapshot.settings.seoDescription ?? ''],
   ]),
-  putSheetValues('media!A:I', [
-    ['id', 'src', 'width', 'height', 'sizes', 'responsive', 'driveFileId', 'usageNotes', 'deletedAt'],
+  putSheetValues('media!A:J', [
+    ['id', 'title', 'src', 'width', 'height', 'sizes', 'responsive', 'driveFileId', 'usageNotes', 'deletedAt'],
     ...snapshot.media.map((item) => [
       item.id,
+      item.title ?? '',
       item.src,
       item.width,
       item.height,

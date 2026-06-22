@@ -15,6 +15,7 @@ export const demoContent: ContentSnapshot = {
   media: [
     {
       id: 'hosting-table-overview',
+      title: 'שולחן אירוח מוכן',
       src: '/media/food/events/quiche-tart-clean.webp',
       width: 721,
       height: 1280,
@@ -24,6 +25,7 @@ export const demoContent: ContentSnapshot = {
     },
     {
       id: 'mini-burger-trays',
+      title: 'מיני לחמניות אישיות',
       src: '/media/food/events/mini-burger-trays.webp',
       width: 899,
       height: 1599,

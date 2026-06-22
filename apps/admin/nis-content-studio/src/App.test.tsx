@@ -19,7 +19,8 @@ describe('Content Studio', () => {
 
     expect(screen.getByRole('heading', { name: 'Nis Studio' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'כניסה עם Google' })).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /תמונות וגלריה/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /ניהול תמונות/ })).not.toBeInTheDocument();
+    expect(screen.queryByText('תמונות וגלריה')).not.toBeInTheDocument();
     expect(screen.queryByDisplayValue('מיני לחמניות אישיות')).not.toBeInTheDocument();
   });
 

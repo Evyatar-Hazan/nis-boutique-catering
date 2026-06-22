@@ -106,7 +106,7 @@ const numberOrFallback = (value: string | undefined, fallback: number) => {
 export const readContentFromSheets = async (accessToken: string): Promise<ContentSnapshot> => {
   const [settingsRows, mediaRows, galleryRows, servicesRows, sectionsRows] = await Promise.all([
     fetchSheetValues(accessToken, 'site_settings!A:B'),
-    fetchSheetValues(accessToken, 'media!A:I'),
+    fetchSheetValues(accessToken, 'media!A:J'),
     fetchSheetValues(accessToken, 'gallery!A:K'),
     fetchSheetValues(accessToken, 'services!A:M'),
     fetchSheetValues(accessToken, 'sections!A:H'),
@@ -115,6 +115,7 @@ export const readContentFromSheets = async (accessToken: string): Promise<Conten
   const settings = Object.fromEntries(settingsRows.filter((row) => row[0]).map(([key, value]) => [key, value ?? '']));
   const media = rowsToObjects(mediaRows).map((row): ImageAssetRecord => ({
     id: row.id,
+    title: row.title || undefined,
     src: row.src,
     width: Number(row.width),
     height: Number(row.height),
@@ -211,9 +212,9 @@ export const saveContentToSheets = async (accessToken: string, snapshot: Content
       ['seoTitle', valid.settings.seoTitle ?? ''],
       ['seoDescription', valid.settings.seoDescription ?? ''],
     ]),
-    putSheetValues(accessToken, 'media!A:I', [
-      ['id', 'src', 'width', 'height', 'sizes', 'responsive', 'driveFileId', 'usageNotes', 'deletedAt'],
-      ...valid.media.map((item) => [item.id, item.src, item.width, item.height, item.sizes ?? '', item.responsive, item.driveFileId ?? '', item.usageNotes ?? '', item.deletedAt ?? '']),
+    putSheetValues(accessToken, 'media!A:J', [
+      ['id', 'title', 'src', 'width', 'height', 'sizes', 'responsive', 'driveFileId', 'usageNotes', 'deletedAt'],
+      ...valid.media.map((item) => [item.id, item.title ?? '', item.src, item.width, item.height, item.sizes ?? '', item.responsive, item.driveFileId ?? '', item.usageNotes ?? '', item.deletedAt ?? '']),
     ]),
     putSheetValues(accessToken, 'gallery!A:K', [
       ['id', 'title', 'alt', 'category', 'order', 'active', 'tall', 'mediaId', 'driveFileId', 'notes', 'deletedAt'],

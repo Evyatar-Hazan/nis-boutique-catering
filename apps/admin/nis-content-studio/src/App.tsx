@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState, type ChangeEvent, type CSSProperties, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useState, type ChangeEvent, type CSSProperties, type DragEvent, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import {
   ArrowDown,
@@ -144,6 +144,17 @@ type MediaUsageEntry = {
   readonly active: boolean;
 };
 
+type MediaLibraryFilter = 'all' | 'used' | 'unused' | 'missing-drive' | 'archived';
+
+type SiteAreaDefinition = {
+  readonly id: ActiveView;
+  readonly title: string;
+  readonly location: string;
+  readonly help: string;
+  readonly icon: ReactNode;
+  readonly editorView?: ActiveView;
+};
+
 type Session = {
   readonly accessToken: string;
   readonly email: string;
@@ -247,6 +258,14 @@ const categoryLabels: Readonly<Record<GalleryItemRecord['category'], string>> = 
   salads: 'סלטים',
   coffee: 'קפה',
   fish: 'דגים',
+};
+
+const mediaLibraryFilterLabels: Readonly<Record<MediaLibraryFilter, string>> = {
+  all: 'הכל',
+  used: 'בשימוש',
+  unused: 'לא בשימוש',
+  'missing-drive': 'חסר Drive',
+  archived: 'בארכיון',
 };
 
 const sectionGroupLabels: Readonly<Record<string, string>> = {
@@ -441,13 +460,7 @@ const getManagedCopySection = (content: ContentSnapshot, id: string) =>
 const normalizeMediaId = (value: string) =>
   value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'media-new';
 
-const areaDefinitions: readonly {
-  readonly id: ActiveView;
-  readonly title: string;
-  readonly location: string;
-  readonly help: string;
-  readonly icon: ReactNode;
-}[] = [
+const areaDefinitions: readonly SiteAreaDefinition[] = [
   {
     id: 'hero',
     title: 'מסך פתיחה',
@@ -491,10 +504,10 @@ const areaDefinitions: readonly {
     icon: <Sparkles aria-hidden="true" />,
   },
   {
-    id: 'gallery',
-    title: 'תמונות וגלריה',
+    id: 'media',
+    title: 'גלריה באתר',
     location: 'אחרי כרטיסי השירותים ולפני הווידאו',
-    help: 'כאן מנהלים גם את מאגר התמונות וגם את הגלריה הציבורית במקום אחד.',
+    help: 'כאן מנהלים את סדר התמונות, הכותרות והקטגוריות שהלקוח רואה בגלריה הציבורית.',
     icon: <Images aria-hidden="true" />,
   },
   {
@@ -569,8 +582,8 @@ const studioSections: readonly {
   },
   {
     id: 'gallery',
-    label: 'תמונות וגלריה',
-    help: 'מאגר התמונות בדרייב ומה מתוכן מוצג באתר.',
+    label: 'ניהול תמונות',
+    help: 'כל התמונות הזמינות, פרטי הקובץ, העלאה ל-Drive ושימושים באתר.',
     icon: <Images aria-hidden="true" />,
   },
   {
@@ -593,6 +606,11 @@ export const App = () => {
   const [status, setStatus] = useState('התחברו כדי לנהל את התוכן האמיתי של האתר.');
   const [isBusy, setIsBusy] = useState(false);
   const [query, setQuery] = useState('');
+  const [siteGalleryQuery, setSiteGalleryQuery] = useState('');
+  const [selectedMediaId, setSelectedMediaId] = useState<string | null>(null);
+  const [selectedMediaIds, setSelectedMediaIds] = useState<readonly string[]>([]);
+  const [mediaFilter, setMediaFilter] = useState<MediaLibraryFilter>('all');
+  const [isImageDropActive, setIsImageDropActive] = useState(false);
 
   const mediaById = useMemo(() => new Map(content.media.map((media) => [media.id, media])), [content.media]);
   const validation = useMemo(() => contentSnapshotSchema.safeParse(content), [content]);
@@ -608,12 +626,52 @@ export const App = () => {
     ...content.media,
   ].filter((item) => item.deletedAt).length;
   const driveMediaCount = visibleMedia.filter((media) => media.driveFileId).length;
+  const filteredMedia = useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase();
+    const byUsageTitles = (mediaId: string) => getMediaUsage(mediaId, content).map((usage) => usage.title).join(' ');
+
+    return [...content.media]
+      .filter((media) => {
+        const usageCount = getMediaUsage(media.id, content).length;
+        const matchesFilter = (
+          mediaFilter === 'all'
+          || (mediaFilter === 'used' && usageCount > 0 && !media.deletedAt)
+          || (mediaFilter === 'unused' && usageCount === 0 && !media.deletedAt)
+          || (mediaFilter === 'missing-drive' && !media.driveFileId && !media.deletedAt)
+          || (mediaFilter === 'archived' && Boolean(media.deletedAt))
+        );
+        if (!matchesFilter) {
+          return false;
+        }
+        if (!normalizedQuery) {
+          return true;
+        }
+
+        return [
+          media.id,
+          media.usageNotes ?? '',
+          mediaStatus(media, content),
+          byUsageTitles(media.id),
+        ].join(' ').toLowerCase().includes(normalizedQuery);
+      })
+      .sort((left, right) => {
+        if (Boolean(left.deletedAt) !== Boolean(right.deletedAt)) {
+          return left.deletedAt ? 1 : -1;
+        }
+        return mediaLabel(left, content).localeCompare(mediaLabel(right, content), 'he');
+      });
+  }, [content, mediaFilter, query]);
+  const selectedMedia = selectedMediaId ? content.media.find((media) => media.id === selectedMediaId) ?? null : null;
+  const activeSelectedMedia = selectedMedia && filteredMedia.some((media) => media.id === selectedMedia.id)
+    ? selectedMedia
+    : filteredMedia[0] ?? null;
+  const bulkSelectedMedia = content.media.filter((media) => selectedMediaIds.includes(media.id));
   const filteredGallery = useMemo(
     () =>
       content.gallery
-        .filter((item) => `${item.title} ${item.alt} ${item.category}`.toLowerCase().includes(query.toLowerCase()))
+        .filter((item) => `${item.title} ${item.alt} ${item.category}`.toLowerCase().includes(siteGalleryQuery.toLowerCase()))
         .sort((left, right) => left.order - right.order),
-    [content.gallery, query],
+    [content.gallery, siteGalleryQuery],
   );
   const markDraft = () => {
     if (authState === 'authorized') {
@@ -623,20 +681,22 @@ export const App = () => {
     }
   };
 
+  const buildNextContent = (current: ContentSnapshot, updater: (snapshot: ContentSnapshot) => ContentSnapshot) => {
+    const next = updater(current);
+    const siteVersion = nextContentVersion();
+    return {
+      ...next,
+      updatedAt: new Date().toISOString(),
+      version: siteVersion,
+      settings: {
+        ...next.settings,
+        siteVersion,
+      },
+    };
+  };
+
   const updateContent = (updater: (current: ContentSnapshot) => ContentSnapshot) => {
-    setContent((current) => {
-      const next = updater(current);
-      const siteVersion = nextContentVersion();
-      return {
-        ...next,
-        updatedAt: new Date().toISOString(),
-        version: siteVersion,
-        settings: {
-          ...next.settings,
-          siteVersion,
-        },
-      };
-    });
+    setContent((current) => buildNextContent(current, updater));
     markDraft();
   };
 
@@ -868,6 +928,31 @@ export const App = () => {
     updateContent((current) => ({ ...current, media: updateById(current.media, id, patch) }));
   };
 
+  const saveMediaTitle = (id: string, title: string) => {
+    const trimmedTitle = title.trim();
+    if (!trimmedTitle) {
+      return;
+    }
+
+    void runTask('שומרים את שם התמונה', async () => {
+      if (!session) {
+        throw new Error('צריך להתחבר לפני שמירה.');
+      }
+
+      const nextSnapshot = buildNextContent(content, (current) => ({
+        ...current,
+        media: updateById(current.media, id, { title: trimmedTitle }),
+      }));
+
+      setContent(nextSnapshot);
+      setPublishState('saving');
+      const accessToken = await getFreshAccessToken();
+      await saveContentToSheets(accessToken, nextSnapshot);
+      setPublishState('draft');
+      setStatus('שם התמונה נשמר ב-Google Sheets.');
+    });
+  };
+
   const renameMedia = (id: string, nextId: string) => {
     const cleanId = normalizeMediaId(nextId);
     updateContent((current) => ({
@@ -881,6 +966,7 @@ export const App = () => {
           : section
       )),
     }));
+    setSelectedMediaId(cleanId);
   };
 
   const updateService = (id: string, patch: Partial<ServiceRecord>) => {
@@ -911,6 +997,38 @@ export const App = () => {
     updateMedia(id, { deletedAt: archiveDate() });
   };
   const restoreMedia = (id: string) => updateMedia(id, { deletedAt: undefined });
+  const toggleSelectedMedia = (mediaId: string) => {
+    setSelectedMediaIds((current) => (current.includes(mediaId) ? current.filter((id) => id !== mediaId) : [...current, mediaId]));
+  };
+  const toggleSelectAllVisibleMedia = () => {
+    const visibleIds = filteredMedia.map((media) => media.id);
+    const allSelected = visibleIds.length > 0 && visibleIds.every((mediaId) => selectedMediaIds.includes(mediaId));
+    setSelectedMediaIds(allSelected ? [] : visibleIds);
+  };
+  const archiveSelectedMedia = () => {
+    const targetIds = bulkSelectedMedia.filter((media) => !media.deletedAt).map((media) => media.id);
+    if (targetIds.length === 0) {
+      return;
+    }
+
+    updateContent((current) => ({
+      ...current,
+      media: current.media.map((media) => (targetIds.includes(media.id) ? { ...media, deletedAt: archiveDate() } : media)),
+    }));
+    setSelectedMediaIds([]);
+  };
+  const restoreSelectedMedia = () => {
+    const targetIds = bulkSelectedMedia.filter((media) => media.deletedAt).map((media) => media.id);
+    if (targetIds.length === 0) {
+      return;
+    }
+
+    updateContent((current) => ({
+      ...current,
+      media: current.media.map((media) => (targetIds.includes(media.id) ? { ...media, deletedAt: undefined } : media)),
+    }));
+    setSelectedMediaIds([]);
+  };
 
   const moveGalleryItem = (id: string, direction: -1 | 1) => {
     updateContent((current) => {
@@ -1065,9 +1183,8 @@ export const App = () => {
     }));
   };
 
-  const handleUpload = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file || !session) {
+  const uploadMediaFile = (file: File) => {
+    if (!session) {
       return;
     }
 
@@ -1081,6 +1198,7 @@ export const App = () => {
           ...current.media,
           {
             id,
+            title: file.name.replace(/\.[^.]+$/, ''),
             src: cmsSrcFor(id),
             width: uploaded.imageMediaMetadata?.width ?? 1200,
             height: uploaded.imageMediaMetadata?.height ?? 1600,
@@ -1091,8 +1209,30 @@ export const App = () => {
           },
         ],
       }));
-      setStatus('התמונה עלתה ל-Drive. חברו אותה לגלריה או לשירות ואז לחצו "עדכן אתר".');
+      setSelectedMediaId(id);
+      setStatus('התמונה עלתה ל-Drive. עכשיו אפשר לשייך אותה לאזור רלוונטי באתר מתוך מסך ניהול האתר.');
     });
+  };
+
+  const handleUpload = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    uploadMediaFile(file);
+    event.target.value = '';
+  };
+
+  const handleImageDrop = (event: DragEvent<HTMLElement>) => {
+    event.preventDefault();
+    setIsImageDropActive(false);
+    const file = event.dataTransfer.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    uploadMediaFile(file);
   };
 
   const handlePickDriveFile = (mediaId: string) => {
@@ -1182,7 +1322,15 @@ export const App = () => {
         <header className="topbar">
           <div>
             <p className="kicker">ניהול אתר Nis</p>
-            <h2>{activeView === 'site-map' ? 'ניהול מלא של האתר' : activeView === 'contact' ? 'מטה דאטה ופרסום' : areaDefinitions.find((area) => area.id === activeView)?.title ?? 'תוכן האתר'}</h2>
+            <h2>{
+              activeView === 'site-map'
+                ? 'ניהול מלא של האתר'
+                : activeView === 'gallery'
+                  ? 'ניהול תמונות'
+                  : activeView === 'contact'
+                    ? 'מטה דאטה ופרסום'
+                    : areaDefinitions.find((area) => area.id === activeView)?.title ?? 'תוכן האתר'
+            }</h2>
             <p className="topbar-help">כל שינוי מקבל גרסה חדשה ונשמר כטיוטה. רק הכפתור "עדכן אתר" מפרסם לאתר החי.</p>
           </div>
           <div className="topbar-actions">
@@ -1220,8 +1368,9 @@ export const App = () => {
         />
 
         <section className="overview-strip" aria-label="מצב התוכן">
-          <Metric label="תמונות פעילות בגלריה" value={String(activeGalleryCount)} />
+          <Metric label="תמונות בספרייה" value={String(visibleMedia.length)} />
           <Metric label="תמונות מחוברות ל-Drive" value={String(driveMediaCount)} />
+          <Metric label="תמונות פעילות בגלריה" value={String(activeGalleryCount)} />
           <Metric label="שירותים באתר" value={String(content.services.filter((service) => !service.deletedAt).length)} />
           <Metric label="פריטים בארכיון" value={String(archivedCount)} />
           <Metric label="גרסת תוכן" value={content.settings.siteVersion || content.version} />
@@ -1418,187 +1567,63 @@ export const App = () => {
         {activeView === 'gallery' && (
           <section className="workspace-panel">
             <PanelHeader
-              title="תמונות וגלריה"
-              text="זה מסך אחד: קודם מנהלים את התמונות שמופיעות בגלריה, ובהמשך אותו מסך מציג את כל מאגר התמונות מדרייב."
+              title="ניהול תמונות"
+              text="כאן מנהלים את כל התמונות הזמינות: מעלים, בודקים פרטים, מחליפים מקור, ומבינים איפה כל תמונה מופיעה באתר."
               action={
-                <div className="action-row">
-                  <button className="compact-button" onClick={normalizeCmsMetadata}>
-                    <Wand2 aria-hidden="true" />
-                    ניקוי מדיה
-                  </button>
-                  <button className="compact-button" onClick={() => addGalleryItem()}>
-                    <ImagePlus aria-hidden="true" />
-                    הוספת תמונה לגלריה
-                  </button>
-                </div>
+                <button className="compact-button" onClick={normalizeCmsMetadata}>
+                  <Wand2 aria-hidden="true" />
+                  ניקוי מדיה
+                </button>
               }
             />
-            <PreviewHeader
-              title="תצוגה מקדימה כמו באתר"
-              text="כך התמונות הראשונות בגלריה יופיעו במחשב או במובייל אחרי פרסום."
-              device={previewDevice}
-              onDeviceChange={setPreviewDevice}
+            <ImageUploadDropzone
+              disabled={!canUseGoogle}
+              isActive={isImageDropActive}
+              onDragStateChange={setIsImageDropActive}
+              onDrop={handleImageDrop}
+              onUpload={handleUpload}
             />
-              <GallerySitePreview content={content} mediaById={mediaById} device={previewDevice} />
-            <label className="search-box">
-              <Search aria-hidden="true" />
-              <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="חיפוש לפי שם, תיאור או קטגוריה" />
-            </label>
-            <div className="subsection-heading gallery-area-heading is-site-gallery">
-              <div>
-                <p className="kicker">גלריה באתר</p>
-                <h3>התמונות שהלקוח רואה בפועל</h3>
-                <p>כל פריט כאן הוא מקום בגלריה הציבורית. אפשר לשנות סדר, שם, קטגוריה, תיאור ותמונה מחוברת.</p>
+            <ImagesLibraryToolbar
+              query={query}
+              onQueryChange={setQuery}
+              totalCount={visibleMedia.length}
+              filteredCount={filteredMedia.length}
+              filter={mediaFilter}
+              onFilterChange={setMediaFilter}
+              selectedCount={bulkSelectedMedia.length}
+              areAllVisibleSelected={filteredMedia.length > 0 && filteredMedia.every((media) => selectedMediaIds.includes(media.id))}
+              onToggleSelectAll={toggleSelectAllVisibleMedia}
+              onArchiveSelected={archiveSelectedMedia}
+              onRestoreSelected={restoreSelectedMedia}
+            />
+            <div className="images-library-layout">
+              <div className="images-grid-scroll-pane">
+                <ImagesGrid
+                  items={filteredMedia}
+                  content={content}
+                  accessToken={session.accessToken}
+                  selectedMediaId={activeSelectedMedia?.id ?? null}
+                  selectedMediaIds={selectedMediaIds}
+                  onSelect={setSelectedMediaId}
+                  onToggleSelect={toggleSelectedMedia}
+                />
               </div>
-              <div className="area-status-pill">
-                <Images aria-hidden="true" />
-                <span>{filteredGallery.length} פריטים לעריכה</span>
+              <div className="image-details-scroll-pane">
+                <ImageDetailsPanel
+                  key={activeSelectedMedia?.id ?? 'empty-image-details'}
+                  media={activeSelectedMedia}
+                  content={content}
+                  accessToken={session.accessToken}
+                  canUseGoogle={canUseGoogle}
+                  onRename={renameMedia}
+                  onSaveTitle={saveMediaTitle}
+                  onUpdate={updateMedia}
+                  onArchive={archiveMedia}
+                  onRestore={restoreMedia}
+                  onPickDriveFile={handlePickDriveFile}
+                  onNavigate={setActiveView}
+                />
               </div>
-            </div>
-            <div className="gallery-editor-grid">
-              {filteredGallery.map((item) => {
-                const media = mediaById.get(item.mediaId);
-                return (
-                  <article className={item.deletedAt ? 'gallery-edit-card is-archived' : item.active ? 'gallery-edit-card' : 'gallery-edit-card is-muted'} key={item.id}>
-                    <DrivePreviewImage media={media} accessToken={session.accessToken} />
-                    <div className="card-heading">
-                      <div>
-                        <p className="kicker">תמונה מספר {item.order}</p>
-                        <h3>{item.title}</h3>
-                      </div>
-                      <div className="row-actions">
-                        <button type="button" className="icon-button" onClick={() => moveGalleryItem(item.id, -1)} aria-label="העלאה למעלה">
-                          <ArrowUp aria-hidden="true" />
-                        </button>
-                        <button type="button" className="icon-button" onClick={() => moveGalleryItem(item.id, 1)} aria-label="הורדה למטה">
-                          <ArrowDown aria-hidden="true" />
-                        </button>
-                        <ItemActions
-                          isArchived={Boolean(item.deletedAt)}
-                          onDuplicate={() => duplicateGalleryItem(item)}
-                          onArchive={() => archiveGalleryItem(item.id)}
-                          onRestore={() => restoreGalleryItem(item.id)}
-                        />
-                      </div>
-                    </div>
-                    <Field label="שם פנימי לתמונה" help="עוזר לזהות את התמונה בסטודיו.">
-                      <TextInput value={item.title} onChange={(value) => updateGallery(item.id, { title: value })} />
-                    </Field>
-                    <Field label="תיאור נגיש לתמונה" help="לא תמיד מוצג באתר, אבל חשוב לנגישות ול-SEO.">
-                      <TextInput value={item.alt} onChange={(value) => updateGallery(item.id, { alt: value })} />
-                    </Field>
-                    <div className="inline-grid">
-                      <Field label="קטגוריה באתר" help="באיזה פילטר בגלריה התמונה תופיע.">
-                        <select value={item.category} onChange={(event) => updateGallery(item.id, { category: event.target.value as GalleryItemRecord['category'] })}>
-                          {editableCategories.map((category) => <option key={category} value={category}>{categoryLabels[category]}</option>)}
-                        </select>
-                      </Field>
-                      <Field label="תמונה מחוברת" help="איזה מקור מדיה ישמש לפריט הזה.">
-                        <select value={item.mediaId} onChange={(event) => updateGallery(item.id, { mediaId: event.target.value })}>
-                          {visibleMedia.map((mediaItem) => <option key={mediaItem.id} value={mediaItem.id}>{mediaLabel(mediaItem, content)}</option>)}
-                        </select>
-                      </Field>
-                    </div>
-                    <MediaQuickPicker
-                      label="בחירה מהירה לתמונת הגלריה"
-                      mediaItems={visibleMedia}
-                      selectedMediaId={item.mediaId}
-                      content={content}
-                      onSelect={(mediaId) => updateGallery(item.id, { mediaId })}
-                    />
-                    <MediaSelectionUsageNotice
-                      mediaId={item.mediaId}
-                      content={content}
-                      currentUsage={{ kind: 'gallery', id: item.id }}
-                    />
-                    <div className="toggle-row">
-                      <Toggle checked={item.active} label="מוצג באתר" onChange={(checked) => updateGallery(item.id, { active: checked })} />
-                      <Toggle checked={item.tall} label="תמונה גבוהה" onChange={(checked) => updateGallery(item.id, { tall: checked })} />
-                    </div>
-                  </article>
-                );
-              })}
-            </div>
-            <div className="subsection-heading gallery-area-heading is-media-library">
-              <div>
-                <p className="kicker">ספריית תמונות</p>
-                <h3>כל מקורות התמונות, גם כאלה שלא מוצגים בגלריה</h3>
-                <p>כאן מנהלים את מקור התמונה בדרייב ואת מפת השימושים. כדי להציג תמונה באתר, חברו אותה לפריט באזור “גלריה באתר”.</p>
-              </div>
-              <div className="area-heading-actions">
-                <div className="area-status-pill">
-                  <Cloud aria-hidden="true" />
-                  <span>{content.media.filter((media) => !media.deletedAt).length} תמונות בספרייה</span>
-                </div>
-                <label className="compact-button file-button">
-                  <Upload aria-hidden="true" />
-                  העלאה ל-Drive
-                  <input type="file" accept="image/*" onChange={handleUpload} disabled={!canUseGoogle} />
-                </label>
-              </div>
-            </div>
-            <div className="media-grid compact-media-grid">
-              {content.media.map((media) => {
-                const galleryItem = getGalleryItemForMedia(media.id, content);
-                const galleryButtonLabel = galleryItem ? 'כבר בגלריה' : 'הוסף לגלריה';
-
-                return (
-                  <article className={media.deletedAt ? 'media-card is-archived' : 'media-card'} key={media.id}>
-                    <DrivePreviewImage media={media} accessToken={session.accessToken} />
-                    <div className="card-heading">
-                      <div>
-                        <p className="kicker">{mediaStatus(media, content)}</p>
-                        <h3>{mediaLabel(media, content)}</h3>
-                      </div>
-                      <ItemActions
-                        isArchived={Boolean(media.deletedAt)}
-                        onDuplicate={undefined}
-                        onArchive={() => archiveMedia(media.id)}
-                        onRestore={() => restoreMedia(media.id)}
-                      />
-                    </div>
-                    <div className="usage-list">
-                      <strong>איפה זה משפיע באתר</strong>
-                      <MediaUsageList mediaId={media.id} content={content} />
-                    </div>
-                    <MediaRiskNotice mediaId={media.id} content={content} />
-                    <div className="media-quick-actions">
-                      <button
-                        className={galleryItem ? 'ghost-button is-confirmed' : 'ghost-button'}
-                        onClick={() => addGalleryItem(media.id)}
-                        disabled={Boolean(media.deletedAt) || Boolean(galleryItem)}
-                        title={galleryItem ? `כבר מחובר לפריט "${galleryItem.title}"` : undefined}
-                      >
-                        {galleryButtonLabel}
-                      </button>
-                      <button className="ghost-button" onClick={() => handlePickDriveFile(media.id)} disabled={!canUseGoogle}>החלף מקור מדרייב</button>
-                    </div>
-                    <details className="technical-details">
-                      <summary>פרטים מתקדמים</summary>
-                      <Field label="שם תמונה בסטודיו" help="שם קצר באנגלית שמזהה את התמונה במערכת.">
-                        <TextInput value={media.id} onChange={(value) => renameMedia(media.id, value)} />
-                      </Field>
-                      <div className="inline-grid">
-                        <Field label="רוחב" help="נלקח מהתמונה המקורית בדרייב.">
-                          <NumberInput value={media.width} onChange={(value) => updateMedia(media.id, { width: value })} />
-                        </Field>
-                        <Field label="גובה" help="נלקח מהתמונה המקורית בדרייב.">
-                          <NumberInput value={media.height} onChange={(value) => updateMedia(media.id, { height: value })} />
-                        </Field>
-                      </div>
-                      <Field label="הערות שימוש" help="הסבר פנימי איפה כדאי להשתמש בתמונה.">
-                        <TextInput value={media.usageNotes ?? ''} onChange={(value) => updateMedia(media.id, { usageNotes: value })} />
-                      </Field>
-                      <Field label="כתובת באתר אחרי פרסום" help="נוצרת אוטומטית מתוך Drive בזמן build.">
-                        <TextInput value={media.src} onChange={(value) => updateMedia(media.id, { src: value })} />
-                      </Field>
-                      <Field label="מקור Drive" help="מזהה הקובץ בדרייב.">
-                        <TextInput value={media.driveFileId ?? ''} onChange={(value) => updateMedia(media.id, { driveFileId: value || undefined })} />
-                      </Field>
-                    </details>
-                  </article>
-                );
-              })}
             </div>
           </section>
         )}
@@ -1773,75 +1798,97 @@ export const App = () => {
         {activeView === 'media' && (
           <section className="workspace-panel">
             <PanelHeader
-              title="תמונות בדרייב"
-              text="Drive הוא מקור העריכה. כאן רואים כל תמונה, איפה היא משמשת, ומה יקרה לה אחרי עדכון האתר."
+              title="גלריה באתר"
+              text="כאן עורכים את מה שהלקוח רואה בגלריה הציבורית: סדר, שם, תיאור, קטגוריה ובחירת התמונה שמחוברת לכל פריט."
               action={
-                <label className="compact-button file-button">
-                  <Upload aria-hidden="true" />
-                  העלאה ל-Drive
-                  <input type="file" accept="image/*" onChange={handleUpload} disabled={!canUseGoogle} />
-                </label>
+                <button className="compact-button" onClick={() => addGalleryItem()}>
+                  <ImagePlus aria-hidden="true" />
+                  הוספת פריט לגלריה
+                </button>
               }
             />
-            <div className="media-grid">
-              {content.media.map((media) => {
-                const galleryItem = getGalleryItemForMedia(media.id, content);
-                const galleryButtonLabel = galleryItem ? 'כבר בגלריה' : 'הוסף לגלריה';
-
+            <PreviewHeader
+              title="תצוגה מקדימה כמו באתר"
+              text="כך התמונות הראשונות בגלריה יופיעו במחשב או במובייל אחרי פרסום."
+              device={previewDevice}
+              onDeviceChange={setPreviewDevice}
+            />
+            <GallerySitePreview content={content} mediaById={mediaById} device={previewDevice} />
+            <label className="search-box">
+              <Search aria-hidden="true" />
+              <input value={siteGalleryQuery} onChange={(event) => setSiteGalleryQuery(event.target.value)} placeholder="חיפוש לפי שם, תיאור או קטגוריה" />
+            </label>
+            <div className="subsection-heading gallery-area-heading is-site-gallery">
+              <div>
+                <p className="kicker">גלריה ציבורית</p>
+                <h3>התמונות שהלקוח רואה בפועל</h3>
+                <p>כל פריט כאן הוא מקום בגלריה הציבורית. אפשר לשנות סדר, שם, קטגוריה, תיאור ותמונה מחוברת.</p>
+              </div>
+              <div className="area-status-pill">
+                <Images aria-hidden="true" />
+                <span>{filteredGallery.length} פריטים לעריכה</span>
+              </div>
+            </div>
+            <div className="gallery-editor-grid">
+              {filteredGallery.map((item) => {
+                const media = mediaById.get(item.mediaId);
                 return (
-                  <article className={media.deletedAt ? 'media-card is-archived' : 'media-card'} key={media.id}>
+                  <article className={item.deletedAt ? 'gallery-edit-card is-archived' : item.active ? 'gallery-edit-card' : 'gallery-edit-card is-muted'} key={item.id}>
                     <DrivePreviewImage media={media} accessToken={session.accessToken} />
                     <div className="card-heading">
                       <div>
-                        <p className="kicker">{mediaStatus(media, content)}</p>
-                        <h3>{mediaLabel(media, content)}</h3>
+                        <p className="kicker">תמונה מספר {item.order}</p>
+                        <h3>{item.title}</h3>
                       </div>
-                      <ItemActions
-                        isArchived={Boolean(media.deletedAt)}
-                        onDuplicate={undefined}
-                        onArchive={() => archiveMedia(media.id)}
-                        onRestore={() => restoreMedia(media.id)}
-                      />
+                      <div className="row-actions">
+                        <button type="button" className="icon-button" onClick={() => moveGalleryItem(item.id, -1)} aria-label="העלאה למעלה">
+                          <ArrowUp aria-hidden="true" />
+                        </button>
+                        <button type="button" className="icon-button" onClick={() => moveGalleryItem(item.id, 1)} aria-label="הורדה למטה">
+                          <ArrowDown aria-hidden="true" />
+                        </button>
+                        <ItemActions
+                          isArchived={Boolean(item.deletedAt)}
+                          onDuplicate={() => duplicateGalleryItem(item)}
+                          onArchive={() => archiveGalleryItem(item.id)}
+                          onRestore={() => restoreGalleryItem(item.id)}
+                        />
+                      </div>
                     </div>
-                    <div className="usage-list">
-                      <strong>איפה זה משפיע באתר</strong>
-                      <MediaUsageList mediaId={media.id} content={content} />
-                    </div>
-                    <MediaRiskNotice mediaId={media.id} content={content} />
-                    <div className="inline-grid">
-                      <Field label="רוחב" help="נלקח מהתמונה המקורית בדרייב.">
-                        <NumberInput value={media.width} onChange={(value) => updateMedia(media.id, { width: value })} />
-                      </Field>
-                      <Field label="גובה" help="נלקח מהתמונה המקורית בדרייב.">
-                        <NumberInput value={media.height} onChange={(value) => updateMedia(media.id, { height: value })} />
-                      </Field>
-                    </div>
-                    <Field label="הערות שימוש" help="הסבר פנימי איפה כדאי להשתמש בתמונה.">
-                      <TextInput value={media.usageNotes ?? ''} onChange={(value) => updateMedia(media.id, { usageNotes: value })} />
+                    <Field label="שם פנימי לתמונה" help="עוזר לזהות את התמונה בסטודיו.">
+                      <TextInput value={item.title} onChange={(value) => updateGallery(item.id, { title: value })} />
                     </Field>
-                    <div className="asset-path">
-                      <Cloud aria-hidden="true" />
-                      <span>באתר אחרי פרסום: {media.driveFileId ? cmsSrcFor(media.id) : media.src}</span>
-                    </div>
-                    <div className="media-quick-actions">
-                      <button
-                        className={galleryItem ? 'ghost-button is-confirmed' : 'ghost-button'}
-                        onClick={() => addGalleryItem(media.id)}
-                        disabled={Boolean(media.deletedAt) || Boolean(galleryItem)}
-                        title={galleryItem ? `כבר מחובר לפריט "${galleryItem.title}"` : undefined}
-                      >
-                        {galleryButtonLabel}
-                      </button>
-                      <button className="ghost-button" onClick={() => handlePickDriveFile(media.id)} disabled={!canUseGoogle}>בחירה מ-Drive</button>
-                    </div>
-                    <details className="technical-details">
-                      <summary>פרטים מתקדמים</summary>
-                      <Field label="שם תמונה בסטודיו" help="שם קצר באנגלית שמזהה את התמונה במערכת.">
-                        <TextInput value={media.id} onChange={(value) => renameMedia(media.id, value)} />
+                    <Field label="תיאור נגיש לתמונה" help="לא תמיד מוצג באתר, אבל חשוב לנגישות ול-SEO.">
+                      <TextInput value={item.alt} onChange={(value) => updateGallery(item.id, { alt: value })} />
+                    </Field>
+                    <div className="inline-grid">
+                      <Field label="קטגוריה באתר" help="באיזה פילטר בגלריה התמונה תופיע.">
+                        <select value={item.category} onChange={(event) => updateGallery(item.id, { category: event.target.value as GalleryItemRecord['category'] })}>
+                          {editableCategories.map((category) => <option key={category} value={category}>{categoryLabels[category]}</option>)}
+                        </select>
                       </Field>
-                      <TextInput value={media.src} onChange={(value) => updateMedia(media.id, { src: value })} />
-                      <TextInput value={media.driveFileId ?? ''} onChange={(value) => updateMedia(media.id, { driveFileId: value || undefined })} />
-                    </details>
+                      <Field label="תמונה מחוברת" help="איזה מקור מדיה ישמש לפריט הזה.">
+                        <select value={item.mediaId} onChange={(event) => updateGallery(item.id, { mediaId: event.target.value })}>
+                          {visibleMedia.map((mediaItem) => <option key={mediaItem.id} value={mediaItem.id}>{mediaLabel(mediaItem, content)}</option>)}
+                        </select>
+                      </Field>
+                    </div>
+                    <MediaQuickPicker
+                      label="בחירה מהירה לתמונת הגלריה"
+                      mediaItems={visibleMedia}
+                      selectedMediaId={item.mediaId}
+                      content={content}
+                      onSelect={(mediaId) => updateGallery(item.id, { mediaId })}
+                    />
+                    <MediaSelectionUsageNotice
+                      mediaId={item.mediaId}
+                      content={content}
+                      currentUsage={{ kind: 'gallery', id: item.id }}
+                    />
+                    <div className="toggle-row">
+                      <Toggle checked={item.active} label="מוצג באתר" onChange={(checked) => updateGallery(item.id, { active: checked })} />
+                      <Toggle checked={item.tall} label="תמונה גבוהה" onChange={(checked) => updateGallery(item.id, { tall: checked })} />
+                    </div>
                   </article>
                 );
               })}
@@ -1878,7 +1925,7 @@ const SiteMapPanel = ({
             </div>
             <div className="site-area-card-actions">
               <span>{areaStatus(area.id, content)}</span>
-              <button className="compact-button" onClick={() => onOpen(area.id)}>עריכה</button>
+              <button className="compact-button" onClick={() => onOpen(area.editorView ?? area.id)}>עריכה</button>
             </div>
           </div>
           <SiteMapAreaPreview area={area.id} content={content} mediaById={mediaById} />
@@ -3897,7 +3944,15 @@ const ItemActions = ({
   </div>
 );
 
-const DrivePreviewImage = ({ media, accessToken }: { readonly media?: ImageAssetRecord; readonly accessToken: string }) => {
+const DrivePreviewImage = ({
+  media,
+  accessToken,
+  showActions = true,
+}: {
+  readonly media?: ImageAssetRecord;
+  readonly accessToken: string;
+  readonly showActions?: boolean;
+}) => {
   const [preview, setPreview] = useState<{ readonly fileId: string; readonly objectUrl: string; readonly failed: boolean } | null>(null);
   const [failedFallbackSrc, setFailedFallbackSrc] = useState('');
   const [retryKey, setRetryKey] = useState(0);
@@ -3984,7 +4039,7 @@ const DrivePreviewImage = ({ media, accessToken }: { readonly media?: ImageAsset
           </span>
         </div>
       )}
-      {media && (
+      {media && showActions && (
         <div className="preview-source-bar">
           <span className={isShowingDrive ? 'source-pill is-drive' : isShowingFallbackAfterDriveFailure ? 'source-pill is-warning' : 'source-pill'}>
             {statusLabel}
@@ -4047,6 +4102,328 @@ const Metric = ({ label, value }: { readonly label: string; readonly value: stri
   </article>
 );
 
+const ImageUploadDropzone = ({
+  disabled,
+  isActive,
+  onDragStateChange,
+  onDrop,
+  onUpload,
+}: {
+  readonly disabled: boolean;
+  readonly isActive: boolean;
+  readonly onDragStateChange: (active: boolean) => void;
+  readonly onDrop: (event: DragEvent<HTMLElement>) => void;
+  readonly onUpload: (event: ChangeEvent<HTMLInputElement>) => void;
+}) => (
+  <label
+    className={isActive ? 'image-upload-dropzone is-active' : 'image-upload-dropzone'}
+    onDragEnter={() => onDragStateChange(true)}
+    onDragLeave={(event) => {
+      if (event.currentTarget.contains(event.relatedTarget as Node | null)) {
+        return;
+      }
+      onDragStateChange(false);
+    }}
+    onDragOver={(event) => {
+      event.preventDefault();
+      onDragStateChange(true);
+    }}
+    onDrop={onDrop}
+  >
+    <input type="file" accept="image/*" onChange={onUpload} disabled={disabled} />
+    <div className="image-upload-dropzone-copy">
+      <span className="image-upload-icon">
+        <Upload aria-hidden="true" />
+      </span>
+      <div>
+        <strong>הוספת תמונה חדשה</strong>
+        <p>לחצו לבחירת קובץ או גררו תמונה לכאן כדי להעלות אותה ל-Google Drive.</p>
+      </div>
+    </div>
+    <span className="image-upload-cta">{disabled ? 'צריך חיבור Google פעיל' : 'בחירת קובץ או גרירה'}</span>
+  </label>
+);
+
+const ImagesLibraryToolbar = ({
+  query,
+  onQueryChange,
+  totalCount,
+  filteredCount,
+  filter,
+  onFilterChange,
+  selectedCount,
+  areAllVisibleSelected,
+  onToggleSelectAll,
+  onArchiveSelected,
+  onRestoreSelected,
+}: {
+  readonly query: string;
+  readonly onQueryChange: (value: string) => void;
+  readonly totalCount: number;
+  readonly filteredCount: number;
+  readonly filter: MediaLibraryFilter;
+  readonly onFilterChange: (filter: MediaLibraryFilter) => void;
+  readonly selectedCount: number;
+  readonly areAllVisibleSelected: boolean;
+  readonly onToggleSelectAll: () => void;
+  readonly onArchiveSelected: () => void;
+  readonly onRestoreSelected: () => void;
+}) => (
+  <div className="images-library-toolbar">
+    <div className="images-toolbar-meta">
+      <div className="area-status-pill">
+        <Cloud aria-hidden="true" />
+        <span>{filteredCount} מתוך {totalCount} תמונות</span>
+      </div>
+      <div className="media-filter-row" aria-label="סינון ספריית תמונות">
+        {(Object.keys(mediaLibraryFilterLabels) as MediaLibraryFilter[]).map((filterOption) => (
+          <button
+            type="button"
+            key={filterOption}
+            className={filter === filterOption ? 'filter-chip is-active' : 'filter-chip'}
+            onClick={() => onFilterChange(filterOption)}
+          >
+            {mediaLibraryFilterLabels[filterOption]}
+          </button>
+        ))}
+      </div>
+    </div>
+    <div className="images-toolbar-actions">
+      <label className="search-box">
+        <Search aria-hidden="true" />
+        <input value={query} onChange={(event) => onQueryChange(event.target.value)} placeholder="חיפוש לפי שם, הערה או שימוש באתר" />
+      </label>
+      <div className="bulk-actions-bar">
+        <button type="button" className="ghost-button" onClick={onToggleSelectAll}>
+          {areAllVisibleSelected ? 'נקה בחירה' : 'בחר את כל המסוננים'}
+        </button>
+        <span className="bulk-selection-status">{selectedCount > 0 ? `${selectedCount} נבחרו` : 'אין בחירה מרובה'}</span>
+        <button type="button" className="ghost-button" onClick={onArchiveSelected} disabled={selectedCount === 0}>
+          <Trash2 aria-hidden="true" />
+          ארכב נבחרים
+        </button>
+        <button type="button" className="ghost-button" onClick={onRestoreSelected} disabled={selectedCount === 0}>
+          <RotateCcw aria-hidden="true" />
+          שחזר נבחרים
+        </button>
+      </div>
+    </div>
+  </div>
+);
+
+const ImagesGrid = ({
+  items,
+  content,
+  accessToken,
+  selectedMediaId,
+  selectedMediaIds,
+  onSelect,
+  onToggleSelect,
+}: {
+  readonly items: readonly ImageAssetRecord[];
+  readonly content: ContentSnapshot;
+  readonly accessToken: string;
+  readonly selectedMediaId: string | null;
+  readonly selectedMediaIds: readonly string[];
+  readonly onSelect: (mediaId: string) => void;
+  readonly onToggleSelect: (mediaId: string) => void;
+}) => (
+  <div className="images-library-grid" aria-label="ספריית תמונות">
+    {items.map((media) => {
+      const selected = media.id === selectedMediaId;
+      const multiSelected = selectedMediaIds.includes(media.id);
+
+      return (
+        <article
+          key={media.id}
+          className={`${selected ? 'image-library-card is-selected' : 'image-library-card'}${multiSelected ? ' is-multi-selected' : ''}`}
+        >
+          <span className="image-card-selection">
+            <input
+              type="checkbox"
+              checked={multiSelected}
+              onChange={() => onToggleSelect(media.id)}
+              aria-label={`בחירה מרובה עבור ${mediaLabel(media, content)}`}
+            />
+          </span>
+          <button type="button" className="image-card-open" onClick={() => onSelect(media.id)}>
+            <DrivePreviewImage media={media} accessToken={accessToken} showActions={false} />
+            <div className="image-library-card-body">
+              <h3>{mediaLabel(media, content)}</h3>
+            </div>
+          </button>
+        </article>
+      );
+    })}
+  </div>
+);
+
+const ImageUsageLinks = ({
+  mediaId,
+  content,
+  onNavigate,
+}: {
+  readonly mediaId: string;
+  readonly content: ContentSnapshot;
+  readonly onNavigate: (view: ActiveView) => void;
+}) => {
+  const usages = getMediaUsage(mediaId, content);
+
+  if (usages.length === 0) {
+    return (
+      <div className="usage-links-empty">
+        <span>התמונה עדיין לא מחוברת לשום אזור באתר.</span>
+        <button type="button" className="ghost-button" onClick={() => onNavigate('site-map')}>
+          <MonitorCheck aria-hidden="true" />
+          לעבור לניהול האתר
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="usage-links-list">
+      {usages.map((usage) => (
+        <button
+          type="button"
+          key={`${usage.kind}-${usage.id}`}
+          className={usage.active ? 'usage-link-chip is-active' : 'usage-link-chip'}
+          onClick={() => onNavigate(getViewForUsage(usage.kind))}
+        >
+          <span>{usageKindLabel(usage.kind)}: {usage.title}</span>
+          <ExternalLink aria-hidden="true" />
+        </button>
+      ))}
+    </div>
+  );
+};
+
+const ImageDetailsPanel = ({
+  media,
+  content,
+  accessToken,
+  canUseGoogle,
+  onRename,
+  onSaveTitle,
+  onUpdate,
+  onArchive,
+  onRestore,
+  onPickDriveFile,
+  onNavigate,
+}: {
+  readonly media: ImageAssetRecord | null;
+  readonly content: ContentSnapshot;
+  readonly accessToken: string;
+  readonly canUseGoogle: boolean;
+  readonly onRename: (currentId: string, nextId: string) => void;
+  readonly onSaveTitle: (id: string, title: string) => void;
+  readonly onUpdate: (id: string, patch: Partial<ImageAssetRecord>) => void;
+  readonly onArchive: (id: string) => void;
+  readonly onRestore: (id: string) => void;
+  readonly onPickDriveFile: (mediaId: string) => void;
+  readonly onNavigate: (view: ActiveView) => void;
+}) => {
+  const currentMediaLabel = media ? mediaLabel(media, content) : '';
+  const [mediaNameDraft, setMediaNameDraft] = useState(currentMediaLabel);
+
+  if (!media) {
+    return (
+      <aside className="image-details-panel is-empty">
+        <div className="image-details-empty">
+          <Images aria-hidden="true" />
+          <strong>בחרו תמונה כדי לראות את הפרטים שלה</strong>
+          <p>כאן יופיעו התצוגה המקדימה, עריכת הפרטים, מחיקה, והקישורים לאזורים שבהם התמונה בשימוש באתר.</p>
+        </div>
+      </aside>
+    );
+  }
+
+  const commitMediaTitle = () => {
+    const nextValue = mediaNameDraft.trim();
+    if (!nextValue || nextValue === currentMediaLabel) {
+      setMediaNameDraft(currentMediaLabel);
+      return;
+    }
+
+    onSaveTitle(media.id, nextValue);
+  };
+
+  return (
+    <aside className="image-details-panel">
+      <div className="image-details-panel-header">
+        <div>
+          <p className="kicker">{mediaStatus(media, content)}</p>
+          <h3>{mediaLabel(media, content)}</h3>
+          <div className="image-details-summary">
+            <span>{getMediaUsage(media.id, content).length} שימושים</span>
+            <span>{media.width}×{media.height}</span>
+            <span>{media.driveFileId ? 'מחובר ל-Drive' : 'ללא מקור Drive'}</span>
+          </div>
+        </div>
+        <ItemActions
+          isArchived={Boolean(media.deletedAt)}
+          onArchive={() => onArchive(media.id)}
+          onRestore={() => onRestore(media.id)}
+        />
+      </div>
+      <DrivePreviewImage media={media} accessToken={accessToken} />
+      <MediaRiskNotice mediaId={media.id} content={content} />
+      <div className="usage-list">
+        <strong>איפה התמונה מופיעה באתר</strong>
+        <ImageUsageLinks mediaId={media.id} content={content} onNavigate={onNavigate} />
+      </div>
+      <div className="media-quick-actions">
+        <button className="ghost-button" onClick={() => onPickDriveFile(media.id)} disabled={!canUseGoogle}>
+          החלף מקור מדרייב
+        </button>
+        <button className="ghost-button" onClick={() => onNavigate('site-map')}>
+          <MonitorCheck aria-hidden="true" />
+          לעבור לניהול האתר
+        </button>
+      </div>
+      <Field label="שם התמונה" help="השם בעברית שמופיע בסטודיו ועוזר לזהות את התמונה מהר.">
+        <TextInput
+          value={mediaNameDraft}
+          onChange={setMediaNameDraft}
+          onBlur={commitMediaTitle}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter') {
+              event.preventDefault();
+              commitMediaTitle();
+            }
+            if (event.key === 'Escape') {
+              setMediaNameDraft(currentMediaLabel);
+            }
+          }}
+        />
+      </Field>
+      <Field label="הערות שימוש" help="הסבר פנימי קצר מתי כדאי להשתמש בתמונה.">
+        <TextInput value={media.usageNotes ?? ''} onChange={(value) => onUpdate(media.id, { usageNotes: value })} />
+      </Field>
+      <div className="inline-grid">
+        <Field label="רוחב" help="נלקח מהתמונה המקורית בדרייב.">
+          <NumberInput value={media.width} onChange={(value) => onUpdate(media.id, { width: value })} />
+        </Field>
+        <Field label="גובה" help="נלקח מהתמונה המקורית בדרייב.">
+          <NumberInput value={media.height} onChange={(value) => onUpdate(media.id, { height: value })} />
+        </Field>
+      </div>
+      <details className="technical-details">
+        <summary>פרטים טכניים</summary>
+        <Field label="מזהה טכני" help="מזהה באנגלית לקבצים, לקישורים ולשימושים פנימיים במערכת.">
+          <TextInput value={media.id} onChange={(value) => onRename(media.id, value)} />
+        </Field>
+        <Field label="כתובת באתר אחרי פרסום" help="נוצרת אוטומטית מתוך Drive בזמן build.">
+          <TextInput value={media.src} onChange={(value) => onUpdate(media.id, { src: value })} />
+        </Field>
+        <Field label="מקור Drive" help="מזהה הקובץ בדרייב.">
+          <TextInput value={media.driveFileId ?? ''} onChange={(value) => onUpdate(media.id, { driveFileId: value || undefined })} />
+        </Field>
+      </details>
+    </aside>
+  );
+};
+
 const MediaQuickPicker = ({
   label,
   mediaItems,
@@ -4086,25 +4463,6 @@ const MediaQuickPicker = ({
     </div>
   </div>
 );
-
-const MediaUsageList = ({ mediaId, content }: { readonly mediaId: string; readonly content: ContentSnapshot }) => {
-  const usages = getMediaUsage(mediaId, content);
-
-  if (usages.length === 0) {
-    return <span className="usage-empty">עדיין לא מחובר לשום אזור באתר</span>;
-  }
-
-  return (
-    <div className="usage-chips" aria-label="מפת שימושים לתמונה">
-      {usages.map((usage) => (
-        <span className={usage.active ? 'usage-chip is-active' : 'usage-chip'} key={`${usage.kind}-${usage.title}`}>
-          {usageKindLabel(usage.kind)}: {usage.title}
-          {!usage.active ? ' (כבוי)' : ''}
-        </span>
-      ))}
-    </div>
-  );
-};
 
 const MediaSelectionUsageNotice = ({
   mediaId,
@@ -4158,8 +4516,26 @@ const MediaRiskNotice = ({ mediaId, content }: { readonly mediaId: string; reado
   );
 };
 
-const TextInput = ({ value, onChange, placeholder }: { readonly value: string; readonly onChange: (value: string) => void; readonly placeholder?: string }) => (
-  <input value={value} onChange={(event) => onChange(event.target.value)} placeholder={placeholder} />
+const TextInput = ({
+  value,
+  onChange,
+  placeholder,
+  onBlur,
+  onKeyDown,
+}: {
+  readonly value: string;
+  readonly onChange: (value: string) => void;
+  readonly placeholder?: string;
+  readonly onBlur?: () => void;
+  readonly onKeyDown?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
+}) => (
+  <input
+    value={value}
+    onChange={(event) => onChange(event.target.value)}
+    placeholder={placeholder}
+    onBlur={onBlur}
+    onKeyDown={onKeyDown}
+  />
 );
 
 const NumberInput = ({ value, onChange }: { readonly value: number; readonly onChange: (value: number) => void }) => (
@@ -4468,6 +4844,13 @@ const usageKindLabel = (kind: MediaUsageKind) => {
   return 'מסך פתיחה';
 };
 
+const getViewForUsage = (kind: MediaUsageKind): ActiveView => {
+  if (kind === 'gallery') return 'media';
+  if (kind === 'service') return 'services';
+  if (kind === 'manifesto') return 'manifesto';
+  return 'hero';
+};
+
 const getGalleryItemForMedia = (mediaId: string, content: ContentSnapshot) => (
   content.gallery.find((item) => item.mediaId === mediaId && !item.deletedAt) ?? null
 );
@@ -4493,6 +4876,9 @@ const makeGalleryItem = (content: ContentSnapshot, mediaId?: string): GalleryIte
 };
 
 const mediaLabel = (media: ImageAssetRecord, content: ContentSnapshot) => {
+  if (media.title?.trim()) {
+    return media.title.trim();
+  }
   const firstGallery = content.gallery.find((item) => item.mediaId === media.id && !item.deletedAt);
   const firstService = content.services.find((service) => service.mediaId === media.id && !service.deletedAt);
   return firstGallery?.title ?? firstService?.title ?? media.id;

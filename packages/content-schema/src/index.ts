@@ -6,6 +6,7 @@ export const editableGalleryCategorySchema = z.enum(['tables', 'trays', 'salads'
 
 export const imageAssetSchema = z.object({
   id: z.string().min(1),
+  title: z.string().min(1).optional(),
   src: z.string().min(1),
   width: z.coerce.number().int().positive(),
   height: z.coerce.number().int().positive(),
@@ -118,6 +119,10 @@ export const contentFieldHelp = {
     },
   },
   media: {
+    title: {
+      label: 'שם תמונה',
+      help: 'השם הפנימי בעברית שמופיע בסטודיו ועוזר לזהות את התמונה מהר.',
+    },
     driveFileId: {
       label: 'מקור בדרייב',
       help: 'קובץ המקור שממנו נוצרות תמונות האתר בזמן פרסום.',
