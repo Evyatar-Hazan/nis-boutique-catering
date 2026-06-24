@@ -82,6 +82,14 @@ import {
   exactPreviewCopySectionIds,
   exactPreviewSectionGroupIds,
 } from './previewParityContract';
+import { Field } from './components/editor/Field';
+import { PanelHeader } from './components/editor/PanelHeader';
+import { PreviewHeader } from './components/editor/PreviewHeader';
+import { CopyOnlySectionEditor } from './components/editor/sections/CopyOnlySectionEditor';
+import { IntroBandEditor } from './components/editor/sections/IntroBandEditor';
+import { ManifestoEditor } from './components/editor/sections/ManifestoEditor';
+import { TextInput } from './components/editor/TextInput';
+import { Toggle } from './components/editor/Toggle';
 import siteBaseCss from '../../../frontend/nis-boutique-catering/src/styles/base.css?raw';
 import siteThemeCss from '../../../frontend/nis-boutique-catering/src/styles/theme.css?raw';
 
@@ -831,7 +839,7 @@ export const App = () => {
     });
   };
 
-  const saveDraft = async () => {
+  const saveDraft = async (successMessage = 'נשמר כטיוטה ב-Google Sheets. האתר החי עדיין לא השתנה.') => {
     if (!session) {
       throw new Error('צריך להתחבר לפני שמירה.');
     }
@@ -843,11 +851,17 @@ export const App = () => {
     const accessToken = await getFreshAccessToken();
     await saveContentToSheets(accessToken, { ...content, updatedAt: new Date().toISOString() });
     setPublishState('draft');
-    setStatus('נשמר כטיוטה ב-Google Sheets. האתר החי עדיין לא השתנה.');
+    setStatus(successMessage);
   };
 
   const handleSaveDraft = () => {
     void runTask('שומרים טיוטה', saveDraft);
+  };
+
+  const persistDraft = (taskLabel: string, successMessage: string) => {
+    void runTask(taskLabel, async () => {
+      await saveDraft(successMessage);
+    });
   };
 
   const handleUpdateSite = () => {
@@ -1388,6 +1402,7 @@ export const App = () => {
             onPreviewDeviceChange={setPreviewDevice}
             updateSection={updateSection}
             addSection={addSection}
+            persistHeroStats={() => persistDraft('שומרים נתוני אירוח', 'נתוני האירוח נשמרו ב-Google Sheets. כדי לעדכן את האתר החי לחצו אחר כך על "עדכן אתר".')}
           />
         )}
 
@@ -1399,6 +1414,11 @@ export const App = () => {
             onPreviewDeviceChange={setPreviewDevice}
             updateSection={updateSection}
             addSection={addSection}
+            getManagedCopySection={getManagedCopySection}
+            patchSectionItem={patchSectionItem}
+            renderPreview={({ content: previewContent, mediaById: previewMediaById, device }) => (
+              <IntroBandPreview content={previewContent} mediaById={previewMediaById} device={device} />
+            )}
           />
         )}
 
@@ -1412,6 +1432,32 @@ export const App = () => {
             previewDevice={previewDevice}
             onPreviewDeviceChange={setPreviewDevice}
             updateSection={updateSection}
+            getManagedCopySection={getManagedCopySection}
+            patchSectionItem={patchSectionItem}
+            joinPipeList={joinPipeList}
+            splitPipeList={splitPipeList}
+            renderExactPreview={({ sectionId, content: previewContent, mediaById: previewMediaById, device }) => {
+              if (!exactPreviewCopySectionIds.includes(sectionId as typeof exactPreviewCopySectionIds[number])) {
+                return null;
+              }
+
+              if (sectionId === 'experience-lab') {
+                return <ActualExperienceLabPreview content={previewContent} mediaById={previewMediaById} device={device} />;
+              }
+
+              if (sectionId === 'real-media') {
+                return (
+                  <ActualSiteSectionFrame content={previewContent} mediaById={previewMediaById} device={device}>
+                    <RealMediaSection />
+                  </ActualSiteSectionFrame>
+                );
+              }
+
+              return null;
+            }}
+            renderFallbackPreview={({ section, tagsSection, device }) => (
+              <CopyOnlySectionPreview section={section} tagsSection={tagsSection} device={device} />
+            )}
           />
         )}
 
@@ -1638,6 +1684,32 @@ export const App = () => {
             previewDevice={previewDevice}
             onPreviewDeviceChange={setPreviewDevice}
             updateSection={updateSection}
+            getManagedCopySection={getManagedCopySection}
+            patchSectionItem={patchSectionItem}
+            joinPipeList={joinPipeList}
+            splitPipeList={splitPipeList}
+            renderExactPreview={({ sectionId, content: previewContent, mediaById: previewMediaById, device }) => {
+              if (!exactPreviewCopySectionIds.includes(sectionId as typeof exactPreviewCopySectionIds[number])) {
+                return null;
+              }
+
+              if (sectionId === 'experience-lab') {
+                return <ActualExperienceLabPreview content={previewContent} mediaById={previewMediaById} device={device} />;
+              }
+
+              if (sectionId === 'real-media') {
+                return (
+                  <ActualSiteSectionFrame content={previewContent} mediaById={previewMediaById} device={device}>
+                    <RealMediaSection />
+                  </ActualSiteSectionFrame>
+                );
+              }
+
+              return null;
+            }}
+            renderFallbackPreview={({ section, tagsSection, device }) => (
+              <CopyOnlySectionPreview section={section} tagsSection={tagsSection} device={device} />
+            )}
           />
         )}
 
@@ -1706,6 +1778,32 @@ export const App = () => {
             restoreSection={restoreSection}
             previewDevice={previewDevice}
             onPreviewDeviceChange={setPreviewDevice}
+            manifestoMediaFallbacks={manifestoMediaFallbacks}
+            patchSectionItem={patchSectionItem}
+            mediaLabel={mediaLabel}
+            renderPreview={({ content: previewContent, mediaById: previewMediaById, device }) => (
+              <ManifestoSitePreview content={previewContent} mediaById={previewMediaById} device={device} />
+            )}
+            renderItemActions={({ section, onDuplicate, onArchive, onRestore }) => (
+              <ItemActions
+                isArchived={Boolean(section.deletedAt)}
+                onDuplicate={onDuplicate}
+                onArchive={onArchive}
+                onRestore={onRestore}
+              />
+            )}
+            renderMediaQuickPicker={({ label, mediaItems, selectedMediaId, content: previewContent, onSelect }) => (
+              <MediaQuickPicker
+                label={label}
+                mediaItems={mediaItems}
+                selectedMediaId={selectedMediaId}
+                content={previewContent}
+                onSelect={onSelect}
+              />
+            )}
+            renderMediaSelectionUsageNotice={({ mediaId, content: previewContent, currentUsage }) => (
+              <MediaSelectionUsageNotice mediaId={mediaId} content={previewContent} currentUsage={currentUsage} />
+            )}
           />
         )}
 
@@ -2127,6 +2225,7 @@ const HeroEditor = ({
   onPreviewDeviceChange,
   updateSection,
   addSection,
+  persistHeroStats,
 }: {
   readonly content: ContentSnapshot;
   readonly mediaById: ReadonlyMap<string, ImageAssetRecord>;
@@ -2134,6 +2233,7 @@ const HeroEditor = ({
   readonly onPreviewDeviceChange: (device: PreviewDevice) => void;
   readonly updateSection: (id: string, patch: Partial<SectionBlockRecord>) => void;
   readonly addSection: (group?: string) => void;
+  readonly persistHeroStats: () => void;
 }) => {
   const hero = content.sections.find((section) => section.id === 'hero') ?? content.sections.find((section) => section.group === 'hero');
   const heroBadges = content.sections.find((section) => section.id === 'hero-badges');
@@ -2265,11 +2365,27 @@ const HeroEditor = ({
                 {heroStats.map((stat) => (
                   <article key={stat.id}>
                     <Field label="ערך קצר" help="לדוגמה: שבתות, אירוח קטן, Travel Nis.">
-                      <TextInput value={stat.title ?? ''} onChange={(value) => updateSection(stat.id, { title: value || undefined })} />
+                      <TextInput
+                        value={stat.title ?? ''}
+                        onChange={(value) => updateSection(stat.id, { title: value || undefined })}
+                        onBlur={persistHeroStats}
+                      />
                     </Field>
                     <Field label="הסבר קצר" help="משפט שמסביר את הערך.">
-                      <TextInput value={stat.text ?? ''} onChange={(value) => updateSection(stat.id, { text: value || undefined })} />
+                      <TextInput
+                        value={stat.text ?? ''}
+                        onChange={(value) => updateSection(stat.id, { text: value || undefined })}
+                        onBlur={persistHeroStats}
+                      />
                     </Field>
+                  </article>
+                ))}
+              </div>
+              <div className="hero-stats-live-preview" aria-label="תצוגה חיה של נתוני האירוח">
+                {heroStats.map((stat) => (
+                  <article key={`${stat.id}-preview`} className="hero-stats-live-card">
+                    <strong>{stat.title || 'ערך קצר'}</strong>
+                    <span>{stat.text || 'הסבר קצר שיופיע בתוך מסך הפתיחה.'}</span>
                   </article>
                 ))}
               </div>
@@ -2281,284 +2397,6 @@ const HeroEditor = ({
   );
 };
 
-const IntroBandEditor = ({
-  content,
-  previewDevice,
-  onPreviewDeviceChange,
-  updateSection,
-  addSection,
-  mediaById,
-}: {
-  readonly content: ContentSnapshot;
-  readonly previewDevice: PreviewDevice;
-  readonly onPreviewDeviceChange: (device: PreviewDevice) => void;
-  readonly updateSection: (id: string, patch: Partial<SectionBlockRecord>) => void;
-  readonly addSection: (group?: string) => void;
-  readonly mediaById: ReadonlyMap<string, ImageAssetRecord>;
-}) => {
-  const section = getManagedCopySection(content, 'intro-band');
-
-  if (!section) {
-    return (
-      <section className="workspace-panel">
-        <PanelHeader title="רעיון אחד ברור" text="האזור הזה עדיין לא קיים ב-Sheets." />
-        <button className="compact-button" onClick={() => addSection('site-copy')}>
-          <Plus aria-hidden="true" />
-          צור אזור פתיח
-        </button>
-      </section>
-    );
-  }
-
-  return (
-    <section className="workspace-panel split-editor">
-      <div className="editor-column">
-        <PanelHeader
-          title="רעיון אחד ברור"
-          text="זה הפתיח הקצר שאחרי מסך הפתיחה. הוא מיועד להסביר במהירות למי Nis מתאימה ולמה שבתות, אירוח קטן ו-Travel Nis הם אותו עולם."
-        />
-        <Toggle checked={section.active && !section.deletedAt} label="האזור מוצג באתר" onChange={(checked) => updateSection(section.id, { active: checked })} />
-        <Field label="תווית קטנה מעל הכותרת" help="לדוגמה: רעיון אחד ברור.">
-          <TextInput value={section.items[0] ?? ''} onChange={(value) => updateSection(section.id, patchSectionItem(section, 0, value, 'רעיון אחד ברור'))} />
-        </Field>
-        <Field label="כותרת האזור" help="משפט אחד שמחדד את ההבטחה של Nis.">
-          <textarea value={section.title ?? ''} onChange={(event) => updateSection(section.id, { title: event.target.value || undefined })} />
-        </Field>
-        <Field label="טקסט הסבר" help="פסקה קצרה שמסבירה למי האזור מיועד ולמה הוא חשוב.">
-          <textarea value={section.text ?? ''} onChange={(event) => updateSection(section.id, { text: event.target.value || undefined })} />
-        </Field>
-      </div>
-      <div className="preview-column">
-        <PreviewHeader
-          title="תצוגה מקדימה כמו באתר"
-          text="האזור הזה אמור להיות קצר, ברור וללא גלילה בדסקטופ."
-          device={previewDevice}
-          onDeviceChange={onPreviewDeviceChange}
-        />
-        <IntroBandPreview content={content} mediaById={mediaById} device={previewDevice} />
-      </div>
-    </section>
-  );
-};
-
-const CopyOnlySectionEditor = ({
-  content,
-  sectionId,
-  title,
-  text,
-  previewDevice,
-  onPreviewDeviceChange,
-  updateSection,
-  tagsSection,
-  mediaById,
-}: {
-  readonly content: ContentSnapshot;
-  readonly sectionId: string;
-  readonly title: string;
-  readonly text: string;
-  readonly previewDevice: PreviewDevice;
-  readonly onPreviewDeviceChange: (device: PreviewDevice) => void;
-  readonly updateSection: (id: string, patch: Partial<SectionBlockRecord>) => void;
-  readonly tagsSection?: SectionBlockRecord;
-  readonly mediaById: ReadonlyMap<string, ImageAssetRecord>;
-}) => {
-  const section = getManagedCopySection(content, sectionId);
-
-  if (!section) {
-    return (
-      <section className="workspace-panel">
-        <PanelHeader title={title} text="האזור הזה עדיין לא קיים ב-Sheets. רענון מה-Sheets יוסיף ברירות מחדל אם הן חסרות." />
-      </section>
-    );
-  }
-
-  return (
-    <section className="workspace-panel split-editor">
-      <div className="editor-column">
-        <PanelHeader title={title} text={text} />
-        <Toggle checked={section.active && !section.deletedAt} label="האזור מוצג באתר" onChange={(checked) => updateSection(section.id, { active: checked })} />
-        <Field label="תווית קטנה מעל הכותרת" help="מופיעה מעל הכותרת של האזור באתר.">
-          <TextInput value={section.items[0] ?? ''} onChange={(value) => updateSection(section.id, patchSectionItem(section, 0, value, title))} />
-        </Field>
-        <Field label="כותרת האזור" help="הכותרת הגדולה שמופיעה באתר.">
-          <textarea value={section.title ?? ''} onChange={(event) => updateSection(section.id, { title: event.target.value || undefined })} />
-        </Field>
-        <Field label="טקסט הסבר" help="אפשר להשתמש ב-| כדי לחלק לפסקאות באתר.">
-          <textarea value={section.text ?? ''} onChange={(event) => updateSection(section.id, { text: event.target.value || undefined })} />
-        </Field>
-        {tagsSection && (
-          <Field label="תגיות תחומי שירות" help="מופיע באזור SEO באתר כתגיות קצרות. מפרידים עם |">
-            <TextInput value={joinPipeList(tagsSection.items)} onChange={(value) => updateSection(tagsSection.id, { items: splitPipeList(value) })} />
-          </Field>
-        )}
-      </div>
-      <div className="preview-column">
-        <PreviewHeader
-          title="תצוגה מקדימה כמו באתר"
-          text="האזור הזה צריך להישאר קצר וברור בדסקטופ ובמובייל."
-          device={previewDevice}
-          onDeviceChange={onPreviewDeviceChange}
-        />
-        {exactPreviewCopySectionIds.includes(sectionId as typeof exactPreviewCopySectionIds[number]) ? (
-          sectionId === 'experience-lab' ? (
-          <ActualExperienceLabPreview content={content} mediaById={mediaById} device={previewDevice} />
-          ) : sectionId === 'real-media' ? (
-          <ActualSiteSectionFrame content={content} mediaById={mediaById} device={previewDevice}>
-            <RealMediaSection />
-          </ActualSiteSectionFrame>
-          ) : null
-        ) : (
-          <CopyOnlySectionPreview section={section} tagsSection={tagsSection} device={previewDevice} />
-        )}
-      </div>
-    </section>
-  );
-};
-
-const ManifestoEditor = ({
-  content,
-  mediaById,
-  updateSection,
-  addSection,
-  duplicateSection,
-  archiveSection,
-  restoreSection,
-  previewDevice,
-  onPreviewDeviceChange,
-}: {
-  readonly content: ContentSnapshot;
-  readonly mediaById: ReadonlyMap<string, ImageAssetRecord>;
-  readonly updateSection: (id: string, patch: Partial<SectionBlockRecord>) => void;
-  readonly addSection: (group?: string) => void;
-  readonly duplicateSection: (section: SectionBlockRecord) => void;
-  readonly archiveSection: (id: string) => void;
-  readonly restoreSection: (id: string) => void;
-  readonly previewDevice: PreviewDevice;
-  readonly onPreviewDeviceChange: (device: PreviewDevice) => void;
-}) => {
-  const copy = content.sections.find((section) => section.id === 'manifesto' && section.group === 'site-copy');
-  const moments = content.sections
-    .filter((section) => section.group === 'manifesto')
-    .sort((left, right) => left.order - right.order);
-  const visibleMedia = content.media.filter((media) => !media.deletedAt);
-
-  return (
-    <section className="workspace-panel split-editor">
-      <div className="editor-column">
-        <PanelHeader
-          title="השפה של Nis"
-          text="האזור הזה מסביר את תחושת הבוטיק: נראות, ביתיות והתאמה אישית. כאן עורכים גם את הטקסט הראשי וגם את הכרטיסים שמרכזים את מסרי הבוטיק."
-          action={
-            <button className="compact-button" onClick={() => addSection('manifesto')}>
-              <Plus aria-hidden="true" />
-              הוסף כרטיס
-            </button>
-          }
-        />
-        {copy && (
-          <div className="editor-group">
-            <div className="editor-group-heading">
-              <strong>כותרת האזור</strong>
-              <span>החלק הימני באתר: תווית, כותרת גדולה ופסקת הסבר.</span>
-            </div>
-            <Toggle checked={copy.active && !copy.deletedAt} label="האזור מוצג באתר" onChange={(checked) => updateSection(copy.id, { active: checked })} />
-            <Field label="תווית קטנה" help="לדוגמה: השפה של Nis.">
-              <TextInput value={copy.items[0] ?? ''} onChange={(value) => updateSection(copy.id, patchSectionItem(copy, 0, value, 'השפה של Nis'))} />
-            </Field>
-            <Field label="כותרת גדולה" help="אפשר לרדת שורה עם Enter.">
-              <textarea value={copy.title ?? ''} onChange={(event) => updateSection(copy.id, { title: event.target.value || undefined })} />
-            </Field>
-            <Field label="טקסט מתחת לכותרת" help="משפט קצר שמסביר את התחושה שהאזור אמור להעביר.">
-              <textarea value={copy.text ?? ''} onChange={(event) => updateSection(copy.id, { text: event.target.value || undefined })} />
-            </Field>
-          </div>
-        )}
-        <div className="cards-list">
-          {moments.map((moment, index) => {
-            const selectedMediaId = moment.items[1] ?? manifestoMediaFallbacks[index % manifestoMediaFallbacks.length];
-            return (
-              <article className={moment.deletedAt ? 'edit-card is-archived' : 'edit-card'} key={moment.id}>
-                <div className="card-heading">
-                  <div>
-                    <p className="kicker">כרטיס בשפה של Nis</p>
-                    <h3>{moment.title || 'כרטיס ללא כותרת'}</h3>
-                  </div>
-                  <ItemActions
-                    isArchived={Boolean(moment.deletedAt)}
-                    onDuplicate={() => duplicateSection(moment)}
-                    onArchive={() => archiveSection(moment.id)}
-                    onRestore={() => restoreSection(moment.id)}
-                  />
-                </div>
-                <Toggle checked={moment.active && !moment.deletedAt} label="מוצג באתר" onChange={(checked) => updateSection(moment.id, { active: checked })} />
-                <Field label="מספר/תווית בכרטיס" help="לדוגמה: 01, 02, 03.">
-                  <TextInput value={moment.items[0] ?? ''} onChange={(value) => updateSection(moment.id, patchSectionItem(moment, 0, value, String(index + 1).padStart(2, '0')))} />
-                </Field>
-                <Field label="כותרת הכרטיס" help="הכותרת שמופיעה בתוך הכרטיס באתר.">
-                  <textarea value={moment.title ?? ''} onChange={(event) => updateSection(moment.id, { title: event.target.value || undefined })} />
-                </Field>
-                <Field label="טקסט הכרטיס" help="הסבר קצר שמופיע מתחת לכותרת.">
-                  <textarea value={moment.text ?? ''} onChange={(event) => updateSection(moment.id, { text: event.target.value || undefined })} />
-                </Field>
-                <Field label="תמונה לכרטיס" help="התמונה שמופיעה בצד הכרטיס באזור השפה של Nis.">
-                  <select value={selectedMediaId} onChange={(event) => updateSection(moment.id, patchSectionItem(moment, 1, event.target.value, manifestoMediaFallbacks[index % manifestoMediaFallbacks.length]))}>
-                    {visibleMedia.map((media) => <option key={media.id} value={media.id}>{mediaLabel(media, content)}</option>)}
-                  </select>
-                  <MediaQuickPicker
-                    label="בחירה מהירה לתמונה"
-                    mediaItems={visibleMedia}
-                    selectedMediaId={selectedMediaId}
-                    content={content}
-                    onSelect={(mediaId) => updateSection(moment.id, patchSectionItem(moment, 1, mediaId, manifestoMediaFallbacks[index % manifestoMediaFallbacks.length]))}
-                  />
-                  <MediaSelectionUsageNotice mediaId={selectedMediaId} content={content} currentUsage={{ kind: 'manifesto', id: moment.id }} />
-                </Field>
-              </article>
-            );
-          })}
-        </div>
-      </div>
-      <div className="preview-column">
-        <PreviewHeader
-          title="תצוגה מקדימה כמו באתר"
-          text="אפשר לעבור בין מחשב למובייל ולבדוק שהאזור נכנס נכון בלי חיתוך מיותר."
-          device={previewDevice}
-          onDeviceChange={onPreviewDeviceChange}
-        />
-        <ManifestoSitePreview content={content} mediaById={mediaById} device={previewDevice} />
-      </div>
-    </section>
-  );
-};
-
-const PreviewHeader = ({
-  title,
-  text,
-  device,
-  onDeviceChange,
-}: {
-  readonly title: string;
-  readonly text: string;
-  readonly device: PreviewDevice;
-  readonly onDeviceChange: (device: PreviewDevice) => void;
-}) => (
-  <div className="preview-header">
-    <div>
-      <p className="kicker">{title}</p>
-      <p>{text}</p>
-    </div>
-    <div className="preview-device-switch" aria-label="בחירת תצוגה מקדימה">
-      <button type="button" className={device === 'desktop' ? 'is-active' : ''} onClick={() => onDeviceChange('desktop')} aria-pressed={device === 'desktop'}>
-        <MonitorCheck aria-hidden="true" />
-        מחשב
-      </button>
-      <button type="button" className={device === 'mobile' ? 'is-active' : ''} onClick={() => onDeviceChange('mobile')} aria-pressed={device === 'mobile'}>
-        <Phone aria-hidden="true" />
-        מובייל
-      </button>
-    </div>
-  </div>
-);
 
 const HeroSitePreview = ({
   content,
@@ -4101,31 +3939,6 @@ const DrivePreviewImage = ({
   );
 };
 
-const PanelHeader = ({ title, text, action }: { readonly title: string; readonly text: string; readonly action?: ReactNode }) => (
-  <div className="panel-header">
-    <div>
-      <h3>{title}</h3>
-      <p>{text}</p>
-    </div>
-    {action}
-  </div>
-);
-
-const Field = ({ label, help, children }: { readonly label: string; readonly help: string; readonly children: ReactNode }) => (
-  <label className="field-block">
-    <span>{label}</span>
-    <small>{help}</small>
-    {children}
-  </label>
-);
-
-const Toggle = ({ checked, label, onChange }: { readonly checked: boolean; readonly label: string; readonly onChange: (checked: boolean) => void }) => (
-  <label className="toggle-control">
-    <input type="checkbox" checked={checked} onChange={(event) => onChange(event.target.checked)} />
-    <span>{label}</span>
-  </label>
-);
-
 const Metric = ({ label, value }: { readonly label: string; readonly value: string }) => (
   <article>
     <span>{label}</span>
@@ -4546,28 +4359,6 @@ const MediaRiskNotice = ({ mediaId, content }: { readonly mediaId: string; reado
     </div>
   );
 };
-
-const TextInput = ({
-  value,
-  onChange,
-  placeholder,
-  onBlur,
-  onKeyDown,
-}: {
-  readonly value: string;
-  readonly onChange: (value: string) => void;
-  readonly placeholder?: string;
-  readonly onBlur?: () => void;
-  readonly onKeyDown?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
-}) => (
-  <input
-    value={value}
-    onChange={(event) => onChange(event.target.value)}
-    placeholder={placeholder}
-    onBlur={onBlur}
-    onKeyDown={onKeyDown}
-  />
-);
 
 const NumberInput = ({ value, onChange }: { readonly value: number; readonly onChange: (value: number) => void }) => (
   <input type="number" value={value} min={0} onChange={(event) => onChange(Number(event.target.value))} />
