@@ -168,6 +168,23 @@ type MediaUsageEntry = {
   readonly active: boolean;
 };
 
+type SectionEditorItemActionsArgs = {
+  readonly section: SectionBlockRecord;
+  readonly onDuplicate: () => void;
+  readonly onArchive: () => void;
+  readonly onRestore: () => void;
+};
+
+type SectionGroupPreviewArgs = {
+  readonly group: string;
+  readonly title: string;
+  readonly content: ContentSnapshot;
+  readonly mediaById: ReadonlyMap<string, ImageAssetRecord>;
+  readonly sections: readonly SectionBlockRecord[];
+  readonly allSections: readonly SectionBlockRecord[];
+  readonly device: PreviewDevice;
+};
+
 type MediaLibraryFilter = 'all' | 'used' | 'unused' | 'missing-drive' | 'archived';
 
 type SiteAreaDefinition = {
@@ -1081,6 +1098,40 @@ export const App = () => {
     });
   };
 
+  const renderSectionEditorItemActions = ({
+    section,
+    onDuplicate,
+    onArchive,
+    onRestore,
+  }: SectionEditorItemActionsArgs) => (
+    <ItemActions
+      isArchived={Boolean(section.deletedAt)}
+      onDuplicate={onDuplicate}
+      onArchive={onArchive}
+      onRestore={onRestore}
+    />
+  );
+
+  const renderSectionGroupPreview = ({
+    group,
+    title,
+    content: previewContent,
+    mediaById: previewMediaById,
+    sections,
+    allSections,
+    device,
+  }: SectionGroupPreviewArgs) => (
+    <SectionGroupSitePreview
+      group={group}
+      title={title}
+      content={previewContent}
+      mediaById={previewMediaById}
+      sections={sections}
+      allSections={allSections}
+      device={device}
+    />
+  );
+
   const normalizeCmsMetadata = () => {
     updateContent((current) => ({
       ...current,
@@ -1861,25 +1912,8 @@ export const App = () => {
             sectionGroupLabels={sectionGroupLabels}
             joinPipeList={joinPipeList}
             splitPipeList={splitPipeList}
-            renderItemActions={({ section, onDuplicate, onArchive, onRestore }) => (
-              <ItemActions
-                isArchived={Boolean(section.deletedAt)}
-                onDuplicate={onDuplicate}
-                onArchive={onArchive}
-                onRestore={onRestore}
-              />
-            )}
-            renderPreview={({ group, title, content: previewContent, mediaById: previewMediaById, sections, allSections, device }) => (
-              <SectionGroupSitePreview
-                group={group}
-                title={title}
-                content={previewContent}
-                mediaById={previewMediaById}
-                sections={sections}
-                allSections={allSections}
-                device={device}
-              />
-            )}
+            renderItemActions={renderSectionEditorItemActions}
+            renderPreview={renderSectionGroupPreview}
           />
         )}
 
@@ -1901,25 +1935,8 @@ export const App = () => {
             sectionGroupLabels={sectionGroupLabels}
             joinPipeList={joinPipeList}
             splitPipeList={splitPipeList}
-            renderItemActions={({ section, onDuplicate, onArchive, onRestore }) => (
-              <ItemActions
-                isArchived={Boolean(section.deletedAt)}
-                onDuplicate={onDuplicate}
-                onArchive={onArchive}
-                onRestore={onRestore}
-              />
-            )}
-            renderPreview={({ group, title, content: previewContent, mediaById: previewMediaById, sections, allSections, device }) => (
-              <SectionGroupSitePreview
-                group={group}
-                title={title}
-                content={previewContent}
-                mediaById={previewMediaById}
-                sections={sections}
-                allSections={allSections}
-                device={device}
-              />
-            )}
+            renderItemActions={renderSectionEditorItemActions}
+            renderPreview={renderSectionGroupPreview}
           />
         )}
 
@@ -1941,25 +1958,8 @@ export const App = () => {
             sectionGroupLabels={sectionGroupLabels}
             joinPipeList={joinPipeList}
             splitPipeList={splitPipeList}
-            renderItemActions={({ section, onDuplicate, onArchive, onRestore }) => (
-              <ItemActions
-                isArchived={Boolean(section.deletedAt)}
-                onDuplicate={onDuplicate}
-                onArchive={onArchive}
-                onRestore={onRestore}
-              />
-            )}
-            renderPreview={({ group, title, content: previewContent, mediaById: previewMediaById, sections, allSections, device }) => (
-              <SectionGroupSitePreview
-                group={group}
-                title={title}
-                content={previewContent}
-                mediaById={previewMediaById}
-                sections={sections}
-                allSections={allSections}
-                device={device}
-              />
-            )}
+            renderItemActions={renderSectionEditorItemActions}
+            renderPreview={renderSectionGroupPreview}
           />
         )}
 
@@ -1980,14 +1980,7 @@ export const App = () => {
             renderPreview={({ content: previewContent, mediaById: previewMediaById, device }) => (
               <ManifestoSitePreview content={previewContent} mediaById={previewMediaById} device={device} />
             )}
-            renderItemActions={({ section, onDuplicate, onArchive, onRestore }) => (
-              <ItemActions
-                isArchived={Boolean(section.deletedAt)}
-                onDuplicate={onDuplicate}
-                onArchive={onArchive}
-                onRestore={onRestore}
-              />
-            )}
+            renderItemActions={renderSectionEditorItemActions}
             renderMediaQuickPicker={({ label, mediaItems, selectedMediaId, content: previewContent, onSelect }) => (
               <MediaQuickPicker
                 label={label}
@@ -2021,25 +2014,8 @@ export const App = () => {
             sectionGroupLabels={sectionGroupLabels}
             joinPipeList={joinPipeList}
             splitPipeList={splitPipeList}
-            renderItemActions={({ section, onDuplicate, onArchive, onRestore }) => (
-              <ItemActions
-                isArchived={Boolean(section.deletedAt)}
-                onDuplicate={onDuplicate}
-                onArchive={onArchive}
-                onRestore={onRestore}
-              />
-            )}
-            renderPreview={({ group, title, content: previewContent, mediaById: previewMediaById, sections, allSections, device }) => (
-              <SectionGroupSitePreview
-                group={group}
-                title={title}
-                content={previewContent}
-                mediaById={previewMediaById}
-                sections={sections}
-                allSections={allSections}
-                device={device}
-              />
-            )}
+            renderItemActions={renderSectionEditorItemActions}
+            renderPreview={renderSectionGroupPreview}
           />
         )}
 
@@ -2061,25 +2037,8 @@ export const App = () => {
             sectionGroupLabels={sectionGroupLabels}
             joinPipeList={joinPipeList}
             splitPipeList={splitPipeList}
-            renderItemActions={({ section, onDuplicate, onArchive, onRestore }) => (
-              <ItemActions
-                isArchived={Boolean(section.deletedAt)}
-                onDuplicate={onDuplicate}
-                onArchive={onArchive}
-                onRestore={onRestore}
-              />
-            )}
-            renderPreview={({ group, title, content: previewContent, mediaById: previewMediaById, sections, allSections, device }) => (
-              <SectionGroupSitePreview
-                group={group}
-                title={title}
-                content={previewContent}
-                mediaById={previewMediaById}
-                sections={sections}
-                allSections={allSections}
-                device={device}
-              />
-            )}
+            renderItemActions={renderSectionEditorItemActions}
+            renderPreview={renderSectionGroupPreview}
           />
         )}
 
@@ -2101,25 +2060,8 @@ export const App = () => {
             sectionGroupLabels={sectionGroupLabels}
             joinPipeList={joinPipeList}
             splitPipeList={splitPipeList}
-            renderItemActions={({ section, onDuplicate, onArchive, onRestore }) => (
-              <ItemActions
-                isArchived={Boolean(section.deletedAt)}
-                onDuplicate={onDuplicate}
-                onArchive={onArchive}
-                onRestore={onRestore}
-              />
-            )}
-            renderPreview={({ group, title, content: previewContent, mediaById: previewMediaById, sections, allSections, device }) => (
-              <SectionGroupSitePreview
-                group={group}
-                title={title}
-                content={previewContent}
-                mediaById={previewMediaById}
-                sections={sections}
-                allSections={allSections}
-                device={device}
-              />
-            )}
+            renderItemActions={renderSectionEditorItemActions}
+            renderPreview={renderSectionGroupPreview}
           />
         )}
 
@@ -2141,25 +2083,8 @@ export const App = () => {
             sectionGroupLabels={sectionGroupLabels}
             joinPipeList={joinPipeList}
             splitPipeList={splitPipeList}
-            renderItemActions={({ section, onDuplicate, onArchive, onRestore }) => (
-              <ItemActions
-                isArchived={Boolean(section.deletedAt)}
-                onDuplicate={onDuplicate}
-                onArchive={onArchive}
-                onRestore={onRestore}
-              />
-            )}
-            renderPreview={({ group, title, content: previewContent, mediaById: previewMediaById, sections, allSections, device }) => (
-              <SectionGroupSitePreview
-                group={group}
-                title={title}
-                content={previewContent}
-                mediaById={previewMediaById}
-                sections={sections}
-                allSections={allSections}
-                device={device}
-              />
-            )}
+            renderItemActions={renderSectionEditorItemActions}
+            renderPreview={renderSectionGroupPreview}
           />
         )}
 
