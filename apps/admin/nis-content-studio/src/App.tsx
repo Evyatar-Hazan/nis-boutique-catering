@@ -175,6 +175,13 @@ type SectionEditorItemActionsArgs = {
   readonly onRestore: () => void;
 };
 
+type ArchivableItemActionsArgs = {
+  readonly isArchived: boolean;
+  readonly onDuplicate?: () => void;
+  readonly onArchive: () => void;
+  readonly onRestore: () => void;
+};
+
 type SectionGroupPreviewArgs = {
   readonly group: string;
   readonly title: string;
@@ -1098,19 +1105,31 @@ export const App = () => {
     });
   };
 
-  const renderSectionEditorItemActions = ({
-    section,
+  const renderArchivableItemActions = ({
+    isArchived,
     onDuplicate,
     onArchive,
     onRestore,
-  }: SectionEditorItemActionsArgs) => (
+  }: ArchivableItemActionsArgs) => (
     <ItemActions
-      isArchived={Boolean(section.deletedAt)}
+      isArchived={isArchived}
       onDuplicate={onDuplicate}
       onArchive={onArchive}
       onRestore={onRestore}
     />
   );
+
+  const renderSectionEditorItemActions = ({
+    section,
+    onDuplicate,
+    onArchive,
+    onRestore,
+  }: SectionEditorItemActionsArgs) => renderArchivableItemActions({
+    isArchived: Boolean(section.deletedAt),
+    onDuplicate,
+    onArchive,
+    onRestore,
+  });
 
   const renderSectionGroupPreview = ({
     group,
@@ -1704,12 +1723,12 @@ export const App = () => {
                       <p className="kicker">חוויית אירוח באתר</p>
                       <h3>{service.title}</h3>
                     </div>
-                    <ItemActions
-                      isArchived={Boolean(service.deletedAt)}
-                      onDuplicate={() => duplicateService(service)}
-                      onArchive={() => archiveService(service.id)}
-                      onRestore={() => restoreService(service.id)}
-                    />
+                    {renderArchivableItemActions({
+                      isArchived: Boolean(service.deletedAt),
+                      onDuplicate: () => duplicateService(service),
+                      onArchive: () => archiveService(service.id),
+                      onRestore: () => restoreService(service.id),
+                    })}
                   </div>
                   <div className="toggle-row">
                     <Toggle checked={service.active && !service.deletedAt} label="מוצג באתר" onChange={(checked) => updateService(service.id, { active: checked })} />
@@ -1840,13 +1859,11 @@ export const App = () => {
                   getMediaUsages={(mediaId) => getMediaUsage(mediaId, content)}
                   getUsageKindLabel={(kind) => usageKindLabel(kind as MediaUsageKind)}
                   renderPreview={(media, showActions) => <DrivePreviewImage media={media} accessToken={session.accessToken} showActions={showActions} />}
-                  renderItemActions={(media) => (
-                    <ItemActions
-                      isArchived={Boolean(media.deletedAt)}
-                      onArchive={() => archiveMedia(media.id)}
-                      onRestore={() => restoreMedia(media.id)}
-                    />
-                  )}
+                  renderItemActions={(media) => renderArchivableItemActions({
+                    isArchived: Boolean(media.deletedAt),
+                    onArchive: () => archiveMedia(media.id),
+                    onRestore: () => restoreMedia(media.id),
+                  })}
                   renderMediaRiskNotice={(mediaId) => <MediaRiskNotice mediaId={mediaId} content={content} />}
                   renderNumberInput={(value, onChange) => <NumberInput value={value} onChange={onChange} />}
                 />
@@ -2154,12 +2171,12 @@ export const App = () => {
                         <button type="button" className="icon-button" onClick={() => moveGalleryItem(item.id, 1)} aria-label="הורדה למטה">
                           <ArrowDown aria-hidden="true" />
                         </button>
-                        <ItemActions
-                          isArchived={Boolean(item.deletedAt)}
-                          onDuplicate={() => duplicateGalleryItem(item)}
-                          onArchive={() => archiveGalleryItem(item.id)}
-                          onRestore={() => restoreGalleryItem(item.id)}
-                        />
+                        {renderArchivableItemActions({
+                          isArchived: Boolean(item.deletedAt),
+                          onDuplicate: () => duplicateGalleryItem(item),
+                          onArchive: () => archiveGalleryItem(item.id),
+                          onRestore: () => restoreGalleryItem(item.id),
+                        })}
                       </div>
                     </div>
                     <Field label="שם פנימי לתמונה" help="עוזר לזהות את התמונה בסטודיו.">
