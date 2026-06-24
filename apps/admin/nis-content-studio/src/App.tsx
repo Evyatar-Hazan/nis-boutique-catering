@@ -85,6 +85,11 @@ import {
 import { Field } from './components/editor/Field';
 import { HeroEditor } from './components/editor/sections/HeroEditor';
 import { SectionGroupEditor } from './components/editor/sections/SectionGroupEditor';
+import {
+  SiteMapAreaPreview,
+  SiteMapAreaPreviewSurface,
+  SiteMapPanel,
+} from './components/editor/sections/SiteMapPanel';
 import { PanelHeader } from './components/editor/PanelHeader';
 import { PreviewHeader } from './components/editor/PreviewHeader';
 import { CopyOnlySectionEditor } from './components/editor/sections/CopyOnlySectionEditor';
@@ -1393,7 +1398,76 @@ export const App = () => {
         </section>
 
         {activeView === 'site-map' && (
-          <SiteMapPanel content={content} mediaById={mediaById} onOpen={setActiveView} />
+          <SiteMapPanel
+            content={content}
+            mediaById={mediaById}
+            onOpen={(view) => setActiveView(view as ActiveView)}
+            areaDefinitions={areaDefinitions}
+            areaStatus={(areaId, nextContent) => areaStatus(areaId as ActiveView, nextContent)}
+            renderAreaPreview={({ area, content: previewContent, mediaById: previewMediaById }) => (
+              <SiteMapAreaPreview
+                area={area}
+                content={previewContent}
+                mediaById={previewMediaById}
+                renderAreaSurface={({ area, content: surfaceContent, mediaById: surfaceMediaById, device }) => (
+                  <SiteMapAreaPreviewSurface
+                    area={area}
+                    content={surfaceContent}
+                    mediaById={surfaceMediaById}
+                    device={device}
+                    areaDefinitions={areaDefinitions}
+                    exactPreviewSectionGroupIds={exactPreviewSectionGroupIds}
+                    renderHeroPreview={({ content: heroContent, hero, device, mediaById: heroMediaById }) => (
+                      <HeroSitePreview content={heroContent} hero={hero} device={device} mediaById={heroMediaById} />
+                    )}
+                    renderIntroBandPreview={({ content: introContent, mediaById: introMediaById, device }) => (
+                      <IntroBandPreview content={introContent} mediaById={introMediaById} device={device} />
+                    )}
+                    renderManifestoPreview={({ content: manifestoContent, mediaById: manifestoMediaById, device }) => (
+                      <ManifestoSitePreview content={manifestoContent} mediaById={manifestoMediaById} device={device} />
+                    )}
+                    renderExperienceLabPreview={({ content: experienceContent, mediaById: experienceMediaById, device }) => (
+                      <ActualExperienceLabPreview content={experienceContent} mediaById={experienceMediaById} device={device} />
+                    )}
+                    renderServicesPreview={({ content: servicesContent, mediaById: servicesMediaById, device }) => (
+                      <ServicesPreview content={servicesContent} mediaById={servicesMediaById} device={device} />
+                    )}
+                    renderGalleryPreview={({ content: galleryContent, mediaById: galleryMediaById, device }) => (
+                      <GallerySitePreview content={galleryContent} mediaById={galleryMediaById} device={device} />
+                    )}
+                    renderRealMediaPreview={({ content: realMediaContent, mediaById: realMediaMediaById, device }) => (
+                      <ActualSiteSectionFrame content={realMediaContent} mediaById={realMediaMediaById} device={device}>
+                        <RealMediaSection />
+                      </ActualSiteSectionFrame>
+                    )}
+                    renderContactPreview={({ content: contactContent, mediaById: contactMediaById, device }) => (
+                      <ContactPreview content={contactContent} mediaById={contactMediaById} device={device} />
+                    )}
+                    renderSectionGroupPreview={({ group, title, content: groupContent, mediaById: groupMediaById, sections, allSections, device }) => (
+                      <SectionGroupSitePreview
+                        group={group}
+                        title={title}
+                        content={groupContent}
+                        mediaById={groupMediaById}
+                        sections={sections}
+                        allSections={allSections}
+                        device={device}
+                      />
+                    )}
+                    renderSiteCopyOverviewPreview={({ content: copyContent, device }) => (
+                      <SiteCopyOverviewPreview content={copyContent} device={device} />
+                    )}
+                    renderSiteMicrocopyOverviewPreview={({ content: microcopyContent, device }) => (
+                      <SiteMicrocopyOverviewPreview content={microcopyContent} device={device} />
+                    )}
+                    renderMetadataPreview={({ content: metadataContent, device }) => (
+                      <MetadataSeoPreview content={metadataContent} device={device} />
+                    )}
+                  />
+                )}
+              />
+            )}
+          />
         )}
 
         {activeView === 'hero' && (
@@ -2176,145 +2250,6 @@ export const App = () => {
   );
 };
 
-const SiteMapPanel = ({
-  content,
-  mediaById,
-  onOpen,
-}: {
-  readonly content: ContentSnapshot;
-  readonly mediaById: ReadonlyMap<string, ImageAssetRecord>;
-  readonly onOpen: (view: ActiveView) => void;
-}) => (
-  <section className="workspace-panel">
-    <PanelHeader title="מפת האתר" text="כל כרטיס מציג תיאור קצר ובצידו תצוגת דסקטופ ותצוגת מובייל של אותו אזור, כדי לראות את התוצאה בלי להיכנס קודם למסך העריכה." />
-    <div className="site-map-grid">
-      {areaDefinitions.map((area) => (
-        <article className="site-area-card site-area-card-rich" key={area.id}>
-          <div className="site-area-card-header">
-            <div className="site-area-card-copy">
-              <div className="site-area-icon">{area.icon}</div>
-              <div>
-                <p className="kicker">{area.location}</p>
-                <h3>{area.title}</h3>
-                <p>{area.help}</p>
-              </div>
-            </div>
-            <div className="site-area-card-actions">
-              <span>{areaStatus(area.id, content)}</span>
-              <button className="compact-button" onClick={() => onOpen(area.editorView ?? area.id)}>עריכה</button>
-            </div>
-          </div>
-          <SiteMapAreaPreview area={area.id} content={content} mediaById={mediaById} />
-        </article>
-      ))}
-    </div>
-  </section>
-);
-
-const SiteMapAreaPreview = ({
-  area,
-  content,
-  mediaById,
-}: {
-  readonly area: ActiveView;
-  readonly content: ContentSnapshot;
-  readonly mediaById: ReadonlyMap<string, ImageAssetRecord>;
-}) => (
-  <div className="site-map-preview-shell">
-    <div className="site-map-preview-pane site-map-preview-pane-desktop">
-      <p className="site-map-preview-label">תצוגת מחשב</p>
-      <div className="site-map-embedded-preview">
-        <SiteMapAreaPreviewSurface area={area} content={content} mediaById={mediaById} device="desktop" />
-      </div>
-    </div>
-    <div className="site-map-preview-pane site-map-preview-pane-mobile">
-      <p className="site-map-preview-label">תצוגת מובייל</p>
-      <div className="site-map-embedded-preview">
-        <SiteMapAreaPreviewSurface area={area} content={content} mediaById={mediaById} device="mobile" />
-      </div>
-    </div>
-  </div>
-);
-
-const SiteMapAreaPreviewSurface = ({
-  area,
-  content,
-  mediaById,
-  device,
-}: {
-  readonly area: ActiveView;
-  readonly content: ContentSnapshot;
-  readonly mediaById: ReadonlyMap<string, ImageAssetRecord>;
-  readonly device: PreviewDevice;
-}) => {
-  const allSections = content.sections.filter((section) => !section.deletedAt);
-  const title = areaDefinitions.find((definition) => definition.id === area)?.title ?? 'אזור באתר';
-  const hero = content.sections.find((section) => section.id === 'hero' && section.active && !section.deletedAt);
-
-  if (area === 'hero' && hero) {
-    return <HeroSitePreview content={content} hero={hero} device={device} mediaById={mediaById} />;
-  }
-
-  if (area === 'intro-band') {
-    return <IntroBandPreview content={content} device={device} mediaById={mediaById} />;
-  }
-
-  if (area === 'manifesto') {
-    return <ManifestoSitePreview content={content} mediaById={mediaById} device={device} />;
-  }
-
-  if (area === 'experience-lab') {
-    return <ActualExperienceLabPreview content={content} mediaById={mediaById} device={device} />;
-  }
-
-  if (area === 'services') {
-    return <ServicesPreview content={content} mediaById={mediaById} device={device} />;
-  }
-
-  if (area === 'gallery') {
-    return <GallerySitePreview content={content} mediaById={mediaById} device={device} />;
-  }
-
-  if (area === 'real-media') {
-    return (
-      <ActualSiteSectionFrame content={content} mediaById={mediaById} device={device}>
-        <RealMediaSection />
-      </ActualSiteSectionFrame>
-    );
-  }
-
-  if (area === 'contact') {
-    return <ContactPreview content={content} device={device} mediaById={mediaById} />;
-  }
-
-  if (exactPreviewSectionGroupIds.some((group) => group === area)) {
-    const group = area as typeof exactPreviewSectionGroupIds[number];
-    const sections = content.sections
-      .filter((section) => section.group === group)
-      .sort((left, right) => left.order - right.order);
-    return (
-      <SectionGroupSitePreview
-        group={group}
-        title={title}
-        content={content}
-        mediaById={mediaById}
-        sections={sections}
-        allSections={allSections}
-        device={device}
-      />
-    );
-  }
-
-  if (area === 'site-copy') {
-    return <SiteCopyOverviewPreview content={content} device={device} />;
-  }
-
-  if (area === 'site-microcopy') {
-    return <SiteMicrocopyOverviewPreview content={content} device={device} />;
-  }
-
-  return <MetadataSeoPreview content={content} device={device} />;
-};
 
 const SiteCopyOverviewPreview = ({
   content,
