@@ -48,6 +48,33 @@ import {
 } from '@monorepo/content-schema';
 import { isGoogleConfigured, studioConfig } from './config';
 import {
+  addGalleryItemToSnapshot,
+  addSectionToSnapshot,
+  addServiceToSnapshot,
+  archiveGalleryItemInSnapshot,
+  archiveMediaInSnapshot,
+  archiveSectionInSnapshot,
+  archiveSelectedMediaInSnapshot,
+  archiveServiceInSnapshot,
+  duplicateGalleryItemInSnapshot,
+  duplicateSectionInSnapshot,
+  duplicateServiceInSnapshot,
+  getGalleryItemForMedia,
+  moveGalleryItemInSnapshot,
+  normalizeCmsMetadataInSnapshot,
+  normalizeMediaId,
+  renameMediaInSnapshot,
+  restoreGalleryItemInSnapshot,
+  restoreMediaInSnapshot,
+  restoreSectionInSnapshot,
+  restoreSelectedMediaInSnapshot,
+  restoreServiceInSnapshot,
+  updateGalleryInSnapshot,
+  updateMediaInSnapshot,
+  updateSectionInSnapshot,
+  updateServiceInSnapshot,
+} from './contentMutations';
+import {
   fetchGoogleUserEmail,
   getDriveFileDownloadUrl,
   openDrivePicker,
@@ -232,7 +259,6 @@ const emptyContent: ContentSnapshot = {
 
 const editableCategories = galleryCategoryIds.filter((category) => category !== 'all');
 const publicSiteOrigin = 'https://nisboutiquecatering.com';
-const archiveDate = () => new Date().toISOString();
 const creatorUrl = 'https://EvyatarHazan.com';
 const rememberedSessionKey = 'nis-content-studio-session-v1';
 const tokenRefreshWindowMs = 60_000;
@@ -487,9 +513,6 @@ export const ensureManagedSections = (snapshot: ContentSnapshot): ContentSnapsho
 
 const formatError = (error: unknown) => (error instanceof Error ? error.message : 'הפעולה נכשלה');
 
-const updateById = <T extends { id: string }>(items: readonly T[], id: string, patch: Partial<T>) =>
-  items.map((item) => (item.id === id ? { ...item, ...patch } : item));
-
 const splitPipeList = (value: string) => value.split('|').map((item) => item.trim()).filter(Boolean);
 const joinPipeList = (items: readonly string[]) => items.join(' | ');
 const cmsSrcFor = (id: string) => `/media/cms/${id}.webp`;
@@ -509,9 +532,6 @@ const managedCopySectionId = (id: string) => `copy-${id}`;
 
 const getManagedCopySection = (content: ContentSnapshot, id: string) =>
   content.sections.find((section) => section.id === managedCopySectionId(id) && section.group === 'site-copy' && !section.deletedAt);
-
-const normalizeMediaId = (value: string) =>
-  value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'media-new';
 
 const areaDefinitions: readonly SiteAreaDefinition[] = [
   {
@@ -980,11 +1000,11 @@ export const App = () => {
   };
 
   const updateGallery = (id: string, patch: Partial<GalleryItemRecord>) => {
-    updateContent((current) => ({ ...current, gallery: updateById(current.gallery, id, patch) }));
+    updateContent((current) => updateGalleryInSnapshot(current, id, patch));
   };
 
   const updateMedia = (id: string, patch: Partial<ImageAssetRecord>) => {
-    updateContent((current) => ({ ...current, media: updateById(current.media, id, patch) }));
+    updateContent((current) => updateMediaInSnapshot(current, id, patch));
   };
 
   const saveMediaTitle = (id: string, title: string) => {
@@ -998,10 +1018,7 @@ export const App = () => {
         throw new Error('צריך להתחבר לפני שמירה.');
       }
 
-      const nextSnapshot = buildNextContent(content, (current) => ({
-        ...current,
-        media: updateById(current.media, id, { title: trimmedTitle }),
-      }));
+      const nextSnapshot = buildNextContent(content, (current) => updateMediaInSnapshot(current, id, { title: trimmedTitle }));
 
       setContent(nextSnapshot);
       setPublishState('saving');
@@ -1014,34 +1031,24 @@ export const App = () => {
 
   const renameMedia = (id: string, nextId: string) => {
     const cleanId = normalizeMediaId(nextId);
-    updateContent((current) => ({
-      ...current,
-      media: current.media.map((media) => (media.id === id ? { ...media, id: cleanId, src: media.driveFileId ? cmsSrcFor(cleanId) : media.src } : media)),
-      gallery: current.gallery.map((item) => (item.mediaId === id ? { ...item, mediaId: cleanId } : item)),
-      services: current.services.map((service) => (service.mediaId === id ? { ...service, mediaId: cleanId } : service)),
-      sections: current.sections.map((section) => (
-        section.group === 'hero-media' || section.group === 'manifesto'
-          ? { ...section, items: section.items.map((item) => (item === id ? cleanId : item)) }
-          : section
-      )),
-    }));
+    updateContent((current) => renameMediaInSnapshot(current, id, nextId));
     setSelectedMediaId(cleanId);
   };
 
   const updateService = (id: string, patch: Partial<ServiceRecord>) => {
-    updateContent((current) => ({ ...current, services: updateById(current.services, id, patch) }));
+    updateContent((current) => updateServiceInSnapshot(current, id, patch));
   };
 
   const updateSection = (id: string, patch: Partial<SectionBlockRecord>) => {
-    updateContent((current) => ({ ...current, sections: updateById(current.sections, id, patch) }));
+    updateContent((current) => updateSectionInSnapshot(current, id, patch));
   };
 
-  const archiveGalleryItem = (id: string) => updateGallery(id, { active: false, deletedAt: archiveDate() });
-  const restoreGalleryItem = (id: string) => updateGallery(id, { deletedAt: undefined });
-  const archiveService = (id: string) => updateService(id, { active: false, deletedAt: archiveDate() });
-  const restoreService = (id: string) => updateService(id, { deletedAt: undefined });
-  const archiveSection = (id: string) => updateSection(id, { active: false, deletedAt: archiveDate() });
-  const restoreSection = (id: string) => updateSection(id, { deletedAt: undefined });
+  const archiveGalleryItem = (id: string) => updateContent((current) => archiveGalleryItemInSnapshot(current, id));
+  const restoreGalleryItem = (id: string) => updateContent((current) => restoreGalleryItemInSnapshot(current, id));
+  const archiveService = (id: string) => updateContent((current) => archiveServiceInSnapshot(current, id));
+  const restoreService = (id: string) => updateContent((current) => restoreServiceInSnapshot(current, id));
+  const archiveSection = (id: string) => updateContent((current) => archiveSectionInSnapshot(current, id));
+  const restoreSection = (id: string) => updateContent((current) => restoreSectionInSnapshot(current, id));
   const archiveMedia = (id: string) => {
     const usages = getMediaUsage(id, content);
     const activeUsages = usages.filter((usage) => usage.active);
@@ -1053,9 +1060,9 @@ export const App = () => {
       }
     }
 
-    updateMedia(id, { deletedAt: archiveDate() });
+    updateContent((current) => archiveMediaInSnapshot(current, id));
   };
-  const restoreMedia = (id: string) => updateMedia(id, { deletedAt: undefined });
+  const restoreMedia = (id: string) => updateContent((current) => restoreMediaInSnapshot(current, id));
   const toggleSelectedMedia = (mediaId: string) => {
     setSelectedMediaIds((current) => (current.includes(mediaId) ? current.filter((id) => id !== mediaId) : [...current, mediaId]));
   };
@@ -1070,10 +1077,7 @@ export const App = () => {
       return;
     }
 
-    updateContent((current) => ({
-      ...current,
-      media: current.media.map((media) => (targetIds.includes(media.id) ? { ...media, deletedAt: archiveDate() } : media)),
-    }));
+    updateContent((current) => archiveSelectedMediaInSnapshot(current, targetIds));
     setSelectedMediaIds([]);
   };
   const restoreSelectedMedia = () => {
@@ -1082,32 +1086,12 @@ export const App = () => {
       return;
     }
 
-    updateContent((current) => ({
-      ...current,
-      media: current.media.map((media) => (targetIds.includes(media.id) ? { ...media, deletedAt: undefined } : media)),
-    }));
+    updateContent((current) => restoreSelectedMediaInSnapshot(current, targetIds));
     setSelectedMediaIds([]);
   };
 
   const moveGalleryItem = (id: string, direction: -1 | 1) => {
-    updateContent((current) => {
-      const sorted = [...current.gallery].sort((left, right) => left.order - right.order);
-      const index = sorted.findIndex((item) => item.id === id);
-      const nextIndex = index + direction;
-      if (index < 0 || nextIndex < 0 || nextIndex >= sorted.length) {
-        return current;
-      }
-      const currentItem = sorted[index];
-      const nextItem = sorted[nextIndex];
-      return {
-        ...current,
-        gallery: current.gallery.map((item) => {
-          if (item.id === currentItem.id) return { ...item, order: nextItem.order };
-          if (item.id === nextItem.id) return { ...item, order: currentItem.order };
-          return item;
-        }),
-      };
-    });
+    updateContent((current) => moveGalleryItemInSnapshot(current, id, direction));
   };
 
   const renderArchivableItemActions = ({
@@ -1177,11 +1161,7 @@ export const App = () => {
   };
 
   const normalizeCmsMetadata = () => {
-    updateContent((current) => ({
-      ...current,
-      media: current.media.map((media) => (media.driveFileId ? { ...media, src: cmsSrcFor(media.id), responsive: true } : media)),
-      gallery: current.gallery.map((item, index) => ({ ...item, order: index + 1, driveFileId: undefined })),
-    }));
+    updateContent((current) => normalizeCmsMetadataInSnapshot(current));
     setStatus('נתיבי המדיה נוקו לכתובות CMS. לחצו "עדכן אתר" כדי לפרסם את הניקוי.');
   };
 
@@ -1197,13 +1177,7 @@ export const App = () => {
         }
       }
 
-      return {
-        ...current,
-        gallery: [
-          ...current.gallery,
-          makeGalleryItem(current, mediaId),
-        ],
-      };
+      return addGalleryItemToSnapshot(current, mediaLabel, mediaId);
     });
 
     if (duplicateTitle) {
@@ -1217,95 +1191,23 @@ export const App = () => {
   };
 
   const duplicateGalleryItem = (item: GalleryItemRecord) => {
-    updateContent((current) => ({
-      ...current,
-      gallery: [
-        ...current.gallery,
-        {
-          ...item,
-          id: `${item.id}-copy-${current.gallery.length + 1}`,
-          title: `${item.title} - עותק`,
-          order: current.gallery.length + 1,
-          active: false,
-          deletedAt: undefined,
-        },
-      ],
-    }));
+    updateContent((current) => duplicateGalleryItemInSnapshot(current, item));
   };
 
   const addService = () => {
-    updateContent((current) => ({
-      ...current,
-      services: [
-        ...current.services,
-        {
-          id: `service-${current.services.length + 1}`,
-          title: 'שירות חדש',
-          subtitle: 'משפט קצר שמסביר את השירות',
-          description: 'כאן כותבים מה הלקוח מקבל בשירות הזה.',
-          bestFor: 'למי זה מתאים',
-          promise: 'מה מבטיחים ללקוח',
-          details: ['פרט ראשון', 'פרט שני'],
-          cta: 'דברו איתנו',
-          mediaId: current.media.find((media) => !media.deletedAt)?.id ?? '',
-          icon: 'Sparkles',
-          active: false,
-          order: current.services.length + 1,
-        },
-      ],
-    }));
+    updateContent((current) => addServiceToSnapshot(current));
   };
 
   const duplicateService = (service: ServiceRecord) => {
-    updateContent((current) => ({
-      ...current,
-      services: [
-        ...current.services,
-        {
-          ...service,
-          id: `${service.id}-copy-${current.services.length + 1}`,
-          title: `${service.title} - עותק`,
-          active: false,
-          order: current.services.length + 1,
-          deletedAt: undefined,
-        },
-      ],
-    }));
+    updateContent((current) => duplicateServiceInSnapshot(current, service));
   };
 
   const addSection = (group = 'general') => {
-    updateContent((current) => ({
-      ...current,
-      sections: [
-        ...current.sections,
-        {
-          id: `${group}-${current.sections.filter((section) => section.group === group).length + 1}`,
-          group,
-          title: 'מקטע חדש',
-          text: 'טקסט לעריכה',
-          items: [],
-          active: false,
-          order: current.sections.filter((section) => section.group === group).length + 1,
-        },
-      ],
-    }));
+    updateContent((current) => addSectionToSnapshot(current, group));
   };
 
   const duplicateSection = (section: SectionBlockRecord) => {
-    updateContent((current) => ({
-      ...current,
-      sections: [
-        ...current.sections,
-        {
-          ...section,
-          id: `${section.id}-copy-${current.sections.filter((item) => item.group === section.group).length + 1}`,
-          title: `${section.title ?? 'מקטע'} - עותק`,
-          active: false,
-          order: current.sections.filter((item) => item.group === section.group).length + 1,
-          deletedAt: undefined,
-        },
-      ],
-    }));
+    updateContent((current) => duplicateSectionInSnapshot(current, section));
   };
 
   const uploadMediaFile = (file: File) => {
@@ -4089,29 +3991,9 @@ const getViewForUsage = (kind: MediaUsageKind): ActiveView => {
   return 'hero';
 };
 
-const getGalleryItemForMedia = (mediaId: string, content: ContentSnapshot) => (
-  content.gallery.find((item) => item.mediaId === mediaId && !item.deletedAt) ?? null
-);
-
 const formatMediaUsage = (usages: readonly MediaUsageEntry[]) => usages
   .map((usage) => `- ${usageKindLabel(usage.kind)}: ${usage.title}`)
   .join('\n');
-
-const makeGalleryItem = (content: ContentSnapshot, mediaId?: string): GalleryItemRecord => {
-  const media = mediaId ? content.media.find((item) => item.id === mediaId) : undefined;
-  const title = media ? mediaLabel(media, content) : 'תמונה חדשה';
-
-  return {
-    id: `gallery-${content.gallery.length + 1}`,
-    title,
-    alt: media ? `תיאור נגיש עבור ${title}` : 'תיאור נגיש לתמונה חדשה',
-    category: 'trays',
-    order: content.gallery.length + 1,
-    active: Boolean(media),
-    tall: false,
-    mediaId: media?.id ?? content.media.find((item) => !item.deletedAt)?.id ?? '',
-  };
-};
 
 const mediaLabel = (media: ImageAssetRecord, content: ContentSnapshot) => {
   if (media.title?.trim()) {
