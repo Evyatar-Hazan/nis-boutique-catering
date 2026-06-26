@@ -182,6 +182,12 @@ type ArchivableItemActionsArgs = {
   readonly onRestore: () => void;
 };
 
+type DevicePreviewBlockArgs = {
+  readonly text: string;
+  readonly children: ReactNode;
+  readonly wrapInColumn?: boolean;
+};
+
 type SectionGroupPreviewArgs = {
   readonly group: string;
   readonly title: string;
@@ -1151,6 +1157,26 @@ export const App = () => {
     />
   );
 
+  const renderDevicePreviewBlock = ({
+    text,
+    children,
+    wrapInColumn = true,
+  }: DevicePreviewBlockArgs) => {
+    const preview = (
+      <>
+        <PreviewHeader
+          title="תצוגה מקדימה כמו באתר"
+          text={text}
+          device={previewDevice}
+          onDeviceChange={setPreviewDevice}
+        />
+        {children}
+      </>
+    );
+
+    return wrapInColumn ? <div className="preview-column">{preview}</div> : preview;
+  };
+
   const normalizeCmsMetadata = () => {
     updateContent((current) => ({
       ...current,
@@ -1677,27 +1703,26 @@ export const App = () => {
                 <textarea value={content.settings.seoDescription ?? ''} onChange={(event) => updateContent((current) => ({ ...current, settings: { ...current.settings, seoDescription: event.target.value || undefined } }))} />
               </Field>
             </div>
-            <div className="preview-column">
-              <PreviewHeader
-                title="תצוגה מקדימה כמו באתר"
-                text="כך אזור יצירת הקשר ופרטי ה-SEO ירגישו ללקוח במחשב או במובייל."
-                device={previewDevice}
-                onDeviceChange={setPreviewDevice}
-              />
-              <ContactPreview content={content} mediaById={mediaById} device={previewDevice} />
-              <MetadataSeoPreview content={content} device={previewDevice} />
-              <PublishPanel
-                content={content}
-                hasErrors={hasErrors}
-                status={hasErrors ? validationErrorText(validation, referenceIssues) : status}
-                publishState={publishState}
-                publishProgress={publishProgress}
-                hasPublishUrl={Boolean(studioConfig.publishUrl)}
-                onSaveDraft={handleSaveDraft}
-                onPublish={handleUpdateSite}
-                disabled={isBusy || !canUseGoogle || hasErrors}
-              />
-            </div>
+            {renderDevicePreviewBlock({
+              text: 'כך אזור יצירת הקשר ופרטי ה-SEO ירגישו ללקוח במחשב או במובייל.',
+              children: (
+                <>
+                  <ContactPreview content={content} mediaById={mediaById} device={previewDevice} />
+                  <MetadataSeoPreview content={content} device={previewDevice} />
+                  <PublishPanel
+                    content={content}
+                    hasErrors={hasErrors}
+                    status={hasErrors ? validationErrorText(validation, referenceIssues) : status}
+                    publishState={publishState}
+                    publishProgress={publishProgress}
+                    hasPublishUrl={Boolean(studioConfig.publishUrl)}
+                    onSaveDraft={handleSaveDraft}
+                    onPublish={handleUpdateSite}
+                    disabled={isBusy || !canUseGoogle || hasErrors}
+                  />
+                </>
+              ),
+            })}
           </section>
         )}
 
@@ -1785,15 +1810,10 @@ export const App = () => {
                 ))}
               </div>
             </div>
-            <div className="preview-column">
-                <PreviewHeader
-                  title="תצוגה מקדימה כמו באתר"
-                text="אפשר לעבור בין מחשב למובייל ולראות איך בחירת החוויה תרגיש ללקוח באתר החי."
-                  device={previewDevice}
-                  onDeviceChange={setPreviewDevice}
-                />
-              <ServicesPreview content={content} mediaById={mediaById} device={previewDevice} />
-            </div>
+            {renderDevicePreviewBlock({
+              text: 'אפשר לעבור בין מחשב למובייל ולראות איך בחירת החוויה תרגיש ללקוח באתר החי.',
+              children: <ServicesPreview content={content} mediaById={mediaById} device={previewDevice} />,
+            })}
           </section>
         )}
 
@@ -2131,13 +2151,11 @@ export const App = () => {
                 </button>
               }
             />
-            <PreviewHeader
-              title="תצוגה מקדימה כמו באתר"
-              text="כך התמונות הראשונות בגלריה יופיעו במחשב או במובייל אחרי פרסום."
-              device={previewDevice}
-              onDeviceChange={setPreviewDevice}
-            />
-            <GallerySitePreview content={content} mediaById={mediaById} device={previewDevice} />
+            {renderDevicePreviewBlock({
+              text: 'כך התמונות הראשונות בגלריה יופיעו במחשב או במובייל אחרי פרסום.',
+              wrapInColumn: false,
+              children: <GallerySitePreview content={content} mediaById={mediaById} device={previewDevice} />,
+            })}
             <label className="search-box">
               <Search aria-hidden="true" />
               <input value={siteGalleryQuery} onChange={(event) => setSiteGalleryQuery(event.target.value)} placeholder="חיפוש לפי שם, תיאור או קטגוריה" />
