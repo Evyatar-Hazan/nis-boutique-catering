@@ -74,6 +74,7 @@ import {
   updateSectionInSnapshot,
   updateServiceInSnapshot,
 } from './contentMutations';
+import { MediaQuickPicker, MediaSelectionUsageNotice } from './mediaSelectionComponents';
 import {
   fetchGoogleUserEmail,
   getDriveFileDownloadUrl,
@@ -1508,12 +1509,16 @@ export const App = () => {
                 label={label}
                 mediaItems={mediaItems}
                 selectedMediaId={selectedMediaId}
-                content={previewContent}
                 onSelect={onSelect}
+                getMediaLabel={(media) => mediaLabel(media, previewContent)}
+                getMediaSrc={(media) => (media.src ? publicAssetSrcFor(media.src) : '')}
               />
             )}
             renderMediaSelectionUsageNotice={({ mediaId, content: previewContent, currentUsage }) => (
-              <MediaSelectionUsageNotice mediaId={mediaId} content={previewContent} currentUsage={currentUsage} />
+              <MediaSelectionUsageNotice
+                otherUsages={getMediaUsage(mediaId, previewContent).filter((usage) => usage.kind !== currentUsage.kind || usage.id !== currentUsage.id)}
+                getUsageKindLabel={usageKindLabel}
+              />
             )}
             joinPipeList={joinPipeList}
             splitPipeList={splitPipeList}
@@ -1689,13 +1694,13 @@ export const App = () => {
                       label="בחירה מהירה לתמונת השירות"
                       mediaItems={visibleMedia}
                       selectedMediaId={service.mediaId}
-                      content={content}
                       onSelect={(mediaId) => updateService(service.id, { mediaId })}
+                      getMediaLabel={(media) => mediaLabel(media, content)}
+                      getMediaSrc={(media) => (media.src ? publicAssetSrcFor(media.src) : '')}
                     />
                     <MediaSelectionUsageNotice
-                      mediaId={service.mediaId}
-                      content={content}
-                      currentUsage={{ kind: 'service', id: service.id }}
+                      otherUsages={getMediaUsage(service.mediaId, content).filter((usage) => usage.kind !== 'service' || usage.id !== service.id)}
+                      getUsageKindLabel={usageKindLabel}
                     />
                     <Field label="טקסט כפתור" help="כפתור הפעולה בכרטיס.">
                       <TextInput value={service.cta} onChange={(value) => updateService(service.id, { cta: value })} />
@@ -1924,12 +1929,16 @@ export const App = () => {
                 label={label}
                 mediaItems={mediaItems}
                 selectedMediaId={selectedMediaId}
-                content={previewContent}
                 onSelect={onSelect}
+                getMediaLabel={(media) => mediaLabel(media, previewContent)}
+                getMediaSrc={(media) => (media.src ? publicAssetSrcFor(media.src) : '')}
               />
             )}
             renderMediaSelectionUsageNotice={({ mediaId, content: previewContent, currentUsage }) => (
-              <MediaSelectionUsageNotice mediaId={mediaId} content={previewContent} currentUsage={currentUsage} />
+              <MediaSelectionUsageNotice
+                otherUsages={getMediaUsage(mediaId, previewContent).filter((usage) => usage.kind !== currentUsage.kind || usage.id !== currentUsage.id)}
+                getUsageKindLabel={usageKindLabel}
+              />
             )}
           />
         )}
@@ -2120,13 +2129,13 @@ export const App = () => {
                       label="בחירה מהירה לתמונת הגלריה"
                       mediaItems={visibleMedia}
                       selectedMediaId={item.mediaId}
-                      content={content}
                       onSelect={(mediaId) => updateGallery(item.id, { mediaId })}
+                      getMediaLabel={(media) => mediaLabel(media, content)}
+                      getMediaSrc={(media) => (media.src ? publicAssetSrcFor(media.src) : '')}
                     />
                     <MediaSelectionUsageNotice
-                      mediaId={item.mediaId}
-                      content={content}
-                      currentUsage={{ kind: 'gallery', id: item.id }}
+                      otherUsages={getMediaUsage(item.mediaId, content).filter((usage) => usage.kind !== 'gallery' || usage.id !== item.id)}
+                      getUsageKindLabel={usageKindLabel}
                     />
                     <div className="toggle-row">
                       <Toggle checked={item.active} label="מוצג באתר" onChange={(checked) => updateGallery(item.id, { active: checked })} />
@@ -3585,83 +3594,6 @@ const Metric = ({ label, value }: { readonly label: string; readonly value: stri
   </article>
 );
 
-
-const MediaQuickPicker = ({
-  label,
-  mediaItems,
-  selectedMediaId,
-  content,
-  onSelect,
-}: {
-  readonly label: string;
-  readonly mediaItems: readonly ImageAssetRecord[];
-  readonly selectedMediaId: string;
-  readonly content: ContentSnapshot;
-  readonly onSelect: (mediaId: string) => void;
-}) => (
-  <div className="media-quick-picker" aria-label={label}>
-    <div className="media-quick-picker-heading">
-      <strong>{label}</strong>
-      <span>לחיצה אחת מחליפה את התמונה באזור הזה.</span>
-    </div>
-    <div className="media-choice-list">
-      {mediaItems.map((media) => {
-        const selected = media.id === selectedMediaId;
-        const src = media.src ? publicAssetSrcFor(media.src) : '';
-        return (
-          <button
-            type="button"
-            className={selected ? 'media-choice is-selected' : 'media-choice'}
-            key={media.id}
-            onClick={() => onSelect(media.id)}
-            aria-pressed={selected}
-            title={mediaLabel(media, content)}
-          >
-            {src ? <img src={src} alt="" loading="lazy" /> : <span className="media-choice-empty">אין תמונה</span>}
-            <span>{mediaLabel(media, content)}</span>
-          </button>
-        );
-      })}
-    </div>
-  </div>
-);
-
-const MediaSelectionUsageNotice = ({
-  mediaId,
-  content,
-  currentUsage,
-}: {
-  readonly mediaId: string;
-  readonly content: ContentSnapshot;
-  readonly currentUsage: Pick<MediaUsageEntry, 'kind' | 'id'>;
-}) => {
-  const otherUsages = getMediaUsage(mediaId, content).filter((usage) => usage.kind !== currentUsage.kind || usage.id !== currentUsage.id);
-  const activeOtherUsages = otherUsages.filter((usage) => usage.active);
-
-  return (
-    <div className={activeOtherUsages.length > 0 ? 'media-selection-usage has-risk' : 'media-selection-usage'}>
-      <strong>התמונה הזאת מחוברת גם ל...</strong>
-      {otherUsages.length > 0 ? (
-        <div className="usage-chips" aria-label="שימושים נוספים לתמונה">
-          {otherUsages.map((usage) => (
-            <span className={usage.active ? 'usage-chip is-active' : 'usage-chip'} key={`${usage.kind}-${usage.id}`}>
-              {usageKindLabel(usage.kind)}: {usage.title}
-              {!usage.active ? ' (כבוי)' : ''}
-            </span>
-          ))}
-        </div>
-      ) : (
-        <span className="usage-empty">אין שימוש נוסף לתמונה הזאת כרגע.</span>
-      )}
-      {activeOtherUsages.length > 0 && (
-        <span className="selection-risk-text">
-          <AlertTriangle aria-hidden="true" />
-          החלפה או שינוי מקור ישפיעו גם על המקומות הפעילים שמסומנים כאן.
-        </span>
-      )}
-    </div>
-  );
-};
 
 const MediaRiskNotice = ({ mediaId, content }: { readonly mediaId: string; readonly content: ContentSnapshot }) => {
   const activeUsages = getMediaUsage(mediaId, content).filter((usage) => usage.active);
