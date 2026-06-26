@@ -2,10 +2,9 @@ import { Plus } from 'lucide-react';
 import type { ReactNode } from 'react';
 import type { ContentSnapshot, ImageAssetRecord, SectionBlockRecord } from '@monorepo/content-schema';
 import { EditorSplitLayout } from '../EditorSplitLayout';
-import { Field } from '../Field';
 import { PanelHeader } from '../PanelHeader';
 import { PreviewHeader } from '../PreviewHeader';
-import { TextInput } from '../TextInput';
+import { SectionCopyFields } from './SectionCopyFields';
 import { Toggle } from '../Toggle';
 import type { PreviewDevice } from '../types';
 
@@ -59,15 +58,18 @@ export const IntroBandEditor = ({
           text="זה הפתיח הקצר שאחרי מסך הפתיחה. הוא מיועד להסביר במהירות למי Nis מתאימה ולמה שבתות, אירוח קטן ו-Travel Nis הם אותו עולם."
         />
         <Toggle checked={section.active && !section.deletedAt} label="האזור מוצג באתר" onChange={(checked) => updateSection(section.id, { active: checked })} />
-        <Field label="תווית קטנה מעל הכותרת" help="לדוגמה: רעיון אחד ברור.">
-          <TextInput value={section.items[0] ?? ''} onChange={(value) => updateSection(section.id, patchSectionItem(section, 0, value, 'רעיון אחד ברור'))} />
-        </Field>
-        <Field label="כותרת האזור" help="משפט אחד שמחדד את ההבטחה של Nis.">
-          <textarea value={section.title ?? ''} onChange={(event) => updateSection(section.id, { title: event.target.value || undefined })} />
-        </Field>
-        <Field label="טקסט הסבר" help="פסקה קצרה שמסבירה למי האזור מיועד ולמה הוא חשוב.">
-          <textarea value={section.text ?? ''} onChange={(event) => updateSection(section.id, { text: event.target.value || undefined })} />
-        </Field>
+        <SectionCopyFields
+          section={section}
+          onUpdate={updateSection}
+          patchSectionItem={patchSectionItem}
+          eyebrowFallback="רעיון אחד ברור"
+          eyebrowLabel="תווית קטנה מעל הכותרת"
+          eyebrowHelp="לדוגמה: רעיון אחד ברור."
+          titleLabel="כותרת האזור"
+          titleHelp="משפט אחד שמחדד את ההבטחה של Nis."
+          textLabel="טקסט הסבר"
+          textHelp="פסקה קצרה שמסבירה למי האזור מיועד ולמה הוא חשוב."
+        />
         </>
       }
       preview={

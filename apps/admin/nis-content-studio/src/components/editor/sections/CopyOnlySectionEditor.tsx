@@ -4,6 +4,7 @@ import { EditorSplitLayout } from '../EditorSplitLayout';
 import { Field } from '../Field';
 import { PanelHeader } from '../PanelHeader';
 import { PreviewHeader } from '../PreviewHeader';
+import { SectionCopyFields } from './SectionCopyFields';
 import { TextInput } from '../TextInput';
 import { Toggle } from '../Toggle';
 import type { PreviewDevice } from '../types';
@@ -70,15 +71,18 @@ export const CopyOnlySectionEditor = ({
         <>
         <PanelHeader title={title} text={text} />
         <Toggle checked={section.active && !section.deletedAt} label="האזור מוצג באתר" onChange={(checked) => updateSection(section.id, { active: checked })} />
-        <Field label="תווית קטנה מעל הכותרת" help="מופיעה מעל הכותרת של האזור באתר.">
-          <TextInput value={section.items[0] ?? ''} onChange={(value) => updateSection(section.id, patchSectionItem(section, 0, value, title))} />
-        </Field>
-        <Field label="כותרת האזור" help="הכותרת הגדולה שמופיעה באתר.">
-          <textarea value={section.title ?? ''} onChange={(event) => updateSection(section.id, { title: event.target.value || undefined })} />
-        </Field>
-        <Field label="טקסט הסבר" help="אפשר להשתמש ב-| כדי לחלק לפסקאות באתר.">
-          <textarea value={section.text ?? ''} onChange={(event) => updateSection(section.id, { text: event.target.value || undefined })} />
-        </Field>
+        <SectionCopyFields
+          section={section}
+          onUpdate={updateSection}
+          patchSectionItem={patchSectionItem}
+          eyebrowFallback={title}
+          eyebrowLabel="תווית קטנה מעל הכותרת"
+          eyebrowHelp="מופיעה מעל הכותרת של האזור באתר."
+          titleLabel="כותרת האזור"
+          titleHelp="הכותרת הגדולה שמופיעה באתר."
+          textLabel="טקסט הסבר"
+          textHelp="אפשר להשתמש ב-| כדי לחלק לפסקאות באתר."
+        />
         {tagsSection && (
           <Field label="תגיות תחומי שירות" help="מופיע באזור SEO באתר כתגיות קצרות. מפרידים עם |">
             <TextInput value={joinPipeList(tagsSection.items)} onChange={(value) => updateSection(tagsSection.id, { items: splitPipeList(value) })} />

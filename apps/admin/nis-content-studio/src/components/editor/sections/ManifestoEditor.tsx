@@ -5,6 +5,7 @@ import { EditorSplitLayout } from '../EditorSplitLayout';
 import { Field } from '../Field';
 import { PanelHeader } from '../PanelHeader';
 import { PreviewHeader } from '../PreviewHeader';
+import { SectionCopyFields } from './SectionCopyFields';
 import { TextInput } from '../TextInput';
 import { Toggle } from '../Toggle';
 import type { MediaUsageKind, PreviewDevice } from '../types';
@@ -92,15 +93,18 @@ export const ManifestoEditor = ({
               <span>החלק הימני באתר: תווית, כותרת גדולה ופסקת הסבר.</span>
             </div>
             <Toggle checked={copy.active && !copy.deletedAt} label="האזור מוצג באתר" onChange={(checked) => updateSection(copy.id, { active: checked })} />
-            <Field label="תווית קטנה" help="לדוגמה: השפה של Nis.">
-              <TextInput value={copy.items[0] ?? ''} onChange={(value) => updateSection(copy.id, patchSectionItem(copy, 0, value, 'השפה של Nis'))} />
-            </Field>
-            <Field label="כותרת גדולה" help="אפשר לרדת שורה עם Enter.">
-              <textarea value={copy.title ?? ''} onChange={(event) => updateSection(copy.id, { title: event.target.value || undefined })} />
-            </Field>
-            <Field label="טקסט מתחת לכותרת" help="משפט קצר שמסביר את התחושה שהאזור אמור להעביר.">
-              <textarea value={copy.text ?? ''} onChange={(event) => updateSection(copy.id, { text: event.target.value || undefined })} />
-            </Field>
+            <SectionCopyFields
+              section={copy}
+              onUpdate={updateSection}
+              patchSectionItem={patchSectionItem}
+              eyebrowFallback="השפה של Nis"
+              eyebrowLabel="תווית קטנה"
+              eyebrowHelp="לדוגמה: השפה של Nis."
+              titleLabel="כותרת גדולה"
+              titleHelp="אפשר לרדת שורה עם Enter."
+              textLabel="טקסט מתחת לכותרת"
+              textHelp="משפט קצר שמסביר את התחושה שהאזור אמור להעביר."
+            />
           </div>
         )}
         <div className="cards-list">
