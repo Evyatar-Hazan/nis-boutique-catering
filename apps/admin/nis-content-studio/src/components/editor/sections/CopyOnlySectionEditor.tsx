@@ -1,12 +1,12 @@
 import type { ReactNode } from 'react';
 import type { ContentSnapshot, ImageAssetRecord, SectionBlockRecord } from '@monorepo/content-schema';
+import { EditorSplitLayout } from '../EditorSplitLayout';
 import { Field } from '../Field';
 import { PanelHeader } from '../PanelHeader';
 import { PreviewHeader } from '../PreviewHeader';
 import { TextInput } from '../TextInput';
 import { Toggle } from '../Toggle';
-
-type PreviewDevice = 'desktop' | 'mobile';
+import type { PreviewDevice } from '../types';
 
 type CopyOnlySectionEditorProps = {
   readonly content: ContentSnapshot;
@@ -65,8 +65,9 @@ export const CopyOnlySectionEditor = ({
   const exactPreview = renderExactPreview({ sectionId, content, mediaById, device: previewDevice });
 
   return (
-    <section className="workspace-panel split-editor">
-      <div className="editor-column">
+    <EditorSplitLayout
+      editor={
+        <>
         <PanelHeader title={title} text={text} />
         <Toggle checked={section.active && !section.deletedAt} label="האזור מוצג באתר" onChange={(checked) => updateSection(section.id, { active: checked })} />
         <Field label="תווית קטנה מעל הכותרת" help="מופיעה מעל הכותרת של האזור באתר.">
@@ -83,8 +84,10 @@ export const CopyOnlySectionEditor = ({
             <TextInput value={joinPipeList(tagsSection.items)} onChange={(value) => updateSection(tagsSection.id, { items: splitPipeList(value) })} />
           </Field>
         )}
-      </div>
-      <div className="preview-column">
+        </>
+      }
+      preview={
+        <>
         <PreviewHeader
           title="תצוגה מקדימה כמו באתר"
           text="האזור הזה צריך להישאר קצר וברור בדסקטופ ובמובייל."
@@ -92,7 +95,8 @@ export const CopyOnlySectionEditor = ({
           onDeviceChange={onPreviewDeviceChange}
         />
         {exactPreview ?? renderFallbackPreview({ section, tagsSection, device: previewDevice })}
-      </div>
-    </section>
+        </>
+      }
+    />
   );
 };

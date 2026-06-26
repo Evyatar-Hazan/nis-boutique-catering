@@ -101,6 +101,7 @@ import {
 } from './components/editor/sections/SiteMapPanel';
 import { PanelHeader } from './components/editor/PanelHeader';
 import { PreviewHeader } from './components/editor/PreviewHeader';
+import type { MediaUsageKind, PreviewDevice } from './components/editor/types';
 import { CopyOnlySectionEditor } from './components/editor/sections/CopyOnlySectionEditor';
 import { IntroBandEditor } from './components/editor/sections/IntroBandEditor';
 import { ManifestoEditor } from './components/editor/sections/ManifestoEditor';
@@ -130,8 +131,6 @@ type ActiveView =
   | 'publish';
 type AuthState = 'signed-out' | 'loading' | 'authorized' | 'denied';
 type PublishState = 'clean' | 'draft' | 'saving' | 'publishing' | 'checking' | 'published' | 'live' | 'error';
-type PreviewDevice = 'desktop' | 'mobile';
-type MediaUsageKind = 'gallery' | 'service' | 'hero' | 'manifesto';
 type PublishStepState = 'done' | 'active' | 'pending' | 'blocked' | 'error';
 
 type StudioWorkflowStep = {

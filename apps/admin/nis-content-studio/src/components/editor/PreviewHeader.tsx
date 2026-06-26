@@ -1,6 +1,5 @@
 import { MonitorCheck, Phone } from 'lucide-react';
-
-type PreviewDevice = 'desktop' | 'mobile';
+import type { PreviewDevice } from './types';
 
 type PreviewHeaderProps = {
   readonly title: string;

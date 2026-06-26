@@ -1,14 +1,13 @@
 import { Plus } from 'lucide-react';
 import type { ReactNode } from 'react';
 import type { ContentSnapshot, ImageAssetRecord, SectionBlockRecord } from '@monorepo/content-schema';
+import { EditorSplitLayout } from '../EditorSplitLayout';
 import { Field } from '../Field';
 import { PanelHeader } from '../PanelHeader';
 import { PreviewHeader } from '../PreviewHeader';
 import { TextInput } from '../TextInput';
 import { Toggle } from '../Toggle';
-
-type PreviewDevice = 'desktop' | 'mobile';
-type MediaUsageKind = 'gallery' | 'service' | 'hero' | 'manifesto';
+import type { MediaUsageKind, PreviewDevice } from '../types';
 
 type ManifestoEditorProps = {
   readonly content: ContentSnapshot;
@@ -73,8 +72,9 @@ export const ManifestoEditor = ({
   const visibleMedia = content.media.filter((media) => !media.deletedAt);
 
   return (
-    <section className="workspace-panel split-editor">
-      <div className="editor-column">
+    <EditorSplitLayout
+      editor={
+        <>
         <PanelHeader
           title="השפה של Nis"
           text="האזור הזה מסביר את תחושת הבוטיק: נראות, ביתיות והתאמה אישית. כאן עורכים גם את הטקסט הראשי וגם את הכרטיסים שמרכזים את מסרי הבוטיק."
@@ -151,8 +151,10 @@ export const ManifestoEditor = ({
             );
           })}
         </div>
-      </div>
-      <div className="preview-column">
+        </>
+      }
+      preview={
+        <>
         <PreviewHeader
           title="תצוגה מקדימה כמו באתר"
           text="אפשר לעבור בין מחשב למובייל ולבדוק שהאזור נכנס נכון בלי חיתוך מיותר."
@@ -160,7 +162,8 @@ export const ManifestoEditor = ({
           onDeviceChange={onPreviewDeviceChange}
         />
         {renderPreview({ content, mediaById, device: previewDevice })}
-      </div>
-    </section>
+        </>
+      }
+    />
   );
 };

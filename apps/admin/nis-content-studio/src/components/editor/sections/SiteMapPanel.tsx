@@ -1,8 +1,7 @@
 import type { ReactNode } from 'react';
 import type { ContentSnapshot, ImageAssetRecord, SectionBlockRecord } from '@monorepo/content-schema';
 import { PanelHeader } from '../PanelHeader';
-
-type PreviewDevice = 'desktop' | 'mobile';
+import type { PreviewDevice } from '../types';
 
 type SiteAreaDefinition = {
   readonly id: string;

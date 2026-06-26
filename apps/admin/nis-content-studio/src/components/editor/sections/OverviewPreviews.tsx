@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react';
 import type { ContentSnapshot } from '@monorepo/content-schema';
-
-type PreviewDevice = 'desktop' | 'mobile';
+import type { PreviewDevice } from '../types';
 
 type SiteCopyOverviewPreviewProps = {
   readonly content: ContentSnapshot;

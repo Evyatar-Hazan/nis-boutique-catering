@@ -1,13 +1,13 @@
 import { FileText, Plus } from 'lucide-react';
 import type { ReactNode } from 'react';
 import type { ContentSnapshot, ImageAssetRecord, SectionBlockRecord } from '@monorepo/content-schema';
+import { EditorSplitLayout } from '../EditorSplitLayout';
 import { Field } from '../Field';
 import { PanelHeader } from '../PanelHeader';
 import { PreviewHeader } from '../PreviewHeader';
 import { TextInput } from '../TextInput';
 import { Toggle } from '../Toggle';
-
-type PreviewDevice = 'desktop' | 'mobile';
+import type { PreviewDevice } from '../types';
 
 type SectionGroupEditorProps = {
   readonly title: string;
@@ -68,8 +68,9 @@ export const SectionGroupEditor = ({
     .sort((left, right) => left.order - right.order);
 
   return (
-    <section className="workspace-panel split-editor">
-      <div className="editor-column">
+    <EditorSplitLayout
+      editor={
+        <>
         <PanelHeader
           title={title}
           text={text}
@@ -131,8 +132,10 @@ export const SectionGroupEditor = ({
             </div>
           )}
         </div>
-      </div>
-      <div className="preview-column">
+        </>
+      }
+      preview={
+        <>
         <PreviewHeader
           title="תצוגה מקדימה כמו באתר"
           text="אפשר לעבור בין מחשב למובייל ולבדוק איך הטקסטים ייראו אחרי פרסום."
@@ -148,7 +151,8 @@ export const SectionGroupEditor = ({
           allSections: sections,
           device: previewDevice,
         })}
-      </div>
-    </section>
+        </>
+      }
+    />
   );
 };

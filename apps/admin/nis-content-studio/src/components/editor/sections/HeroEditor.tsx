@@ -1,14 +1,13 @@
 import { Plus } from 'lucide-react';
 import type { ReactNode } from 'react';
 import type { ContentSnapshot, ImageAssetRecord, SectionBlockRecord } from '@monorepo/content-schema';
+import { EditorSplitLayout } from '../EditorSplitLayout';
 import { Field } from '../Field';
 import { PanelHeader } from '../PanelHeader';
 import { PreviewHeader } from '../PreviewHeader';
 import { TextInput } from '../TextInput';
 import { Toggle } from '../Toggle';
-
-type PreviewDevice = 'desktop' | 'mobile';
-type MediaUsageKind = 'gallery' | 'service' | 'hero' | 'manifesto';
+import type { MediaUsageKind, PreviewDevice } from '../types';
 
 type HeroMediaSlot = {
   readonly key: string;
@@ -92,8 +91,13 @@ export const HeroEditor = ({
   }
 
   return (
-    <section className="workspace-panel split-editor split-editor-priority-preview">
-      <div className="preview-column preview-column-full-width">
+    <EditorSplitLayout
+      className="split-editor-priority-preview"
+      previewClassName="preview-column preview-column-full-width"
+      editorClassName="editor-column editor-column-sections"
+      previewFirst
+      preview={
+        <>
         <PreviewHeader
           title="תצוגה מקדימה כמו באתר"
           text="אפשר לעבור בין מחשב למובייל ולראות איך מסך הפתיחה ירגיש ללקוח."
@@ -101,8 +105,10 @@ export const HeroEditor = ({
           onDeviceChange={onPreviewDeviceChange}
         />
         {renderPreview({ content, hero, device: previewDevice, mediaById })}
-      </div>
-      <div className="editor-column editor-column-sections">
+        </>
+      }
+      editor={
+        <>
         <PanelHeader title="מסך פתיחה" text="כאן עורכים את המסר הראשון שהלקוח פוגש. כל אזור מחולק לפי המשמעות שלו באתר." />
         <div className="hero-editor-status-card">
           <div className="hero-editor-status-copy">
@@ -232,7 +238,8 @@ export const HeroEditor = ({
             </div>
           </details>
         )}
-      </div>
-    </section>
+        </>
+      }
+    />
   );
 };

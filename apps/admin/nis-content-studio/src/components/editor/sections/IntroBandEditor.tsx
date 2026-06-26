@@ -1,13 +1,13 @@
 import { Plus } from 'lucide-react';
 import type { ReactNode } from 'react';
 import type { ContentSnapshot, ImageAssetRecord, SectionBlockRecord } from '@monorepo/content-schema';
+import { EditorSplitLayout } from '../EditorSplitLayout';
 import { Field } from '../Field';
 import { PanelHeader } from '../PanelHeader';
 import { PreviewHeader } from '../PreviewHeader';
 import { TextInput } from '../TextInput';
 import { Toggle } from '../Toggle';
-
-type PreviewDevice = 'desktop' | 'mobile';
+import type { PreviewDevice } from '../types';
 
 type IntroBandEditorProps = {
   readonly content: ContentSnapshot;
@@ -51,8 +51,9 @@ export const IntroBandEditor = ({
   }
 
   return (
-    <section className="workspace-panel split-editor">
-      <div className="editor-column">
+    <EditorSplitLayout
+      editor={
+        <>
         <PanelHeader
           title="רעיון אחד ברור"
           text="זה הפתיח הקצר שאחרי מסך הפתיחה. הוא מיועד להסביר במהירות למי Nis מתאימה ולמה שבתות, אירוח קטן ו-Travel Nis הם אותו עולם."
@@ -67,8 +68,10 @@ export const IntroBandEditor = ({
         <Field label="טקסט הסבר" help="פסקה קצרה שמסבירה למי האזור מיועד ולמה הוא חשוב.">
           <textarea value={section.text ?? ''} onChange={(event) => updateSection(section.id, { text: event.target.value || undefined })} />
         </Field>
-      </div>
-      <div className="preview-column">
+        </>
+      }
+      preview={
+        <>
         <PreviewHeader
           title="תצוגה מקדימה כמו באתר"
           text="האזור הזה אמור להיות קצר, ברור וללא גלילה בדסקטופ."
@@ -76,7 +79,8 @@ export const IntroBandEditor = ({
           onDeviceChange={onPreviewDeviceChange}
         />
         {renderPreview({ content, mediaById, device: previewDevice })}
-      </div>
-    </section>
+        </>
+      }
+    />
   );
 };
