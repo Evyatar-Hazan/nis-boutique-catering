@@ -6,7 +6,7 @@ import {
 } from '../../../apps/frontend/nis-boutique-catering/src/data/siteContent';
 import { buildInquiryWhatsappLink } from '../../../apps/frontend/nis-boutique-catering/src/utils/contact';
 import { OptimizedImage } from './OptimizedImage';
-import { useSiteSectionPreviewData } from '@monorepo/site-preview/SiteSectionPreviewData';
+import { useSiteSectionPreviewData } from './SiteSectionPreviewData';
 import { IntroBandSectionContent } from './IntroBandSectionContent';
 
 const SectionHeading = ({

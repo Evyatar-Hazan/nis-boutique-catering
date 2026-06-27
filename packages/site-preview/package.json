@@ -4,13 +4,9 @@
   "version": "0.1.0",
   "type": "module",
   "exports": {
-    "./MainSections": {
-      "types": "./src/MainSections.tsx",
-      "import": "./src/MainSections.tsx"
-    },
-    "./SiteSectionPreviewData": {
-      "types": "./src/SiteSectionPreviewData.tsx",
-      "import": "./src/SiteSectionPreviewData.tsx"
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts"
     },
     "./styles/base.css": "./src/styles/base.css",
     "./styles/theme.css": "./src/styles/theme.css"

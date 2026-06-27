@@ -95,6 +95,7 @@ import {
   AudienceSection,
   ContactSection,
   CoordinationSection,
+  defaultSiteSectionPreviewData,
   ExperienceLabSection,
   FaqSection,
   GallerySection,
@@ -103,13 +104,10 @@ import {
   ManifestoSection,
   ProcessSection,
   RealMediaSection,
-  StorySection,
-} from '@monorepo/site-preview/MainSections';
-import {
   SiteSectionPreviewDataProvider,
-  defaultSiteSectionPreviewData,
+  StorySection,
   type SiteSectionPreviewData,
-} from '@monorepo/site-preview/SiteSectionPreviewData';
+} from '@monorepo/site-preview';
 import {
   exactPreviewCopySectionIds,
   exactPreviewSectionGroupIds,

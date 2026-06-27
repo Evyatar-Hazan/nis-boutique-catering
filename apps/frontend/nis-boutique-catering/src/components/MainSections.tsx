@@ -1,1 +1,1 @@
-export * from '@monorepo/site-preview/MainSections';
+export * from '@monorepo/site-preview';
