@@ -1,5 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import { contentSnapshotSchema, parseBoolean, sortActiveGallery, sortActiveServices, validateContentReferences } from './index';
+import {
+  contentSnapshotSchema,
+  getActiveSectionsByGroup,
+  getPreviewCopySection,
+  getPreviewMicrocopy,
+  getPreviewMicrocopyItems,
+  parseBoolean,
+  sortActiveGallery,
+  sortActiveServices,
+  validateContentReferences,
+} from './index';
 
 const snapshot = {
   version: '1',
@@ -124,5 +134,73 @@ describe('content schema', () => {
         sections: [],
       }),
     ).toEqual([]);
+  });
+
+  it('derives preview selectors from active content sections', () => {
+    const content = {
+      ...snapshot,
+      services: [],
+      sections: [
+        {
+          id: 'copy-story',
+          group: 'site-copy',
+          title: 'הסיפור של Nis',
+          text: 'טקסט סיפור',
+          items: ['תווית', 'טקסט נוסף'],
+          active: true,
+          order: 2,
+        },
+        {
+          id: 'microcopy-hero-primary-cta',
+          group: 'site-microcopy',
+          text: 'שלחו וואטסאפ',
+          items: [],
+          active: true,
+          order: 1,
+        },
+        {
+          id: 'microcopy-contact-interest-options',
+          group: 'site-microcopy',
+          text: 'לא בשימוש',
+          items: ['שבת', 'מגשים'],
+          active: true,
+          order: 2,
+        },
+        {
+          id: 'audience-2',
+          group: 'audience',
+          title: 'שני',
+          text: 'טקסט',
+          items: [],
+          active: true,
+          order: 2,
+        },
+        {
+          id: 'audience-1',
+          group: 'audience',
+          title: 'ראשון',
+          text: 'טקסט',
+          items: [],
+          active: true,
+          order: 1,
+        },
+      ],
+    };
+
+    expect(
+      getPreviewCopySection(content, 'story', {
+        eyebrow: 'Fallback',
+        title: 'Fallback title',
+      }),
+    ).toEqual({
+      eyebrow: 'תווית',
+      title: 'הסיפור של Nis',
+      text: 'טקסט סיפור',
+      extraText: 'טקסט נוסף',
+    });
+
+    expect(getPreviewMicrocopy(content, 'hero-primary-cta', 'Fallback CTA')).toBe('שלחו וואטסאפ');
+    expect(getPreviewMicrocopyItems(content, 'contact-interest-options', ['Fallback'])).toEqual(['שבת', 'מגשים']);
+    expect(getActiveSectionsByGroup(content, 'audience').map((section) => section.id)).toEqual(['audience-1', 'audience-2']);
   });
 });

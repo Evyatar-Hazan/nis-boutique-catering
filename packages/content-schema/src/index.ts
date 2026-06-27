@@ -85,6 +85,13 @@ export type ServiceRecord = z.infer<typeof serviceSchema>;
 export type SectionBlockRecord = z.infer<typeof sectionBlockSchema>;
 export type ContentSnapshot = z.infer<typeof contentSnapshotSchema>;
 
+export type PreviewCopySectionFallback = {
+  readonly eyebrow: string;
+  readonly title: string;
+  readonly text?: string;
+  readonly extraText?: string;
+};
+
 export const contentFieldHelp = {
   siteAreas: {
     hero: {
@@ -182,6 +189,33 @@ export const sortActiveSections = (items: readonly SectionBlockRecord[], group?:
   [...items]
     .filter((item) => item.active && !item.deletedAt && (!group || item.group === group))
     .sort((left, right) => left.order - right.order);
+
+export const getActiveSectionsByGroup = (content: ContentSnapshot, group: string) =>
+  sortActiveSections(content.sections, group);
+
+export const getPreviewCopySection = (
+  content: ContentSnapshot,
+  id: string,
+  fallback: PreviewCopySectionFallback,
+) => {
+  const section = content.sections.find((item) => item.id === `copy-${id}` && item.group === 'site-copy' && item.active && !item.deletedAt);
+
+  return {
+    eyebrow: section?.items[0] || fallback.eyebrow,
+    title: section?.title || fallback.title,
+    text: section?.text || fallback.text,
+    extraText: section?.items[1] || fallback.extraText,
+  };
+};
+
+export const getPreviewMicrocopy = (content: ContentSnapshot, id: string, fallback: string) => (
+  content.sections.find((item) => item.id === `microcopy-${id}` && item.group === 'site-microcopy' && item.active && !item.deletedAt)?.text || fallback
+);
+
+export const getPreviewMicrocopyItems = (content: ContentSnapshot, id: string, fallback: readonly string[]) => {
+  const items = content.sections.find((item) => item.id === `microcopy-${id}` && item.group === 'site-microcopy' && item.active && !item.deletedAt)?.items;
+  return items && items.length > 0 ? items : fallback;
+};
 
 export const validateContentReferences = (snapshot: ContentSnapshot) => {
   const issues: string[] = [];

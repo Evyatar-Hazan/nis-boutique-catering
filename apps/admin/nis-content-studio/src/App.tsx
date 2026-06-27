@@ -38,6 +38,10 @@ import {
 import {
   contentSnapshotSchema,
   galleryCategoryIds,
+  getActiveSectionsByGroup,
+  getPreviewCopySection,
+  getPreviewMicrocopy,
+  getPreviewMicrocopyItems,
   validateContentReferences,
   type ContentSnapshot,
   type GalleryItemRecord,
@@ -2601,34 +2605,6 @@ const PreviewBrowserBar = ({ device }: { readonly device: PreviewDevice }) => (
     <strong>nisboutiquecatering.com</strong>
   </div>
 );
-
-const getPreviewCopySection = (
-  content: ContentSnapshot,
-  id: string,
-  fallback: { readonly eyebrow: string; readonly title: string; readonly text?: string; readonly extraText?: string },
-) => {
-  const section = content.sections.find((item) => item.id === `copy-${id}` && item.group === 'site-copy' && item.active && !item.deletedAt);
-  return {
-    eyebrow: section?.items[0] || fallback.eyebrow,
-    title: section?.title || fallback.title,
-    text: section?.text || fallback.text,
-    extraText: section?.items[1] || fallback.extraText,
-  };
-};
-
-const getPreviewMicrocopy = (content: ContentSnapshot, id: string, fallback: string) => (
-  content.sections.find((item) => item.id === `microcopy-${id}` && item.group === 'site-microcopy' && item.active && !item.deletedAt)?.text || fallback
-);
-
-const getPreviewMicrocopyItems = (content: ContentSnapshot, id: string, fallback: readonly string[]) => {
-  const items = content.sections.find((item) => item.id === `microcopy-${id}` && item.group === 'site-microcopy' && item.active && !item.deletedAt)?.items;
-  return items && items.length > 0 ? items : fallback;
-};
-
-const getActiveSectionsByGroup = (content: ContentSnapshot, group: string) =>
-  content.sections
-    .filter((section) => section.group === group && section.active && !section.deletedAt)
-    .sort((left, right) => left.order - right.order);
 
 const resolvePreviewImage = (
   mediaById: ReadonlyMap<string, ImageAssetRecord>,
