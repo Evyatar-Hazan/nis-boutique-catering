@@ -5,8 +5,8 @@
   "type": "module",
   "exports": {
     "./MainSections": {
-      "types": "./src/MainSections.ts",
-      "import": "./src/MainSections.ts"
+      "types": "./src/MainSections.tsx",
+      "import": "./src/MainSections.tsx"
     },
     "./SiteSectionPreviewData": {
       "types": "./src/SiteSectionPreviewData.tsx",
