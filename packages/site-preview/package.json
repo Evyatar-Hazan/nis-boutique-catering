@@ -12,7 +12,7 @@
       "types": "./src/SiteSectionPreviewData.tsx",
       "import": "./src/SiteSectionPreviewData.tsx"
     },
-    "./styles/base.css": "../../apps/frontend/nis-boutique-catering/src/styles/base.css",
-    "./styles/theme.css": "../../apps/frontend/nis-boutique-catering/src/styles/theme.css"
+    "./styles/base.css": "./src/styles/base.css",
+    "./styles/theme.css": "./src/styles/theme.css"
   }
 }
