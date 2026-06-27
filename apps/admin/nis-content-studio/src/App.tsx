@@ -37,15 +37,17 @@ import {
 } from 'lucide-react';
 import {
   contentSnapshotSchema,
+  formatMediaUsageList,
   galleryCategoryIds,
+  getActiveMediaUsages,
   getActiveSectionsByGroup,
   getMediaLabel,
   getMediaStatus,
   getMediaUsage,
+  getMediaUsageKindLabel,
   getPreviewCopySection,
   getPreviewMicrocopy,
   getPreviewMicrocopyItems,
-  type MediaUsageEntry,
   validateContentReferences,
   type ContentSnapshot,
   type GalleryItemRecord,
@@ -1040,10 +1042,9 @@ export const App = () => {
   const archiveSection = (id: string) => updateContent((current) => archiveSectionInSnapshot(current, id));
   const restoreSection = (id: string) => updateContent((current) => restoreSectionInSnapshot(current, id));
   const archiveMedia = (id: string) => {
-    const usages = getMediaUsage(id, content);
-    const activeUsages = usages.filter((usage) => usage.active);
+    const activeUsages = getActiveMediaUsages(id, content);
     if (activeUsages.length > 0) {
-      const ok = window.confirm(`התמונה הזאת עדיין מוצגת באתר ב-${activeUsages.length} מקום/ות:\n${formatMediaUsage(activeUsages)}\n\nלהעביר אותה לארכיון בכל זאת?`);
+      const ok = window.confirm(`התמונה הזאת עדיין מוצגת באתר ב-${activeUsages.length} מקום/ות:\n${formatMediaUsageList(activeUsages)}\n\nלהעביר אותה לארכיון בכל זאת?`);
       if (!ok) {
         setStatus('הארכוב בוטל. קודם החליפו את התמונה באזורים שבהם היא בשימוש.');
         return;
@@ -1257,9 +1258,9 @@ export const App = () => {
       return;
     }
 
-    const activeUsages = getMediaUsage(mediaId, content).filter((usage) => usage.active);
+    const activeUsages = getActiveMediaUsages(mediaId, content);
     if (activeUsages.length > 0) {
-      const ok = window.confirm(`התמונה הזאת מוצגת עכשיו באתר ב-${activeUsages.length} מקום/ות:\n${formatMediaUsage(activeUsages)}\n\nלהחליף את מקור ה-Drive שלה בכל זאת?`);
+      const ok = window.confirm(`התמונה הזאת מוצגת עכשיו באתר ב-${activeUsages.length} מקום/ות:\n${formatMediaUsageList(activeUsages)}\n\nלהחליף את מקור ה-Drive שלה בכל זאת?`);
       if (!ok) {
         setStatus('החלפת מקור Drive בוטלה. קודם החליפו את התמונה באזורים שבהם היא בשימוש, או אשרו את ההחלפה.');
         return;
@@ -1506,7 +1507,7 @@ export const App = () => {
             renderMediaSelectionUsageNotice={({ mediaId, content: previewContent, currentUsage }) => (
               <MediaSelectionUsageNotice
                 otherUsages={getMediaUsage(mediaId, previewContent).filter((usage) => usage.kind !== currentUsage.kind || usage.id !== currentUsage.id)}
-                getUsageKindLabel={usageKindLabel}
+                getUsageKindLabel={getMediaUsageKindLabel}
               />
             )}
             joinPipeList={joinPipeList}
@@ -1687,7 +1688,7 @@ export const App = () => {
                     />
                     <MediaSelectionUsageNotice
                       otherUsages={getMediaUsage(service.mediaId, content).filter((usage) => usage.kind !== 'service' || usage.id !== service.id)}
-                      getUsageKindLabel={usageKindLabel}
+                      getUsageKindLabel={getMediaUsageKindLabel}
                     />
                     <Field label="טקסט כפתור" help="כפתור הפעולה בכרטיס.">
                       <TextInput value={service.cta} onChange={(value) => updateService(service.id, { cta: value })} />
@@ -1770,7 +1771,7 @@ export const App = () => {
                   getMediaLabel={(media) => getMediaLabel(media, content)}
                   getMediaStatus={getMediaStatus}
                   getMediaUsages={(mediaId) => getMediaUsage(mediaId, content)}
-                  getUsageKindLabel={(kind) => usageKindLabel(kind as MediaUsageKind)}
+                  getUsageKindLabel={(kind) => getMediaUsageKindLabel(kind as MediaUsageKind)}
                   renderPreview={(media, showActions) => <DrivePreviewImage media={media} accessToken={session.accessToken} showActions={showActions} />}
                   renderItemActions={(media) => renderArchivableItemActions({
                     isArchived: Boolean(media.deletedAt),
@@ -1908,7 +1909,7 @@ export const App = () => {
             renderMediaSelectionUsageNotice={({ mediaId, content: previewContent, currentUsage }) => (
               <MediaSelectionUsageNotice
                 otherUsages={getMediaUsage(mediaId, previewContent).filter((usage) => usage.kind !== currentUsage.kind || usage.id !== currentUsage.id)}
-                getUsageKindLabel={usageKindLabel}
+                getUsageKindLabel={getMediaUsageKindLabel}
               />
             )}
           />
@@ -2107,7 +2108,7 @@ export const App = () => {
                     />
                     <MediaSelectionUsageNotice
                       otherUsages={getMediaUsage(item.mediaId, content).filter((usage) => usage.kind !== 'gallery' || usage.id !== item.id)}
-                      getUsageKindLabel={usageKindLabel}
+                      getUsageKindLabel={getMediaUsageKindLabel}
                     />
                     <div className="toggle-row">
                       <Toggle checked={item.active} label="מוצג באתר" onChange={(checked) => updateGallery(item.id, { active: checked })} />
@@ -3413,7 +3414,7 @@ const Metric = ({ label, value }: { readonly label: string; readonly value: stri
 
 
 const MediaRiskNotice = ({ mediaId, content }: { readonly mediaId: string; readonly content: ContentSnapshot }) => {
-  const activeUsages = getMediaUsage(mediaId, content).filter((usage) => usage.active);
+  const activeUsages = getActiveMediaUsages(mediaId, content);
 
   if (activeUsages.length === 0) {
     return null;
@@ -3538,23 +3539,12 @@ const waitForLiveSiteVersion = async (
   throw new Error(`הפרסום נשלח, אבל אחרי ${liveVersionPollAttempts} בדיקות במשך בערך ${Math.round((liveVersionPollAttempts * liveVersionPollDelayMs) / 60000)} דקות הסטודיו עדיין לא רואה את גרסת ${version} באתר החי. לרוב זה אומר ש-Cloudflare עדיין בונה, או שהפרסום נכשל בשרת הפרסום.`);
 };
 
-const usageKindLabel = (kind: MediaUsageKind) => {
-  if (kind === 'gallery') return 'גלריה';
-  if (kind === 'service') return 'שירות';
-  if (kind === 'manifesto') return 'השפה של Nis';
-  return 'מסך פתיחה';
-};
-
 const getViewForUsage = (kind: MediaUsageKind): ActiveView => {
   if (kind === 'gallery') return 'media';
   if (kind === 'service') return 'services';
   if (kind === 'manifesto') return 'manifesto';
   return 'hero';
 };
-
-const formatMediaUsage = (usages: readonly MediaUsageEntry[]) => usages
-  .map((usage) => `- ${usageKindLabel(usage.kind)}: ${usage.title}`)
-  .join('\n');
 
 const areaStatus = (area: ActiveView, content: ContentSnapshot) => {
   if (area === 'hero') {

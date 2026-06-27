@@ -1,10 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import {
   contentSnapshotSchema,
+  formatMediaUsageList,
   getActiveSectionsByGroup,
+  getActiveMediaUsages,
   getMediaLabel,
   getMediaStatus,
   getMediaUsage,
+  getMediaUsageKindLabel,
   getPreviewCopySection,
   getPreviewMicrocopy,
   getPreviewMicrocopyItems,
@@ -253,6 +256,9 @@ describe('content schema', () => {
     };
 
     expect(getMediaUsage('tray', content).map((usage) => usage.kind)).toEqual(['hero', 'manifesto', 'gallery', 'service']);
+    expect(getActiveMediaUsages('tray', content)).toHaveLength(4);
+    expect(getMediaUsageKindLabel('manifesto')).toBe('השפה של Nis');
+    expect(formatMediaUsageList(getMediaUsage('tray', content))).toContain('גלריה: מגש אירוח');
     expect(getMediaLabel(content.media[0], content)).toBe('מגש אירוח');
     expect(getMediaStatus(content.media[0], content)).toBe('תמונה תקינה');
     expect(getMediaStatus(content.media[1], content)).toBe('לא בשימוש באתר');

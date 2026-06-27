@@ -243,6 +243,20 @@ export const getMediaUsage = (mediaId: string, content: ContentSnapshot): readon
   return [...heroUsage, ...manifestoUsage, ...galleryUsage, ...serviceUsage];
 };
 
+export const getActiveMediaUsages = (mediaId: string, content: ContentSnapshot) =>
+  getMediaUsage(mediaId, content).filter((usage) => usage.active);
+
+export const getMediaUsageKindLabel = (kind: MediaUsageKind) => {
+  if (kind === 'gallery') return 'גלריה';
+  if (kind === 'service') return 'שירות';
+  if (kind === 'manifesto') return 'השפה של Nis';
+  return 'מסך פתיחה';
+};
+
+export const formatMediaUsageList = (usages: readonly MediaUsageEntry[]) => usages
+  .map((usage) => `- ${getMediaUsageKindLabel(usage.kind)}: ${usage.title}`)
+  .join('\n');
+
 export const getMediaLabel = (media: ImageAssetRecord, content: ContentSnapshot) => {
   if (media.title?.trim()) {
     return media.title.trim();
