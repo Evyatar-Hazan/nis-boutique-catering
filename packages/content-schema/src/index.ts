@@ -92,6 +92,15 @@ export type PreviewCopySectionFallback = {
   readonly extraText?: string;
 };
 
+export type MediaUsageKind = 'hero' | 'manifesto' | 'gallery' | 'service';
+
+export type MediaUsageEntry = {
+  readonly kind: MediaUsageKind;
+  readonly id: string;
+  readonly title: string;
+  readonly active: boolean;
+};
+
 export const contentFieldHelp = {
   siteAreas: {
     hero: {
@@ -215,6 +224,48 @@ export const getPreviewMicrocopy = (content: ContentSnapshot, id: string, fallba
 export const getPreviewMicrocopyItems = (content: ContentSnapshot, id: string, fallback: readonly string[]) => {
   const items = content.sections.find((item) => item.id === `microcopy-${id}` && item.group === 'site-microcopy' && item.active && !item.deletedAt)?.items;
   return items && items.length > 0 ? items : fallback;
+};
+
+export const getMediaUsage = (mediaId: string, content: ContentSnapshot): readonly MediaUsageEntry[] => {
+  const heroMedia = content.sections.find((section) => section.id === 'hero-media' && !section.deletedAt);
+  const heroUsage = heroMedia?.items.includes(mediaId)
+    ? [{ kind: 'hero', id: heroMedia.id, title: 'מסך פתיחה', active: heroMedia.active } satisfies MediaUsageEntry]
+    : [];
+  const manifestoUsage = content.sections
+    .filter((section) => section.group === 'manifesto' && !section.deletedAt && section.items[1] === mediaId)
+    .map((section): MediaUsageEntry => ({ kind: 'manifesto', id: section.id, title: section.title ?? 'השפה של Nis', active: section.active }));
+  const galleryUsage = content.gallery
+    .filter((item) => item.mediaId === mediaId && !item.deletedAt)
+    .map((item): MediaUsageEntry => ({ kind: 'gallery', id: item.id, title: item.title, active: item.active }));
+  const serviceUsage = content.services
+    .filter((service) => service.mediaId === mediaId && !service.deletedAt)
+    .map((service): MediaUsageEntry => ({ kind: 'service', id: service.id, title: service.title, active: service.active }));
+  return [...heroUsage, ...manifestoUsage, ...galleryUsage, ...serviceUsage];
+};
+
+export const getMediaLabel = (media: ImageAssetRecord, content: ContentSnapshot) => {
+  if (media.title?.trim()) {
+    return media.title.trim();
+  }
+  const firstGallery = content.gallery.find((item) => item.mediaId === media.id && !item.deletedAt);
+  const firstService = content.services.find((service) => service.mediaId === media.id && !service.deletedAt);
+  return firstGallery?.title ?? firstService?.title ?? media.id;
+};
+
+export const getMediaStatus = (media: ImageAssetRecord, content: ContentSnapshot) => {
+  if (media.deletedAt) {
+    return 'בארכיון';
+  }
+  if (!media.driveFileId) {
+    return 'חסר מקור בדרייב';
+  }
+  if (getMediaUsage(media.id, content).length === 0) {
+    return 'לא בשימוש באתר';
+  }
+  if (media.src.startsWith('/media/cms/')) {
+    return 'תמונה תקינה';
+  }
+  return 'תיווצר באתר אחרי עדכון אתר';
 };
 
 export const validateContentReferences = (snapshot: ContentSnapshot) => {

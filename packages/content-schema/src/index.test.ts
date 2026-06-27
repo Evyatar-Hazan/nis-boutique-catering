@@ -2,6 +2,9 @@ import { describe, expect, it } from 'vitest';
 import {
   contentSnapshotSchema,
   getActiveSectionsByGroup,
+  getMediaLabel,
+  getMediaStatus,
+  getMediaUsage,
   getPreviewCopySection,
   getPreviewMicrocopy,
   getPreviewMicrocopyItems,
@@ -202,5 +205,56 @@ describe('content schema', () => {
     expect(getPreviewMicrocopy(content, 'hero-primary-cta', 'Fallback CTA')).toBe('שלחו וואטסאפ');
     expect(getPreviewMicrocopyItems(content, 'contact-interest-options', ['Fallback'])).toEqual(['שבת', 'מגשים']);
     expect(getActiveSectionsByGroup(content, 'audience').map((section) => section.id)).toEqual(['audience-1', 'audience-2']);
+  });
+
+  it('derives media usage, label, and status from content relations', () => {
+    const content = {
+      ...snapshot,
+      media: [
+        { id: 'tray', title: '', src: '/media/cms/tray.webp', width: 1200, height: 1600, responsive: true, driveFileId: 'drive-1' },
+        { id: 'unused', src: '/media/local/unused.webp', width: 800, height: 600, responsive: true, driveFileId: 'drive-2' },
+      ],
+      services: [
+        {
+          id: 'service-1',
+          title: 'אירועים',
+          subtitle: 'בוטיק',
+          description: 'תיאור',
+          bestFor: 'אירוח',
+          promise: 'רגוע',
+          details: ['פרט'],
+          cta: 'דברו איתנו',
+          mediaId: 'tray',
+          icon: 'Camera',
+          active: true,
+          order: 1,
+        },
+      ],
+      sections: [
+        {
+          id: 'hero-media',
+          group: 'hero-media',
+          title: 'hero media',
+          text: '',
+          items: ['tray'],
+          active: true,
+          order: 0,
+        },
+        {
+          id: 'manifesto-1',
+          group: 'manifesto',
+          title: 'כרטיס',
+          text: 'טקסט',
+          items: ['01', 'tray'],
+          active: true,
+          order: 1,
+        },
+      ],
+    };
+
+    expect(getMediaUsage('tray', content).map((usage) => usage.kind)).toEqual(['hero', 'manifesto', 'gallery', 'service']);
+    expect(getMediaLabel(content.media[0], content)).toBe('מגש אירוח');
+    expect(getMediaStatus(content.media[0], content)).toBe('תמונה תקינה');
+    expect(getMediaStatus(content.media[1], content)).toBe('לא בשימוש באתר');
   });
 });

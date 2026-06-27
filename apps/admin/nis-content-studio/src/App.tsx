@@ -39,9 +39,13 @@ import {
   contentSnapshotSchema,
   galleryCategoryIds,
   getActiveSectionsByGroup,
+  getMediaLabel,
+  getMediaStatus,
+  getMediaUsage,
   getPreviewCopySection,
   getPreviewMicrocopy,
   getPreviewMicrocopyItems,
+  type MediaUsageEntry,
   validateContentReferences,
   type ContentSnapshot,
   type GalleryItemRecord,
@@ -178,13 +182,6 @@ type PublishProgress = {
 type LiveVersionCheckResult = {
   readonly live: boolean;
   readonly bundleUrl?: string;
-};
-
-type MediaUsageEntry = {
-  readonly kind: MediaUsageKind;
-  readonly id: string;
-  readonly title: string;
-  readonly active: boolean;
 };
 
 type SectionEditorItemActionsArgs = {
@@ -716,7 +713,7 @@ export const App = () => {
         return [
           media.id,
           media.usageNotes ?? '',
-          mediaStatus(media, content),
+          getMediaStatus(media, content),
           byUsageTitles(media.id),
         ].join(' ').toLowerCase().includes(normalizedQuery);
       })
@@ -724,7 +721,7 @@ export const App = () => {
         if (Boolean(left.deletedAt) !== Boolean(right.deletedAt)) {
           return left.deletedAt ? 1 : -1;
         }
-        return mediaLabel(left, content).localeCompare(mediaLabel(right, content), 'he');
+        return getMediaLabel(left, content).localeCompare(getMediaLabel(right, content), 'he');
       });
   }, [content, mediaFilter, query]);
   const selectedMedia = selectedMediaId ? content.media.find((media) => media.id === selectedMediaId) ?? null : null;
@@ -1170,7 +1167,7 @@ export const App = () => {
         }
       }
 
-      return addGalleryItemToSnapshot(current, mediaLabel, mediaId);
+      return addGalleryItemToSnapshot(current, getMediaLabel, mediaId);
     });
 
     if (duplicateTitle) {
@@ -1492,7 +1489,7 @@ export const App = () => {
             patchSectionItem={patchSectionItem}
             heroMediaIdAt={heroMediaIdAt}
             patchHeroMediaId={patchHeroMediaId}
-            mediaLabel={mediaLabel}
+            mediaLabel={getMediaLabel}
             renderPreview={({ content: previewContent, hero, device, mediaById: previewMediaById }) => (
               <HeroSitePreview content={previewContent} hero={hero} device={device} mediaById={previewMediaById} />
             )}
@@ -1502,7 +1499,7 @@ export const App = () => {
                 mediaItems={mediaItems}
                 selectedMediaId={selectedMediaId}
                 onSelect={onSelect}
-                getMediaLabel={(media) => mediaLabel(media, previewContent)}
+                getMediaLabel={(media) => getMediaLabel(media, previewContent)}
                 getMediaSrc={(media) => (media.src ? publicAssetSrcFor(media.src) : '')}
               />
             )}
@@ -1677,7 +1674,7 @@ export const App = () => {
                   <div className="inline-grid">
                     <Field label="תמונה לשירות" help="איזו תמונה תופיע בכרטיס.">
                       <select value={service.mediaId} onChange={(event) => updateService(service.id, { mediaId: event.target.value })}>
-                        {visibleMedia.map((media) => <option key={media.id} value={media.id}>{mediaLabel(media, content)}</option>)}
+                        {visibleMedia.map((media) => <option key={media.id} value={media.id}>{getMediaLabel(media, content)}</option>)}
                       </select>
                     </Field>
                     <MediaQuickPicker
@@ -1685,7 +1682,7 @@ export const App = () => {
                       mediaItems={visibleMedia}
                       selectedMediaId={service.mediaId}
                       onSelect={(mediaId) => updateService(service.id, { mediaId })}
-                      getMediaLabel={(media) => mediaLabel(media, content)}
+                      getMediaLabel={(media) => getMediaLabel(media, content)}
                       getMediaSrc={(media) => (media.src ? publicAssetSrcFor(media.src) : '')}
                     />
                     <MediaSelectionUsageNotice
@@ -1754,7 +1751,7 @@ export const App = () => {
                   selectedMediaIds={selectedMediaIds}
                   onSelect={setSelectedMediaId}
                   onToggleSelect={toggleSelectedMedia}
-                  getMediaLabel={(media) => mediaLabel(media, content)}
+                  getMediaLabel={(media) => getMediaLabel(media, content)}
                   renderPreview={(media) => <DrivePreviewImage media={media} accessToken={session.accessToken} showActions={false} />}
                 />
               </div>
@@ -1770,8 +1767,8 @@ export const App = () => {
                   onPickDriveFile={handlePickDriveFile}
                   onNavigateToSiteMap={() => setActiveView('site-map')}
                   onNavigateToUsage={(kind) => setActiveView(getViewForUsage(kind as MediaUsageKind))}
-                  getMediaLabel={(media) => mediaLabel(media, content)}
-                  getMediaStatus={mediaStatus}
+                  getMediaLabel={(media) => getMediaLabel(media, content)}
+                  getMediaStatus={getMediaStatus}
                   getMediaUsages={(mediaId) => getMediaUsage(mediaId, content)}
                   getUsageKindLabel={(kind) => usageKindLabel(kind as MediaUsageKind)}
                   renderPreview={(media, showActions) => <DrivePreviewImage media={media} accessToken={session.accessToken} showActions={showActions} />}
@@ -1893,7 +1890,7 @@ export const App = () => {
             onPreviewDeviceChange={setPreviewDevice}
             manifestoMediaFallbacks={manifestoMediaFallbacks}
             patchSectionItem={patchSectionItem}
-            mediaLabel={mediaLabel}
+            mediaLabel={getMediaLabel}
             renderPreview={({ content: previewContent, mediaById: previewMediaById, device }) => (
               <ManifestoSitePreview content={previewContent} mediaById={previewMediaById} device={device} />
             )}
@@ -1904,7 +1901,7 @@ export const App = () => {
                 mediaItems={mediaItems}
                 selectedMediaId={selectedMediaId}
                 onSelect={onSelect}
-                getMediaLabel={(media) => mediaLabel(media, previewContent)}
+                getMediaLabel={(media) => getMediaLabel(media, previewContent)}
                 getMediaSrc={(media) => (media.src ? publicAssetSrcFor(media.src) : '')}
               />
             )}
@@ -2096,7 +2093,7 @@ export const App = () => {
                       </Field>
                       <Field label="תמונה מחוברת" help="איזה מקור מדיה ישמש לפריט הזה.">
                         <select value={item.mediaId} onChange={(event) => updateGallery(item.id, { mediaId: event.target.value })}>
-                          {visibleMedia.map((mediaItem) => <option key={mediaItem.id} value={mediaItem.id}>{mediaLabel(mediaItem, content)}</option>)}
+                          {visibleMedia.map((mediaItem) => <option key={mediaItem.id} value={mediaItem.id}>{getMediaLabel(mediaItem, content)}</option>)}
                         </select>
                       </Field>
                     </div>
@@ -2105,7 +2102,7 @@ export const App = () => {
                       mediaItems={visibleMedia}
                       selectedMediaId={item.mediaId}
                       onSelect={(mediaId) => updateGallery(item.id, { mediaId })}
-                      getMediaLabel={(media) => mediaLabel(media, content)}
+                      getMediaLabel={(media) => getMediaLabel(media, content)}
                       getMediaSrc={(media) => (media.src ? publicAssetSrcFor(media.src) : '')}
                     />
                     <MediaSelectionUsageNotice
@@ -3541,25 +3538,6 @@ const waitForLiveSiteVersion = async (
   throw new Error(`הפרסום נשלח, אבל אחרי ${liveVersionPollAttempts} בדיקות במשך בערך ${Math.round((liveVersionPollAttempts * liveVersionPollDelayMs) / 60000)} דקות הסטודיו עדיין לא רואה את גרסת ${version} באתר החי. לרוב זה אומר ש-Cloudflare עדיין בונה, או שהפרסום נכשל בשרת הפרסום.`);
 };
 
-const getMediaUsage = (mediaId: string, content: ContentSnapshot): readonly MediaUsageEntry[] => {
-  const heroMedia = content.sections.find((section) => section.id === 'hero-media' && !section.deletedAt);
-  const heroUsage = heroMedia
-    ? heroMediaSlots
-      .filter((_, index) => heroMediaIdAt(heroMedia, index) === mediaId)
-      .map((slot): MediaUsageEntry => ({ kind: 'hero', id: slot.key, title: slot.label, active: heroMedia.active }))
-    : [];
-  const manifestoUsage = content.sections
-    .filter((section) => section.group === 'manifesto' && !section.deletedAt && section.items[1] === mediaId)
-    .map((section): MediaUsageEntry => ({ kind: 'manifesto', id: section.id, title: section.title ?? 'השפה של Nis', active: section.active }));
-  const galleryUsage = content.gallery
-    .filter((item) => item.mediaId === mediaId && !item.deletedAt)
-    .map((item): MediaUsageEntry => ({ kind: 'gallery', id: item.id, title: item.title, active: item.active }));
-  const serviceUsage = content.services
-    .filter((service) => service.mediaId === mediaId && !service.deletedAt)
-    .map((service): MediaUsageEntry => ({ kind: 'service', id: service.id, title: service.title, active: service.active }));
-  return [...heroUsage, ...manifestoUsage, ...galleryUsage, ...serviceUsage];
-};
-
 const usageKindLabel = (kind: MediaUsageKind) => {
   if (kind === 'gallery') return 'גלריה';
   if (kind === 'service') return 'שירות';
@@ -3577,31 +3555,6 @@ const getViewForUsage = (kind: MediaUsageKind): ActiveView => {
 const formatMediaUsage = (usages: readonly MediaUsageEntry[]) => usages
   .map((usage) => `- ${usageKindLabel(usage.kind)}: ${usage.title}`)
   .join('\n');
-
-const mediaLabel = (media: ImageAssetRecord, content: ContentSnapshot) => {
-  if (media.title?.trim()) {
-    return media.title.trim();
-  }
-  const firstGallery = content.gallery.find((item) => item.mediaId === media.id && !item.deletedAt);
-  const firstService = content.services.find((service) => service.mediaId === media.id && !service.deletedAt);
-  return firstGallery?.title ?? firstService?.title ?? media.id;
-};
-
-const mediaStatus = (media: ImageAssetRecord, content: ContentSnapshot) => {
-  if (media.deletedAt) {
-    return 'בארכיון';
-  }
-  if (!media.driveFileId) {
-    return 'חסר מקור בדרייב';
-  }
-  if (getMediaUsage(media.id, content).length === 0) {
-    return 'לא בשימוש באתר';
-  }
-  if (media.src.startsWith('/media/cms/')) {
-    return 'תמונה תקינה';
-  }
-  return 'תיווצר באתר אחרי עדכון אתר';
-};
 
 const areaStatus = (area: ActiveView, content: ContentSnapshot) => {
   if (area === 'hero') {
