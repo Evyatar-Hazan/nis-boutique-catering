@@ -1,6 +1,7 @@
 import { Plus } from 'lucide-react';
 import type { ReactNode } from 'react';
 import type { ContentSnapshot, ImageAssetRecord, SectionBlockRecord } from '@monorepo/content-schema';
+import { EditorCard } from '../EditorCard';
 import { EditorSplitLayout } from '../EditorSplitLayout';
 import { Field } from '../Field';
 import { PanelHeader } from '../PanelHeader';
@@ -111,19 +112,18 @@ export const ManifestoEditor = ({
           {moments.map((moment, index) => {
             const selectedMediaId = moment.items[1] ?? manifestoMediaFallbacks[index % manifestoMediaFallbacks.length];
             return (
-              <article className={moment.deletedAt ? 'edit-card is-archived' : 'edit-card'} key={moment.id}>
-                <div className="card-heading">
-                  <div>
-                    <p className="kicker">כרטיס בשפה של Nis</p>
-                    <h3>{moment.title || 'כרטיס ללא כותרת'}</h3>
-                  </div>
-                  {renderItemActions({
-                    section: moment,
-                    onDuplicate: () => duplicateSection(moment),
-                    onArchive: () => archiveSection(moment.id),
-                    onRestore: () => restoreSection(moment.id),
-                  })}
-                </div>
+              <EditorCard
+                key={moment.id}
+                archived={Boolean(moment.deletedAt)}
+                kicker="כרטיס בשפה של Nis"
+                title={moment.title || 'כרטיס ללא כותרת'}
+                actions={renderItemActions({
+                  section: moment,
+                  onDuplicate: () => duplicateSection(moment),
+                  onArchive: () => archiveSection(moment.id),
+                  onRestore: () => restoreSection(moment.id),
+                })}
+              >
                 <Toggle checked={moment.active && !moment.deletedAt} label="מוצג באתר" onChange={(checked) => updateSection(moment.id, { active: checked })} />
                 <Field label="מספר/תווית בכרטיס" help="לדוגמה: 01, 02, 03.">
                   <TextInput value={moment.items[0] ?? ''} onChange={(value) => updateSection(moment.id, patchSectionItem(moment, 0, value, String(index + 1).padStart(2, '0')))} />
@@ -151,7 +151,7 @@ export const ManifestoEditor = ({
                     currentUsage: { kind: 'manifesto', id: moment.id },
                   })}
                 </Field>
-              </article>
+              </EditorCard>
             );
           })}
         </div>

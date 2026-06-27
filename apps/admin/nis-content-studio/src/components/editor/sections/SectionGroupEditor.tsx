@@ -1,6 +1,7 @@
 import { FileText, Plus } from 'lucide-react';
 import type { ReactNode } from 'react';
 import type { ContentSnapshot, ImageAssetRecord, SectionBlockRecord } from '@monorepo/content-schema';
+import { EditorCard } from '../EditorCard';
 import { EditorSplitLayout } from '../EditorSplitLayout';
 import { Field } from '../Field';
 import { PanelHeader } from '../PanelHeader';
@@ -83,19 +84,18 @@ export const SectionGroupEditor = ({
         />
         <div className="cards-list">
           {groupSections.map((section) => (
-            <article className={section.deletedAt ? 'edit-card is-archived' : 'edit-card'} key={section.id}>
-              <div className="card-heading">
-                <div>
-                  <p className="kicker">{sectionGroupLabels[section.group] ?? section.group}</p>
-                  <h3>{section.title || 'פריט ללא כותרת'}</h3>
-                </div>
-                {renderItemActions({
-                  section,
-                  onDuplicate: () => duplicateSection(section),
-                  onArchive: () => archiveSection(section.id),
-                  onRestore: () => restoreSection(section.id),
-                })}
-              </div>
+            <EditorCard
+              key={section.id}
+              archived={Boolean(section.deletedAt)}
+              kicker={sectionGroupLabels[section.group] ?? section.group}
+              title={section.title || 'פריט ללא כותרת'}
+              actions={renderItemActions({
+                section,
+                onDuplicate: () => duplicateSection(section),
+                onArchive: () => archiveSection(section.id),
+                onRestore: () => restoreSection(section.id),
+              })}
+            >
               <Toggle checked={section.active && !section.deletedAt} label="מוצג באתר" onChange={(checked) => updateSection(section.id, { active: checked })} />
               <Field
                 label={group === 'site-microcopy' ? 'שם פנימי ברור' : group === 'faq' ? 'השאלה שמופיעה באתר' : 'כותרת שמופיעה באתר'}
@@ -122,7 +122,7 @@ export const SectionGroupEditor = ({
                   <TextInput value={section.id} onChange={(value) => updateSection(section.id, { id: value })} />
                 </div>
               </details>
-            </article>
+            </EditorCard>
           ))}
           {groupSections.length === 0 && (
             <div className="empty-state">
