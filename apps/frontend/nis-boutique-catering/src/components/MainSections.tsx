@@ -6,7 +6,7 @@ import {
 } from '../data/siteContent';
 import { buildInquiryWhatsappLink } from '../utils/contact';
 import { OptimizedImage } from './OptimizedImage';
-import { useSiteSectionPreviewData } from './SiteSectionPreviewData';
+import { useSiteSectionPreviewData } from '@monorepo/site-preview/SiteSectionPreviewData';
 import { IntroBandSectionContent } from './sections/IntroBandSection';
 
 const SectionHeading = ({

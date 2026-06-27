@@ -1,0 +1,18 @@
+{
+  "name": "@monorepo/site-preview",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    "./MainSections": {
+      "types": "./src/MainSections.ts",
+      "import": "./src/MainSections.ts"
+    },
+    "./SiteSectionPreviewData": {
+      "types": "./src/SiteSectionPreviewData.ts",
+      "import": "./src/SiteSectionPreviewData.ts"
+    },
+    "./styles/base.css": "../../apps/frontend/nis-boutique-catering/src/styles/base.css",
+    "./styles/theme.css": "../../apps/frontend/nis-boutique-catering/src/styles/theme.css"
+  }
+}

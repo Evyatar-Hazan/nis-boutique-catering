@@ -104,12 +104,12 @@ import {
   ProcessSection,
   RealMediaSection,
   StorySection,
-} from '../../../frontend/nis-boutique-catering/src/components/MainSections';
+} from '@monorepo/site-preview/MainSections';
 import {
   SiteSectionPreviewDataProvider,
   defaultSiteSectionPreviewData,
   type SiteSectionPreviewData,
-} from '../../../frontend/nis-boutique-catering/src/components/SiteSectionPreviewData';
+} from '@monorepo/site-preview/SiteSectionPreviewData';
 import {
   exactPreviewCopySectionIds,
   exactPreviewSectionGroupIds,
@@ -140,8 +140,8 @@ import { IntroBandEditor } from './components/editor/sections/IntroBandEditor';
 import { ManifestoEditor } from './components/editor/sections/ManifestoEditor';
 import { TextInput } from './components/editor/TextInput';
 import { Toggle } from './components/editor/Toggle';
-import siteBaseCss from '../../../frontend/nis-boutique-catering/src/styles/base.css?raw';
-import siteThemeCss from '../../../frontend/nis-boutique-catering/src/styles/theme.css?raw';
+import siteBaseCss from '@monorepo/site-preview/styles/base.css?raw';
+import siteThemeCss from '@monorepo/site-preview/styles/theme.css?raw';
 
 type ActiveView =
   | 'site-map'
