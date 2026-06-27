@@ -1556,25 +1556,9 @@ export const App = () => {
             patchSectionItem={patchSectionItem}
             joinPipeList={joinPipeList}
             splitPipeList={splitPipeList}
-            renderExactPreview={({ sectionId, content: previewContent, mediaById: previewMediaById, device }) => {
-              if (!exactPreviewCopySectionIds.includes(sectionId as typeof exactPreviewCopySectionIds[number])) {
-                return null;
-              }
-
-              if (sectionId === 'experience-lab') {
-                return <ActualExperienceLabPreview content={previewContent} mediaById={previewMediaById} device={device} />;
-              }
-
-              if (sectionId === 'real-media') {
-                return (
-                  <ActualSiteSectionFrame content={previewContent} mediaById={previewMediaById} device={device}>
-                    <RealMediaSection />
-                  </ActualSiteSectionFrame>
-                );
-              }
-
-              return null;
-            }}
+            renderExactPreview={({ sectionId, content: previewContent, mediaById: previewMediaById, device }) =>
+              renderExactCopySectionPreview({ sectionId, content: previewContent, mediaById: previewMediaById, device })
+            }
             renderFallbackPreview={({ section, tagsSection, device }) => (
               <CopyOnlySectionPreview section={section} tagsSection={tagsSection} device={device} />
             )}
@@ -1814,25 +1798,9 @@ export const App = () => {
             patchSectionItem={patchSectionItem}
             joinPipeList={joinPipeList}
             splitPipeList={splitPipeList}
-            renderExactPreview={({ sectionId, content: previewContent, mediaById: previewMediaById, device }) => {
-              if (!exactPreviewCopySectionIds.includes(sectionId as typeof exactPreviewCopySectionIds[number])) {
-                return null;
-              }
-
-              if (sectionId === 'experience-lab') {
-                return <ActualExperienceLabPreview content={previewContent} mediaById={previewMediaById} device={device} />;
-              }
-
-              if (sectionId === 'real-media') {
-                return (
-                  <ActualSiteSectionFrame content={previewContent} mediaById={previewMediaById} device={device}>
-                    <RealMediaSection />
-                  </ActualSiteSectionFrame>
-                );
-              }
-
-              return null;
-            }}
+            renderExactPreview={({ sectionId, content: previewContent, mediaById: previewMediaById, device }) =>
+              renderExactCopySectionPreview({ sectionId, content: previewContent, mediaById: previewMediaById, device })
+            }
             renderFallbackPreview={({ section, tagsSection, device }) => (
               <CopyOnlySectionPreview section={section} tagsSection={tagsSection} device={device} />
             )}
@@ -2472,6 +2440,36 @@ const ActualExperienceLabPreview = ({
       <ExperienceLabSection activeExperienceIndex={activeExperienceIndex} onChangeExperience={setActiveExperienceIndex} />
     </ActualSiteSectionFrame>
   );
+};
+
+const renderExactCopySectionPreview = ({
+  sectionId,
+  content,
+  mediaById,
+  device,
+}: {
+  readonly sectionId: string;
+  readonly content: ContentSnapshot;
+  readonly mediaById: ReadonlyMap<string, ImageAssetRecord>;
+  readonly device: PreviewDevice;
+}) => {
+  if (!exactPreviewCopySectionIds.includes(sectionId as typeof exactPreviewCopySectionIds[number])) {
+    return null;
+  }
+
+  if (sectionId === 'experience-lab') {
+    return <ActualExperienceLabPreview content={content} mediaById={mediaById} device={device} />;
+  }
+
+  if (sectionId === 'real-media') {
+    return (
+      <ActualSiteSectionFrame content={content} mediaById={mediaById} device={device}>
+        <RealMediaSection />
+      </ActualSiteSectionFrame>
+    );
+  }
+
+  return null;
 };
 
 const ActualGalleryPreview = ({
