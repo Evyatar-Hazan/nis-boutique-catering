@@ -9,8 +9,8 @@
       "import": "./src/MainSections.ts"
     },
     "./SiteSectionPreviewData": {
-      "types": "./src/SiteSectionPreviewData.ts",
-      "import": "./src/SiteSectionPreviewData.ts"
+      "types": "./src/SiteSectionPreviewData.tsx",
+      "import": "./src/SiteSectionPreviewData.tsx"
     },
     "./styles/base.css": "../../apps/frontend/nis-boutique-catering/src/styles/base.css",
     "./styles/theme.css": "../../apps/frontend/nis-boutique-catering/src/styles/theme.css"
