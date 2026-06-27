@@ -134,7 +134,6 @@ import { PanelHeader } from './components/editor/PanelHeader';
 import { PreviewHeader } from './components/editor/PreviewHeader';
 import type { MediaUsageKind, PreviewDevice } from './components/editor/types';
 import { CopyOnlySectionEditor } from './components/editor/sections/CopyOnlySectionEditor';
-import { IntroBandEditor } from './components/editor/sections/IntroBandEditor';
 import { ManifestoEditor } from './components/editor/sections/ManifestoEditor';
 import { TextInput } from './components/editor/TextInput';
 import { Toggle } from './components/editor/Toggle';
@@ -1515,17 +1514,30 @@ export const App = () => {
         )}
 
         {activeView === 'intro-band' && (
-          <IntroBandEditor
+          <CopyOnlySectionEditor
             content={content}
             mediaById={mediaById}
+            sectionId="intro-band"
+            title="רעיון אחד ברור"
+            text="זה הפתיח הקצר שאחרי מסך הפתיחה. הוא מיועד להסביר במהירות למי Nis מתאימה ולמה שבתות, אירוח קטן ו-Travel Nis הם אותו עולם."
             previewDevice={previewDevice}
             onPreviewDeviceChange={setPreviewDevice}
             updateSection={updateSection}
-            addSection={addSection}
             getManagedCopySection={getManagedCopySection}
             patchSectionItem={patchSectionItem}
-            renderPreview={({ content: previewContent, mediaById: previewMediaById, device }) => (
-              <IntroBandPreview content={previewContent} mediaById={previewMediaById} device={device} />
+            joinPipeList={joinPipeList}
+            splitPipeList={splitPipeList}
+            renderExactPreview={({ sectionId, content: previewContent, mediaById: previewMediaById, device }) => {
+              if (sectionId !== 'intro-band') {
+                return null;
+              }
+
+              return (
+                <IntroBandPreview content={previewContent} mediaById={previewMediaById} device={device} />
+              );
+            }}
+            renderFallbackPreview={({ section, tagsSection, device }) => (
+              <CopyOnlySectionPreview section={section} tagsSection={tagsSection} device={device} />
             )}
           />
         )}
