@@ -29,6 +29,7 @@ import {
   storyMoments,
   trustCards,
   videoMedia,
+  whatsappBase,
 } from '../../../apps/frontend/nis-boutique-catering/src/data/siteContent';
 
 export const defaultSiteSectionPreviewData = {
@@ -60,6 +61,7 @@ export const defaultSiteSectionPreviewData = {
   storyMoments,
   trustCards,
   videoMedia,
+  whatsappBase,
 } as const;
 
 export type SiteSectionPreviewData = typeof defaultSiteSectionPreviewData;

@@ -1,6 +1,6 @@
 import type { ImgHTMLAttributes } from 'react';
-import type { ImageAsset } from '../../../apps/frontend/nis-boutique-catering/src/data/siteContent';
-import { getImageProps, getImageSrcSet } from '../../../apps/frontend/nis-boutique-catering/src/utils/media';
+import type { ImageAsset } from './sitePreviewTypes';
+import { getImageProps, getImageSrcSet } from './mediaHelpers';
 
 type OptimizedImageProps = Omit<
   ImgHTMLAttributes<HTMLImageElement>,

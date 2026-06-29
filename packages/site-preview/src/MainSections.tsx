@@ -1,10 +1,7 @@
 import { type CSSProperties, type FormEventHandler, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from 'react';
 import { ArrowLeft, Camera, CheckCircle2, ChefHat, Clock, Mail, MapPin, MessageCircle, Package, Phone, Play, Send, Utensils } from 'lucide-react';
-import {
-  type GalleryCategory,
-  type GalleryImage,
-} from '../../../apps/frontend/nis-boutique-catering/src/data/siteContent';
-import { buildInquiryWhatsappLink } from '../../../apps/frontend/nis-boutique-catering/src/utils/contact';
+import type { GalleryCategory, GalleryImage } from './sitePreviewTypes';
+import { buildInquiryWhatsappLink } from './contactHelpers';
 import { OptimizedImage } from './OptimizedImage';
 import { useSiteSectionPreviewData } from './SiteSectionPreviewData';
 import { IntroBandSectionContent } from './IntroBandSectionContent';
@@ -294,7 +291,7 @@ export const ExperienceLabSection = ({
   activeExperienceIndex,
   onChangeExperience,
 }: ExperienceLabSectionProps) => {
-  const { foodMedia, sectionCopy, services, siteMicrocopy } = useSiteSectionPreviewData();
+  const { foodMedia, sectionCopy, services, siteMicrocopy, whatsappBase } = useSiteSectionPreviewData();
   const handleTabNavigation = (event: ReactKeyboardEvent<HTMLButtonElement>, index: number) => {
     if (event.key === 'ArrowRight') {
       event.preventDefault();
@@ -382,7 +379,7 @@ export const ExperienceLabSection = ({
                         <li key={detail}>{detail}</li>
                       ))}
                     </ul>
-                    <a href={buildInquiryWhatsappLink(service.title)}>
+                    <a href={buildInquiryWhatsappLink(whatsappBase, service.title)}>
                       {siteMicrocopy.experienceCta}
                       <ArrowLeft aria-hidden="true" size={16} />
                     </a>
@@ -459,7 +456,7 @@ export const BoutiqueSection = () => {
 };
 
 export const ServicesSection = () => {
-  const { sectionCopy, services } = useSiteSectionPreviewData();
+  const { sectionCopy, services, whatsappBase } = useSiteSectionPreviewData();
   return (
     <section id="experiences" className="section" aria-labelledby="experiences-title">
     <div className="container">
@@ -482,7 +479,7 @@ export const ServicesSection = () => {
                     <li key={detail}>{detail}</li>
                   ))}
                 </ul>
-                <a href={buildInquiryWhatsappLink(service.title)} className="text-link">
+                <a href={buildInquiryWhatsappLink(whatsappBase, service.title)} className="text-link">
                   {service.cta}
                   <ArrowLeft aria-hidden="true" size={16} />
                 </a>
