@@ -101,6 +101,11 @@ import {
   validationErrorText,
 } from './studioHelpers';
 import {
+  heroMediaIdAt,
+  heroMediaSlots,
+  patchHeroMediaId,
+} from './heroMediaHelpers';
+import {
   fetchGoogleUserEmail,
   getDriveFileDownloadUrl,
   openDrivePicker,
@@ -246,12 +251,6 @@ const rememberedSessionKey = 'nis-content-studio-session-v1';
 const tokenRefreshWindowMs = 60_000;
 const liveVersionPollDelayMs = 15_000;
 const liveVersionPollAttempts = 12;
-const heroMediaSlots = [
-  { key: 'background', label: 'רקע מסך פתיחה', help: 'התמונה הרחבה שמופיעה מאחורי כל מסך הפתיחה.', fallbackMediaId: 'hosting-table-overview' },
-  { key: 'primary', label: 'תמונה ראשית', help: 'התמונה הגדולה באזור התצוגה/האירוח.', fallbackMediaId: 'salmon-skewers-lemon' },
-  { key: 'side', label: 'תמונה צדדית', help: 'תמונה קטנה שמוסיפה עומק לתצוגת האירוח.', fallbackMediaId: 'dips-tray-close' },
-  { key: 'tall', label: 'תמונה גבוהה', help: 'תמונה אנכית נוספת באזור התצוגה.', fallbackMediaId: 'table-setting-blue-gold' },
-] as const;
 const manifestoMediaFallbacks = ['hosting-table-overview', 'dips-tray-close', 'table-setting-blue-gold'] as const;
 
 const isSessionShape = (value: unknown): value is Session => {
@@ -495,11 +494,6 @@ export const ensureManagedSections = (snapshot: ContentSnapshot): ContentSnapsho
 
 const cmsSrcFor = (id: string) => `/media/cms/${id}.webp`;
 const publicAssetSrcFor = (src: string) => (src.startsWith('http') ? src : `${publicSiteOrigin}${src}`);
-const heroMediaIdAt = (heroMedia: SectionBlockRecord | undefined, index: number) => heroMedia?.items[index] ?? heroMediaSlots[index]?.fallbackMediaId ?? '';
-const patchHeroMediaId = (heroMedia: SectionBlockRecord, index: number, mediaId: string): Partial<SectionBlockRecord> => {
-  const items = heroMediaSlots.map((slot, slotIndex) => (slotIndex === index ? mediaId : heroMedia.items[slotIndex] ?? slot.fallbackMediaId));
-  return { items };
-};
 
 const areaDefinitions: readonly SiteAreaDefinition[] = [
   {
