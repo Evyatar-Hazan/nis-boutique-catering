@@ -93,7 +93,8 @@ import {
   PublishPanel,
   StatusPanel,
 } from './publishWorkflow';
-export { getOwnerVerificationChecklist, getStudioWorkflowSteps } from './publishWorkflow';
+import type { ActiveView, PublishState } from './publishWorkflowHelpers';
+import { formatValidationIssue } from './validationHelpers';
 import {
   fetchGoogleUserEmail,
   getDriveFileDownloadUrl,
@@ -154,27 +155,7 @@ import { Toggle } from './components/editor/Toggle';
 import siteBaseCss from '@monorepo/site-preview/styles/base.css?raw';
 import siteThemeCss from '@monorepo/site-preview/styles/theme.css?raw';
 
-type ActiveView =
-  | 'site-map'
-  | 'hero'
-  | 'intro-band'
-  | 'contact'
-  | 'manifesto'
-  | 'services'
-  | 'experience-lab'
-  | 'site-copy'
-  | 'site-microcopy'
-  | 'audience'
-  | 'process'
-  | 'story'
-  | 'coordination'
-  | 'real-media'
-  | 'gallery'
-  | 'faq'
-  | 'media'
-  | 'publish';
 type AuthState = 'signed-out' | 'loading' | 'authorized' | 'denied';
-type PublishState = 'clean' | 'draft' | 'saving' | 'publishing' | 'checking' | 'published' | 'live' | 'error';
 
 type PublishProgress = {
   readonly targetVersion: string;
@@ -3435,16 +3416,7 @@ const validationErrorText = (
   return referenceIssues[0] ?? 'יש שדות שצריך לתקן.';
 };
 
-// Exported for validation-message coverage.
-// eslint-disable-next-line react-refresh/only-export-components
-export const formatValidationIssue = (issue: { readonly path: readonly PropertyKey[]; readonly message: string }) => {
-  const path = issue.path.length > 0 ? issue.path.map(String).join('.') : 'התוכן הכללי';
-  const message = issue.message === 'Invalid input' ? 'ערך לא תקין' : issue.message;
-  return `שדה לא תקין: ${path} - ${message}`;
-};
-
 // Exported for the UX coverage test that keeps the editing flow understandable.
-// eslint-disable-next-line react-refresh/only-export-components
 const getDriveFileViewUrl = (fileId: string) => `https://drive.google.com/file/d/${encodeURIComponent(fileId)}/view`;
 
 const shortSourceId = (sourceId: string) => {

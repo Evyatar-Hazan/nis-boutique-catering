@@ -1,13 +1,8 @@
 import { cleanup, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
-import {
-  App,
-  ensureManagedSections,
-  formatValidationIssue,
-  getOwnerVerificationChecklist,
-  getStudioWorkflowSteps,
-  managedSectionDefaults,
-} from './App';
+import { App, ensureManagedSections, managedSectionDefaults } from './App';
+import { getOwnerVerificationChecklist, getStudioWorkflowSteps } from './publishWorkflowHelpers';
+import { formatValidationIssue } from './validationHelpers';
 import { exactPreviewCopySectionIds, exactPreviewSectionGroupIds, exactPreviewViewIds } from './previewParityContract';
 import '@testing-library/jest-dom/vitest';
 
