@@ -105,6 +105,7 @@ import {
   heroMediaSlots,
   patchHeroMediaId,
 } from './heroMediaHelpers';
+import { getAreaStatus } from './areaStatusHelpers';
 import { getViewForUsage } from './previewNavigationHelpers';
 import {
   fetchGoogleUserEmail,
@@ -1371,7 +1372,7 @@ export const App = () => {
             mediaById={mediaById}
             onOpen={(view) => setActiveView(view as ActiveView)}
             areaDefinitions={areaDefinitions}
-            areaStatus={(areaId, nextContent) => areaStatus(areaId as ActiveView, nextContent)}
+            areaStatus={(areaId, nextContent) => getAreaStatus(areaId as ActiveView, nextContent)}
             renderAreaPreview={({ area, content: previewContent, mediaById: previewMediaById }) => (
               <SiteMapAreaPreview
                 area={area}
@@ -3478,33 +3479,4 @@ const waitForLiveSiteVersion = async (
   }
 
   throw new Error(`הפרסום נשלח, אבל אחרי ${liveVersionPollAttempts} בדיקות במשך בערך ${Math.round((liveVersionPollAttempts * liveVersionPollDelayMs) / 60000)} דקות הסטודיו עדיין לא רואה את גרסת ${version} באתר החי. לרוב זה אומר ש-Cloudflare עדיין בונה, או שהפרסום נכשל בשרת הפרסום.`);
-};
-
-const areaStatus = (area: ActiveView, content: ContentSnapshot) => {
-  if (area === 'hero') {
-    const hero = content.sections.find((section) => section.id === 'hero' || section.group === 'hero');
-    return hero?.active && !hero.deletedAt ? 'פעיל באתר' : 'כבוי או חסר';
-  }
-  if (['intro-band', 'experience-lab', 'real-media'].includes(area)) {
-    const copySection = getManagedCopySection(content, area);
-    return copySection?.active ? 'פעיל באתר' : 'כבוי או חסר';
-  }
-  if (area === 'services') {
-    return `${content.services.filter((service) => service.active && !service.deletedAt).length} שירותים פעילים`;
-  }
-  if (area === 'gallery') {
-    return `${content.gallery.filter((item) => item.active && !item.deletedAt).length} תמונות פעילות`;
-  }
-  if (area === 'media') {
-    return `${content.media.filter((media) => !media.deletedAt).length} תמונות בספרייה`;
-  }
-  if (area === 'contact') {
-    return content.settings.phoneDisplay ? `וואטסאפ ${content.settings.phoneDisplay}` : 'חסר טלפון';
-  }
-  if (area === 'publish') {
-    return 'מוכן לבדיקה ופרסום';
-  }
-  const group = area;
-  const activeCount = content.sections.filter((section) => section.group === group && section.active && !section.deletedAt).length;
-  return activeCount > 0 ? `${activeCount} פריטים פעילים` : 'עדיין לא מנוהל מהסטודיו';
 };
