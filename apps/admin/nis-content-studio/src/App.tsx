@@ -94,7 +94,12 @@ import {
   StatusPanel,
 } from './publishWorkflow';
 import type { ActiveView, PublishState } from './publishWorkflowHelpers';
-import { formatValidationIssue } from './validationHelpers';
+import {
+  formatError,
+  getDriveFileViewUrl,
+  shortSourceId,
+  validationErrorText,
+} from './studioHelpers';
 import {
   fetchGoogleUserEmail,
   getDriveFileDownloadUrl,
@@ -487,8 +492,6 @@ export const ensureManagedSections = (snapshot: ContentSnapshot): ContentSnapsho
     sections: [...snapshot.sections, ...missing],
   };
 };
-
-const formatError = (error: unknown) => (error instanceof Error ? error.message : 'הפעולה נכשלה');
 
 const cmsSrcFor = (id: string) => `/media/cms/${id}.webp`;
 const publicAssetSrcFor = (src: string) => (src.startsWith('http') ? src : `${publicSiteOrigin}${src}`);
@@ -3404,27 +3407,6 @@ const MediaRiskNotice = ({ mediaId, content }: { readonly mediaId: string; reado
 const NumberInput = ({ value, onChange }: { readonly value: number; readonly onChange: (value: number) => void }) => (
   <input type="number" value={value} min={0} onChange={(event) => onChange(Number(event.target.value))} />
 );
-
-const validationErrorText = (
-  validation: ReturnType<typeof contentSnapshotSchema.safeParse>,
-  referenceIssues: readonly string[],
-) => {
-  if (!validation.success) {
-    const issue = validation.error.issues[0];
-    return issue ? formatValidationIssue(issue) : 'יש שדות שצריך לתקן.';
-  }
-  return referenceIssues[0] ?? 'יש שדות שצריך לתקן.';
-};
-
-// Exported for the UX coverage test that keeps the editing flow understandable.
-const getDriveFileViewUrl = (fileId: string) => `https://drive.google.com/file/d/${encodeURIComponent(fileId)}/view`;
-
-const shortSourceId = (sourceId: string) => {
-  if (sourceId.length <= 12) {
-    return sourceId;
-  }
-  return `${sourceId.slice(0, 6)}...${sourceId.slice(-4)}`;
-};
 
 const wait = (milliseconds: number) => new Promise((resolve) => {
   window.setTimeout(resolve, milliseconds);
