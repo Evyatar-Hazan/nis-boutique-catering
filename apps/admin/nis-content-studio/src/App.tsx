@@ -105,6 +105,7 @@ import {
   heroMediaSlots,
   patchHeroMediaId,
 } from './heroMediaHelpers';
+import { cmsSrcFor, publicAssetSrcFor, publicSiteOrigin } from './assetUrlHelpers';
 import { getAreaStatus } from './areaStatusHelpers';
 import { getViewForUsage } from './previewNavigationHelpers';
 import {
@@ -247,7 +248,6 @@ const emptyContent: ContentSnapshot = {
 };
 
 const editableCategories = galleryCategoryIds.filter((category) => category !== 'all');
-const publicSiteOrigin = 'https://nisboutiquecatering.com';
 const creatorUrl = 'https://EvyatarHazan.com';
 const rememberedSessionKey = 'nis-content-studio-session-v1';
 const tokenRefreshWindowMs = 60_000;
@@ -493,9 +493,6 @@ export const ensureManagedSections = (snapshot: ContentSnapshot): ContentSnapsho
     sections: [...snapshot.sections, ...missing],
   };
 };
-
-const cmsSrcFor = (id: string) => `/media/cms/${id}.webp`;
-const publicAssetSrcFor = (src: string) => (src.startsWith('http') ? src : `${publicSiteOrigin}${src}`);
 
 const areaDefinitions: readonly SiteAreaDefinition[] = [
   {

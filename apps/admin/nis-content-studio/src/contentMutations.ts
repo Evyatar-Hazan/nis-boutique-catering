@@ -1,11 +1,10 @@
 import type { ContentSnapshot, GalleryItemRecord, ImageAssetRecord, SectionBlockRecord, ServiceRecord } from '@monorepo/content-schema';
+import { cmsSrcFor } from './assetUrlHelpers';
 
 const archiveDate = () => new Date().toISOString();
 
 const updateById = <T extends { id: string }>(items: readonly T[], id: string, patch: Partial<T>) =>
   items.map((item) => (item.id === id ? { ...item, ...patch } : item));
-
-const cmsSrcFor = (id: string) => `/media/cms/${id}.webp`;
 
 export const normalizeMediaId = (value: string) =>
   value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'media-new';
