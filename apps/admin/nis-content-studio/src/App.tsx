@@ -105,6 +105,7 @@ import {
   heroMediaSlots,
   patchHeroMediaId,
 } from './heroMediaHelpers';
+import { getViewForUsage } from './previewNavigationHelpers';
 import {
   fetchGoogleUserEmail,
   getDriveFileDownloadUrl,
@@ -3477,13 +3478,6 @@ const waitForLiveSiteVersion = async (
   }
 
   throw new Error(`הפרסום נשלח, אבל אחרי ${liveVersionPollAttempts} בדיקות במשך בערך ${Math.round((liveVersionPollAttempts * liveVersionPollDelayMs) / 60000)} דקות הסטודיו עדיין לא רואה את גרסת ${version} באתר החי. לרוב זה אומר ש-Cloudflare עדיין בונה, או שהפרסום נכשל בשרת הפרסום.`);
-};
-
-const getViewForUsage = (kind: MediaUsageKind): ActiveView => {
-  if (kind === 'gallery') return 'media';
-  if (kind === 'service') return 'services';
-  if (kind === 'manifesto') return 'manifesto';
-  return 'hero';
 };
 
 const areaStatus = (area: ActiveView, content: ContentSnapshot) => {
