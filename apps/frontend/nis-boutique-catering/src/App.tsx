@@ -12,7 +12,7 @@ import {
   ProcessSection,
   RealMediaSection,
   StorySection,
-} from './components/MainSections';
+} from '@monorepo/site-preview';
 import { FloatingActions, Footer, LightboxDialog, Topbar } from './components/SiteChrome';
 import { contactInterestOptions, email, galleryImages, sectionIds, siteMicrocopy, siteVersion, type GalleryCategory } from './data/siteContent';
 import { useLightboxDialog } from './hooks/useLightboxDialog';
