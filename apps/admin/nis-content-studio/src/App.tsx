@@ -123,7 +123,6 @@ import {
   AudienceSection,
   ContactSection,
   CoordinationSection,
-  defaultSiteSectionPreviewData,
   ExperienceLabSection,
   FaqSection,
   GallerySection,
@@ -136,6 +135,7 @@ import {
   StorySection,
   type SiteSectionPreviewData,
 } from '@monorepo/site-preview';
+import { defaultSiteSectionPreviewData } from '../../../frontend/nis-boutique-catering/src/data/sitePreviewData';
 import {
   exactPreviewCopySectionIds,
   exactPreviewSectionGroupIds,

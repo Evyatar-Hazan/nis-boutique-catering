@@ -11,10 +11,12 @@ import {
   ManifestoSection,
   ProcessSection,
   RealMediaSection,
+  SiteSectionPreviewDataProvider,
   StorySection,
 } from '@monorepo/site-preview';
 import { FloatingActions, Footer, LightboxDialog, Topbar } from './components/SiteChrome';
 import { contactInterestOptions, email, galleryImages, sectionIds, siteMicrocopy, siteVersion, type GalleryCategory } from './data/siteContent';
+import { defaultSiteSectionPreviewData } from './data/sitePreviewData';
 import { useLightboxDialog } from './hooks/useLightboxDialog';
 import { usePointerGlow } from './hooks/usePointerGlow';
 import { useRevealOnScroll } from './hooks/useRevealOnScroll';
@@ -88,6 +90,7 @@ function App() {
   };
 
   return (
+    <SiteSectionPreviewDataProvider value={defaultSiteSectionPreviewData}>
     <div className="site-shell" style={{ '--scroll-progress': scrollProgress } as CSSProperties}>
       <a className="skip-link" href="#main">
         דלג לתוכן המרכזי
@@ -143,6 +146,7 @@ function App() {
         onPrevious={() => showAdjacentImage(-1)}
       />
     </div>
+    </SiteSectionPreviewDataProvider>
   );
 }
 
