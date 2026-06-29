@@ -5,13 +5,18 @@ import {
   getActiveSectionsByGroup,
   getActiveMediaUsages,
   getMediaLabel,
+  getManagedCopySection,
   getMediaStatus,
   getMediaUsage,
   getMediaUsageKindLabel,
+  joinPipeList,
+  managedCopySectionId,
+  patchSectionItem,
   getPreviewCopySection,
   getPreviewMicrocopy,
   getPreviewMicrocopyItems,
   parseBoolean,
+  splitPipeList,
   sortActiveGallery,
   sortActiveServices,
   validateContentReferences,
@@ -59,6 +64,28 @@ describe('content schema', () => {
   it('normalizes boolean sheet values', () => {
     expect(parseBoolean('כן')).toBe(true);
     expect(parseBoolean('0', true)).toBe(false);
+  });
+
+  it('handles pipe list helpers and section item patching', () => {
+    expect(splitPipeList('אחד | שניים| | שלוש ')).toEqual(['אחד', 'שניים', 'שלוש']);
+    expect(joinPipeList(['אחד', 'שניים'])).toBe('אחד | שניים');
+    expect(managedCopySectionId('story')).toBe('copy-story');
+    expect(
+      patchSectionItem(
+        {
+          id: 'copy-story',
+          group: 'site-copy',
+          title: 'כותרת',
+          text: 'טקסט',
+          items: ['ישן', 'קיים'],
+          active: true,
+          order: 1,
+        },
+        0,
+        '',
+        'חלופי',
+      ),
+    ).toEqual({ items: ['חלופי', 'קיים'] });
   });
 
   it('sorts only active gallery rows', () => {
@@ -207,6 +234,7 @@ describe('content schema', () => {
 
     expect(getPreviewMicrocopy(content, 'hero-primary-cta', 'Fallback CTA')).toBe('שלחו וואטסאפ');
     expect(getPreviewMicrocopyItems(content, 'contact-interest-options', ['Fallback'])).toEqual(['שבת', 'מגשים']);
+    expect(getManagedCopySection(content, 'story')?.id).toBe('copy-story');
     expect(getActiveSectionsByGroup(content, 'audience').map((section) => section.id)).toEqual(['audience-1', 'audience-2']);
   });
 

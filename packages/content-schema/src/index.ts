@@ -226,6 +226,27 @@ export const getPreviewMicrocopyItems = (content: ContentSnapshot, id: string, f
   return items && items.length > 0 ? items : fallback;
 };
 
+export const splitPipeList = (value: string) =>
+  value.split('|').map((item) => item.trim()).filter(Boolean);
+
+export const joinPipeList = (items: readonly string[]) => items.join(' | ');
+
+export const patchSectionItem = (
+  section: SectionBlockRecord,
+  index: number,
+  value: string,
+  fallback: string,
+): Partial<SectionBlockRecord> => {
+  const items = [...section.items];
+  items[index] = value || fallback;
+  return { items };
+};
+
+export const managedCopySectionId = (id: string) => `copy-${id}`;
+
+export const getManagedCopySection = (content: ContentSnapshot, id: string) =>
+  content.sections.find((section) => section.id === managedCopySectionId(id) && section.group === 'site-copy' && !section.deletedAt);
+
 export const getMediaUsage = (mediaId: string, content: ContentSnapshot): readonly MediaUsageEntry[] => {
   const heroMedia = content.sections.find((section) => section.id === 'hero-media' && !section.deletedAt);
   const heroUsage = heroMedia?.items.includes(mediaId)

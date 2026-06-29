@@ -42,13 +42,17 @@ import {
   getActiveMediaUsages,
   getActiveSectionsByGroup,
   getMediaLabel,
+  getManagedCopySection,
   getMediaStatus,
   getMediaUsage,
   getMediaUsageKindLabel,
   getPreviewCopySection,
   getPreviewMicrocopy,
   getPreviewMicrocopyItems,
+  joinPipeList,
+  patchSectionItem,
   validateContentReferences,
+  splitPipeList,
   type ContentSnapshot,
   type GalleryItemRecord,
   type ImageAssetRecord,
@@ -505,25 +509,13 @@ export const ensureManagedSections = (snapshot: ContentSnapshot): ContentSnapsho
 
 const formatError = (error: unknown) => (error instanceof Error ? error.message : 'הפעולה נכשלה');
 
-const splitPipeList = (value: string) => value.split('|').map((item) => item.trim()).filter(Boolean);
-const joinPipeList = (items: readonly string[]) => items.join(' | ');
 const cmsSrcFor = (id: string) => `/media/cms/${id}.webp`;
 const publicAssetSrcFor = (src: string) => (src.startsWith('http') ? src : `${publicSiteOrigin}${src}`);
-const patchSectionItem = (section: SectionBlockRecord, index: number, value: string, fallback: string): Partial<SectionBlockRecord> => {
-  const items = [...section.items];
-  items[index] = value || fallback;
-  return { items };
-};
 const heroMediaIdAt = (heroMedia: SectionBlockRecord | undefined, index: number) => heroMedia?.items[index] ?? heroMediaSlots[index]?.fallbackMediaId ?? '';
 const patchHeroMediaId = (heroMedia: SectionBlockRecord, index: number, mediaId: string): Partial<SectionBlockRecord> => {
   const items = heroMediaSlots.map((slot, slotIndex) => (slotIndex === index ? mediaId : heroMedia.items[slotIndex] ?? slot.fallbackMediaId));
   return { items };
 };
-
-const managedCopySectionId = (id: string) => `copy-${id}`;
-
-const getManagedCopySection = (content: ContentSnapshot, id: string) =>
-  content.sections.find((section) => section.id === managedCopySectionId(id) && section.group === 'site-copy' && !section.deletedAt);
 
 const areaDefinitions: readonly SiteAreaDefinition[] = [
   {
