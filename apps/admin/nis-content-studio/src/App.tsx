@@ -129,16 +129,7 @@ import {
   exactPreviewSectionGroupIds,
 } from './previewParityContract';
 import { Field } from './components/editor/Field';
-import {
-  SiteCopyOverviewPreview,
-  SiteMicrocopyOverviewPreview,
-} from './components/editor/sections/OverviewPreviews';
 import { sectionGroupWorkspaceDefinitions } from './components/editor/sections/sectionGroupWorkspaceDefinitions';
-import {
-  SiteMapAreaPreview,
-  SiteMapAreaPreviewSurface,
-  SiteMapPanel,
-} from './components/editor/sections/SiteMapPanel';
 import { PanelHeader } from './components/editor/PanelHeader';
 import { PreviewHeader } from './components/editor/PreviewHeader';
 import type { MediaUsageKind, PreviewDevice } from './components/editor/types';
@@ -193,6 +184,7 @@ const HeroEditor = lazy(async () => ({ default: (await import('./components/edit
 const CopyOnlySectionEditor = lazy(async () => ({ default: (await import('./components/editor/sections/CopyOnlySectionEditor')).CopyOnlySectionEditor }));
 const ManifestoEditor = lazy(async () => ({ default: (await import('./components/editor/sections/ManifestoEditor')).ManifestoEditor }));
 const SectionGroupWorkspace = lazy(async () => ({ default: (await import('./components/editor/sections/SectionGroupWorkspace')).SectionGroupWorkspace }));
+const SiteMapWorkspace = lazy(async () => ({ default: (await import('./components/editor/sections/SiteMapWorkspace')).SiteMapWorkspace }));
 const ImageUploadDropzone = lazy(async () => ({ default: (await import('./components/editor/sections/MediaLibrary')).ImageUploadDropzone }));
 const ImagesLibraryToolbar = lazy(async () => ({ default: (await import('./components/editor/sections/MediaLibrary')).ImagesLibraryToolbar }));
 const ImagesGrid = lazy(async () => ({ default: (await import('./components/editor/sections/MediaLibrary')).ImagesGrid }));
@@ -1043,86 +1035,59 @@ export const App = () => {
         </section>
 
         {activeView === 'site-map' && (
-          <SiteMapPanel
-            content={content}
-            mediaById={mediaById}
-            onOpen={(view) => setActiveView(view as ActiveView)}
-            areaDefinitions={areaDefinitions}
-            areaStatus={(areaId, nextContent) => getAreaStatus(areaId as ActiveView, nextContent)}
-            renderAreaPreview={({ area, content: previewContent, mediaById: previewMediaById }) => (
-              <SiteMapAreaPreview
-                area={area}
-                content={previewContent}
-                mediaById={previewMediaById}
-                renderAreaSurface={({ area, content: surfaceContent, mediaById: surfaceMediaById, device }) => (
-                  <SiteMapAreaPreviewSurface
-                    area={area}
-                    content={surfaceContent}
-                    mediaById={surfaceMediaById}
-                    device={device}
-                    areaDefinitions={areaDefinitions}
-                    exactPreviewSectionGroupIds={exactPreviewSectionGroupIds}
-                    renderHeroPreview={({ content: heroContent, hero, device, mediaById: heroMediaById }) => (
-                      <HeroSitePreview content={heroContent} hero={hero} device={device} mediaById={heroMediaById} />
-                    )}
-                    renderIntroBandPreview={({ content: introContent, mediaById: introMediaById, device }) => (
-                      <IntroBandPreview content={introContent} mediaById={introMediaById} device={device} />
-                    )}
-                    renderManifestoPreview={({ content: manifestoContent, mediaById: manifestoMediaById, device }) => (
-                      <ManifestoSitePreview content={manifestoContent} mediaById={manifestoMediaById} device={device} />
-                    )}
-                    renderExperienceLabPreview={({ content: experienceContent, mediaById: experienceMediaById, device }) => (
-                      <ActualExperienceLabPreview content={experienceContent} mediaById={experienceMediaById} device={device} />
-                    )}
-                    renderServicesPreview={({ content: servicesContent, mediaById: servicesMediaById, device }) => (
-                      <ServicesPreview content={servicesContent} mediaById={servicesMediaById} device={device} />
-                    )}
-                    renderGalleryPreview={({ content: galleryContent, mediaById: galleryMediaById, device }) => (
-                      <GallerySitePreview content={galleryContent} mediaById={galleryMediaById} device={device} />
-                    )}
-                    renderRealMediaPreview={({ content: realMediaContent, mediaById: realMediaMediaById, device }) => (
-                      <ActualSiteSectionFrame content={realMediaContent} mediaById={realMediaMediaById} device={device}>
-                        <RealMediaSection />
-                      </ActualSiteSectionFrame>
-                    )}
-                    renderContactPreview={({ content: contactContent, mediaById: contactMediaById, device }) => (
-                      <ContactPreview content={contactContent} mediaById={contactMediaById} device={device} />
-                    )}
-                    renderSectionGroupPreview={({ group, title, content: groupContent, mediaById: groupMediaById, sections, allSections, device }) => (
-                      <SectionGroupSitePreview
-                        group={group}
-                        title={title}
-                        content={groupContent}
-                        mediaById={groupMediaById}
-                        sections={sections}
-                        allSections={allSections}
-                        device={device}
-                      />
-                    )}
-                    renderSiteCopyOverviewPreview={({ content: copyContent, device }) => (
-                      <SiteCopyOverviewPreview
-                        content={copyContent}
-                        device={device}
-                        sectionGroupLabels={sectionGroupLabels}
-                        renderBrowserBar={(previewDevice) => <PreviewBrowserBar device={previewDevice} />}
-                      />
-                    )}
-                    renderSiteMicrocopyOverviewPreview={({ content: microcopyContent, device }) => (
-                      <SiteMicrocopyOverviewPreview
-                        content={microcopyContent}
-                        device={device}
-                        renderBrowserBar={(previewDevice) => <PreviewBrowserBar device={previewDevice} />}
-                        getPreviewMicrocopy={getPreviewMicrocopy}
-                      />
-                    )}
-                    renderMetadataPreview={({ content: metadataContent, device }) => (
-                      <MetadataSeoPreview content={metadataContent} device={device} />
-                    )}
-                  />
-                )}
-              />
-            )}
-          />
+          <Suspense fallback={<WorkspaceLoadingState label="טוען את מפת האתר..." />}>
+            <SiteMapWorkspace
+              content={content}
+              mediaById={mediaById}
+              setActiveView={setActiveView}
+              areaDefinitions={areaDefinitions}
+              getAreaStatus={getAreaStatus}
+              exactPreviewSectionGroupIds={exactPreviewSectionGroupIds}
+              sectionGroupLabels={sectionGroupLabels}
+              getPreviewMicrocopy={getPreviewMicrocopy}
+              renderHeroPreview={({ content: heroContent, hero, device, mediaById: heroMediaById }) => (
+                <HeroSitePreview content={heroContent} hero={hero} device={device} mediaById={heroMediaById} />
+              )}
+              renderIntroBandPreview={({ content: introContent, mediaById: introMediaById, device }) => (
+                <IntroBandPreview content={introContent} mediaById={introMediaById} device={device} />
+              )}
+              renderManifestoPreview={({ content: manifestoContent, mediaById: manifestoMediaById, device }) => (
+                <ManifestoSitePreview content={manifestoContent} mediaById={manifestoMediaById} device={device} />
+              )}
+              renderExperienceLabPreview={({ content: experienceContent, mediaById: experienceMediaById, device }) => (
+                <ActualExperienceLabPreview content={experienceContent} mediaById={experienceMediaById} device={device} />
+              )}
+              renderServicesPreview={({ content: servicesContent, mediaById: servicesMediaById, device }) => (
+                <ServicesPreview content={servicesContent} mediaById={servicesMediaById} device={device} />
+              )}
+              renderGalleryPreview={({ content: galleryContent, mediaById: galleryMediaById, device }) => (
+                <GallerySitePreview content={galleryContent} mediaById={galleryMediaById} device={device} />
+              )}
+              renderRealMediaPreview={({ content: realMediaContent, mediaById: realMediaMediaById, device }) => (
+                <ActualSiteSectionFrame content={realMediaContent} mediaById={realMediaMediaById} device={device}>
+                  <RealMediaSection />
+                </ActualSiteSectionFrame>
+              )}
+              renderContactPreview={({ content: contactContent, mediaById: contactMediaById, device }) => (
+                <ContactPreview content={contactContent} mediaById={contactMediaById} device={device} />
+              )}
+              renderSectionGroupPreview={({ group, title, content: groupContent, mediaById: groupMediaById, sections, allSections, device }) => (
+                <SectionGroupSitePreview
+                  group={group}
+                  title={title}
+                  content={groupContent}
+                  mediaById={groupMediaById}
+                  sections={sections}
+                  allSections={allSections}
+                  device={device}
+                />
+              )}
+              renderBrowserBar={(previewDevice) => <PreviewBrowserBar device={previewDevice} />}
+              renderMetadataPreview={({ content: metadataContent, device }) => (
+                <MetadataSeoPreview content={metadataContent} device={device} />
+              )}
+            />
+          </Suspense>
         )}
 
         {activeView === 'hero' && (
