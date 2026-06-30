@@ -109,15 +109,12 @@ import { cmsSrcFor, publicAssetSrcFor, publicSiteOrigin } from './assetUrlHelper
 import { getAreaStatus } from './areaStatusHelpers';
 import { getViewForUsage } from './previewNavigationHelpers';
 import {
-  fetchGoogleUserEmail,
   getDriveFileDownloadUrl,
   openDrivePicker,
   readContentFromSheets,
-  requestGoogleAccessToken,
   saveContentToSheets,
   triggerPublish,
   uploadImageToDrive,
-  type GoogleAccessToken,
 } from './googleApi';
 import {
   AudienceSection,
@@ -165,10 +162,9 @@ import { CopyOnlySectionEditor } from './components/editor/sections/CopyOnlySect
 import { ManifestoEditor } from './components/editor/sections/ManifestoEditor';
 import { TextInput } from './components/editor/TextInput';
 import { Toggle } from './components/editor/Toggle';
+import { useStudioAuthSession, type AuthState } from './hooks/useStudioAuthSession';
 import siteBaseCss from '@monorepo/site-preview/styles/base.css?raw';
 import siteThemeCss from '@monorepo/site-preview/styles/theme.css?raw';
-
-type AuthState = 'signed-out' | 'loading' | 'authorized' | 'denied';
 
 type PublishProgress = {
   readonly targetVersion: string;
@@ -225,12 +221,6 @@ type SiteAreaDefinition = {
   readonly editorView?: ActiveView;
 };
 
-type Session = {
-  readonly accessToken: string;
-  readonly email: string;
-  readonly expiresAt: number;
-};
-
 const emptyContent: ContentSnapshot = {
   version: '1',
   updatedAt: new Date(0).toISOString(),
@@ -249,56 +239,10 @@ const emptyContent: ContentSnapshot = {
 
 const editableCategories = galleryCategoryIds.filter((category) => category !== 'all');
 const creatorUrl = 'https://EvyatarHazan.com';
-const rememberedSessionKey = 'nis-content-studio-session-v1';
 const tokenRefreshWindowMs = 60_000;
 const liveVersionPollDelayMs = 15_000;
 const liveVersionPollAttempts = 12;
 const manifestoMediaFallbacks = ['hosting-table-overview', 'dips-tray-close', 'table-setting-blue-gold'] as const;
-
-const isSessionShape = (value: unknown): value is Session => {
-  if (!value || typeof value !== 'object') {
-    return false;
-  }
-
-  const candidate = value as Partial<Record<keyof Session, unknown>>;
-  return (
-    typeof candidate.accessToken === 'string'
-    && typeof candidate.email === 'string'
-    && typeof candidate.expiresAt === 'number'
-  );
-};
-
-const clearRememberedSession = () => {
-  try {
-    window.localStorage.removeItem(rememberedSessionKey);
-  } catch {
-    // Browser storage can be disabled; login should still work for the current tab.
-  }
-};
-
-const readRememberedSession = () => {
-  try {
-    const raw = window.localStorage.getItem(rememberedSessionKey);
-    const parsed = raw ? JSON.parse(raw) as unknown : null;
-    if (!isSessionShape(parsed) || parsed.expiresAt <= Date.now() + tokenRefreshWindowMs) {
-      clearRememberedSession();
-      return null;
-    }
-
-    return parsed;
-  } catch {
-    clearRememberedSession();
-    return null;
-  }
-};
-
-const rememberSession = (session: Session) => {
-  try {
-    window.localStorage.setItem(rememberedSessionKey, JSON.stringify(session));
-  } catch {
-    // Non-blocking: a private browsing policy should not prevent editing in this tab.
-  }
-};
 
 const nextContentVersion = () => {
   const now = new Date();
@@ -629,8 +573,6 @@ const studioSections: readonly {
 ];
 
 export const App = () => {
-  const [authState, setAuthState] = useState<AuthState>('signed-out');
-  const [session, setSession] = useState<Session | null>(null);
   const [content, setContent] = useState<ContentSnapshot>(emptyContent);
   const [activeView, setActiveView] = useState<ActiveView>('site-map');
   const [isSidebarHidden, setIsSidebarHidden] = useState(false);
@@ -649,7 +591,6 @@ export const App = () => {
   const mediaById = useMemo(() => new Map(content.media.map((media) => [media.id, media])), [content.media]);
   const validation = useMemo(() => contentSnapshotSchema.safeParse(content), [content]);
   const referenceIssues = useMemo(() => validateContentReferences(content), [content]);
-  const canUseGoogle = Boolean(session && isGoogleConfigured);
   const hasErrors = !validation.success || referenceIssues.length > 0;
   const visibleMedia = content.media.filter((media) => !media.deletedAt);
   const activeGalleryCount = content.gallery.filter((item) => item.active && !item.deletedAt).length;
@@ -734,99 +675,29 @@ export const App = () => {
     markDraft();
   };
 
-  const loadAuthorizedSession = useCallback(async (token: GoogleAccessToken, knownEmail?: string) => {
-    const email = knownEmail ?? await fetchGoogleUserEmail(token.accessToken);
-    const allowed = studioConfig.allowedEditors.length === 0 || studioConfig.allowedEditors.includes(email);
-
-    if (!allowed) {
-      clearRememberedSession();
-      setSession(null);
-      setAuthState('denied');
-      throw new Error('אין למשתמש הזה הרשאה לנהל את האתר.');
-    }
-
-    const remoteContent = ensureManagedSections(await readContentFromSheets(token.accessToken));
-    const nextSession = { accessToken: token.accessToken, email, expiresAt: token.expiresAt };
-    setSession(nextSession);
-    rememberSession(nextSession);
-    setContent(remoteContent);
-    setAuthState('authorized');
-    setPublishProgress(null);
-    setPublishState('clean');
-    setStatus('התוכן נטען מה-Sheets. אפשר לערוך וללחוץ "עדכן אתר" כדי לפרסם.');
-    return nextSession;
-  }, []);
-
-  const getFreshAccessToken = useCallback(async () => {
-    if (!session) {
-      throw new Error('צריך להתחבר לפני שמירה.');
-    }
-
-    if (session.expiresAt > Date.now() + tokenRefreshWindowMs) {
-      return session.accessToken;
-    }
-
-    const token = await requestGoogleAccessToken({ prompt: '' });
-    const email = await fetchGoogleUserEmail(token.accessToken);
-    if (email !== session.email) {
-      clearRememberedSession();
-      setSession(null);
-      setAuthState('signed-out');
-      throw new Error('התחברת עם משתמש אחר. צריך להתחבר שוב כדי להמשיך.');
-    }
-
-    const nextSession = { accessToken: token.accessToken, email, expiresAt: token.expiresAt };
-    setSession(nextSession);
-    rememberSession(nextSession);
-    return token.accessToken;
-  }, [session]);
-
-  useEffect(() => {
-    if (!isGoogleConfigured) {
-      return;
-    }
-
-    const remembered = readRememberedSession();
-    if (!remembered) {
-      return;
-    }
-
-    let cancelled = false;
-
-    const restore = async () => {
-      setAuthState('loading');
-      setIsBusy(true);
-      setStatus('מחזירים אותך לסטודיו...');
-
-      try {
-        if (remembered.expiresAt <= Date.now() + tokenRefreshWindowMs) {
-          throw new Error('Saved Google session expired');
-        }
-        const token = { accessToken: remembered.accessToken, expiresAt: remembered.expiresAt };
-        await loadAuthorizedSession(token, remembered.email);
-        if (!cancelled) {
-          setStatus('החיבור הקודם נטען. אפשר להמשיך לעבוד.');
-        }
-      } catch {
-        clearRememberedSession();
-        if (!cancelled) {
-          setSession(null);
-          setAuthState('signed-out');
-          setStatus('ההתחברות הקודמת פגה. צריך להתחבר שוב עם Google.');
-        }
-      } finally {
-        if (!cancelled) {
-          setIsBusy(false);
-        }
+  const {
+    authState,
+    session,
+    getFreshAccessToken,
+    handleLogin: performLogin,
+    handleLogout: performLogout,
+  } = useStudioAuthSession({
+    isGoogleConfigured,
+    tokenRefreshWindowMs,
+    onStatusChange: setStatus,
+    onBusyChange: setIsBusy,
+    onAuthorized: async (accessToken, email) => {
+      const allowed = studioConfig.allowedEditors.length === 0 || studioConfig.allowedEditors.includes(email);
+      if (!allowed) {
+        throw new Error('אין למשתמש הזה הרשאה לנהל את האתר.');
       }
-    };
-
-    void restore();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [loadAuthorizedSession]);
+      setContent(ensureManagedSections(await readContentFromSheets(accessToken)));
+      setPublishProgress(null);
+      setPublishState('clean');
+      setStatus('התוכן נטען מה-Sheets. אפשר לערוך וללחוץ "עדכן אתר" כדי לפרסם.');
+    },
+  });
+  const canUseGoogle = Boolean(session && isGoogleConfigured);
 
   const runTask = async (label: string, task: () => Promise<void>) => {
     setIsBusy(true);
@@ -843,13 +714,7 @@ export const App = () => {
 
   const handleLogin = () =>
     runTask('מתחברים לגוגל', async () => {
-      if (!isGoogleConfigured) {
-        throw new Error('חסרה הגדרת Google לסטודיו. צריך להגדיר Client ID ו-Sheet ID.');
-      }
-
-      setAuthState('loading');
-      const token = await requestGoogleAccessToken({ prompt: 'consent' });
-      await loadAuthorizedSession(token);
+      await performLogin();
     });
 
   const handleRefresh = () => {
@@ -951,13 +816,10 @@ export const App = () => {
   };
 
   const handleLogout = () => {
-    clearRememberedSession();
-    setSession(null);
-    setAuthState('signed-out');
+    performLogout();
     setPublishProgress(null);
     setPublishState('clean');
     setContent(emptyContent);
-    setStatus('התנתקת מהסטודיו. אפשר להתחבר שוב עם Google.');
   };
 
   const updateGallery = (id: string, patch: Partial<GalleryItemRecord>) => {
