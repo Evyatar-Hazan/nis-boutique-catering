@@ -3,8 +3,7 @@ import type { ContentSnapshot, ImageAssetRecord } from '@monorepo/content-schema
 import { Cloud, ExternalLink, Images, MonitorCheck, RotateCcw, Search, Trash2, Upload } from 'lucide-react';
 import { Field } from '../Field';
 import { TextInput } from '../TextInput';
-
-type MediaLibraryFilter = 'all' | 'used' | 'unused' | 'missing-drive' | 'archived';
+import type { MediaLibraryFilter } from '../../../hooks/useStudioMediaLibrary';
 type MediaUsageEntry = {
   readonly kind: string;
   readonly id: string;

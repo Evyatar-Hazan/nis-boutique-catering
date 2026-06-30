@@ -65,9 +65,7 @@ import {
   addSectionToSnapshot,
   addServiceToSnapshot,
   archiveGalleryItemInSnapshot,
-  archiveMediaInSnapshot,
   archiveSectionInSnapshot,
-  archiveSelectedMediaInSnapshot,
   archiveServiceInSnapshot,
   duplicateGalleryItemInSnapshot,
   duplicateSectionInSnapshot,
@@ -76,14 +74,10 @@ import {
   moveGalleryItemInSnapshot,
   normalizeCmsMetadataInSnapshot,
   normalizeMediaId,
-  renameMediaInSnapshot,
   restoreGalleryItemInSnapshot,
-  restoreMediaInSnapshot,
   restoreSectionInSnapshot,
-  restoreSelectedMediaInSnapshot,
   restoreServiceInSnapshot,
   updateGalleryInSnapshot,
-  updateMediaInSnapshot,
   updateSectionInSnapshot,
   updateServiceInSnapshot,
 } from './contentMutations';
@@ -111,7 +105,6 @@ import {
   getDriveFileDownloadUrl,
   openDrivePicker,
   readContentFromSheets,
-  saveContentToSheets,
   uploadImageToDrive,
 } from './googleApi';
 import {
@@ -161,6 +154,7 @@ import { ManifestoEditor } from './components/editor/sections/ManifestoEditor';
 import { TextInput } from './components/editor/TextInput';
 import { Toggle } from './components/editor/Toggle';
 import { useStudioAuthSession, type AuthState } from './hooks/useStudioAuthSession';
+import { useStudioMediaLibrary, type MediaLibraryFilter } from './hooks/useStudioMediaLibrary';
 import { useStudioPublishFlow } from './hooks/useStudioPublishFlow';
 import siteBaseCss from '@monorepo/site-preview/styles/base.css?raw';
 import siteThemeCss from '@monorepo/site-preview/styles/theme.css?raw';
@@ -194,8 +188,6 @@ type SectionGroupPreviewArgs = {
   readonly allSections: readonly SectionBlockRecord[];
   readonly device: PreviewDevice;
 };
-
-type MediaLibraryFilter = 'all' | 'used' | 'unused' | 'missing-drive' | 'archived';
 
 type SiteAreaDefinition = {
   readonly id: ActiveView;
@@ -564,11 +556,7 @@ export const App = () => {
   const [previewDevice, setPreviewDevice] = useState<PreviewDevice>('desktop');
   const [status, setStatus] = useState('התחברו כדי לנהל את התוכן האמיתי של האתר.');
   const [isBusy, setIsBusy] = useState(false);
-  const [query, setQuery] = useState('');
   const [siteGalleryQuery, setSiteGalleryQuery] = useState('');
-  const [selectedMediaId, setSelectedMediaId] = useState<string | null>(null);
-  const [selectedMediaIds, setSelectedMediaIds] = useState<readonly string[]>([]);
-  const [mediaFilter, setMediaFilter] = useState<MediaLibraryFilter>('all');
   const [isImageDropActive, setIsImageDropActive] = useState(false);
 
   const mediaById = useMemo(() => new Map(content.media.map((media) => [media.id, media])), [content.media]);
@@ -584,46 +572,6 @@ export const App = () => {
     ...content.media,
   ].filter((item) => item.deletedAt).length;
   const driveMediaCount = visibleMedia.filter((media) => media.driveFileId).length;
-  const filteredMedia = useMemo(() => {
-    const normalizedQuery = query.trim().toLowerCase();
-    const byUsageTitles = (mediaId: string) => getMediaUsage(mediaId, content).map((usage) => usage.title).join(' ');
-
-    return [...content.media]
-      .filter((media) => {
-        const usageCount = getMediaUsage(media.id, content).length;
-        const matchesFilter = (
-          mediaFilter === 'all'
-          || (mediaFilter === 'used' && usageCount > 0 && !media.deletedAt)
-          || (mediaFilter === 'unused' && usageCount === 0 && !media.deletedAt)
-          || (mediaFilter === 'missing-drive' && !media.driveFileId && !media.deletedAt)
-          || (mediaFilter === 'archived' && Boolean(media.deletedAt))
-        );
-        if (!matchesFilter) {
-          return false;
-        }
-        if (!normalizedQuery) {
-          return true;
-        }
-
-        return [
-          media.id,
-          media.usageNotes ?? '',
-          getMediaStatus(media, content),
-          byUsageTitles(media.id),
-        ].join(' ').toLowerCase().includes(normalizedQuery);
-      })
-      .sort((left, right) => {
-        if (Boolean(left.deletedAt) !== Boolean(right.deletedAt)) {
-          return left.deletedAt ? 1 : -1;
-        }
-        return getMediaLabel(left, content).localeCompare(getMediaLabel(right, content), 'he');
-      });
-  }, [content, mediaFilter, query]);
-  const selectedMedia = selectedMediaId ? content.media.find((media) => media.id === selectedMediaId) ?? null : null;
-  const activeSelectedMedia = selectedMedia && filteredMedia.some((media) => media.id === selectedMedia.id)
-    ? selectedMedia
-    : filteredMedia[0] ?? null;
-  const bulkSelectedMedia = content.media.filter((media) => selectedMediaIds.includes(media.id));
   const filteredGallery = useMemo(
     () =>
       content.gallery
@@ -696,6 +644,37 @@ export const App = () => {
     onBusyChange: setIsBusy,
     onStatusChange: setStatus,
   });
+  const {
+    query,
+    setQuery,
+    setSelectedMediaId,
+    selectedMediaIds,
+    mediaFilter,
+    setMediaFilter,
+    filteredMedia,
+    activeSelectedMedia,
+    bulkSelectedMedia,
+    areAllVisibleSelected,
+    updateMedia,
+    saveMediaTitle,
+    renameMedia,
+    archiveMedia,
+    restoreMedia,
+    toggleSelectedMedia,
+    toggleSelectAllVisibleMedia,
+    archiveSelectedMedia,
+    restoreSelectedMedia,
+  } = useStudioMediaLibrary({
+    content,
+    session,
+    buildNextContent,
+    updateContent,
+    getFreshAccessToken,
+    runTask,
+    setContent,
+    setPublishState,
+    setStatus,
+  });
 
   const handleLogin = () =>
     runTask('מתחברים לגוגל', async () => {
@@ -725,38 +704,6 @@ export const App = () => {
     updateContent((current) => updateGalleryInSnapshot(current, id, patch));
   };
 
-  const updateMedia = (id: string, patch: Partial<ImageAssetRecord>) => {
-    updateContent((current) => updateMediaInSnapshot(current, id, patch));
-  };
-
-  const saveMediaTitle = (id: string, title: string) => {
-    const trimmedTitle = title.trim();
-    if (!trimmedTitle) {
-      return;
-    }
-
-    void runTask('שומרים את שם התמונה', async () => {
-      if (!session) {
-        throw new Error('צריך להתחבר לפני שמירה.');
-      }
-
-      const nextSnapshot = buildNextContent(content, (current) => updateMediaInSnapshot(current, id, { title: trimmedTitle }));
-
-      setContent(nextSnapshot);
-      setPublishState('saving');
-      const accessToken = await getFreshAccessToken();
-      await saveContentToSheets(accessToken, nextSnapshot);
-      setPublishState('draft');
-      setStatus('שם התמונה נשמר ב-Google Sheets.');
-    });
-  };
-
-  const renameMedia = (id: string, nextId: string) => {
-    const cleanId = normalizeMediaId(nextId);
-    updateContent((current) => renameMediaInSnapshot(current, id, nextId));
-    setSelectedMediaId(cleanId);
-  };
-
   const updateService = (id: string, patch: Partial<ServiceRecord>) => {
     updateContent((current) => updateServiceInSnapshot(current, id, patch));
   };
@@ -771,45 +718,6 @@ export const App = () => {
   const restoreService = (id: string) => updateContent((current) => restoreServiceInSnapshot(current, id));
   const archiveSection = (id: string) => updateContent((current) => archiveSectionInSnapshot(current, id));
   const restoreSection = (id: string) => updateContent((current) => restoreSectionInSnapshot(current, id));
-  const archiveMedia = (id: string) => {
-    const activeUsages = getActiveMediaUsages(id, content);
-    if (activeUsages.length > 0) {
-      const ok = window.confirm(`התמונה הזאת עדיין מוצגת באתר ב-${activeUsages.length} מקום/ות:\n${formatMediaUsageList(activeUsages)}\n\nלהעביר אותה לארכיון בכל זאת?`);
-      if (!ok) {
-        setStatus('הארכוב בוטל. קודם החליפו את התמונה באזורים שבהם היא בשימוש.');
-        return;
-      }
-    }
-
-    updateContent((current) => archiveMediaInSnapshot(current, id));
-  };
-  const restoreMedia = (id: string) => updateContent((current) => restoreMediaInSnapshot(current, id));
-  const toggleSelectedMedia = (mediaId: string) => {
-    setSelectedMediaIds((current) => (current.includes(mediaId) ? current.filter((id) => id !== mediaId) : [...current, mediaId]));
-  };
-  const toggleSelectAllVisibleMedia = () => {
-    const visibleIds = filteredMedia.map((media) => media.id);
-    const allSelected = visibleIds.length > 0 && visibleIds.every((mediaId) => selectedMediaIds.includes(mediaId));
-    setSelectedMediaIds(allSelected ? [] : visibleIds);
-  };
-  const archiveSelectedMedia = () => {
-    const targetIds = bulkSelectedMedia.filter((media) => !media.deletedAt).map((media) => media.id);
-    if (targetIds.length === 0) {
-      return;
-    }
-
-    updateContent((current) => archiveSelectedMediaInSnapshot(current, targetIds));
-    setSelectedMediaIds([]);
-  };
-  const restoreSelectedMedia = () => {
-    const targetIds = bulkSelectedMedia.filter((media) => media.deletedAt).map((media) => media.id);
-    if (targetIds.length === 0) {
-      return;
-    }
-
-    updateContent((current) => restoreSelectedMediaInSnapshot(current, targetIds));
-    setSelectedMediaIds([]);
-  };
 
   const moveGalleryItem = (id: string, direction: -1 | 1) => {
     updateContent((current) => moveGalleryItemInSnapshot(current, id, direction));
@@ -1468,7 +1376,7 @@ export const App = () => {
               filter={mediaFilter}
               onFilterChange={setMediaFilter}
               selectedCount={bulkSelectedMedia.length}
-              areAllVisibleSelected={filteredMedia.length > 0 && filteredMedia.every((media) => selectedMediaIds.includes(media.id))}
+              areAllVisibleSelected={areAllVisibleSelected}
               onToggleSelectAll={toggleSelectAllVisibleMedia}
               onArchiveSelected={archiveSelectedMedia}
               onRestoreSelected={restoreSelectedMedia}
