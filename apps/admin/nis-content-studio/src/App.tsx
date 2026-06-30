@@ -93,9 +93,8 @@ import {
   PublishPanel,
   StatusPanel,
 } from './publishWorkflow';
-import type { ActiveView, PublishState } from './publishWorkflowHelpers';
+import type { ActiveView } from './publishWorkflowHelpers';
 import {
-  formatError,
   getDriveFileViewUrl,
   shortSourceId,
   validationErrorText,
@@ -113,7 +112,6 @@ import {
   openDrivePicker,
   readContentFromSheets,
   saveContentToSheets,
-  triggerPublish,
   uploadImageToDrive,
 } from './googleApi';
 import {
@@ -163,22 +161,9 @@ import { ManifestoEditor } from './components/editor/sections/ManifestoEditor';
 import { TextInput } from './components/editor/TextInput';
 import { Toggle } from './components/editor/Toggle';
 import { useStudioAuthSession, type AuthState } from './hooks/useStudioAuthSession';
+import { useStudioPublishFlow } from './hooks/useStudioPublishFlow';
 import siteBaseCss from '@monorepo/site-preview/styles/base.css?raw';
 import siteThemeCss from '@monorepo/site-preview/styles/theme.css?raw';
-
-type PublishProgress = {
-  readonly targetVersion: string;
-  readonly liveUrl: string;
-  readonly totalAttempts: number;
-  readonly attempt?: number;
-  readonly checkedAt?: string;
-  readonly lastBundleUrl?: string;
-};
-
-type LiveVersionCheckResult = {
-  readonly live: boolean;
-  readonly bundleUrl?: string;
-};
 
 type SectionEditorItemActionsArgs = {
   readonly section: SectionBlockRecord;
@@ -577,8 +562,6 @@ export const App = () => {
   const [activeView, setActiveView] = useState<ActiveView>('site-map');
   const [isSidebarHidden, setIsSidebarHidden] = useState(false);
   const [previewDevice, setPreviewDevice] = useState<PreviewDevice>('desktop');
-  const [publishState, setPublishState] = useState<PublishState>('clean');
-  const [publishProgress, setPublishProgress] = useState<PublishProgress | null>(null);
   const [status, setStatus] = useState('התחברו כדי לנהל את התוכן האמיתי של האתר.');
   const [isBusy, setIsBusy] = useState(false);
   const [query, setQuery] = useState('');
@@ -648,14 +631,6 @@ export const App = () => {
         .sort((left, right) => left.order - right.order),
     [content.gallery, siteGalleryQuery],
   );
-  const markDraft = () => {
-    if (authState === 'authorized') {
-      setPublishProgress(null);
-      setPublishState('draft');
-      setStatus('יש שינויים שלא פורסמו עדיין. לחצו "עדכן אתר" כדי להעלות אותם לאתר החי.');
-    }
-  };
-
   const buildNextContent = (current: ContentSnapshot, updater: (snapshot: ContentSnapshot) => ContentSnapshot) => {
     const next = updater(current);
     const siteVersion = nextContentVersion();
@@ -698,19 +673,29 @@ export const App = () => {
     },
   });
   const canUseGoogle = Boolean(session && isGoogleConfigured);
-
-  const runTask = async (label: string, task: () => Promise<void>) => {
-    setIsBusy(true);
-    setStatus(`${label}...`);
-    try {
-      await task();
-    } catch (error) {
-      setPublishState('error');
-      setStatus(formatError(error));
-    } finally {
-      setIsBusy(false);
-    }
-  };
+  const {
+    publishState,
+    publishProgress,
+    markDraft,
+    resetPublishFlow,
+    runTask,
+    handleSaveDraft,
+    persistDraft,
+    handleUpdateSite,
+    setPublishState,
+    setPublishProgress,
+  } = useStudioPublishFlow({
+    authState,
+    session,
+    content,
+    hasErrors,
+    publicSiteOrigin,
+    liveVersionPollAttempts,
+    liveVersionPollDelayMs,
+    getFreshAccessToken,
+    onBusyChange: setIsBusy,
+    onStatusChange: setStatus,
+  });
 
   const handleLogin = () =>
     runTask('מתחברים לגוגל', async () => {
@@ -730,95 +715,9 @@ export const App = () => {
     });
   };
 
-  const saveDraft = async (successMessage = 'נשמר כטיוטה ב-Google Sheets. האתר החי עדיין לא השתנה.') => {
-    if (!session) {
-      throw new Error('צריך להתחבר לפני שמירה.');
-    }
-    if (hasErrors) {
-      throw new Error('יש שדות שצריך לתקן לפני שמירה.');
-    }
-
-    setPublishState('saving');
-    const accessToken = await getFreshAccessToken();
-    await saveContentToSheets(accessToken, { ...content, updatedAt: new Date().toISOString() });
-    setPublishState('draft');
-    setStatus(successMessage);
-  };
-
-  const handleSaveDraft = () => {
-    void runTask('שומרים טיוטה', saveDraft);
-  };
-
-  const persistDraft = (taskLabel: string, successMessage: string) => {
-    void runTask(taskLabel, async () => {
-      await saveDraft(successMessage);
-    });
-  };
-
-  const handleUpdateSite = () => {
-    if (!session) {
-      return;
-    }
-
-    void (async () => {
-      const targetVersion = content.settings.siteVersion || content.version;
-      const initialProgress: PublishProgress = {
-        targetVersion,
-        liveUrl: publicSiteOrigin,
-        totalAttempts: liveVersionPollAttempts,
-      };
-      setIsBusy(true);
-      setPublishProgress(initialProgress);
-      setStatus(`מכינים פרסום לגרסת ${targetVersion}. קודם שומרים טיוטה, אחר כך שולחים לבנייה.`);
-      try {
-        await saveDraft();
-        setPublishState('publishing');
-        setStatus('הטיוטה נשמרה. שולחים את הפרסום ל-Cloudflare דרך השרת המאובטח.');
-        const accessToken = await getFreshAccessToken();
-        await triggerPublish(accessToken);
-
-        setPublishState('published');
-        setStatus(`הפרסום נשלח. Cloudflare קיבל את גרסת ${targetVersion} ומתחיל לבנות.`);
-        await wait(900);
-
-        setPublishState('checking');
-        setStatus(`הפרסום נשלח. Cloudflare בונה עכשיו את גרסת ${targetVersion}; הסטודיו בודק מתי האתר החי מגיש אותה.`);
-        setIsBusy(false);
-        const liveProgress = await waitForLiveSiteVersion(targetVersion, ({ attempt, bundleUrl, checkedAt, message, totalAttempts }) => {
-          setPublishState('checking');
-          setPublishProgress({
-            targetVersion,
-            liveUrl: publicSiteOrigin,
-            totalAttempts,
-            attempt,
-            checkedAt,
-            lastBundleUrl: bundleUrl,
-          });
-          setStatus(message);
-        });
-        setPublishState('live');
-        setPublishProgress({
-          targetVersion,
-          liveUrl: publicSiteOrigin,
-          totalAttempts: liveProgress.totalAttempts,
-          attempt: liveProgress.attempt,
-          checkedAt: liveProgress.checkedAt,
-          lastBundleUrl: liveProgress.bundleUrl,
-        });
-        setStatus(`האתר החי עודכן ומגיש עכשיו את גרסת ${targetVersion}.`);
-      } catch (error) {
-        setPublishState('error');
-        setStatus(formatError(error));
-      } finally {
-        setIsBusy(false);
-      }
-    })();
-  };
-
   const handleLogout = () => {
     performLogout();
-    setPublishProgress(null);
-    setPublishState('clean');
+    resetPublishFlow();
     setContent(emptyContent);
   };
 
@@ -3262,80 +3161,3 @@ const MediaRiskNotice = ({ mediaId, content }: { readonly mediaId: string; reado
 const NumberInput = ({ value, onChange }: { readonly value: number; readonly onChange: (value: number) => void }) => (
   <input type="number" value={value} min={0} onChange={(event) => onChange(Number(event.target.value))} />
 );
-
-const wait = (milliseconds: number) => new Promise((resolve) => {
-  window.setTimeout(resolve, milliseconds);
-});
-
-const fetchPublicText = async (url: string) => {
-  const response = await fetch(`${url}${url.includes('?') ? '&' : '?'}nis_check=${Date.now()}`, {
-    cache: 'no-store',
-  });
-  if (!response.ok) {
-    throw new Error(`Could not read ${url}`);
-  }
-  return response.text();
-};
-
-const findBundleUrl = (html: string) => {
-  const match = html.match(/<script[^>]+src="([^"]*assets\/index-[^"]+\.js)"/);
-  return match ? new URL(match[1] ?? '', publicSiteOrigin).href : null;
-};
-
-const isLiveSiteVersion = async (version: string): Promise<LiveVersionCheckResult> => {
-  const html = await fetchPublicText(`${publicSiteOrigin}/`);
-  const bundleUrl = findBundleUrl(html);
-  if (!bundleUrl) {
-    return { live: false };
-  }
-
-  const bundle = await fetchPublicText(bundleUrl);
-  return {
-    live: bundle.includes(version) || bundle.includes(JSON.stringify(version)),
-    bundleUrl,
-  };
-};
-
-const waitForLiveSiteVersion = async (
-  version: string,
-  onProgress: (progress: {
-    readonly attempt: number;
-    readonly totalAttempts: number;
-    readonly checkedAt: string;
-    readonly bundleUrl?: string;
-    readonly message: string;
-  }) => void,
-) => {
-  for (let attempt = 1; attempt <= liveVersionPollAttempts; attempt += 1) {
-    const checkedAt = new Date().toISOString();
-    const result = await isLiveSiteVersion(version);
-    if (result.live) {
-      onProgress({
-        attempt,
-        totalAttempts: liveVersionPollAttempts,
-        checkedAt,
-        bundleUrl: result.bundleUrl,
-        message: `האתר החי כבר מגיש את גרסת ${version}.`,
-      });
-      return {
-        attempt,
-        totalAttempts: liveVersionPollAttempts,
-        checkedAt,
-        bundleUrl: result.bundleUrl,
-      };
-    }
-
-    if (attempt < liveVersionPollAttempts) {
-      onProgress({
-        attempt,
-        totalAttempts: liveVersionPollAttempts,
-        checkedAt,
-        bundleUrl: result.bundleUrl,
-        message: `Cloudflare עדיין בונה או מפיץ את גרסת ${version}. בדיקה ${attempt}/${liveVersionPollAttempts}; נבדוק שוב בעוד ${Math.round(liveVersionPollDelayMs / 1000)} שניות.`,
-      });
-      await wait(liveVersionPollDelayMs);
-    }
-  }
-
-  throw new Error(`הפרסום נשלח, אבל אחרי ${liveVersionPollAttempts} בדיקות במשך בערך ${Math.round((liveVersionPollAttempts * liveVersionPollDelayMs) / 60000)} דקות הסטודיו עדיין לא רואה את גרסת ${version} באתר החי. לרוב זה אומר ש-Cloudflare עדיין בונה, או שהפרסום נכשל בשרת הפרסום.`);
-};
