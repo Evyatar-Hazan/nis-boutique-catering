@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState, type ChangeEvent, type CSSProperties, type DragEvent, type ReactNode } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useMemo, useState, type ChangeEvent, type CSSProperties, type DragEvent, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import {
   ArrowDown,
@@ -129,18 +129,10 @@ import {
   exactPreviewSectionGroupIds,
 } from './previewParityContract';
 import { Field } from './components/editor/Field';
-import { HeroEditor } from './components/editor/sections/HeroEditor';
-import {
-  ImageDetailsPanel,
-  ImagesGrid,
-  ImagesLibraryToolbar,
-  ImageUploadDropzone,
-} from './components/editor/sections/MediaLibrary';
 import {
   SiteCopyOverviewPreview,
   SiteMicrocopyOverviewPreview,
 } from './components/editor/sections/OverviewPreviews';
-import { SectionGroupWorkspace } from './components/editor/sections/SectionGroupWorkspace';
 import { sectionGroupWorkspaceDefinitions } from './components/editor/sections/sectionGroupWorkspaceDefinitions';
 import {
   SiteMapAreaPreview,
@@ -150,8 +142,6 @@ import {
 import { PanelHeader } from './components/editor/PanelHeader';
 import { PreviewHeader } from './components/editor/PreviewHeader';
 import type { MediaUsageKind, PreviewDevice } from './components/editor/types';
-import { CopyOnlySectionEditor } from './components/editor/sections/CopyOnlySectionEditor';
-import { ManifestoEditor } from './components/editor/sections/ManifestoEditor';
 import { TextInput } from './components/editor/TextInput';
 import { Toggle } from './components/editor/Toggle';
 import { useStudioAuthSession, type AuthState } from './hooks/useStudioAuthSession';
@@ -198,6 +188,15 @@ type SiteAreaDefinition = {
   readonly icon: ReactNode;
   readonly editorView?: ActiveView;
 };
+
+const HeroEditor = lazy(async () => ({ default: (await import('./components/editor/sections/HeroEditor')).HeroEditor }));
+const CopyOnlySectionEditor = lazy(async () => ({ default: (await import('./components/editor/sections/CopyOnlySectionEditor')).CopyOnlySectionEditor }));
+const ManifestoEditor = lazy(async () => ({ default: (await import('./components/editor/sections/ManifestoEditor')).ManifestoEditor }));
+const SectionGroupWorkspace = lazy(async () => ({ default: (await import('./components/editor/sections/SectionGroupWorkspace')).SectionGroupWorkspace }));
+const ImageUploadDropzone = lazy(async () => ({ default: (await import('./components/editor/sections/MediaLibrary')).ImageUploadDropzone }));
+const ImagesLibraryToolbar = lazy(async () => ({ default: (await import('./components/editor/sections/MediaLibrary')).ImagesLibraryToolbar }));
+const ImagesGrid = lazy(async () => ({ default: (await import('./components/editor/sections/MediaLibrary')).ImagesGrid }));
+const ImageDetailsPanel = lazy(async () => ({ default: (await import('./components/editor/sections/MediaLibrary')).ImageDetailsPanel }));
 
 const emptyContent: ContentSnapshot = {
   version: '1',
@@ -549,6 +548,16 @@ const studioSections: readonly {
     icon: <Tag aria-hidden="true" />,
   },
 ];
+
+const WorkspaceLoadingState = ({ label = 'טוען את האזור...' }: { readonly label?: string }) => (
+  <section className="workspace-panel">
+    <div className="empty-state">
+      <RefreshCw aria-hidden="true" />
+      <strong>{label}</strong>
+      <span>רק האזור שנבחר נטען עכשיו כדי לשמור על סטודיו מהיר יותר.</span>
+    </div>
+  </section>
+);
 
 export const App = () => {
   const [content, setContent] = useState<ContentSnapshot>(emptyContent);
@@ -1117,93 +1126,99 @@ export const App = () => {
         )}
 
         {activeView === 'hero' && (
-          <HeroEditor
-            content={content}
-            mediaById={mediaById}
-            previewDevice={previewDevice}
-            onPreviewDeviceChange={setPreviewDevice}
-            updateSection={updateSection}
-            addSection={addSection}
-            persistHeroStats={() => persistDraft('שומרים נתוני אירוח', 'נתוני האירוח נשמרו ב-Google Sheets. כדי לעדכן את האתר החי לחצו אחר כך על "עדכן אתר".')}
-            heroMediaSlots={heroMediaSlots}
-            patchSectionItem={patchSectionItem}
-            heroMediaIdAt={heroMediaIdAt}
-            patchHeroMediaId={patchHeroMediaId}
-            mediaLabel={getMediaLabel}
-            renderPreview={({ content: previewContent, hero, device, mediaById: previewMediaById }) => (
-              <HeroSitePreview content={previewContent} hero={hero} device={device} mediaById={previewMediaById} />
-            )}
-            renderMediaQuickPicker={({ label, mediaItems, selectedMediaId, content: previewContent, onSelect }) => (
-              <MediaQuickPicker
-                label={label}
-                mediaItems={mediaItems}
-                selectedMediaId={selectedMediaId}
-                onSelect={onSelect}
-                getMediaLabel={(media) => getMediaLabel(media, previewContent)}
-                getMediaSrc={(media) => (media.src ? publicAssetSrcFor(media.src) : '')}
-              />
-            )}
-            renderMediaSelectionUsageNotice={({ mediaId, content: previewContent, currentUsage }) => (
-              <MediaSelectionUsageNotice
-                otherUsages={getMediaUsage(mediaId, previewContent).filter((usage) => usage.kind !== currentUsage.kind || usage.id !== currentUsage.id)}
-                getUsageKindLabel={getMediaUsageKindLabel}
-              />
-            )}
-            joinPipeList={joinPipeList}
-            splitPipeList={splitPipeList}
-          />
+          <Suspense fallback={<WorkspaceLoadingState label="טוען את עורך ה-Hero..." />}>
+            <HeroEditor
+              content={content}
+              mediaById={mediaById}
+              previewDevice={previewDevice}
+              onPreviewDeviceChange={setPreviewDevice}
+              updateSection={updateSection}
+              addSection={addSection}
+              persistHeroStats={() => persistDraft('שומרים נתוני אירוח', 'נתוני האירוח נשמרו ב-Google Sheets. כדי לעדכן את האתר החי לחצו אחר כך על "עדכן אתר".')}
+              heroMediaSlots={heroMediaSlots}
+              patchSectionItem={patchSectionItem}
+              heroMediaIdAt={heroMediaIdAt}
+              patchHeroMediaId={patchHeroMediaId}
+              mediaLabel={getMediaLabel}
+              renderPreview={({ content: previewContent, hero, device, mediaById: previewMediaById }) => (
+                <HeroSitePreview content={previewContent} hero={hero} device={device} mediaById={previewMediaById} />
+              )}
+              renderMediaQuickPicker={({ label, mediaItems, selectedMediaId, content: previewContent, onSelect }) => (
+                <MediaQuickPicker
+                  label={label}
+                  mediaItems={mediaItems}
+                  selectedMediaId={selectedMediaId}
+                  onSelect={onSelect}
+                  getMediaLabel={(media) => getMediaLabel(media, previewContent)}
+                  getMediaSrc={(media) => (media.src ? publicAssetSrcFor(media.src) : '')}
+                />
+              )}
+              renderMediaSelectionUsageNotice={({ mediaId, content: previewContent, currentUsage }) => (
+                <MediaSelectionUsageNotice
+                  otherUsages={getMediaUsage(mediaId, previewContent).filter((usage) => usage.kind !== currentUsage.kind || usage.id !== currentUsage.id)}
+                  getUsageKindLabel={getMediaUsageKindLabel}
+                />
+              )}
+              joinPipeList={joinPipeList}
+              splitPipeList={splitPipeList}
+            />
+          </Suspense>
         )}
 
         {activeView === 'intro-band' && (
-          <CopyOnlySectionEditor
-            content={content}
-            mediaById={mediaById}
-            sectionId="intro-band"
-            title="רעיון אחד ברור"
-            text="זה הפתיח הקצר שאחרי מסך הפתיחה. הוא מיועד להסביר במהירות למי Nis מתאימה ולמה שבתות, אירוח קטן ו-Travel Nis הם אותו עולם."
-            previewDevice={previewDevice}
-            onPreviewDeviceChange={setPreviewDevice}
-            updateSection={updateSection}
-            getManagedCopySection={getManagedCopySection}
-            patchSectionItem={patchSectionItem}
-            joinPipeList={joinPipeList}
-            splitPipeList={splitPipeList}
-            renderExactPreview={({ sectionId, content: previewContent, mediaById: previewMediaById, device }) => {
-              if (sectionId !== 'intro-band') {
-                return null;
-              }
+          <Suspense fallback={<WorkspaceLoadingState label="טוען את עורך הפתיח..." />}>
+            <CopyOnlySectionEditor
+              content={content}
+              mediaById={mediaById}
+              sectionId="intro-band"
+              title="רעיון אחד ברור"
+              text="זה הפתיח הקצר שאחרי מסך הפתיחה. הוא מיועד להסביר במהירות למי Nis מתאימה ולמה שבתות, אירוח קטן ו-Travel Nis הם אותו עולם."
+              previewDevice={previewDevice}
+              onPreviewDeviceChange={setPreviewDevice}
+              updateSection={updateSection}
+              getManagedCopySection={getManagedCopySection}
+              patchSectionItem={patchSectionItem}
+              joinPipeList={joinPipeList}
+              splitPipeList={splitPipeList}
+              renderExactPreview={({ sectionId, content: previewContent, mediaById: previewMediaById, device }) => {
+                if (sectionId !== 'intro-band') {
+                  return null;
+                }
 
-              return (
-                <IntroBandPreview content={previewContent} mediaById={previewMediaById} device={device} />
-              );
-            }}
-            renderFallbackPreview={({ section, tagsSection, device }) => (
-              <CopyOnlySectionPreview section={section} tagsSection={tagsSection} device={device} />
-            )}
-          />
+                return (
+                  <IntroBandPreview content={previewContent} mediaById={previewMediaById} device={device} />
+                );
+              }}
+              renderFallbackPreview={({ section, tagsSection, device }) => (
+                <CopyOnlySectionPreview section={section} tagsSection={tagsSection} device={device} />
+              )}
+            />
+          </Suspense>
         )}
 
         {activeView === 'experience-lab' && (
-          <CopyOnlySectionEditor
-            content={content}
-            mediaById={mediaById}
-            sectionId="experience-lab"
-            title="בחרו את החוויה"
-            text="הטקסט שמלווה את אזור בחירת החוויה באתר. כאן מסבירים למה לבחור קודם את סוג האירוח ומה קורה אחר כך."
-            previewDevice={previewDevice}
-            onPreviewDeviceChange={setPreviewDevice}
-            updateSection={updateSection}
-            getManagedCopySection={getManagedCopySection}
-            patchSectionItem={patchSectionItem}
-            joinPipeList={joinPipeList}
-            splitPipeList={splitPipeList}
-            renderExactPreview={({ sectionId, content: previewContent, mediaById: previewMediaById, device }) =>
-              renderExactCopySectionPreview({ sectionId, content: previewContent, mediaById: previewMediaById, device })
-            }
-            renderFallbackPreview={({ section, tagsSection, device }) => (
-              <CopyOnlySectionPreview section={section} tagsSection={tagsSection} device={device} />
-            )}
-          />
+          <Suspense fallback={<WorkspaceLoadingState label="טוען את עורך Experience Lab..." />}>
+            <CopyOnlySectionEditor
+              content={content}
+              mediaById={mediaById}
+              sectionId="experience-lab"
+              title="בחרו את החוויה"
+              text="הטקסט שמלווה את אזור בחירת החוויה באתר. כאן מסבירים למה לבחור קודם את סוג האירוח ומה קורה אחר כך."
+              previewDevice={previewDevice}
+              onPreviewDeviceChange={setPreviewDevice}
+              updateSection={updateSection}
+              getManagedCopySection={getManagedCopySection}
+              patchSectionItem={patchSectionItem}
+              joinPipeList={joinPipeList}
+              splitPipeList={splitPipeList}
+              renderExactPreview={({ sectionId, content: previewContent, mediaById: previewMediaById, device }) =>
+                renderExactCopySectionPreview({ sectionId, content: previewContent, mediaById: previewMediaById, device })
+              }
+              renderFallbackPreview={({ section, tagsSection, device }) => (
+                <CopyOnlySectionPreview section={section} tagsSection={tagsSection} device={device} />
+              )}
+            />
+          </Suspense>
         )}
 
         {activeView === 'contact' && (
@@ -1362,101 +1377,126 @@ export const App = () => {
                 </button>
               }
             />
-            <ImageUploadDropzone
-              disabled={!canUseGoogle}
-              isActive={isImageDropActive}
-              onDragStateChange={setIsImageDropActive}
-              onDrop={handleImageDrop}
-              onUpload={handleUpload}
-            />
-            <ImagesLibraryToolbar
-              query={query}
-              onQueryChange={setQuery}
-              totalCount={visibleMedia.length}
-              filteredCount={filteredMedia.length}
-              filter={mediaFilter}
-              onFilterChange={setMediaFilter}
-              selectedCount={bulkSelectedMedia.length}
-              areAllVisibleSelected={areAllVisibleSelected}
-              onToggleSelectAll={toggleSelectAllVisibleMedia}
-              onArchiveSelected={archiveSelectedMedia}
-              onRestoreSelected={restoreSelectedMedia}
-              filterLabels={mediaLibraryFilterLabels}
-            />
-            <div className="images-library-layout">
-              <div className="images-grid-scroll-pane">
-                <ImagesGrid
-                  items={filteredMedia}
-                  selectedMediaId={activeSelectedMedia?.id ?? null}
-                  selectedMediaIds={selectedMediaIds}
-                  onSelect={setSelectedMediaId}
-                  onToggleSelect={toggleSelectedMedia}
-                  getMediaLabel={(media) => getMediaLabel(media, content)}
-                  renderPreview={(media) => <DrivePreviewImage media={media} accessToken={session.accessToken} showActions={false} />}
-                />
+            <Suspense fallback={<WorkspaceLoadingState label="טוען את ספריית התמונות..." />}>
+              <ImageUploadDropzone
+                disabled={!canUseGoogle}
+                isActive={isImageDropActive}
+                onDragStateChange={setIsImageDropActive}
+                onDrop={handleImageDrop}
+                onUpload={handleUpload}
+              />
+              <ImagesLibraryToolbar
+                query={query}
+                onQueryChange={setQuery}
+                totalCount={visibleMedia.length}
+                filteredCount={filteredMedia.length}
+                filter={mediaFilter}
+                onFilterChange={setMediaFilter}
+                selectedCount={bulkSelectedMedia.length}
+                areAllVisibleSelected={areAllVisibleSelected}
+                onToggleSelectAll={toggleSelectAllVisibleMedia}
+                onArchiveSelected={archiveSelectedMedia}
+                onRestoreSelected={restoreSelectedMedia}
+                filterLabels={mediaLibraryFilterLabels}
+              />
+              <div className="images-library-layout">
+                <div className="images-grid-scroll-pane">
+                  <ImagesGrid
+                    items={filteredMedia}
+                    selectedMediaId={activeSelectedMedia?.id ?? null}
+                    selectedMediaIds={selectedMediaIds}
+                    onSelect={setSelectedMediaId}
+                    onToggleSelect={toggleSelectedMedia}
+                    getMediaLabel={(media) => getMediaLabel(media, content)}
+                    renderPreview={(media) => <DrivePreviewImage media={media} accessToken={session.accessToken} showActions={false} />}
+                  />
+                </div>
+                <div className="image-details-scroll-pane">
+                  <ImageDetailsPanel
+                    key={activeSelectedMedia?.id ?? 'empty-image-details'}
+                    media={activeSelectedMedia}
+                    content={content}
+                    canUseGoogle={canUseGoogle}
+                    onRename={renameMedia}
+                    onSaveTitle={saveMediaTitle}
+                    onUpdate={updateMedia}
+                    onPickDriveFile={handlePickDriveFile}
+                    onNavigateToSiteMap={() => setActiveView('site-map')}
+                    onNavigateToUsage={(kind) => setActiveView(getViewForUsage(kind as MediaUsageKind))}
+                    getMediaLabel={(media) => getMediaLabel(media, content)}
+                    getMediaStatus={getMediaStatus}
+                    getMediaUsages={(mediaId) => getMediaUsage(mediaId, content)}
+                    getUsageKindLabel={(kind) => getMediaUsageKindLabel(kind as MediaUsageKind)}
+                    renderPreview={(media, showActions) => <DrivePreviewImage media={media} accessToken={session.accessToken} showActions={showActions} />}
+                    renderItemActions={(media) => renderArchivableItemActions({
+                      isArchived: Boolean(media.deletedAt),
+                      onArchive: () => archiveMedia(media.id),
+                      onRestore: () => restoreMedia(media.id),
+                    })}
+                    renderMediaRiskNotice={(mediaId) => <MediaRiskNotice mediaId={mediaId} content={content} />}
+                    renderNumberInput={(value, onChange) => <NumberInput value={value} onChange={onChange} />}
+                  />
+                </div>
               </div>
-              <div className="image-details-scroll-pane">
-                <ImageDetailsPanel
-                  key={activeSelectedMedia?.id ?? 'empty-image-details'}
-                  media={activeSelectedMedia}
-                  content={content}
-                  canUseGoogle={canUseGoogle}
-                  onRename={renameMedia}
-                  onSaveTitle={saveMediaTitle}
-                  onUpdate={updateMedia}
-                  onPickDriveFile={handlePickDriveFile}
-                  onNavigateToSiteMap={() => setActiveView('site-map')}
-                  onNavigateToUsage={(kind) => setActiveView(getViewForUsage(kind as MediaUsageKind))}
-                  getMediaLabel={(media) => getMediaLabel(media, content)}
-                  getMediaStatus={getMediaStatus}
-                  getMediaUsages={(mediaId) => getMediaUsage(mediaId, content)}
-                  getUsageKindLabel={(kind) => getMediaUsageKindLabel(kind as MediaUsageKind)}
-                  renderPreview={(media, showActions) => <DrivePreviewImage media={media} accessToken={session.accessToken} showActions={showActions} />}
-                  renderItemActions={(media) => renderArchivableItemActions({
-                    isArchived: Boolean(media.deletedAt),
-                    onArchive: () => archiveMedia(media.id),
-                    onRestore: () => restoreMedia(media.id),
-                  })}
-                  renderMediaRiskNotice={(mediaId) => <MediaRiskNotice mediaId={mediaId} content={content} />}
-                  renderNumberInput={(value, onChange) => <NumberInput value={value} onChange={onChange} />}
-                />
-              </div>
-            </div>
+            </Suspense>
           </section>
         )}
 
         {activeView === 'real-media' && (
-          <CopyOnlySectionEditor
-            content={content}
-            mediaById={mediaById}
-            sectionId="real-media"
-            title="וידאו אמיתי"
-            text="כותרת וטקסט לאזור הווידאו. אם האזור לא משרת את האתר, אפשר לכבות אותו כאן במקום להשאיר אותו לא ברור."
-            previewDevice={previewDevice}
-            onPreviewDeviceChange={setPreviewDevice}
-            updateSection={updateSection}
-            getManagedCopySection={getManagedCopySection}
-            patchSectionItem={patchSectionItem}
-            joinPipeList={joinPipeList}
-            splitPipeList={splitPipeList}
-            renderExactPreview={({ sectionId, content: previewContent, mediaById: previewMediaById, device }) =>
-              renderExactCopySectionPreview({ sectionId, content: previewContent, mediaById: previewMediaById, device })
-            }
-            renderFallbackPreview={({ section, tagsSection, device }) => (
-              <CopyOnlySectionPreview section={section} tagsSection={tagsSection} device={device} />
-            )}
-          />
+          <Suspense fallback={<WorkspaceLoadingState label="טוען את עורך הווידאו..." />}>
+            <CopyOnlySectionEditor
+              content={content}
+              mediaById={mediaById}
+              sectionId="real-media"
+              title="וידאו אמיתי"
+              text="כותרת וטקסט לאזור הווידאו. אם האזור לא משרת את האתר, אפשר לכבות אותו כאן במקום להשאיר אותו לא ברור."
+              previewDevice={previewDevice}
+              onPreviewDeviceChange={setPreviewDevice}
+              updateSection={updateSection}
+              getManagedCopySection={getManagedCopySection}
+              patchSectionItem={patchSectionItem}
+              joinPipeList={joinPipeList}
+              splitPipeList={splitPipeList}
+              renderExactPreview={({ sectionId, content: previewContent, mediaById: previewMediaById, device }) =>
+                renderExactCopySectionPreview({ sectionId, content: previewContent, mediaById: previewMediaById, device })
+              }
+              renderFallbackPreview={({ section, tagsSection, device }) => (
+                <CopyOnlySectionPreview section={section} tagsSection={tagsSection} device={device} />
+              )}
+            />
+          </Suspense>
         )}
 
         {sectionGroupWorkspaceDefinitions
           .filter((definition) => definition.view === activeView)
           .map((definition) => (
-            <SectionGroupWorkspace
-              key={definition.view}
-              definition={definition}
+            <Suspense key={definition.view} fallback={<WorkspaceLoadingState label={`טוען את אזור "${definition.title}"...`} />}>
+              <SectionGroupWorkspace
+                definition={definition}
+                content={content}
+                mediaById={mediaById}
+                sections={content.sections}
+                updateSection={updateSection}
+                addSection={addSection}
+                duplicateSection={duplicateSection}
+                archiveSection={archiveSection}
+                restoreSection={restoreSection}
+                previewDevice={previewDevice}
+                onPreviewDeviceChange={setPreviewDevice}
+                sectionGroupLabels={sectionGroupLabels}
+                joinPipeList={joinPipeList}
+                splitPipeList={splitPipeList}
+                renderItemActions={renderSectionEditorItemActions}
+                renderPreview={renderSectionGroupPreview}
+              />
+            </Suspense>
+          ))}
+
+        {activeView === 'manifesto' && (
+          <Suspense fallback={<WorkspaceLoadingState label="טוען את עורך המניפסט..." />}>
+            <ManifestoEditor
               content={content}
               mediaById={mediaById}
-              sections={content.sections}
               updateSection={updateSection}
               addSection={addSection}
               duplicateSection={duplicateSection}
@@ -1464,49 +1504,31 @@ export const App = () => {
               restoreSection={restoreSection}
               previewDevice={previewDevice}
               onPreviewDeviceChange={setPreviewDevice}
-              sectionGroupLabels={sectionGroupLabels}
-              joinPipeList={joinPipeList}
-              splitPipeList={splitPipeList}
+              manifestoMediaFallbacks={manifestoMediaFallbacks}
+              patchSectionItem={patchSectionItem}
+              mediaLabel={getMediaLabel}
+              renderPreview={({ content: previewContent, mediaById: previewMediaById, device }) => (
+                <ManifestoSitePreview content={previewContent} mediaById={previewMediaById} device={device} />
+              )}
               renderItemActions={renderSectionEditorItemActions}
-              renderPreview={renderSectionGroupPreview}
+              renderMediaQuickPicker={({ label, mediaItems, selectedMediaId, content: previewContent, onSelect }) => (
+                <MediaQuickPicker
+                  label={label}
+                  mediaItems={mediaItems}
+                  selectedMediaId={selectedMediaId}
+                  onSelect={onSelect}
+                  getMediaLabel={(media) => getMediaLabel(media, previewContent)}
+                  getMediaSrc={(media) => (media.src ? publicAssetSrcFor(media.src) : '')}
+                />
+              )}
+              renderMediaSelectionUsageNotice={({ mediaId, content: previewContent, currentUsage }) => (
+                <MediaSelectionUsageNotice
+                  otherUsages={getMediaUsage(mediaId, previewContent).filter((usage) => usage.kind !== currentUsage.kind || usage.id !== currentUsage.id)}
+                  getUsageKindLabel={getMediaUsageKindLabel}
+                />
+              )}
             />
-          ))}
-
-        {activeView === 'manifesto' && (
-          <ManifestoEditor
-            content={content}
-            mediaById={mediaById}
-            updateSection={updateSection}
-            addSection={addSection}
-            duplicateSection={duplicateSection}
-            archiveSection={archiveSection}
-            restoreSection={restoreSection}
-            previewDevice={previewDevice}
-            onPreviewDeviceChange={setPreviewDevice}
-            manifestoMediaFallbacks={manifestoMediaFallbacks}
-            patchSectionItem={patchSectionItem}
-            mediaLabel={getMediaLabel}
-            renderPreview={({ content: previewContent, mediaById: previewMediaById, device }) => (
-              <ManifestoSitePreview content={previewContent} mediaById={previewMediaById} device={device} />
-            )}
-            renderItemActions={renderSectionEditorItemActions}
-            renderMediaQuickPicker={({ label, mediaItems, selectedMediaId, content: previewContent, onSelect }) => (
-              <MediaQuickPicker
-                label={label}
-                mediaItems={mediaItems}
-                selectedMediaId={selectedMediaId}
-                onSelect={onSelect}
-                getMediaLabel={(media) => getMediaLabel(media, previewContent)}
-                getMediaSrc={(media) => (media.src ? publicAssetSrcFor(media.src) : '')}
-              />
-            )}
-            renderMediaSelectionUsageNotice={({ mediaId, content: previewContent, currentUsage }) => (
-              <MediaSelectionUsageNotice
-                otherUsages={getMediaUsage(mediaId, previewContent).filter((usage) => usage.kind !== currentUsage.kind || usage.id !== currentUsage.id)}
-                getUsageKindLabel={getMediaUsageKindLabel}
-              />
-            )}
-          />
+          </Suspense>
         )}
 
         {activeView === 'publish' && (
