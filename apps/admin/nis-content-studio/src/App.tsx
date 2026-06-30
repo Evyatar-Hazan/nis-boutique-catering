@@ -24,8 +24,6 @@ import {
   Plus,
   RefreshCw,
   RotateCcw,
-  Rocket,
-  Save,
   Search,
   ShieldAlert,
   ShieldCheck,
@@ -132,6 +130,8 @@ import { Field } from './components/editor/Field';
 import { sectionGroupWorkspaceDefinitions } from './components/editor/sections/sectionGroupWorkspaceDefinitions';
 import { PanelHeader } from './components/editor/PanelHeader';
 import { PreviewHeader } from './components/editor/PreviewHeader';
+import { StudioSidebar } from './components/editor/StudioSidebar';
+import { StudioTopbar } from './components/editor/StudioTopbar';
 import type { MediaUsageKind, PreviewDevice } from './components/editor/types';
 import { TextInput } from './components/editor/TextInput';
 import { Toggle } from './components/editor/Toggle';
@@ -940,78 +940,31 @@ export const App = () => {
         {isSidebarHidden ? 'הצג תפריט' : 'הסתר תפריט'}
       </button>
 
-      <aside id="studio-sidebar" className="studio-sidebar" aria-label="ניווט ניהול" aria-hidden={isSidebarHidden} inert={isSidebarHidden ? true : undefined}>
-        <div className="brand-block">
-          <img className="studio-logo" src={`${publicSiteOrigin}/brand/nis-logo.svg`} alt="Nis Boutique Catering" />
-          <div>
-            <h1>Nis Studio</h1>
-            <p>ניהול האתר בלי קוד</p>
-          </div>
-        </div>
-        <nav className="nav-stack">
-          {studioSections.map((section) => (
-            <button
-              key={section.id}
-              className={activeView === section.id || (section.id === 'site-map' && areaDefinitions.some((area) => area.id === activeView)) ? 'is-active' : ''}
-              onClick={() => setActiveView(section.id)}
-            >
-              {section.icon}
-              <span>
-                <strong>{section.label}</strong>
-                <small>{section.help}</small>
-              </span>
-            </button>
-          ))}
-        </nav>
-        <div className="auth-panel">
-          <ShieldCheck aria-hidden="true" />
-          <strong>{session.email}</strong>
-          <span>מחובר ל-Google Sheets + Drive</span>
-          <button type="button" className="logout-button" onClick={handleLogout}>
-            התנתק
-          </button>
-        </div>
-        <a className="creator-credit studio-credit" href={creatorUrl} target="_blank" rel="noreferrer">
-          נבנה באהבה על ידי EvyatarHazan.com
-        </a>
-      </aside>
+      <StudioSidebar
+        publicSiteOrigin={publicSiteOrigin}
+        creatorUrl={creatorUrl}
+        sessionEmail={session.email}
+        activeView={activeView}
+        isSidebarHidden={isSidebarHidden}
+        sections={studioSections}
+        areaDefinitions={areaDefinitions}
+        onSetActiveView={setActiveView}
+        onLogout={handleLogout}
+      />
 
       <section className="studio-main">
-        <header className="topbar">
-          <div>
-            <p className="kicker">ניהול אתר Nis</p>
-            <h2>{
-              activeView === 'site-map'
-                ? 'ניהול מלא של האתר'
-                : activeView === 'gallery'
-                  ? 'ניהול תמונות'
-                  : activeView === 'contact'
-                    ? 'מטה דאטה ופרסום'
-                    : areaDefinitions.find((area) => area.id === activeView)?.title ?? 'תוכן האתר'
-            }</h2>
-            <p className="topbar-help">כל שינוי מקבל גרסה חדשה ונשמר כטיוטה. רק הכפתור "עדכן אתר" מפרסם לאתר החי.</p>
-          </div>
-          <div className="topbar-actions">
-            {activeView !== 'site-map' && (
-              <button className="ghost-button" onClick={() => setActiveView('site-map')}>
-                <Home aria-hidden="true" />
-                חזרה לניהול אתר
-              </button>
-            )}
-            <button className="ghost-button" onClick={handleRefresh} disabled={isBusy || !canUseGoogle}>
-              <RefreshCw aria-hidden="true" />
-              רענון מה-Sheets
-            </button>
-            <button className="ghost-button" onClick={handleSaveDraft} disabled={isBusy || !canUseGoogle || hasErrors}>
-              <Save aria-hidden="true" />
-              שמור טיוטה
-            </button>
-            <button className="publish-button" onClick={handleUpdateSite} disabled={isBusy || !canUseGoogle || hasErrors || !studioConfig.publishUrl}>
-              <Rocket aria-hidden="true" />
-              עדכן אתר
-            </button>
-          </div>
-        </header>
+        <StudioTopbar
+          activeView={activeView}
+          areaDefinitions={areaDefinitions}
+          isBusy={isBusy}
+          canUseGoogle={canUseGoogle}
+          hasErrors={hasErrors}
+          hasPublishUrl={Boolean(studioConfig.publishUrl)}
+          onSetActiveView={setActiveView}
+          onRefresh={handleRefresh}
+          onSaveDraft={handleSaveDraft}
+          onUpdateSite={handleUpdateSite}
+        />
 
         <StatusPanel
           publishState={publishState}
