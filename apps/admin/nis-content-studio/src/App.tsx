@@ -135,7 +135,7 @@ import {
   StorySection,
   type SiteSectionPreviewData,
 } from '@monorepo/site-preview';
-import { defaultSiteSectionPreviewData } from '../../../frontend/nis-boutique-catering/src/data/sitePreviewData';
+import { fallbackSiteSectionPreviewData } from './preview/fallbackSiteSectionPreviewData';
 import {
   exactPreviewCopySectionIds,
   exactPreviewSectionGroupIds,
@@ -2596,7 +2596,7 @@ const buildSiteSectionPreviewData = (
   content: ContentSnapshot,
   mediaById: ReadonlyMap<string, ImageAssetRecord>,
 ): SiteSectionPreviewData => {
-  const defaults = defaultSiteSectionPreviewData;
+  const defaults = fallbackSiteSectionPreviewData;
   const hero = content.sections.find((section) => section.id === 'hero' && section.active && !section.deletedAt);
   const heroMedia = content.sections.find((section) => section.id === 'hero-media' && section.active && !section.deletedAt);
   const heroBadges = content.sections.find((section) => section.id === 'hero-badges' && section.active && !section.deletedAt);
@@ -2634,7 +2634,7 @@ const buildSiteSectionPreviewData = (
     .filter((item) => item.active && !item.deletedAt)
     .sort((left, right) => left.order - right.order)
     .map((item) => {
-      const fallbackImage = defaultSiteSectionPreviewData.foodMedia.hostingTableOverview;
+      const fallbackImage = fallbackSiteSectionPreviewData.foodMedia.hostingTableOverview;
       return {
         title: item.title,
         alt: item.alt,
