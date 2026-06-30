@@ -173,6 +173,63 @@ The browser sends its short-lived Google OAuth access token to the Apps Script. 
 
 Treat the Web App URL and GitHub token like secrets. If either leaks, rotate the GitHub token and redeploy the Web App.
 
+## Local vs Production
+
+Local development and production deployment do not use the exact same source of truth at every step.
+
+### What local proves
+
+Local work is the fastest way to prove that the codebase is internally healthy:
+
+- `npx pnpm@9.15.9 --filter @monorepo/nis-content-studio build` proves the admin app still compiles.
+- `npx pnpm@9.15.9 --filter @monorepo/nis-content-studio test` proves the current Studio test suite still passes.
+- `npx pnpm@9.15.9 --filter @monorepo/nis-boutique-catering validate` proves the public site still passes its local quality gate.
+- `npx pnpm@9.15.9 cloudflare:build:site` is the closest local approximation of the public-site production build.
+
+Local success does **not** prove that the latest `main` commit is live.
+
+### What production proves
+
+Production truth for this repository comes from the deploy pipeline and the live domains:
+
+1. GitHub Actions `nis Boutique Catering CI` must pass for the target commit.
+2. GitHub Actions `Deploy to Cloudflare Pages` must pass for the same commit.
+3. The live domains must respond successfully:
+   - `https://nisboutiquecatering.com/`
+   - `https://studio.nisboutiquecatering.com/`
+
+Important: live `HTTP 200` alone is not enough proof that the latest HEAD deployed. A previously successful deploy can keep serving while the newest CI or Cloudflare run fails.
+
+### Why local and production can diverge
+
+The main divergence points in this repo are:
+
+- Local public-site development can fall back to committed generated content.
+- Production deploys set `CONTENT_SYNC_REQUIRE_REMOTE=true`, so remote content sync failures should fail the build instead of publishing stale content.
+- GitHub Actions and Cloudflare Pages use their own runtime and env configuration, which can differ from the current local machine.
+- The admin Studio can compile locally even when the public-site deploy path or Cloudflare deploy path is blocked.
+
+### Recommended verification order
+
+After any meaningful refactor, content-flow change, build change, or deploy-sensitive fix, use this order:
+
+1. Run local validation.
+2. Commit and push the change.
+3. Wait for `nis Boutique Catering CI` to finish successfully.
+4. Wait for `Deploy to Cloudflare Pages` to finish successfully.
+5. Only then verify the live endpoints with `curl -I` or a browser check.
+
+### Fast commands
+
+```sh
+npx pnpm@9.15.9 --filter @monorepo/nis-content-studio test
+npx pnpm@9.15.9 --filter @monorepo/nis-content-studio build
+npx pnpm@9.15.9 --filter @monorepo/nis-boutique-catering validate
+gh run list --limit 6
+curl -I https://nisboutiquecatering.com/
+curl -I https://studio.nisboutiquecatering.com/
+```
+
 ## Service Account Setup
 
 Create a Google Cloud service account in the same project used by the OAuth client, then create a JSON key for it. Share the resources with the service account email:
