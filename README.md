@@ -42,6 +42,14 @@ pnpm build
 
 The production website lives in `apps/frontend/nis-boutique-catering`.
 
+## Local Artifacts
+
+`output/` is treated as a local-only artifact directory.
+
+It may contain temporary screenshots or verification outputs created during local debugging, browser checks, or Playwright-style validation runs.
+
+It is intentionally ignored by git and should not be used as a source of truth for the product, content, or deployment pipeline.
+
 To run commands directly for the app:
 
 ```bash
