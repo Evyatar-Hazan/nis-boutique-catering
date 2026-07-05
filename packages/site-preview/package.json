@@ -10,6 +10,11 @@
   "dependencies": {
     "lucide-react": "^0.575.0"
   },
+  "devDependencies": {
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "typescript": "~5.9.3"
+  },
   "exports": {
     ".": {
       "types": "./src/index.ts",
