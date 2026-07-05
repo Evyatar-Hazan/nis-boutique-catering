@@ -29,8 +29,10 @@ Monorepo dedicated to the Nis boutique catering website.
 ## Commands
 
 ```bash
+volta install node@20.19.0 pnpm@9.15.9
 corepack enable
 corepack use pnpm@9.15.9
+pnpm doctor:runtime
 pnpm install --frozen-lockfile
 pnpm dev
 pnpm validate
@@ -45,6 +47,8 @@ pnpm build
 ## Local And CI Parity
 
 - Use Node `20.x` locally to match GitHub Actions and the app-level engine contract.
+- The repo is pinned with Volta to `Node 20.19.0` and `pnpm 9.15.9`.
+- Run `pnpm doctor:runtime` before local work if you want a fail-fast runtime check.
 - Use the repo-pinned pnpm version with `corepack use pnpm@9.15.9`.
 - Treat `pnpm validate` as the single quality gate for both local verification and CI.
 

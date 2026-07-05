@@ -9,6 +9,7 @@
     "pnpm": "9.15.9"
   },
   "scripts": {
+    "doctor:runtime": "node scripts/check-runtime.mjs",
     "dev": "turbo run dev --filter @monorepo/nis-boutique-catering",
     "dev:all": "turbo run dev",
     "admin:dev": "turbo run dev --filter @monorepo/nis-content-studio",
@@ -28,6 +29,10 @@
     "clean": "turbo run clean && rm -rf node_modules",
     "type-check": "turbo run type-check",
     "validate": "turbo run content:check media:check lint test type-check && turbo run build"
+  },
+  "volta": {
+    "node": "20.19.0",
+    "pnpm": "9.15.9"
   },
   "devDependencies": {
     "turbo": "^2.0.0"
