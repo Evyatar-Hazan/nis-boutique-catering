@@ -41,16 +41,7 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
-      - name: Run linter
-        run: pnpm lint
-
-      - name: Type check
-        run: pnpm type-check
-
-      - name: Build all
-        run: pnpm build
-
-      - name: Validate nis Boutique Catering
-        run: pnpm --filter @monorepo/nis-boutique-catering validate
+      - name: Validate workspace
+        run: pnpm validate

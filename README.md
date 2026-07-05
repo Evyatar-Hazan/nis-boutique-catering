@@ -17,6 +17,7 @@ Monorepo dedicated to the Nis boutique catering website.
 
 ## Tech Stack
 
+- Node 20.x
 - pnpm 9.15.9
 - Turborepo
 - React 19
@@ -28,8 +29,11 @@ Monorepo dedicated to the Nis boutique catering website.
 ## Commands
 
 ```bash
-pnpm install
+corepack enable
+corepack use pnpm@9.15.9
+pnpm install --frozen-lockfile
 pnpm dev
+pnpm validate
 pnpm type-check
 pnpm lint
 pnpm media:check
@@ -37,6 +41,12 @@ pnpm media:optimize
 pnpm test
 pnpm build
 ```
+
+## Local And CI Parity
+
+- Use Node `20.x` locally to match GitHub Actions and the app-level engine contract.
+- Use the repo-pinned pnpm version with `corepack use pnpm@9.15.9`.
+- Treat `pnpm validate` as the single quality gate for both local verification and CI.
 
 ## App
 

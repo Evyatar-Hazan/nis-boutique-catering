@@ -5,8 +5,8 @@
   "private": true,
   "packageManager": "pnpm@9.15.9",
   "engines": {
-    "node": ">=18.0.0",
-    "pnpm": ">=9.15.9"
+    "node": "20.x",
+    "pnpm": "9.15.9"
   },
   "scripts": {
     "dev": "turbo run dev --filter @monorepo/nis-boutique-catering",
@@ -27,7 +27,7 @@
     "test": "turbo run test",
     "clean": "turbo run clean && rm -rf node_modules",
     "type-check": "turbo run type-check",
-    "validate": "pnpm content:check && turbo run lint test type-check build"
+    "validate": "pnpm content:check && pnpm media:check && turbo run lint test type-check build"
   },
   "devDependencies": {
     "turbo": "^2.0.0"
