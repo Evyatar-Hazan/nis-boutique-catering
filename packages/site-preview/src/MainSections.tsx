@@ -61,7 +61,7 @@ export const HeroSection = ({ heroWhatsapp }: { readonly heroWhatsapp: string })
       return;
     }
 
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       return;
     }
 
