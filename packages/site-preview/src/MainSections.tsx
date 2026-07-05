@@ -1,4 +1,4 @@
-import { type CSSProperties, type FormEventHandler, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from 'react';
+import { type CSSProperties, type FormEventHandler, type KeyboardEvent as ReactKeyboardEvent, type ReactNode, useEffect, useState } from 'react';
 import { ArrowLeft, Camera, CheckCircle2, ChefHat, Clock, Mail, MapPin, MessageCircle, Package, Phone, Play, Send, Utensils } from 'lucide-react';
 import type { GalleryCategory, GalleryImage } from './sitePreviewTypes';
 import { buildInquiryWhatsappLink } from './contactHelpers';
@@ -54,6 +54,32 @@ const heroBadgeIcons = [ChefHat, Utensils, Package, Clock] as const;
 
 export const HeroSection = ({ heroWhatsapp }: { readonly heroWhatsapp: string }) => {
   const { brandMedia, heroBadges, heroContent, heroMedia, heroSceneNotes, heroStats, siteMicrocopy, videoMedia } = useSiteSectionPreviewData();
+  const [shouldLoadVideo, setShouldLoadVideo] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return;
+    }
+
+    const connection = 'connection' in navigator ? (navigator.connection as { saveData?: boolean }) : undefined;
+    if (connection?.saveData) {
+      return;
+    }
+
+    const enableVideo = () => setShouldLoadVideo(true);
+
+    if ('requestIdleCallback' in window) {
+      const idleId = window.requestIdleCallback(enableVideo, { timeout: 2000 });
+      return () => window.cancelIdleCallback(idleId);
+    }
+
+    const timeoutId = globalThis.setTimeout(enableVideo, 1200);
+    return () => globalThis.clearTimeout(timeoutId);
+  }, []);
 
   return (
     <section
@@ -63,18 +89,20 @@ export const HeroSection = ({ heroWhatsapp }: { readonly heroWhatsapp: string })
       style={{ '--hero-media-image': `url('${heroMedia.background.src}')` } as CSSProperties}
     >
     <div className="hero-media" aria-hidden="true" />
-    <video
-      className="hero-video"
-      aria-hidden="true"
-      autoPlay
-      loop
-      muted
-      playsInline
-      preload="none"
-      poster={heroMedia.background.src}
-    >
-      <source src={videoMedia.eventVideo} type="video/mp4" />
-    </video>
+    {shouldLoadVideo ? (
+      <video
+        className="hero-video"
+        aria-hidden="true"
+        autoPlay
+        loop
+        muted
+        playsInline
+        preload="none"
+        poster={heroMedia.background.src}
+      >
+        <source src={videoMedia.eventVideo} type="video/mp4" />
+      </video>
+    ) : null}
     <div className="hero-texture" aria-hidden="true" />
     <div className="hero-layout">
       <div className="hero-content reveal is-visible">

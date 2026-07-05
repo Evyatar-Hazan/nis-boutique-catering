@@ -643,6 +643,8 @@ summary:focus-visible {
 
 .section {
   padding: clamp(56px, 7vw, 92px) 0;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 960px;
 }
 
 .intro-band,
@@ -1802,6 +1804,8 @@ details p {
 
 .site-footer {
   padding: 34px 0;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 280px;
   background: var(--espresso);
   color: var(--ivory);
   border-top: 1px solid rgba(255, 250, 242, 0.12);
