@@ -27,7 +27,7 @@
     "test": "turbo run test",
     "clean": "turbo run clean && rm -rf node_modules",
     "type-check": "turbo run type-check",
-    "validate": "turbo run content:check media:check lint test type-check build"
+    "validate": "turbo run content:check media:check lint test type-check && turbo run build"
   },
   "devDependencies": {
     "turbo": "^2.0.0"
