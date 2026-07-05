@@ -19,6 +19,14 @@
       "outputs": [],
       "cache": true
     },
+    "content:check": {
+      "outputs": [],
+      "cache": true
+    },
+    "media:check": {
+      "outputs": [],
+      "cache": true
+    },
     "test": {
       "outputs": [],
       "cache": true
