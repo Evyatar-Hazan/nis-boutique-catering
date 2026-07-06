@@ -1,5 +1,5 @@
-const expectedNodeMajor = 20;
-const expectedNodeVersion = '20.19.0';
+const supportedNodeMajors = [24, 25];
+const preferredNodeVersion = '24.11.0';
 const expectedPnpmVersion = '9.15.9';
 
 const nodeVersion = process.versions.node;
@@ -10,8 +10,8 @@ const pnpmVersion = pnpmMatch?.[1] ?? 'unknown';
 
 const errors = [];
 
-if (nodeMajor !== expectedNodeMajor) {
-  errors.push(`Expected Node ${expectedNodeVersion} (major ${expectedNodeMajor}), received ${nodeVersion}.`);
+if (!supportedNodeMajors.includes(nodeMajor)) {
+  errors.push(`Expected Node ${preferredNodeVersion} or a supported compatible major (${supportedNodeMajors.join(', ')}), received ${nodeVersion}.`);
 }
 
 if (pnpmVersion !== expectedPnpmVersion) {
@@ -20,7 +20,7 @@ if (pnpmVersion !== expectedPnpmVersion) {
 
 if (errors.length > 0) {
   console.error(errors.join('\n'));
-  console.error('Run `volta install node@20.19.0 pnpm@9.15.9` or switch with `.nvmrc` before continuing.');
+  console.error(`Run \`volta install node@${preferredNodeVersion} pnpm@${expectedPnpmVersion}\` or switch with \`.nvmrc\` before continuing.`);
   process.exit(1);
 }
 

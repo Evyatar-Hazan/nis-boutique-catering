@@ -17,7 +17,7 @@ Monorepo dedicated to the Nis boutique catering website.
 
 ## Tech Stack
 
-- Node 20.x
+- Node 24.x
 - pnpm 9.15.9
 - Turborepo
 - React 19
@@ -29,7 +29,7 @@ Monorepo dedicated to the Nis boutique catering website.
 ## Commands
 
 ```bash
-volta install node@20.19.0 pnpm@9.15.9
+volta install node@24.11.0 pnpm@9.15.9
 corepack enable
 corepack use pnpm@9.15.9
 pnpm doctor:runtime
@@ -46,8 +46,8 @@ pnpm build
 
 ## Local And CI Parity
 
-- Use Node `20.x` locally to match GitHub Actions and the app-level engine contract.
-- The repo is pinned with Volta to `Node 20.19.0` and `pnpm 9.15.9`.
+- Use Node `24.x` locally to match GitHub Actions and the app-level engine contract.
+- The repo is pinned with Volta to `Node 24.11.0` and `pnpm 9.15.9`.
 - Run `pnpm doctor:runtime` before local work if you want a fail-fast runtime check.
 - Use the repo-pinned pnpm version with `corepack use pnpm@9.15.9`.
 - Treat `pnpm validate` as the single quality gate for both local verification and CI.
