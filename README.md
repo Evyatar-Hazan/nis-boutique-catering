@@ -56,6 +56,11 @@ pnpm build
 
 The production website lives in `apps/frontend/nis-boutique-catering`.
 
+## Documentation
+
+- Full content pipeline and publishing flow: [docs/content-flow.md](/Users/evyatarhazan/Desktop/project/nis-boutique-catering/docs/content-flow.md)
+- Studio setup and operations: [CONTENT_STUDIO.md](/Users/evyatarhazan/Desktop/project/nis-boutique-catering/CONTENT_STUDIO.md)
+
 ## Local Artifacts
 
 `output/` is treated as a local-only artifact directory.

@@ -118,111 +118,27 @@ For production setup, use the manual GitHub Action `.github/workflows/seed-googl
 
 ## Content Flow
 
-This repository has two different content paths that meet at build time:
+המסמך המלא והמחייב של זרימת התוכן נמצא כאן:
 
-1. Studio editing and draft persistence
-2. Public-site generation and deployment
+- [docs/content-flow.md](/Users/evyatarhazan/Desktop/project/nis-boutique-catering/docs/content-flow.md)
 
-### Source of truth
+Short version:
 
-For managed live content, the source of truth is:
+1. Studio reads and writes structured content in Google Sheets.
+2. Studio uploads source images to Google Drive and stores `driveFileId`.
+3. `שמור טיוטה` persists only to Google, not to the live site.
+4. `עדכן אתר` triggers Apps Script, which dispatches GitHub Actions.
+5. The deploy workflow runs `content:sync`, generates static snapshot files and CMS media assets, builds both apps, and deploys to Cloudflare Pages.
+6. The public site changes only after the deploy workflow succeeds and the live domain serves the new bundle.
 
-- Google Sheets for structured content
-- Google Drive for source images
+Use the full document for:
 
-Committed files act as fallback and build artifacts, not the primary editing surface:
-
-- Fallback snapshot: `apps/frontend/nis-boutique-catering/content/fallback-content.json`
-- Generated build snapshot: `apps/frontend/nis-boutique-catering/src/generated/siteContent.generated.ts`
-- Generated JSON snapshot: `apps/frontend/nis-boutique-catering/src/generated/siteContent.generated.json`
-- Optimized public CMS media: `apps/frontend/nis-boutique-catering/public/media/cms`
-
-### Studio editing flow
-
-When an editor works inside the Studio:
-
-1. The Studio reads content from Google Sheets through `readContentFromSheets`.
-2. The editor changes in-memory `ContentSnapshot` state inside the admin app.
-3. Clicking `שמור טיוטה` writes the current snapshot back to Google Sheets through `saveContentToSheets`.
-4. At this point the public site has **not** changed yet.
-
-The Studio is a content editor and draft writer. It does not build the public site directly in the browser.
-
-### Publish flow
-
-When the editor clicks `עדכן אתר`:
-
-1. The Studio first saves the current draft to Google Sheets.
-2. The Studio calls the Apps Script publish proxy with the editor's Google access token.
-3. The Apps Script validates the editor and triggers GitHub Actions on `main`.
-4. GitHub Actions runs the Cloudflare Pages workflow.
-5. The public-site build runs the content sync step.
-6. Cloudflare Pages deploys the rebuilt public site and the admin Studio.
-
-Important: the publish action does not push content files from the browser into the repo. It updates Google Sheets and triggers the server-side build pipeline.
-
-### Public-site build flow
-
-During the public-site build:
-
-1. `apps/frontend/nis-boutique-catering/scripts/sync-content.mjs` reads remote Sheet data when Google credentials are available.
-2. Drive-backed images are downloaded from Google Drive.
-3. Media paths are normalized to `/media/cms/<asset-id>.webp`.
-4. Optimized static assets are generated into `public/media/cms`.
-5. The content snapshot is written into:
-   - `src/generated/siteContent.generated.json`
-   - `src/generated/siteContent.generated.ts`
-6. The site build consumes that generated snapshot as static application data.
-
-This means the public site serves static generated content, not live Google API reads in the browser.
-
-### Fallback flow
-
-If local development runs without Google credentials:
-
-1. The sync script reads `content/fallback-content.json`.
-2. It writes generated snapshot files from that committed fallback.
-3. The public site still builds locally.
-
-This is useful for local work, but it is intentionally weaker than production.
-
-### Production guardrail
-
-Production deploys set `CONTENT_SYNC_REQUIRE_REMOTE=true`.
-
-That means:
-
-- production must read real remote content
-- production should fail if Google sync is unavailable
-- production should not silently publish stale committed fallback content
-
-### What changes the live site
-
-The live public site changes only after all of these happen successfully:
-
-1. Google Sheets contains the intended content
-2. GitHub Actions build succeeds
-3. Cloudflare Pages deploy succeeds
-4. The live domain serves the new generated bundle
-
-### What does not change the live site
-
-These actions alone do **not** change production:
-
-- editing content in the Studio without saving
-- saving a draft to Google Sheets
-- changing `fallback-content.json` locally without deploying
-- getting `HTTP 200` from an older successful deploy
-
-### Recommended debugging order for content issues
-
-If content looks wrong on the live site, debug in this order:
-
-1. Check whether the latest draft was actually saved to Google Sheets.
-2. Check whether the publish flow was triggered successfully.
-3. Check GitHub Actions `Deploy to Cloudflare Pages`.
-4. Check whether the content sync step used remote data or fallback data.
-5. Check whether the live site bundle reflects the expected `siteVersion`.
+- source-of-truth rules
+- exact file ownership
+- local vs production differences
+- failure modes
+- verification checklists
+- maintenance rules
 
 ## Cloudflare Pages
 
