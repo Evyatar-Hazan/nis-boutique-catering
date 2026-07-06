@@ -9,34 +9,45 @@ export type StudioSession = {
   readonly expiresAt: number;
 };
 
-const rememberedSessionKey = 'nis-content-studio-session-v1';
+type RememberedStudioSession = Omit<StudioSession, 'accessToken'>;
 
-const isSessionShape = (value: unknown): value is StudioSession => {
+const rememberedSessionKey = 'nis-content-studio-session-v2';
+const legacyRememberedSessionKey = 'nis-content-studio-session-v1';
+
+const isRememberedSessionShape = (value: unknown): value is RememberedStudioSession => {
   if (!value || typeof value !== 'object') {
     return false;
   }
 
-  const candidate = value as Partial<Record<keyof StudioSession, unknown>>;
-  return (
-    typeof candidate.accessToken === 'string'
-    && typeof candidate.email === 'string'
-    && typeof candidate.expiresAt === 'number'
-  );
+  const candidate = value as Partial<Record<keyof RememberedStudioSession, unknown>>;
+  return typeof candidate.email === 'string' && typeof candidate.expiresAt === 'number';
+};
+
+const clearLegacyRememberedSession = () => {
+  try {
+    window.localStorage.removeItem(legacyRememberedSessionKey);
+  } catch {
+    // Legacy cleanup should never block the studio.
+  }
 };
 
 const clearRememberedSession = () => {
   try {
-    window.localStorage.removeItem(rememberedSessionKey);
+    window.sessionStorage.removeItem(rememberedSessionKey);
   } catch {
     // Browser storage can be disabled; login should still work for the current tab.
   }
+
+  clearLegacyRememberedSession();
 };
 
 const readRememberedSession = (tokenRefreshWindowMs: number) => {
+  clearLegacyRememberedSession();
+
   try {
-    const raw = window.localStorage.getItem(rememberedSessionKey);
+    const raw = window.sessionStorage.getItem(rememberedSessionKey);
     const parsed = raw ? JSON.parse(raw) as unknown : null;
-    if (!isSessionShape(parsed) || parsed.expiresAt <= Date.now() + tokenRefreshWindowMs) {
+    if (!isRememberedSessionShape(parsed) || parsed.expiresAt <= Date.now() + tokenRefreshWindowMs) {
       clearRememberedSession();
       return null;
     }
@@ -50,7 +61,11 @@ const readRememberedSession = (tokenRefreshWindowMs: number) => {
 
 const rememberSession = (session: StudioSession) => {
   try {
-    window.localStorage.setItem(rememberedSessionKey, JSON.stringify(session));
+    const rememberedSession: RememberedStudioSession = {
+      email: session.email,
+      expiresAt: session.expiresAt,
+    };
+    window.sessionStorage.setItem(rememberedSessionKey, JSON.stringify(rememberedSession));
   } catch {
     // Non-blocking: a private browsing policy should not prevent editing in this tab.
   }
@@ -148,17 +163,16 @@ export const useStudioAuthSession = ({
       onStatusChange('מחזירים אותך לסטודיו...');
 
       try {
-        if (remembered.expiresAt <= Date.now() + tokenRefreshWindowMs) {
-          throw new Error('Saved Google session expired');
+        const token = await requestGoogleAccessToken({ prompt: '' });
+        const email = await fetchGoogleUserEmail(token.accessToken);
+        if (email !== remembered.email) {
+          throw new Error('Saved Google session belongs to a different user');
         }
 
-        await loadAuthorizedSession(
-          { accessToken: remembered.accessToken, expiresAt: remembered.expiresAt },
-          remembered.email,
-        );
+        await loadAuthorizedSession(token, email);
 
         if (!cancelled) {
-          onStatusChange('החיבור הקודם נטען. אפשר להמשיך לעבוד.');
+          onStatusChange('החיבור הקודם חודש דרך Google. אפשר להמשיך לעבוד.');
         }
       } catch {
         clearRememberedSession();
