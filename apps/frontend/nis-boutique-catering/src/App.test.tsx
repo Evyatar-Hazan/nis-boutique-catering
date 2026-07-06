@@ -32,27 +32,27 @@ describe('Nis boutique catering app', () => {
     expect(screen.getByText('מארזים חכמים לדרך ולרגעים מיוחדים')).toBeInTheDocument();
   });
 
-  it('filters the gallery by category', () => {
+  it('filters the gallery by category', async () => {
     render(<App />);
 
-    const initialButtons = screen.getAllByRole('button', { name: /פתח תמונה:/i });
+    const initialButtons = await screen.findAllByRole('button', { name: /פתח תמונה:/i });
     expect(initialButtons).toHaveLength(6);
 
     fireEvent.click(screen.getByRole('button', { name: 'דגים' }));
 
-    const filteredButtons = screen.getAllByRole('button', { name: /פתח תמונה:/i });
+    const filteredButtons = await screen.findAllByRole('button', { name: /פתח תמונה:/i });
     expect(filteredButtons).toHaveLength(2);
     expect(screen.getByRole('button', { name: 'דגים' })).toHaveAttribute('aria-pressed', 'true');
   });
 
-  it('opens the lightbox and closes it on escape', () => {
+  it('opens the lightbox and closes it on escape', async () => {
     render(<App />);
 
-    const triggerButton = screen.getByRole('button', { name: 'פתח תמונה: שולחן אירוח מוכן' });
+    const triggerButton = await screen.findByRole('button', { name: 'פתח תמונה: שולחן אירוח מוכן' });
     triggerButton.focus();
     fireEvent.click(triggerButton);
 
-    const dialog = screen.getByRole('dialog', { name: /שולחן אירוח מוכן/i });
+    const dialog = await screen.findByRole('dialog', { name: /שולחן אירוח מוכן/i });
     const closeButton = within(dialog).getByRole('button', { name: 'סגור תמונה' });
     expect(dialog).toBeInTheDocument();
     expect(document.body).toHaveClass('is-lightbox-open');
@@ -65,10 +65,11 @@ describe('Nis boutique catering app', () => {
     expect(triggerButton).toHaveFocus();
   });
 
-  it('lets visitors choose between the three service experiences', () => {
+  it('lets visitors choose between the three service experiences', async () => {
     render(<App />);
 
-    const experienceSection = screen.getByRole('heading', { name: /מהרגע שבוחרים כיוון/i }).closest('section');
+    const experienceHeading = await screen.findByRole('heading', { name: /מהרגע שבוחרים כיוון/i });
+    const experienceSection = experienceHeading.closest('section');
     expect(experienceSection).not.toBeNull();
     if (!experienceSection) {
       throw new Error('Experience section was not found');
@@ -93,7 +94,7 @@ describe('Nis boutique catering app', () => {
     expect(screen.queryByRole('heading', { name: 'פחות סימני שאלה, יותר תחושה שיש עם מי לדבר.' })).not.toBeInTheDocument();
   });
 
-  it('builds a whatsapp inquiry from the contact form submit', () => {
+  it('builds a whatsapp inquiry from the contact form submit', async () => {
     const locationMock = {
       ...window.location,
       href: 'http://localhost:5174/',
@@ -106,7 +107,7 @@ describe('Nis boutique catering app', () => {
 
     render(<App />);
 
-    fireEvent.change(screen.getByLabelText('שם מלא'), { target: { value: 'שרה כהן' } });
+    fireEvent.change(await screen.findByLabelText('שם מלא'), { target: { value: 'שרה כהן' } });
     fireEvent.change(screen.getByLabelText('טלפון'), { target: { value: '0501234567' } });
     fireEvent.change(screen.getByLabelText('מייל'), { target: { value: 'sara@example.com' } });
     fireEvent.change(screen.getByLabelText('במה אתם מתעניינים?'), {

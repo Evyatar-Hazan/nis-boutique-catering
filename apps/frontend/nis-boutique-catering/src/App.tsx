@@ -1,19 +1,12 @@
-import { type CSSProperties, type FormEvent, useCallback, useMemo, useState } from 'react';
+import { lazy, Suspense, type CSSProperties, type FormEvent, useCallback, useMemo, useState } from 'react';
 import {
-  AudienceSection,
-  ContactSection,
-  CoordinationSection,
-  ExperienceLabSection,
-  FaqSection,
-  GallerySection,
   HeroSection,
   IntroBandSection,
   ManifestoSection,
-  ProcessSection,
-  RealMediaSection,
   SiteSectionPreviewDataProvider,
-  StorySection,
 } from '@monorepo/site-preview';
+import { DeferredSections } from './components/DeferredSections';
+import { SectionSkeleton } from './components/SectionSkeleton';
 import { FloatingActions, Footer, LightboxDialog, Topbar } from './components/SiteChrome';
 import { contactInterestOptions, email, galleryImages, sectionIds, siteMicrocopy, siteVersion, type GalleryCategory } from './data/siteContent';
 import { defaultSiteSectionPreviewData } from './data/sitePreviewData';
@@ -23,6 +16,8 @@ import { useRevealOnScroll } from './hooks/useRevealOnScroll';
 import { useScrollState } from './hooks/useScrollState';
 import { buildInquiryWhatsappLink, buildWhatsappLink } from './utils/contact';
 import './App.css';
+
+const LazySiteSections = lazy(() => import('./components/LazySiteSections'));
 
 function App() {
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
@@ -49,7 +44,7 @@ function App() {
   const showAdjacentImage = useCallback(
     (direction: 1 | -1) => {
       setSelectedImageIndex((currentIndex) => {
-        if (currentIndex === null || filteredGalleryImages.length === 0) {
+        if (currentIndex === null) {
           return currentIndex;
         }
 
@@ -107,32 +102,24 @@ function App() {
         <HeroSection heroWhatsapp={heroWhatsapp} />
         <IntroBandSection />
         <ManifestoSection />
-        <AudienceSection />
-        <ExperienceLabSection
-          activeExperienceIndex={activeExperienceIndex}
-          onChangeExperience={setActiveExperienceIndex}
-        />
-        <GallerySection
-          activeCategory={activeGalleryCategory}
-          images={filteredGalleryImages}
-          onFilterChange={(category) => {
-            setActiveGalleryCategory(category);
-            setSelectedImageIndex(null);
-          }}
-          onOpenImage={setSelectedImageIndex}
-        />
-        <RealMediaSection />
-        <ProcessSection />
-        <StorySection />
-        <CoordinationSection />
-        <FaqSection />
-        <ContactSection
-          contactWhatsapp={contactWhatsapp}
-          email={email}
-          leadSource={leadSource}
-          onLeadSourceChange={setLeadSource}
-          onSubmit={handleContactSubmit}
-        />
+        <DeferredSections>
+          <Suspense fallback={<SectionSkeleton />}>
+            <LazySiteSections
+              activeExperienceIndex={activeExperienceIndex}
+              activeGalleryCategory={activeGalleryCategory}
+              contactWhatsapp={contactWhatsapp}
+              leadSource={leadSource}
+              onChangeExperience={setActiveExperienceIndex}
+              onFilterChange={(category) => {
+                setActiveGalleryCategory(category);
+                setSelectedImageIndex(null);
+              }}
+              onLeadSourceChange={setLeadSource}
+              onOpenImage={setSelectedImageIndex}
+              onSubmit={handleContactSubmit}
+            />
+          </Suspense>
+        </DeferredSections>
       </main>
 
       <Footer email={email} footerWhatsapp={footerWhatsapp} version={siteVersion} />
