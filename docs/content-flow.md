@@ -401,11 +401,13 @@ flowchart TD
 ### בדיקת pipeline מלאה
 
 1. `pnpm validate`
-2. `pnpm cloudflare:build:site`
-3. `gh run list --limit 5`
-4. `gh run watch <run-id>`
-5. `curl -I https://nisboutiquecatering.com/`
-6. `curl -I https://studio.nisboutiquecatering.com/`
+2. `pnpm parity:local`
+3. `pnpm parity:local:deploy`
+4. `pnpm cloudflare:build:site`
+5. `gh run list --limit 5`
+6. `gh run watch <run-id>`
+7. `curl -I https://nisboutiquecatering.com/`
+8. `curl -I https://studio.nisboutiquecatering.com/`
 
 ## תחזוקה שוטפת
 

@@ -34,6 +34,7 @@ corepack enable
 corepack use pnpm@9.15.9
 pnpm doctor:runtime
 pnpm install --frozen-lockfile
+pnpm parity:local
 pnpm dev
 pnpm validate
 pnpm type-check
@@ -51,6 +52,8 @@ pnpm build
 - Run `pnpm doctor:runtime` before local work if you want a fail-fast runtime check.
 - Use the repo-pinned pnpm version with `corepack use pnpm@9.15.9`.
 - Treat `pnpm validate` as the single quality gate for both local verification and CI.
+- Run `pnpm parity:local` to mirror the CI validate job locally with the same runtime, frozen lockfile install, and workspace gate.
+- Run `pnpm parity:local:deploy` to mirror the deploy workflow build path locally. It fails fast if the same Google and Studio env values used in CI are missing.
 
 ## App
 
@@ -60,6 +63,7 @@ The production website lives in `apps/frontend/nis-boutique-catering`.
 
 - Full content pipeline and publishing flow: [docs/content-flow.md](/Users/evyatarhazan/Desktop/project/nis-boutique-catering/docs/content-flow.md)
 - Studio setup and operations: [CONTENT_STUDIO.md](/Users/evyatarhazan/Desktop/project/nis-boutique-catering/CONTENT_STUDIO.md)
+- Local parity env template: [.env.example](/Users/evyatarhazan/Desktop/project/nis-boutique-catering/.env.example)
 
 ## Local Artifacts
 

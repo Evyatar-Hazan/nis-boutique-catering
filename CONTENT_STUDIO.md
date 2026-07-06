@@ -102,6 +102,12 @@ npx pnpm@9.15.9 cloudflare:build:site
 
 Local development can omit Google env and `content:sync` will fall back to committed content. The production Cloudflare workflow sets `CONTENT_SYNC_REQUIRE_REMOTE=true`, so production deploys fail instead of silently publishing stale fallback content.
 
+For local parity with CI:
+
+- use the shared template in [.env.example](/Users/evyatarhazan/Desktop/project/nis-boutique-catering/.env.example)
+- run `pnpm parity:local` for the validate lane
+- run `pnpm parity:local:deploy` for the closest local simulation of the deploy workflow
+
 When remote sync succeeds, `public/media/cms` is rebuilt from Drive. Source images are downloaded into a temporary `_source` folder and converted into static WebP variants, so the public site does not serve Drive URLs or original image metadata.
 
 ## Seeding Sheets

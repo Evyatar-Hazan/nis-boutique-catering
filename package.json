@@ -10,6 +10,8 @@
   },
   "scripts": {
     "doctor:runtime": "node scripts/check-runtime.mjs",
+    "parity:local": "node scripts/run-local-parity.mjs validate",
+    "parity:local:deploy": "node scripts/run-local-parity.mjs deploy",
     "dev": "turbo run dev --filter @monorepo/nis-boutique-catering",
     "dev:all": "turbo run dev",
     "admin:dev": "turbo run dev --filter @monorepo/nis-content-studio",
