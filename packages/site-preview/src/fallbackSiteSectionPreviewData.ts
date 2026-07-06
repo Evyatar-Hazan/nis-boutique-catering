@@ -13,8 +13,7 @@ import {
   Utensils,
   type LucideIcon,
 } from 'lucide-react';
-import type { SiteSectionPreviewData } from '@monorepo/site-preview';
-import { publicAssetSrcFor } from '../assetUrlHelpers';
+import type { SiteSectionPreviewData } from './SiteSectionPreviewData';
 
 const image = (
   src: string,
@@ -23,7 +22,7 @@ const image = (
   sizes?: string,
   responsive = true,
 ) => ({
-  src: publicAssetSrcFor(src),
+  src,
   width,
   height,
   sizes,
@@ -247,8 +246,8 @@ export const fallbackSiteSectionPreviewData: SiteSectionPreviewData = {
     card('זמינות נוחה', 'פנייה קצרה שמקדמת מהר.', Phone),
   ],
   videoMedia: {
-    saladCupsPrep: publicAssetSrcFor('/media/food/nis-salad-cups-prep.mp4'),
-    eventVideo: publicAssetSrcFor('/media/food/events/nis-event-table-video.mp4'),
+    saladCupsPrep: '/media/food/nis-salad-cups-prep.mp4',
+    eventVideo: '/media/food/events/nis-event-table-video.mp4',
   },
   whatsappBase: 'https://wa.me/972503502615',
 };

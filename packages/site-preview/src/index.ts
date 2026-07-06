@@ -1,5 +1,7 @@
 export * from './PrimarySections';
 export * from './DeferredSections';
+export * from './buildSiteSectionPreviewData';
+export * from './fallbackSiteSectionPreviewData';
 export {
   SignatureSection,
   BoutiqueSection,

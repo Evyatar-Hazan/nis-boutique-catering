@@ -8,6 +8,7 @@
     "react-dom": "^19.2.0"
   },
   "dependencies": {
+    "@monorepo/content-schema": "workspace:*",
     "lucide-react": "^0.575.0"
   },
   "devDependencies": {

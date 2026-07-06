@@ -182,6 +182,9 @@ importers:
 
   packages/site-preview:
     dependencies:
+      '@monorepo/content-schema':
+        specifier: workspace:*
+        version: link:../content-schema
       lucide-react:
         specifier: ^0.575.0
         version: 0.575.0(react@19.2.7)
