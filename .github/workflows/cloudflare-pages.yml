@@ -14,6 +14,7 @@ env:
   PNPM_VERSION: 9.15.9
   NODE_VERSION: '24'
   CLOUDFLARE_ACCOUNT_ID: 9b3262d42898067352168901679a4936
+  CLOUDFLARE_ZONE_ID: c2a593125ed4fe46262ef7c46d97e3e3
   PUBLIC_SITE_PROJECT: nis-boutique-catering
   ADMIN_STUDIO_PROJECT: nis-content-studio
   GOOGLE_SHEET_ID: 101lO26iC3FzIJ7LdsGPCt1oJDR6RBHIkmeqcJ_Peyzk
@@ -104,3 +105,60 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Disable Cloudflare managed robots.txt
+        run: |
+          current_config="$(curl -fsS "https://api.cloudflare.com/client/v4/zones/${CLOUDFLARE_ZONE_ID}/bot_management" \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}")"
+
+          payload="$(printf '%s' "${current_config}" | jq '
+            .result
+            | {
+                ai_bots_protection,
+                auto_update_model,
+                bm_cookie_enabled,
+                cf_robots_variant,
+                content_bots_protection,
+                crawler_protection,
+                enable_js,
+                fight_mode,
+                is_robots_txt_managed,
+                optimize_wordpress,
+                sbfm_definitely_automated,
+                sbfm_likely_automated,
+                sbfm_static_resource_protection,
+                sbfm_verified_bots,
+                suppress_session_score
+              }
+            | with_entries(select(.value != null))
+            | .is_robots_txt_managed = false
+          ')"
+
+          curl -fsS -X PUT "https://api.cloudflare.com/client/v4/zones/${CLOUDFLARE_ZONE_ID}/bot_management" \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H "Content-Type: application/json" \
+            --data "${payload}" >/dev/null
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ZONE_ID: ${{ env.CLOUDFLARE_ZONE_ID }}
+
+      - name: Verify repo-owned robots.txt responses
+        run: |
+          check_robots() {
+            local url="$1"
+            local expected_line="$2"
+            local body
+            body="$(curl -fsS "${url}")"
+            if printf '%s' "${body}" | grep -q "Cloudflare Managed content"; then
+              echo "Cloudflare managed robots.txt is still active for ${url}"
+              exit 1
+            fi
+            if ! printf '%s' "${body}" | grep -Fq "${expected_line}"; then
+              echo "Expected line not found in ${url}: ${expected_line}"
+              printf '%s\n' "${body}"
+              exit 1
+            fi
+          }
+
+          check_robots "https://nisboutiquecatering.com/robots.txt" "Sitemap: https://nisboutiquecatering.com/sitemap.xml"
+          check_robots "https://studio.nisboutiquecatering.com/robots.txt" "Disallow: /"

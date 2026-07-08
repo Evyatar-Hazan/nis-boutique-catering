@@ -200,6 +200,8 @@
 1. GitHub Actions בונה גם את האתר הציבורי וגם את הסטודיו
 2. הוא מריץ deploy נפרד לכל פרויקט Cloudflare Pages
 3. ה־production domains מצביעים לפרויקטים האלה
+4. בסוף ה־workflow הוא מכבה `managed robots.txt` ברמת ה־zone כדי ש־`robots.txt` יישאר בבעלות ה־repo
+5. הוא מאמת שהתגובות החיות של `robots.txt` לא כוללות בלוק `Cloudflare Managed content`
 
 קובץ מרכזי:
 
