@@ -202,6 +202,7 @@
 3. ה־production domains מצביעים לפרויקטים האלה
 4. בסוף ה־workflow הוא מכבה `managed robots.txt` ברמת ה־zone כדי ש־`robots.txt` יישאר בבעלות ה־repo
 5. הוא מאמת שהתגובות החיות של `robots.txt` לא כוללות בלוק `Cloudflare Managed content`
+6. אם `CLOUDFLARE_API_TOKEN` לא כולל `Bot Management Write`, ה־workflow לא עוצר את ה־deploy אבל מוציא אזהרה מפורשת שהבעלות עדיין לא נאכפה עד הסוף
 
 קובץ מרכזי:
 
