@@ -127,6 +127,7 @@ For production setup, use the manual GitHub Action `.github/workflows/seed-googl
 המסמך המלא והמחייב של זרימת התוכן נמצא כאן:
 
 - [docs/content-flow.md](/Users/evyatarhazan/Desktop/project/nis-boutique-catering/docs/content-flow.md)
+- [docs/history.md](/Users/evyatarhazan/Desktop/project/nis-boutique-catering/docs/history.md) עבור ההקשר ההיסטורי של הריפקטורים, החלטות התשתית והקשחות ה-production
 
 Short version:
 

@@ -64,6 +64,7 @@ The production website lives in `apps/frontend/nis-boutique-catering`.
 ## Documentation
 
 - Full content pipeline and publishing flow: [docs/content-flow.md](/Users/evyatarhazan/Desktop/project/nis-boutique-catering/docs/content-flow.md)
+- Historical architecture and operational timeline: [docs/history.md](/Users/evyatarhazan/Desktop/project/nis-boutique-catering/docs/history.md)
 - Studio setup and operations: [CONTENT_STUDIO.md](/Users/evyatarhazan/Desktop/project/nis-boutique-catering/CONTENT_STUDIO.md)
 - Local parity env template: [.env.example](/Users/evyatarhazan/Desktop/project/nis-boutique-catering/.env.example)
 
