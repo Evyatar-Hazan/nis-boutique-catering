@@ -41,6 +41,8 @@ pnpm type-check
 pnpm lint
 pnpm media:check
 pnpm media:optimize
+pnpm artifacts:list
+pnpm artifacts:clean
 pnpm test
 pnpm build
 ```
@@ -72,6 +74,15 @@ The production website lives in `apps/frontend/nis-boutique-catering`.
 It may contain temporary screenshots or verification outputs created during local debugging, browser checks, or Playwright-style validation runs.
 
 It is intentionally ignored by git and should not be used as a source of truth for the product, content, or deployment pipeline.
+
+The contract for `output/`, including allowed uses and cleanup commands, lives in [docs/local-artifacts.md](/Users/evyatarhazan/Desktop/project/nis-boutique-catering/docs/local-artifacts.md).
+
+Quick commands:
+
+```bash
+pnpm artifacts:list
+pnpm artifacts:clean
+```
 
 To run commands directly for the app:
 

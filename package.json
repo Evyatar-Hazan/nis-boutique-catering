@@ -10,6 +10,8 @@
   },
   "scripts": {
     "doctor:runtime": "node scripts/check-runtime.mjs",
+    "artifacts:list": "node scripts/local-artifacts.mjs list",
+    "artifacts:clean": "node scripts/local-artifacts.mjs clean",
     "parity:local": "node scripts/run-local-parity.mjs validate",
     "parity:local:deploy": "node scripts/run-local-parity.mjs deploy",
     "dev": "turbo run dev --filter @monorepo/nis-boutique-catering",
