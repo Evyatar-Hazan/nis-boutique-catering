@@ -15,6 +15,7 @@ import {
 
 const sheetsBaseUrl = 'https://sheets.googleapis.com/v4/spreadsheets';
 const driveBaseUrl = 'https://www.googleapis.com/drive/v3';
+const transientSheetStatuses = new Set([408, 425, 429, 500, 502, 503, 504]);
 
 const sheetId = process.env.GOOGLE_SHEET_ID || process.env.VITE_GOOGLE_SHEET_ID;
 const requireRemote = process.env.CONTENT_SYNC_REQUIRE_REMOTE === 'true';
@@ -34,23 +35,51 @@ const parseBool = (value, fallback = false) => {
   return fallback;
 };
 
-const fetchSheetValues = async (accessToken, range) => {
+const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const fetchSheetRange = async (accessToken, range, attempt = 1) => {
   const response = await fetch(`${sheetsBaseUrl}/${sheetId}/values/${encodeURIComponent(range)}`, {
     headers: { Authorization: `Bearer ${accessToken}` },
   });
 
   if (!response.ok) {
-    throw new Error(`Could not read ${range}`);
+    const body = await response.text().catch(() => '');
+    if (transientSheetStatuses.has(response.status) && attempt < 3) {
+      await wait(attempt * 1_000);
+      return fetchSheetRange(accessToken, range, attempt + 1);
+    }
+
+    const error = new Error(`Could not read ${range} (status ${response.status})${body ? `: ${body}` : ''}`);
+    error.status = response.status;
+    throw error;
   }
 
   const data = await response.json();
   return data.values ?? [];
 };
 
+const fetchSheetValues = async (accessToken, ranges) => {
+  const candidates = Array.isArray(ranges) ? ranges : [ranges];
+  const errors = [];
+
+  for (const range of candidates) {
+    try {
+      return await fetchSheetRange(accessToken, range);
+    } catch (error) {
+      errors.push(error);
+      if (error.status !== 400 || range === candidates.at(-1)) {
+        continue;
+      }
+    }
+  }
+
+  throw errors.at(-1);
+};
+
 const readRemoteSnapshot = async (accessToken) => {
   const [settingsRows, mediaRows, galleryRows, servicesRows, sectionsRows] = await Promise.all([
-    fetchSheetValues(accessToken, 'site_settings!A:B'),
-    fetchSheetValues(accessToken, 'media!A:I'),
+    fetchSheetValues(accessToken, ['site_settings!A:B', 'settings!A:B']),
+    fetchSheetValues(accessToken, 'media!A:J'),
     fetchSheetValues(accessToken, 'gallery!A:K'),
     fetchSheetValues(accessToken, 'services!A:M'),
     fetchSheetValues(accessToken, 'sections!A:H'),
