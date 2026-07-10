@@ -2,10 +2,11 @@ import { useEffect } from 'react';
 
 export const useRevealOnScroll = (): void => {
   useEffect(() => {
-    const revealElements = Array.from(document.querySelectorAll<HTMLElement>('.reveal'));
+    const revealSelector = '.reveal';
+    const revealElements = () => Array.from(document.querySelectorAll<HTMLElement>(revealSelector));
 
     if (!('IntersectionObserver' in window)) {
-      revealElements.forEach((element) => element.classList.add('is-visible'));
+      revealElements().forEach((element) => element.classList.add('is-visible'));
       return undefined;
     }
 
@@ -21,8 +22,31 @@ export const useRevealOnScroll = (): void => {
       { rootMargin: '0px 0px -12% 0px', threshold: 0.12 },
     );
 
-    revealElements.forEach((element) => observer.observe(element));
+    const observePendingRevealElements = () => {
+      revealElements().forEach((element) => {
+        if (element.dataset.revealObserved === 'true') {
+          return;
+        }
 
-    return () => observer.disconnect();
+        element.dataset.revealObserved = 'true';
+        observer.observe(element);
+      });
+    };
+
+    observePendingRevealElements();
+
+    const mutationObserver = new MutationObserver(() => {
+      observePendingRevealElements();
+    });
+
+    mutationObserver.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+
+    return () => {
+      mutationObserver.disconnect();
+      observer.disconnect();
+    };
   }, []);
 };
