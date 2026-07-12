@@ -118,7 +118,7 @@ Key changes:
 - deploy behavior was softened so token-permission issues surface as explicit warnings instead of opaque failures
 - remote content sync was hardened with retries, better error messages, and range compatibility fallback
 - public site and studio response headers were hardened with `Strict-Transport-Security`, `Content-Security-Policy`, and related protections
-- an unsafe CSP attempt was rolled back, then replaced with app-specific policies that allow the public site's Google Fonts and the studio's Google Identity, Sheets, Drive, Picker, Apps Script, and live-site verification flows
+- an unsafe CSP attempt was rolled back, then replaced with app-specific policies that allow the public site's Google Fonts, Cloudflare Web Analytics, and the studio's Google Identity, Sheets, Drive, Picker, Apps Script, and live-site verification flows
 - `validate` now checks the repo-owned response headers so CSP cannot disappear silently again
 
 Why it mattered:
