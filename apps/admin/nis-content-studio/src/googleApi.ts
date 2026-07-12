@@ -5,6 +5,8 @@ const sheetsBaseUrl = 'https://sheets.googleapis.com/v4/spreadsheets';
 const driveBaseUrl = 'https://www.googleapis.com/drive/v3';
 const defaultAccessTokenTtlMs = 50 * 60 * 1000;
 const tokenExpirySafetyMs = 2 * 60 * 1000;
+const retryableGoogleStatuses = new Set([408, 429, 500, 502, 503, 504]);
+const googleRequestRetryDelaysMs = [350, 1_000, 2_000];
 
 export interface GoogleAccessToken {
   readonly accessToken: string;
@@ -27,6 +29,48 @@ const loadScript = (src: string) =>
     script.addEventListener('error', () => reject(new Error(`Failed to load ${src}`)), { once: true });
     document.head.append(script);
   });
+
+const wait = (durationMs: number) => new Promise((resolve) => {
+  window.setTimeout(resolve, durationMs);
+});
+
+const fetchGoogleApi = async (url: string, init: RequestInit, label: string) => {
+  let lastResponse: Response | null = null;
+  let lastError: unknown = null;
+
+  for (let attempt = 0; attempt <= googleRequestRetryDelaysMs.length; attempt += 1) {
+    let response: Response;
+    try {
+      response = await fetch(url, init);
+    } catch (error) {
+      lastError = error;
+      if (attempt >= googleRequestRetryDelaysMs.length) {
+        break;
+      }
+
+      await wait(googleRequestRetryDelaysMs[attempt]);
+      continue;
+    }
+
+    if (response.ok) {
+      return response;
+    }
+
+    lastResponse = response;
+    const canRetry = retryableGoogleStatuses.has(response.status) && attempt < googleRequestRetryDelaysMs.length;
+    if (!canRetry) {
+      break;
+    }
+
+    await wait(googleRequestRetryDelaysMs[attempt]);
+  }
+
+  if (lastError instanceof Error) {
+    throw new Error(`${label} (${lastError.message})`);
+  }
+
+  throw new Error(`${label} (${lastResponse?.status ?? 'network error'})`);
+};
 
 export const requestGoogleAccessToken = async (options: { readonly prompt?: 'consent' | '' } = {}): Promise<GoogleAccessToken> => {
   if (!studioConfig.clientId) {
@@ -75,18 +119,16 @@ export const fetchGoogleUserEmail = async (accessToken: string) => {
   return profile.email?.toLowerCase() ?? '';
 };
 
-const fetchSheetValues = async (accessToken: string, range: string) => {
-  const url = `${sheetsBaseUrl}/${studioConfig.sheetId}/values/${encodeURIComponent(range)}`;
-  const response = await fetch(url, {
+const fetchSheetRanges = async (accessToken: string, ranges: readonly string[]) => {
+  const params = new URLSearchParams();
+  ranges.forEach((range) => params.append('ranges', range));
+  const url = `${sheetsBaseUrl}/${studioConfig.sheetId}/values:batchGet?${params.toString()}`;
+  const response = await fetchGoogleApi(url, {
     headers: { Authorization: `Bearer ${accessToken}` },
-  });
+  }, 'Could not read Google Sheets content');
 
-  if (!response.ok) {
-    throw new Error(`Could not read ${range}`);
-  }
-
-  const data = (await response.json()) as { values?: string[][] };
-  return data.values ?? [];
+  const data = (await response.json()) as { valueRanges?: Array<{ values?: string[][] }> };
+  return ranges.map((_, index) => data.valueRanges?.[index]?.values ?? []);
 };
 
 const rowsToObjects = (rows: string[][]) => {
@@ -104,12 +146,12 @@ const numberOrFallback = (value: string | undefined, fallback: number) => {
 };
 
 export const readContentFromSheets = async (accessToken: string): Promise<ContentSnapshot> => {
-  const [settingsRows, mediaRows, galleryRows, servicesRows, sectionsRows] = await Promise.all([
-    fetchSheetValues(accessToken, 'site_settings!A:B'),
-    fetchSheetValues(accessToken, 'media!A:J'),
-    fetchSheetValues(accessToken, 'gallery!A:K'),
-    fetchSheetValues(accessToken, 'services!A:M'),
-    fetchSheetValues(accessToken, 'sections!A:H'),
+  const [settingsRows, mediaRows, galleryRows, servicesRows, sectionsRows] = await fetchSheetRanges(accessToken, [
+    'site_settings!A:B',
+    'media!A:J',
+    'gallery!A:K',
+    'services!A:M',
+    'sections!A:H',
   ]);
 
   const settings = Object.fromEntries(settingsRows.filter((row) => row[0]).map(([key, value]) => [key, value ?? '']));
@@ -184,18 +226,14 @@ export const readContentFromSheets = async (accessToken: string): Promise<Conten
 
 const putSheetValues = async (accessToken: string, range: string, values: readonly unknown[][]) => {
   const url = `${sheetsBaseUrl}/${studioConfig.sheetId}/values/${encodeURIComponent(range)}?valueInputOption=USER_ENTERED`;
-  const response = await fetch(url, {
+  await fetchGoogleApi(url, {
     method: 'PUT',
     headers: {
       Authorization: `Bearer ${accessToken}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ values }),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Could not write ${range}`);
-  }
+  }, `Could not write ${range}`);
 };
 
 export const saveContentToSheets = async (accessToken: string, snapshot: ContentSnapshot) => {
