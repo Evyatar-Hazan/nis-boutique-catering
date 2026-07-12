@@ -55,7 +55,7 @@ describe('useStudioAuthSession', () => {
     expect(raw).not.toContain('token-123');
   });
 
-  it('restores a remembered session by requesting a fresh silent token', async () => {
+  it('clears remembered session metadata instead of opening a background Google popup', async () => {
     window.sessionStorage.setItem(
       'nis-content-studio-session-v2',
       JSON.stringify({
@@ -63,12 +63,6 @@ describe('useStudioAuthSession', () => {
         expiresAt: Date.now() + 10 * 60_000,
       }),
     );
-
-    googleApiMocks.requestGoogleAccessToken.mockResolvedValue({
-      accessToken: 'fresh-token',
-      expiresAt: Date.now() + 10 * 60_000,
-    });
-    googleApiMocks.fetchGoogleUserEmail.mockResolvedValue('owner@example.com');
 
     const onAuthorized = vi.fn().mockResolvedValue(undefined);
     const onStatusChange = vi.fn();
@@ -84,11 +78,14 @@ describe('useStudioAuthSession', () => {
       }),
     );
 
-    await waitFor(() => expect(result.current.authState).toBe('authorized'));
+    await waitFor(() => expect(window.sessionStorage.getItem('nis-content-studio-session-v2')).toBeNull());
 
-    expect(googleApiMocks.requestGoogleAccessToken).toHaveBeenCalledWith({ prompt: '' });
-    expect(onAuthorized).toHaveBeenCalledWith('fresh-token', 'owner@example.com');
-    expect(result.current.session?.accessToken).toBe('fresh-token');
+    expect(googleApiMocks.requestGoogleAccessToken).not.toHaveBeenCalled();
+    expect(onAuthorized).not.toHaveBeenCalled();
+    expect(onBusyChange).not.toHaveBeenCalled();
+    expect(onStatusChange).toHaveBeenCalledWith('צריך להתחבר שוב עם Google כדי לפתוח את הסטודיו.');
+    expect(result.current.authState).toBe('signed-out');
+    expect(result.current.session).toBeNull();
   });
 
   it('clears legacy localStorage sessions during restore', async () => {

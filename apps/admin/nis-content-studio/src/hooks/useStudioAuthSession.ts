@@ -85,7 +85,6 @@ export const useStudioAuthSession = ({
   isGoogleConfigured,
   tokenRefreshWindowMs,
   onStatusChange,
-  onBusyChange,
   onAuthorized,
   onDenied,
   onLogout,
@@ -155,45 +154,9 @@ export const useStudioAuthSession = ({
       return;
     }
 
-    let cancelled = false;
-
-    const restore = async () => {
-      setAuthState('loading');
-      onBusyChange(true);
-      onStatusChange('מחזירים אותך לסטודיו...');
-
-      try {
-        const token = await requestGoogleAccessToken({ prompt: '' });
-        const email = await fetchGoogleUserEmail(token.accessToken);
-        if (email !== remembered.email) {
-          throw new Error('Saved Google session belongs to a different user');
-        }
-
-        await loadAuthorizedSession(token, email);
-
-        if (!cancelled) {
-          onStatusChange('החיבור הקודם חודש דרך Google. אפשר להמשיך לעבוד.');
-        }
-      } catch {
-        clearRememberedSession();
-        if (!cancelled) {
-          setSession(null);
-          setAuthState('signed-out');
-          onStatusChange('ההתחברות הקודמת פגה. צריך להתחבר שוב עם Google.');
-        }
-      } finally {
-        if (!cancelled) {
-          onBusyChange(false);
-        }
-      }
-    };
-
-    void restore();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [isGoogleConfigured, loadAuthorizedSession, onBusyChange, onStatusChange, tokenRefreshWindowMs]);
+    clearRememberedSession();
+    onStatusChange('צריך להתחבר שוב עם Google כדי לפתוח את הסטודיו.');
+  }, [isGoogleConfigured, onStatusChange, tokenRefreshWindowMs]);
 
   const handleLogin = useCallback(async () => {
     if (!isGoogleConfigured) {
