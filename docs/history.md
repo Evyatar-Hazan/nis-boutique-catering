@@ -13,14 +13,14 @@ It exists to answer four practical questions quickly:
 
 ## Current State Snapshot
 
-As of July 8, 2026:
+As of July 12, 2026:
 
 - the repo is a Turborepo with a public site, a private content studio, and shared packages
 - production deploys run through GitHub Actions into Cloudflare Pages
 - managed content source of truth is Google Sheets + Google Drive
 - production builds require remote content sync instead of silently publishing fallback content
 - `robots.txt` ownership is enforced at the repo/workflow level instead of Cloudflare managed injection
-- both apps now ship with hardened response headers, including `Content-Security-Policy`
+- both apps ship with repo-owned hardened response headers, including `Content-Security-Policy`, `Strict-Transport-Security`, and frame protections
 
 ## Timeline
 
@@ -106,7 +106,7 @@ Why it mattered:
 - faster diagnosis when runtime or dependency drift appears
 - better shared understanding of the deploy-sensitive content pipeline
 
-### July 8, 2026: Operational Hardening
+### July 8-12, 2026: Operational Hardening
 
 July 8 focused on production ownership and deploy safety.
 
@@ -118,6 +118,8 @@ Key changes:
 - deploy behavior was softened so token-permission issues surface as explicit warnings instead of opaque failures
 - remote content sync was hardened with retries, better error messages, and range compatibility fallback
 - public site and studio response headers were hardened with `Strict-Transport-Security`, `Content-Security-Policy`, and related protections
+- an unsafe CSP attempt was rolled back, then replaced with app-specific policies that allow the public site's Google Fonts and the studio's Google Identity, Sheets, Drive, Picker, Apps Script, and live-site verification flows
+- `validate` now checks the repo-owned response headers so CSP cannot disappear silently again
 
 Why it mattered:
 
