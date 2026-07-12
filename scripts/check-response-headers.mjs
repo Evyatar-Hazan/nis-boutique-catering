@@ -52,6 +52,7 @@ const headerFiles = [
       'https://nisboutiquecatering.com',
       'https://static.cloudflareinsights.com',
       'https://cloudflareinsights.com',
+      'img-src \'self\' data: blob: https://www.googleapis.com https://drive.google.com https://lh3.googleusercontent.com https://*.googleusercontent.com https://ssl.gstatic.com https://www.gstatic.com https://nisboutiquecatering.com',
       "form-action 'self'",
     ],
   },
