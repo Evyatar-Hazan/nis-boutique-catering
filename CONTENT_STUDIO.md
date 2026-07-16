@@ -45,7 +45,10 @@ services
 id | title | subtitle | description | bestFor | promise | details | cta | mediaId | icon
 
 sections
-id | group | title | text | items | active
+id | group | title | text | items | active | order | deletedAt
+
+admins
+id | email | name | picture | active | createdAt | lastLogin
 ```
 
 Use `|` inside `details` and `items` cells for multiple values.
@@ -58,6 +61,7 @@ The public site currently consumes generated content from these Sheet areas:
 - `media` + `gallery`: gallery images, active state, ordering, layout, alt text, and static CMS assets.
 - `services`: service cards when the sheet has valid rows; otherwise the committed fallback services are used.
 - `sections`: `id=hero` controls the hero eyebrow/title/kicker/text. `id=hero-media` stores the hero image media IDs in this order: background, primary, side, tall. Rows with `group=faq` become FAQ items. Other groups are stored and editable for gradual rollout.
+- `admins`: the Studio allowlist managed from the admin UI. If this tab does not exist yet, the Studio falls back to `VITE_ALLOWED_EDITORS`; saving from the admin screen creates the tab.
 
 For Drive-backed media, the production build normalizes `src` to `/media/cms/<asset-id>.webp` and generates static files from the Drive source.
 
@@ -180,6 +184,8 @@ VITE_GOOGLE_SHEET_ID
 VITE_GOOGLE_DRIVE_FOLDER_ID
 VITE_ALLOWED_EDITORS
 ```
+
+`VITE_ALLOWED_EDITORS` remains the bootstrap allowlist and lockout protection. The Studio admin screen can then manage additional equal-permission admins in the `admins` Sheet tab.
 
 ## Apps Script Publish Proxy
 

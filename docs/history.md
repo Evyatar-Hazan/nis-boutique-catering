@@ -21,8 +21,27 @@ As of July 12, 2026:
 - production builds require remote content sync instead of silently publishing fallback content
 - `robots.txt` ownership is enforced at the repo/workflow level instead of Cloudflare managed injection
 - both apps ship with repo-owned hardened response headers, including `Content-Security-Policy`, `Strict-Transport-Security`, and frame protections
+- as of July 16, 2026, the Studio includes equal-permission admin management backed by an `admins` Google Sheet tab, with `VITE_ALLOWED_EDITORS` retained as bootstrap lockout protection
 
 ## Timeline
+
+### July 16, 2026: Studio Admin Management
+
+The Studio added a Shoham-style admin management surface without replacing the stable Nis content pipeline.
+
+Key changes:
+
+- added a `ניהול אדמינים` navigation item and workspace
+- introduced an `admins` Google Sheet tab for email, display name, optional picture, active state, created date, and last-login metadata
+- kept `VITE_ALLOWED_EDITORS` as the bootstrap allowlist and fallback if the Sheet tab does not exist yet
+- blocked self-deactivation and the last-active-admin case in the UI
+- retained Google OAuth as the login proof instead of trusting an unsigned email bearer value
+
+Why it mattered:
+
+- moved the Studio toward the simpler Shoham admin UX requested for the replacement flow
+- made future admin additions owner-manageable without code changes
+- preserved the existing Google Sheets/Drive and Cloudflare Pages deployment architecture while changing the CMS layer incrementally
 
 ### June 20-21, 2026: Real Preview Foundation
 

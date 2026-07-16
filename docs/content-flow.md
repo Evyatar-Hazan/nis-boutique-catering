@@ -55,6 +55,7 @@
 - `gallery`
 - `services`
 - `sections`
+- `admins`
 
 ולכולן יש schema מאומת באמצעות `zod`.
 
@@ -81,7 +82,7 @@
 - [apps/admin/nis-content-studio/src/googleApi.ts](/Users/evyatarhazan/Desktop/project/nis-boutique-catering/apps/admin/nis-content-studio/src/googleApi.ts)
 - [apps/frontend/nis-boutique-catering/scripts/sync-content.mjs](/Users/evyatarhazan/Desktop/project/nis-boutique-catering/apps/frontend/nis-boutique-catering/scripts/sync-content.mjs)
 
-המשמעות היא שהסטודיו ו־build-time sync משתמשים באותה חלוקה לוגית של התוכן.
+המשמעות היא שהסטודיו ו־build-time sync משתמשים באותה חלוקה לוגית של התוכן. טאב `admins` משמש את הסטודיו בלבד לניהול הרשאות כניסה, ואינו נצרך על ידי האתר הציבורי.
 
 ## הזרימה המלאה
 
@@ -90,9 +91,12 @@
 כאשר עורך נכנס לסטודיו:
 
 1. הסטודיו מבצע login מול Google Identity Services.
-2. הסטודיו קורא את Google Sheets דרך `readContentFromSheets(accessToken)`.
-3. הנתונים נטענים ל־`ContentSnapshot` בזיכרון של אפליקציית React.
-4. כל שינוי UI מעדכן את ה־snapshot המקומי בלבד עד שמבצעים שמירה.
+2. הסטודיו קורא את רשימת האדמינים דרך `readStudioAdminsFromSheets(accessToken)`.
+3. אם טאב `admins` לא קיים עדיין, הסטודיו נופל חזרה ל־`VITE_ALLOWED_EDITORS` כדי לא לנעול את בעלי הגישה מחוץ למערכת.
+4. רק אימייל פעיל ברשימת האדמינים או ב־bootstrap allowlist יכול להמשיך לטעינת התוכן.
+5. הסטודיו קורא את Google Sheets דרך `readContentFromSheets(accessToken)`.
+6. הנתונים נטענים ל־`ContentSnapshot` בזיכרון של אפליקציית React.
+7. כל שינוי UI מעדכן את ה־snapshot המקומי בלבד עד שמבצעים שמירה.
 
 קבצים מרכזיים:
 
@@ -106,6 +110,26 @@
 - ה־repo לא השתנה
 - ה־site bundle החי לא השתנה
 - Cloudflare לא נגע בשום דבר
+
+### 1.1. ניהול אדמינים
+
+מסך `ניהול אדמינים` בסטודיו מנהל את טאב `admins`:
+
+- `id`
+- `email`
+- `name`
+- `picture`
+- `active`
+- `createdAt`
+- `lastLogin`
+
+כל האדמינים מקבלים בשלב זה הרשאות שוות. אפשר להוסיף אדמין לפי אימייל, לערוך שם ותמונה, ולהפעיל או לכבות אדמין. המערכת לא מאפשרת לכבות את המשתמש שמחובר עכשיו, ולא מאפשרת להישאר בלי אדמין פעיל.
+
+חשוב:
+
+- `VITE_ALLOWED_EDITORS` נשאר מנגנון bootstrap ו־lockout protection.
+- אין שימוש ב־email bearer לא חתום. כל כניסה מתחילה ב־Google OAuth וממשיכה רק אחרי בדיקת allowlist.
+- שינוי אדמינים נשמר ל־Google Sheets בלבד ואינו משנה את האתר הציבורי.
 
 ### 2. שמירת טיוטה
 
