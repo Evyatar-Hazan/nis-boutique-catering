@@ -22,6 +22,7 @@ import {
   RotateCcw,
   Search,
   ShieldAlert,
+  ShieldCheck,
   Sparkles,
   Tag,
   Trash2,
@@ -95,6 +96,8 @@ import {
   getDriveFileDownloadUrl,
   openDrivePicker,
   readContentFromSheets,
+  readStudioAdminsFromSheets,
+  saveStudioAdminsToSheets,
   uploadImageToDrive,
 } from './googleApi';
 import {
@@ -112,6 +115,7 @@ import { Toggle } from './components/editor/Toggle';
 import { useStudioAuthSession, type AuthState } from './hooks/useStudioAuthSession';
 import { useStudioMediaLibrary, type MediaLibraryFilter } from './hooks/useStudioMediaLibrary';
 import { useStudioPublishFlow } from './hooks/useStudioPublishFlow';
+import { getConfiguredStudioAdmins, isAllowedStudioAdmin, type StudioAdminRecord } from './studioAdmins';
 
 type SectionEditorItemActionsArgs = {
   readonly section: SectionBlockRecord;
@@ -162,6 +166,7 @@ const ImageUploadDropzone = lazy(async () => ({ default: (await import('./compon
 const ImagesLibraryToolbar = lazy(async () => ({ default: (await import('./components/editor/sections/MediaLibrary')).ImagesLibraryToolbar }));
 const ImagesGrid = lazy(async () => ({ default: (await import('./components/editor/sections/MediaLibrary')).ImagesGrid }));
 const ImageDetailsPanel = lazy(async () => ({ default: (await import('./components/editor/sections/MediaLibrary')).ImageDetailsPanel }));
+const AdminsWorkspace = lazy(async () => ({ default: (await import('./components/editor/sections/AdminsWorkspace')).AdminsWorkspace }));
 const HeroSitePreview = lazy(async () => ({ default: (await import('./preview/SitePreviewBlocks')).HeroSitePreview }));
 const IntroBandPreview = lazy(async () => ({ default: (await import('./preview/SitePreviewBlocks')).IntroBandPreview }));
 const ExactCopySectionPreview = lazy(async () => ({ default: (await import('./preview/SitePreviewBlocks')).ExactCopySectionPreview }));
@@ -541,6 +546,12 @@ const studioSections: readonly {
     help: 'טלפון, וואטסאפ, SEO, גרסה וכפתור עדכון אתר.',
     icon: <Tag aria-hidden="true" />,
   },
+  {
+    id: 'admins',
+    label: 'ניהול אדמינים',
+    help: 'הוספה, עריכה וכיבוי של משתמשים מורשים בסגנון שוהם.',
+    icon: <ShieldCheck aria-hidden="true" />,
+  },
 ];
 
 const WorkspaceLoadingState = ({ label = 'טוען את האזור...' }: { readonly label?: string }) => (
@@ -562,6 +573,7 @@ export const App = () => {
   const [isBusy, setIsBusy] = useState(false);
   const [siteGalleryQuery, setSiteGalleryQuery] = useState('');
   const [isImageDropActive, setIsImageDropActive] = useState(false);
+  const [studioAdmins, setStudioAdmins] = useState<readonly StudioAdminRecord[]>(getConfiguredStudioAdmins());
 
   const mediaById = useMemo(() => new Map(content.media.map((media) => [media.id, media])), [content.media]);
   const validation = useMemo(() => contentSnapshotSchema.safeParse(content), [content]);
@@ -614,10 +626,12 @@ export const App = () => {
     onStatusChange: setStatus,
     onBusyChange: setIsBusy,
     onAuthorized: async (accessToken, email) => {
-      const allowed = studioConfig.allowedEditors.length === 0 || studioConfig.allowedEditors.includes(email);
+      const admins = await readStudioAdminsFromSheets(accessToken);
+      const allowed = isAllowedStudioAdmin(email, admins);
       if (!allowed) {
         throw new Error('אין למשתמש הזה הרשאה לנהל את האתר.');
       }
+      setStudioAdmins(admins);
       setContent(ensureManagedSections(await readContentFromSheets(accessToken)));
       setPublishProgress(null);
       setPublishState('clean');
@@ -691,7 +705,12 @@ export const App = () => {
     }
     void runTask('מרעננים תוכן מ-Google Sheets', async () => {
       const accessToken = await getFreshAccessToken();
-      setContent(ensureManagedSections(await readContentFromSheets(accessToken)));
+      const [freshAdmins, freshContent] = await Promise.all([
+        readStudioAdminsFromSheets(accessToken),
+        readContentFromSheets(accessToken),
+      ]);
+      setStudioAdmins(freshAdmins);
+      setContent(ensureManagedSections(freshContent));
       setPublishProgress(null);
       setPublishState('clean');
       setStatus('התוכן רוענן מה-Sheets.');
@@ -702,6 +721,20 @@ export const App = () => {
     performLogout();
     resetPublishFlow();
     setContent(emptyContent);
+    setStudioAdmins(getConfiguredStudioAdmins());
+  };
+
+  const saveStudioAdmins = (admins: readonly StudioAdminRecord[]) => {
+    if (!session) {
+      return;
+    }
+
+    void runTask('שומרים רשימת אדמינים', async () => {
+      const accessToken = await getFreshAccessToken();
+      await saveStudioAdminsToSheets(accessToken, admins);
+      setStudioAdmins(admins);
+      setStatus('רשימת האדמינים נשמרה ב-Google Sheets. ההרשאות ייכנסו לתוקף בכניסה או רענון הבא.');
+    });
   };
 
   const updateGallery = (id: string, patch: Partial<GalleryItemRecord>) => {
@@ -1006,6 +1039,7 @@ export const App = () => {
           <Metric label="תמונות מחוברות ל-Drive" value={String(driveMediaCount)} />
           <Metric label="תמונות פעילות בגלריה" value={String(activeGalleryCount)} />
           <Metric label="שירותים באתר" value={String(content.services.filter((service) => !service.deletedAt).length)} />
+          <Metric label="אדמינים פעילים" value={String(studioAdmins.filter((admin) => admin.active).length)} />
           <Metric label="פריטים בארכיון" value={String(archivedCount)} />
           <Metric label="גרסת תוכן" value={content.settings.siteVersion || content.version} />
         </section>
@@ -1242,6 +1276,17 @@ export const App = () => {
                 text: 'אפשר לעבור בין מחשב למובייל ולראות איך בחירת החוויה תרגיש ללקוח באתר החי.',
                 children: <ServicesPreview content={content} mediaById={mediaById} device={previewDevice} />,
               })}
+            />
+          </Suspense>
+        )}
+
+        {activeView === 'admins' && (
+          <Suspense fallback={<WorkspaceLoadingState label="טוען את מסך האדמינים..." />}>
+            <AdminsWorkspace
+              admins={studioAdmins}
+              currentEmail={session.email}
+              isBusy={isBusy}
+              onSaveAdmins={saveStudioAdmins}
             />
           </Suspense>
         )}

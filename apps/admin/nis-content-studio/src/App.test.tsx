@@ -157,6 +157,7 @@ describe('Content Studio', () => {
 
   it('keeps the studio editing workflow clear across editing and publish states', () => {
     const editingSteps = getStudioWorkflowSteps('services', 'draft', false, true);
+    const adminsSteps = getStudioWorkflowSteps('admins', 'clean', false, true);
     const errorSteps = getStudioWorkflowSteps('faq', 'draft', true, true);
     const liveSteps = getStudioWorkflowSteps('publish', 'live', false, true);
 
@@ -166,6 +167,7 @@ describe('Content Studio', () => {
       expect.objectContaining({ title: 'שמירת טיוטה', state: 'done' }),
       expect.objectContaining({ title: 'עדכון האתר', state: 'pending' }),
     ]);
+    expect(adminsSteps.at(0)).toEqual(expect.objectContaining({ title: 'עריכה', state: 'active' }));
     expect(errorSteps.at(0)).toEqual(expect.objectContaining({ title: 'עריכה', state: 'error' }));
     expect(errorSteps.at(2)).toEqual(expect.objectContaining({ title: 'שמירת טיוטה', state: 'blocked' }));
     expect(liveSteps.at(3)).toEqual(expect.objectContaining({ title: 'עדכון האתר', state: 'done', text: 'האתר החי עודכן' }));

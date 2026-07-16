@@ -256,6 +256,129 @@ input:disabled {
   padding: 11px 14px;
 }
 
+.admins-workspace {
+  display: grid;
+  gap: 22px;
+}
+
+.admins-layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.85fr) minmax(0, 1.15fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.admins-form,
+.admins-list {
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+  border: 1px solid #ded6c5;
+  border-radius: 8px;
+  background: #fffdf8;
+}
+
+.admin-form-heading,
+.admins-list-heading,
+.admin-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.admin-form-heading svg,
+.admins-list-heading svg {
+  width: 22px;
+  height: 22px;
+  color: #8f6d2a;
+}
+
+.admin-form-heading h3,
+.admin-form-heading p,
+.admins-list-heading h3,
+.admins-list-heading p,
+.admin-card h4,
+.admin-card p {
+  margin: 0;
+}
+
+.admin-form-heading p,
+.admins-list-heading p,
+.admin-card p,
+.admin-card dt {
+  color: #6d6354;
+  font-size: 14px;
+}
+
+.form-error {
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid #e0b4aa;
+  border-radius: 8px;
+  color: #782929;
+  background: #fff0ec;
+  font-weight: 700;
+}
+
+.form-actions,
+.admin-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.admin-card-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.admin-card {
+  display: grid;
+  gap: 14px;
+  padding: 14px;
+  border: 1px solid #ded6c5;
+  border-radius: 8px;
+  background: #f8f4ea;
+}
+
+.admin-card.is-inactive {
+  opacity: 0.68;
+}
+
+.admin-card-header img,
+.admin-card-header span {
+  display: grid;
+  width: 46px;
+  height: 46px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 50%;
+  background: #2f3733;
+  color: #f8f4ea;
+  font-weight: 800;
+}
+
+.admin-card-header img {
+  object-fit: cover;
+}
+
+.admin-card dl {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0;
+}
+
+.admin-card dd {
+  margin: 2px 0 0;
+  color: #202520;
+  font-weight: 800;
+}
+
+.danger-button {
+  color: #782929;
+}
+
 .nav-stack svg {
   flex: 0 0 auto;
   width: 17px;

@@ -16,6 +16,7 @@ export type ActiveView =
   | 'gallery'
   | 'faq'
   | 'media'
+  | 'admins'
   | 'publish';
 
 export type PublishState = 'clean' | 'draft' | 'saving' | 'publishing' | 'checking' | 'published' | 'live' | 'error';

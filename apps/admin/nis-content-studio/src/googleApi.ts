@@ -1,5 +1,11 @@
 import { contentSnapshotSchema, parseBoolean, type ContentSnapshot, type GalleryItemRecord, type ImageAssetRecord, type ServiceRecord } from '@monorepo/content-schema';
 import { googleScopes, studioConfig } from './config';
+import {
+  getConfiguredStudioAdmins,
+  parseStudioAdmins,
+  serializeStudioAdmins,
+  type StudioAdminRecord,
+} from './studioAdmins';
 
 const sheetsBaseUrl = 'https://sheets.googleapis.com/v4/spreadsheets';
 const driveBaseUrl = 'https://www.googleapis.com/drive/v3';
@@ -129,6 +135,40 @@ const fetchSheetRanges = async (accessToken: string, ranges: readonly string[]) 
 
   const data = (await response.json()) as { valueRanges?: Array<{ values?: string[][] }> };
   return ranges.map((_, index) => data.valueRanges?.[index]?.values ?? []);
+};
+
+const fetchSpreadsheetSheetTitles = async (accessToken: string) => {
+  const url = `${sheetsBaseUrl}/${studioConfig.sheetId}?fields=sheets.properties.title`;
+  const response = await fetchGoogleApi(url, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  }, 'Could not read Google Sheets metadata');
+  const data = (await response.json()) as { sheets?: Array<{ properties?: { title?: string } }> };
+  return new Set(data.sheets?.map((sheet) => sheet.properties?.title).filter((title): title is string => Boolean(title)) ?? []);
+};
+
+const ensureSheetExists = async (accessToken: string, title: string) => {
+  const titles = await fetchSpreadsheetSheetTitles(accessToken);
+  if (titles.has(title)) {
+    return;
+  }
+
+  const url = `${sheetsBaseUrl}/${studioConfig.sheetId}:batchUpdate`;
+  await fetchGoogleApi(url, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      requests: [
+        {
+          addSheet: {
+            properties: { title },
+          },
+        },
+      ],
+    }),
+  }, `Could not create ${title} sheet`);
 };
 
 const rowsToObjects = (rows: string[][]) => {
@@ -267,6 +307,21 @@ export const saveContentToSheets = async (accessToken: string, snapshot: Content
       ...valid.sections.map((item) => [item.id, item.group, item.title ?? '', item.text ?? '', item.items.join('|'), item.active, item.order, item.deletedAt ?? '']),
     ]),
   ]);
+};
+
+export const readStudioAdminsFromSheets = async (accessToken: string): Promise<readonly StudioAdminRecord[]> => {
+  try {
+    const [adminRows] = await fetchSheetRanges(accessToken, ['admins!A:G']);
+    const admins = parseStudioAdmins(adminRows);
+    return admins.length > 0 ? admins : getConfiguredStudioAdmins();
+  } catch {
+    return getConfiguredStudioAdmins();
+  }
+};
+
+export const saveStudioAdminsToSheets = async (accessToken: string, admins: readonly StudioAdminRecord[]) => {
+  await ensureSheetExists(accessToken, 'admins');
+  await putSheetValues(accessToken, 'admins!A:G', serializeStudioAdmins(admins));
 };
 
 export const uploadImageToDrive = async (accessToken: string, file: File) => {
