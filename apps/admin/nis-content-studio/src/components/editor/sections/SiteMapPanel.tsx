@@ -35,6 +35,24 @@ export const SiteMapPanel = ({
 }: SiteMapPanelProps) => (
   <section className="workspace-panel">
     <PanelHeader title="מפת האתר" text="כל כרטיס מציג תיאור קצר ובצידו תצוגת דסקטופ ותצוגת מובייל של אותו אזור, כדי לראות את התוצאה בלי להיכנס קודם למסך העריכה." />
+    <div className="admin-command-strip" aria-label="פעולות ניהול מהירות">
+      <button type="button" onClick={() => onOpen('admins')}>
+        <strong>אדמינים</strong>
+        <span>הוספה וכיבוי משתמשים</span>
+      </button>
+      <button type="button" onClick={() => onOpen('gallery')}>
+        <strong>תמונות</strong>
+        <span>ספרייה, Drive וגלריה</span>
+      </button>
+      <button type="button" onClick={() => onOpen('services')}>
+        <strong>חוויות אירוח</strong>
+        <span>שירותים וכרטיסים</span>
+      </button>
+      <button type="button" onClick={() => onOpen('contact')}>
+        <strong>פרסום ויצירת קשר</strong>
+        <span>SEO, טיוטה ועדכון אתר</span>
+      </button>
+    </div>
     <div className="site-map-grid">
       {areaDefinitions.map((area) => (
         <article className="site-area-card site-area-card-rich" key={area.id}>
