@@ -13,14 +13,15 @@ import {
   Images,
   ListChecks,
   Lock,
+  LogOut,
   LogIn,
   MonitorCheck,
-  PanelRightClose,
-  PanelRightOpen,
   Phone,
   RefreshCw,
   RotateCcw,
+  Rocket,
   Search,
+  Save,
   ShieldAlert,
   ShieldCheck,
   Sparkles,
@@ -107,8 +108,6 @@ import { Field } from './components/editor/Field';
 import { sectionGroupWorkspaceDefinitions } from './components/editor/sections/sectionGroupWorkspaceDefinitions';
 import { PanelHeader } from './components/editor/PanelHeader';
 import { PreviewHeader } from './components/editor/PreviewHeader';
-import { StudioSidebar } from './components/editor/StudioSidebar';
-import { StudioTopbar } from './components/editor/StudioTopbar';
 import type { MediaUsageKind, PreviewDevice } from './components/editor/types';
 import { TextInput } from './components/editor/TextInput';
 import { Toggle } from './components/editor/Toggle';
@@ -522,37 +521,175 @@ const areaDefinitions: readonly SiteAreaDefinition[] = [
   },
 ];
 
-const studioSections: readonly {
+const adminPanelTabs: readonly {
   readonly id: ActiveView;
   readonly label: string;
   readonly help: string;
   readonly icon: ReactNode;
 }[] = [
   {
+    id: 'admins',
+    label: 'ניהול אדמינים',
+    help: 'הרשאות כניסה, הוספה וכיבוי משתמשים',
+    icon: <ShieldCheck aria-hidden="true" />,
+  },
+  {
     id: 'site-map',
-    label: 'ניהול האתר',
-    help: 'האזורים לפי סדר ההופעה באתר, מה-Hero ועד יצירת קשר.',
+    label: 'תוכן האתר',
+    help: 'כל אזורי האתר לפי סדר הופעה',
     icon: <MonitorCheck aria-hidden="true" />,
   },
   {
+    id: 'hero',
+    label: 'מסך פתיחה',
+    help: 'כותרת, CTA ותמונות Hero',
+    icon: <Home aria-hidden="true" />,
+  },
+  {
+    id: 'services',
+    label: 'חוויות אירוח',
+    help: 'שירותים וכרטיסי בחירה',
+    icon: <Sparkles aria-hidden="true" />,
+  },
+  {
     id: 'gallery',
-    label: 'ניהול תמונות',
-    help: 'כל התמונות הזמינות, פרטי הקובץ, העלאה ל-Drive ושימושים באתר.',
+    label: 'גלריה ותמונות',
+    help: 'ספריית מדיה, Drive ושימושים',
     icon: <Images aria-hidden="true" />,
   },
   {
     id: 'contact',
-    label: 'מטה דאטה ופרסום',
-    help: 'טלפון, וואטסאפ, SEO, גרסה וכפתור עדכון אתר.',
-    icon: <Tag aria-hidden="true" />,
+    label: 'פרסום ויצירת קשר',
+    help: 'טלפון, וואטסאפ, SEO ועדכון אתר',
+    icon: <Phone aria-hidden="true" />,
   },
   {
-    id: 'admins',
-    label: 'ניהול אדמינים',
-    help: 'הוספה, עריכה וכיבוי של משתמשים מורשים בסגנון שוהם.',
-    icon: <ShieldCheck aria-hidden="true" />,
+    id: 'site-copy',
+    label: 'טקסטי מעטפת',
+    help: 'כותרות, פתיחים ומיקרו־קופי',
+    icon: <FileText aria-hidden="true" />,
   },
 ];
+
+const getAdminPanelTitle = (activeView: ActiveView, areaDefinitions: readonly SiteAreaDefinition[]) => {
+  if (activeView === 'admins') {
+    return 'ניהול אדמינים';
+  }
+  if (activeView === 'site-map') {
+    return 'תוכן האתר';
+  }
+  if (activeView === 'gallery') {
+    return 'גלריה ותמונות';
+  }
+  if (activeView === 'contact') {
+    return 'פרסום ויצירת קשר';
+  }
+  return areaDefinitions.find((area) => area.id === activeView)?.title ?? 'תוכן האתר';
+};
+
+type AdminPanelFrameProps = {
+  readonly activeView: ActiveView;
+  readonly sessionEmail: string;
+  readonly isBusy: boolean;
+  readonly canUseGoogle: boolean;
+  readonly hasErrors: boolean;
+  readonly hasPublishUrl: boolean;
+  readonly metrics: readonly { readonly label: string; readonly value: string }[];
+  readonly children: ReactNode;
+  readonly onSetActiveView: (view: ActiveView) => void;
+  readonly onRefresh: () => void;
+  readonly onSaveDraft: () => void;
+  readonly onUpdateSite: () => void;
+  readonly onLogout: () => void;
+};
+
+const AdminPanelFrame = ({
+  activeView,
+  sessionEmail,
+  isBusy,
+  canUseGoogle,
+  hasErrors,
+  hasPublishUrl,
+  metrics,
+  children,
+  onSetActiveView,
+  onRefresh,
+  onSaveDraft,
+  onUpdateSite,
+  onLogout,
+}: AdminPanelFrameProps) => (
+  <main className="admin-panel-shell">
+    <div className="admin-panel-grain" aria-hidden="true" />
+    <header className="admin-panel-header">
+      <div className="admin-panel-brand">
+        <img className="admin-panel-logo" src={`${publicSiteOrigin}/brand/nis-logo.svg`} alt="Nis Boutique Catering" />
+        <div>
+          <p className="kicker">Nis Boutique Catering</p>
+          <h1>פאנל ניהול</h1>
+          <p>שלום, {sessionEmail}. כאן מנהלים הרשאות, תוכן, תמונות ופרסום בלי הסטודיו הישן.</p>
+        </div>
+      </div>
+      <div className="admin-panel-header-actions">
+        <a className="ghost-button" href={publicSiteOrigin} target="_blank" rel="noreferrer">
+          <ExternalLink aria-hidden="true" />
+          אתר חי
+        </a>
+        <button type="button" className="ghost-button" onClick={onLogout}>
+          <LogOut aria-hidden="true" />
+          התנתק
+        </button>
+      </div>
+    </header>
+
+    <nav className="admin-panel-tabs" aria-label="ניווט פאנל ניהול">
+      {adminPanelTabs.map((tab) => (
+        <button
+          key={tab.id}
+          type="button"
+          className={activeView === tab.id ? 'is-active' : ''}
+          onClick={() => onSetActiveView(tab.id)}
+        >
+          {tab.icon}
+          <span>
+            <strong>{tab.label}</strong>
+            <small>{tab.help}</small>
+          </span>
+        </button>
+      ))}
+    </nav>
+
+    <section className="admin-panel-command-bar" aria-label="פעולות ניהול">
+      <div>
+        <p className="kicker">האזור הנוכחי</p>
+        <h2>{getAdminPanelTitle(activeView, areaDefinitions)}</h2>
+      </div>
+      <div className="admin-panel-actions">
+        <button className="ghost-button" onClick={onRefresh} disabled={isBusy || !canUseGoogle}>
+          <RefreshCw aria-hidden="true" />
+          רענון מה-Sheets
+        </button>
+        <button className="ghost-button" onClick={onSaveDraft} disabled={isBusy || !canUseGoogle || hasErrors}>
+          <Save aria-hidden="true" />
+          שמור טיוטה
+        </button>
+        <button className="publish-button" onClick={onUpdateSite} disabled={isBusy || !canUseGoogle || hasErrors || !hasPublishUrl}>
+          <Rocket aria-hidden="true" />
+          עדכן אתר
+        </button>
+      </div>
+    </section>
+
+    <section className="overview-strip admin-panel-metrics" aria-label="מצב התוכן">
+      {metrics.map((metric) => (
+        <Metric key={metric.label} label={metric.label} value={metric.value} />
+      ))}
+    </section>
+
+    <section className="admin-panel-content">
+      {children}
+    </section>
+  </main>
+);
 
 const WorkspaceLoadingState = ({ label = 'טוען את האזור...' }: { readonly label?: string }) => (
   <section className="workspace-panel">
@@ -566,8 +703,7 @@ const WorkspaceLoadingState = ({ label = 'טוען את האזור...' }: { read
 
 export const App = () => {
   const [content, setContent] = useState<ContentSnapshot>(emptyContent);
-  const [activeView, setActiveView] = useState<ActiveView>('site-map');
-  const [isSidebarHidden, setIsSidebarHidden] = useState(false);
+  const [activeView, setActiveView] = useState<ActiveView>('admins');
   const [previewDevice, setPreviewDevice] = useState<PreviewDevice>('desktop');
   const [status, setStatus] = useState('התחברו כדי לנהל את התוכן האמיתי של האתר.');
   const [isBusy, setIsBusy] = useState(false);
@@ -983,44 +1119,31 @@ export const App = () => {
     );
   }
 
+  const dashboardMetrics = [
+    { label: 'תמונות בספרייה', value: String(visibleMedia.length) },
+    { label: 'תמונות מחוברות ל-Drive', value: String(driveMediaCount) },
+    { label: 'תמונות פעילות בגלריה', value: String(activeGalleryCount) },
+    { label: 'שירותים באתר', value: String(content.services.filter((service) => !service.deletedAt).length) },
+    { label: 'אדמינים פעילים', value: String(studioAdmins.filter((admin) => admin.active).length) },
+    { label: 'פריטים בארכיון', value: String(archivedCount) },
+    { label: 'גרסת תוכן', value: content.settings.siteVersion || content.version },
+  ] as const;
+
   return (
-    <main className={`studio-shell${isSidebarHidden ? ' is-sidebar-hidden' : ''}`}>
-      <button
-        type="button"
-        className="sidebar-toggle"
-        onClick={() => setIsSidebarHidden((current) => !current)}
-        aria-expanded={!isSidebarHidden}
-        aria-controls="studio-sidebar"
-      >
-        {isSidebarHidden ? <PanelRightOpen aria-hidden="true" /> : <PanelRightClose aria-hidden="true" />}
-        {isSidebarHidden ? 'הצג תפריט' : 'הסתר תפריט'}
-      </button>
-
-      <StudioSidebar
-        publicSiteOrigin={publicSiteOrigin}
-        creatorUrl={creatorUrl}
-        sessionEmail={session.email}
-        activeView={activeView}
-        isSidebarHidden={isSidebarHidden}
-        sections={studioSections}
-        areaDefinitions={areaDefinitions}
-        onSetActiveView={setActiveView}
-        onLogout={handleLogout}
-      />
-
-      <section className="studio-main">
-        <StudioTopbar
-          activeView={activeView}
-          areaDefinitions={areaDefinitions}
-          isBusy={isBusy}
-          canUseGoogle={canUseGoogle}
-          hasErrors={hasErrors}
-          hasPublishUrl={Boolean(studioConfig.publishUrl)}
-          onSetActiveView={setActiveView}
-          onRefresh={handleRefresh}
-          onSaveDraft={handleSaveDraft}
-          onUpdateSite={handleUpdateSite}
-        />
+    <AdminPanelFrame
+      activeView={activeView}
+      sessionEmail={session.email}
+      isBusy={isBusy}
+      canUseGoogle={canUseGoogle}
+      hasErrors={hasErrors}
+      hasPublishUrl={Boolean(studioConfig.publishUrl)}
+      metrics={dashboardMetrics}
+      onSetActiveView={setActiveView}
+      onRefresh={handleRefresh}
+      onSaveDraft={handleSaveDraft}
+      onUpdateSite={handleUpdateSite}
+      onLogout={handleLogout}
+    >
 
         <StatusPanel
           publishState={publishState}
@@ -1033,16 +1156,6 @@ export const App = () => {
           hasErrors={hasErrors}
           hasPublishUrl={Boolean(studioConfig.publishUrl)}
         />
-
-        <section className="overview-strip" aria-label="מצב התוכן">
-          <Metric label="תמונות בספרייה" value={String(visibleMedia.length)} />
-          <Metric label="תמונות מחוברות ל-Drive" value={String(driveMediaCount)} />
-          <Metric label="תמונות פעילות בגלריה" value={String(activeGalleryCount)} />
-          <Metric label="שירותים באתר" value={String(content.services.filter((service) => !service.deletedAt).length)} />
-          <Metric label="אדמינים פעילים" value={String(studioAdmins.filter((admin) => admin.active).length)} />
-          <Metric label="פריטים בארכיון" value={String(archivedCount)} />
-          <Metric label="גרסת תוכן" value={content.settings.siteVersion || content.version} />
-        </section>
 
         {activeView === 'site-map' && (
           <Suspense fallback={<WorkspaceLoadingState label="טוען את מפת האתר..." />}>
@@ -1574,8 +1687,7 @@ export const App = () => {
             </div>
           </section>
         )}
-      </section>
-    </main>
+    </AdminPanelFrame>
   );
 };
 
@@ -1598,12 +1710,12 @@ const LoginGate = ({
         <img className="studio-logo login-logo" src={`${publicSiteOrigin}/brand/nis-logo.svg`} alt="Nis Boutique Catering" />
         <div>
           <p className="kicker">מערכת ניהול פרטית</p>
-          <h1 id="login-title">Nis Studio</h1>
+          <h1 id="login-title">פאנל ניהול Nis</h1>
         </div>
       </div>
       <div className="login-copy">
         <h2>כניסה למורשים בלבד</h2>
-        <p>הסטודיו מנהל את התוכן והתמונות של האתר. רק משתמשים שאושרו מראש יכולים לצפות או לערוך אותו.</p>
+        <p>פאנל הניהול מנהל את הרשאות הכניסה, התוכן, התמונות והפרסום של האתר. רק משתמשים שאושרו מראש יכולים לצפות או לערוך אותו.</p>
       </div>
       <div className={authState === 'denied' ? 'login-status is-error' : 'login-status'}>
         {authState === 'denied' ? <ShieldAlert aria-hidden="true" /> : <Lock aria-hidden="true" />}

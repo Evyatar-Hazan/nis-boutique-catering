@@ -12,7 +12,7 @@ describe('Content Studio', () => {
   it('shows only the private login gate before authentication', () => {
     render(<App />);
 
-    expect(screen.getByRole('heading', { name: 'Nis Studio' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'פאנל ניהול Nis' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'כניסה עם Google' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /ניהול תמונות/ })).not.toBeInTheDocument();
     expect(screen.queryByText('תמונות וגלריה')).not.toBeInTheDocument();
