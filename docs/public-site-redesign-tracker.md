@@ -678,7 +678,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### UI-003 — Simplify global navigation and conversion surfaces
 
-- **Status:** `VERIFYING`
+- **Status:** `DONE`
 - **Dependencies:** `UI-002`.
 - **Definition:** לבנות header, mobile navigation, WhatsApp CTA ו־footer לפי ארבעת יעדי הניווט החדשים.
 - **Acceptance criteria:**
@@ -687,11 +687,11 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
   - mobile menu נגיש ונסגר אחרי בחירה/Escape.
   - CTA קבוע אינו מכסה תוכן או safe area.
 - **Verification:** keyboard, screen reader smoke test, mobile/desktop browser tests ו־direct anchor URLs.
-- **Evidence (2026-07-20):** `Topbar` now renders exactly four primary anchors (`#experiences`, `#gallery`, `#process`, `#contact`) with scroll-derived active state; FAQ remains content inside the conversion path, not a primary destination. The responsive menu is controlled by one button with `aria-expanded`/`aria-controls`, labelled navigation, 48px menu targets, close-on-selection, Escape close and focus return. Desktop hides the toggle and shows all four links; 375px shows logo, compact WhatsApp CTA and menu. Mobile sticky conversion uses `env(safe-area-inset-bottom)`. Two focused component tests bring frontend to 11/11 and cover link count, active state, selection close, Escape and focus. Local Playwright at 375/1440 confirmed direct `#gallery`, 4 links, menu grid/open/close, desktop/mobile visibility, 0 overflow and 0 console errors; ignored screenshots: `output/playwright/ui-003-{menu-375,nav-1440}.png`.
+- **Evidence (2026-07-20):** `Topbar` now renders exactly four primary anchors (`#experiences`, `#gallery`, `#process`, `#contact`) with scroll-derived active state; FAQ remains content inside the conversion path, not a primary destination. The responsive menu is controlled by one button with `aria-expanded`/`aria-controls`, labelled navigation, 48px menu targets, close-on-selection, Escape close and focus return. Desktop hides the toggle and shows all four links; 375px shows logo, compact WhatsApp CTA and menu. Mobile sticky conversion uses `env(safe-area-inset-bottom)`. Two focused component tests bring frontend to 11/11 and cover link count, active state, selection close, Escape and focus. Local Playwright at 375/1440 confirmed direct `#gallery`, 4 links, menu grid/open/close, desktop/mobile visibility, 0 overflow and 0 console errors; ignored screenshots: `output/playwright/ui-003-{menu-375,nav-1440}.png`. Commit `d7198fa`; CI `29705909705` and deploy `29705909716` succeeded. Production at 375px re-confirmed the four exact anchors, direct `#gallery`, open menu display, Escape close with focus return, 0 overflow and 0 console errors; public and studio returned HTTP 200.
 
 #### UI-004 — Normalize motion and interaction states
 
-- **Status:** `BACKLOG`
+- **Status:** `VERIFYING`
 - **Dependencies:** `UI-001`, `UI-002`.
 - **Definition:** להסיר motion דקורטיבי מיותר, לאחד durations/easing ולכסות hover/focus/pressed/loading/error/success/reduced-motion.
 - **Acceptance criteria:**
@@ -700,7 +700,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
   - reduced-motion מציג את כל התוכן מיד.
   - כל interactive state ברור ללא שינוי layout bounds.
 - **Verification:** DevTools reduced motion, keyboard walkthrough ו־performance trace.
-- **Evidence:** pending.
+- **Evidence (2026-07-20):** all continuous decorative animations were removed, including primary/contact CTA breathing, floating hero notes, proof sweeps and moving rails. Every remaining entrance/interaction transition uses the shared 180/240/280ms motion tokens; the topbar no longer transitions padding, the experience meter uses a compositor transform instead of inset and text-link hover no longer changes gap. Shared controls now expose stable pressed, focus-visible, disabled, `aria-busy`, success and error states without changing layout dimensions. `scripts/check-motion-system.mjs` runs in root `validate` and rejects infinite animation, layout-property transitions, non-token transition durations, missing interaction selectors or an incomplete reduced-motion override. Site-preview has 9/9 tests including forwarded loading/disabled/outcome states; full workspace validation passed. Local Playwright at 375px found 0 infinite animations, 0 overflow and 0 console errors; the visible primary CTA kept its 347×50 layout size through hover and reported `animation-name: none`. Emulated `prefers-reduced-motion: reduce` found 7 reveal nodes immediately visible (one identity transform from the hero layout), 0 animations over 20ms and 0 overflow. A keyboard/hover performance trace completed without console errors; local trace is an ignored artifact.
 
 ### Phase 3 — Implement the public six-section experience
 
@@ -1167,7 +1167,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 |---|---|---:|---:|
 | Phase 0 — Governance | Done | 4 | 4 |
 | Phase 1 — Architecture | Done | 4 | 4 |
-| Phase 2 — Design system | In progress | 2 | 4 |
+| Phase 2 — Design system | In progress | 3 | 4 |
 | Phase 3 — Public site | Ready with dependencies | 0 | 6 |
 | Phase 4 — Cloudflare backend | Ready with dependencies | 0 | 10 |
 | Phase 5 — Migration | Ready with dependencies | 0 | 6 |
@@ -1273,3 +1273,11 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - `UI-003` עבר ל־`VERIFYING`; הניווט הראשי צומצם לארבעה יעדים בלבד ו־FAQ נשאר בתוך מסלול ההמרה.
 - נוסף mobile menu נגיש עם aria state, סגירה בבחירה/Escape והחזרת focus; CTA התחתון מכבד safe-area.
 - 11/11 בדיקות frontend עברו; Playwright ב־375/1440 אישר direct anchor, תפריט פתוח/סגור, visibility נכונה ו־0 overflow/errors.
+- commit `d7198fa` עבר CI `29705909705` ו־deploy `29705909716`; production אישר את ארבעת העוגנים, direct `#gallery`, סגירת Escape עם החזרת focus, ‏0 overflow/errors ו־HTTP 200 בשני המשטחים. `UI-003` נסגר והעבודה עברה ל־`UI-004`.
+
+### 2026-07-20 — UI-004 motion and interaction states
+
+- `UI-004` עבר ל־`VERIFYING`; הוסרו כל האנימציות המתמשכות, כולל CTA, floating notes ו־moving rails.
+- כל transitions שנותרו משתמשים ב־tokens של 180/240/280ms; אנימציות inset/padding/gap הוחלפו ב־transform או state ללא reflow.
+- נוספו מצבי pressed/focus/disabled/loading/success/error משותפים ו־9/9 בדיקות primitives עברו.
+- נוסף `pnpm motion:check` לשער `validate`; validation מלא עבר. Playwright לוקאלי אישר reduced-motion עם תוכן גלוי, 0 infinite animations, ‏0 overflow/errors ו־layout יציב ל־CTA.

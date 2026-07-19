@@ -24,7 +24,7 @@
     radial-gradient(circle at var(--pointer-x) var(--pointer-y), rgba(216, 187, 132, 0.18), transparent 22rem),
     linear-gradient(115deg, rgba(89, 115, 97, 0.08), transparent 32%, rgba(160, 74, 87, 0.08));
   opacity: 0.9;
-  transition: opacity 0.3s var(--ease);
+  transition: opacity var(--duration-base) var(--ease);
 }
 
 .site-shell::after {
@@ -86,8 +86,8 @@
   opacity: 0;
   transform: translateY(28px);
   transition:
-    opacity 0.8s var(--ease) var(--delay),
-    transform 0.8s var(--ease) var(--delay);
+    opacity var(--duration-slow) var(--ease) var(--delay),
+    transform var(--duration-slow) var(--ease) var(--delay);
 }
 
 .reveal.is-visible {
@@ -109,9 +109,8 @@
   backdrop-filter: blur(22px) saturate(1.14);
   box-shadow: 0 14px 40px rgba(18, 10, 15, 0.06);
   transition:
-    padding 0.24s var(--ease),
-    background 0.24s var(--ease),
-    box-shadow 0.24s var(--ease);
+    background var(--duration-base) var(--ease),
+    box-shadow var(--duration-base) var(--ease);
 }
 
 .topbar.is-scrolled {
@@ -166,7 +165,7 @@
   background: var(--gold);
   transform: scaleX(0);
   transform-origin: right;
-  transition: transform 0.24s var(--ease);
+  transition: transform var(--duration-base) var(--ease);
 }
 
 .nav-links a:hover::after {
@@ -209,10 +208,12 @@
   cursor: pointer;
   isolation: isolate;
   transition:
-    transform 0.24s var(--ease),
-    box-shadow 0.24s var(--ease),
-    border-color 0.24s var(--ease),
-    background 0.24s var(--ease);
+    transform var(--duration-base) var(--ease),
+    box-shadow var(--duration-base) var(--ease),
+    border-color var(--duration-base) var(--ease),
+    background var(--duration-base) var(--ease),
+    color var(--duration-base) var(--ease),
+    opacity var(--duration-base) var(--ease);
 }
 
 .button::after,
@@ -224,7 +225,7 @@
   width: 32%;
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.32), transparent);
   transform: translateX(-180%) rotate(18deg);
-  transition: transform 0.7s var(--ease);
+  transition: transform var(--duration-slow) var(--ease);
 }
 
 .button:hover::after,
@@ -246,7 +247,7 @@
   z-index: -1;
   background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.22), transparent);
   transform: translateX(105%);
-  transition: transform 0.55s var(--ease);
+  transition: transform var(--duration-slow) var(--ease);
 }
 
 .button.primary:hover::before {
@@ -268,7 +269,36 @@
 
 .topbar-cta:active,
 .button:active {
-  transform: translateY(0);
+  transform: translateY(0) scale(0.98);
+}
+
+.topbar-cta[aria-disabled='true'],
+.button:disabled,
+.button[aria-disabled='true'] {
+  opacity: 0.58;
+  cursor: not-allowed;
+  pointer-events: none;
+  transform: none;
+  box-shadow: none;
+}
+
+.topbar-cta[aria-busy='true'],
+.button[aria-busy='true'] {
+  opacity: 0.72;
+  cursor: progress;
+  pointer-events: none;
+  transform: none;
+  box-shadow: none;
+}
+
+.button[data-state='success'] {
+  background: var(--success);
+  color: var(--paper);
+}
+
+.button[data-state='error'] {
+  background: var(--danger);
+  color: var(--paper);
 }
 
 a:focus-visible,
@@ -319,8 +349,7 @@ summary:focus-visible {
   background-image: var(--hero-media-image);
   background-position: center;
   background-size: cover;
-  transform: scale(1.08);
-  animation: heroDrift 22s var(--ease) infinite alternate;
+  transform: scale(1.04);
 }
 
 .hero-video {
@@ -344,7 +373,6 @@ summary:focus-visible {
     repeating-linear-gradient(0deg, rgba(255, 250, 242, 0.035) 0 1px, transparent 1px 7px);
   mix-blend-mode: screen;
   opacity: 0.38;
-  animation: scanTexture 7s linear infinite;
 }
 
 .hero-layout {
@@ -396,7 +424,7 @@ summary:focus-visible {
 
 .hero h1 span {
   display: inline-block;
-  animation: titleLift 0.9s var(--ease) both;
+  animation: titleLift var(--duration-slow) var(--ease) both;
   animation-delay: calc(var(--letter-index) * 90ms);
   transform-origin: center bottom;
 }
@@ -465,9 +493,9 @@ summary:focus-visible {
   color: rgba(255, 250, 242, 0.86);
   font-weight: 800;
   transition:
-    transform 0.22s var(--ease),
-    background 0.22s var(--ease),
-    border-color 0.22s var(--ease);
+    transform var(--duration-fast) var(--ease),
+    background var(--duration-fast) var(--ease),
+    border-color var(--duration-fast) var(--ease);
 }
 
 .hero-badges span:hover {
@@ -494,9 +522,9 @@ summary:focus-visible {
   background: rgba(255, 250, 242, 0.1);
   backdrop-filter: blur(14px);
   transition:
-    transform 0.28s var(--ease),
-    background 0.28s var(--ease),
-    border-color 0.28s var(--ease);
+    transform var(--duration-slow) var(--ease),
+    background var(--duration-slow) var(--ease),
+    border-color var(--duration-slow) var(--ease);
 }
 
 .hero-proof div::after {
@@ -506,9 +534,7 @@ summary:focus-visible {
   inset-block-end: 0;
   height: 2px;
   background: linear-gradient(90deg, transparent, var(--gold), transparent);
-  transform: translateX(120%);
-  animation: proofSweep 3.8s var(--ease) infinite;
-  animation-delay: calc(var(--delay, 0ms) + 0.2s);
+  transform: translateX(0);
 }
 
 .hero-proof div:hover {
@@ -606,7 +632,6 @@ summary:focus-visible {
   font-weight: 900;
   backdrop-filter: blur(16px);
   box-shadow: var(--shadow-soft);
-  animation: floatChip 4.8s var(--ease) infinite;
 }
 
 .motion-rail {
@@ -626,7 +651,6 @@ summary:focus-visible {
   background: rgba(255, 250, 242, 0.08);
   color: rgba(255, 250, 242, 0.78);
   font-weight: 900;
-  animation: railRun 14s linear infinite;
 }
 
 .section {
@@ -705,10 +729,10 @@ summary:focus-visible {
   font-weight: 950;
   cursor: pointer;
   transition:
-    transform 0.28s var(--ease),
-    background 0.28s var(--ease),
-    border-color 0.28s var(--ease),
-    color 0.28s var(--ease);
+    transform var(--duration-slow) var(--ease),
+    background var(--duration-slow) var(--ease),
+    border-color var(--duration-slow) var(--ease),
+    color var(--duration-slow) var(--ease);
 }
 
 .experience-pill:hover,
@@ -761,7 +785,7 @@ summary:focus-visible {
 .experience-frame img {
   max-width: none;
   object-fit: cover;
-  animation: imageMorph 0.68s var(--ease) both;
+  animation: imageMorph var(--duration-slow) var(--ease) both;
   filter: saturate(1.08) contrast(1.03);
 }
 
@@ -840,11 +864,12 @@ summary:focus-visible {
 .experience-meter span {
   position: absolute;
   inset-block: 0;
-  inset-inline-start: calc(var(--meter-index) * 33.333%);
+  inset-inline-start: 0;
   width: 33.333%;
   border-radius: inherit;
   background: linear-gradient(90deg, var(--rose), var(--gold));
-  transition: inset-inline-start 0.35s var(--ease);
+  transform: translateX(calc(var(--meter-index) * -100%));
+  transition: transform var(--duration-slow) var(--ease);
 }
 
 .intro-grid,
@@ -886,9 +911,9 @@ summary:focus-visible {
   background: var(--espresso);
   box-shadow: var(--shadow-soft);
   transition:
-    transform 0.4s var(--ease),
-    box-shadow 0.4s var(--ease),
-    border-color 0.4s var(--ease);
+    transform var(--duration-slow) var(--ease),
+    box-shadow var(--duration-slow) var(--ease),
+    border-color var(--duration-slow) var(--ease);
 }
 
 .editorial-card::after {
@@ -919,8 +944,8 @@ summary:focus-visible {
   max-width: none;
   object-fit: cover;
   transition:
-    transform 0.7s var(--ease),
-    filter 0.7s var(--ease);
+    transform var(--duration-slow) var(--ease),
+    filter var(--duration-slow) var(--ease);
 }
 
 .editorial-card:hover img {
@@ -1031,9 +1056,9 @@ summary:focus-visible {
     var(--paper);
   box-shadow: 0 16px 34px rgba(18, 10, 15, 0.06);
   transition:
-    transform 0.3s var(--ease),
-    box-shadow 0.3s var(--ease),
-    border-color 0.3s var(--ease);
+    transform var(--duration-slow) var(--ease),
+    box-shadow var(--duration-slow) var(--ease),
+    border-color var(--duration-slow) var(--ease);
 }
 
 .boutique-card::before {
@@ -1091,8 +1116,8 @@ summary:focus-visible {
   object-fit: cover;
   opacity: 0.86;
   transition:
-    transform 0.55s var(--ease),
-    opacity 0.55s var(--ease);
+    transform var(--duration-slow) var(--ease),
+    opacity var(--duration-slow) var(--ease);
 }
 
 .signature-card::after {
@@ -1154,9 +1179,9 @@ details {
   overflow: hidden;
   box-shadow: var(--shadow-soft);
   transition:
-    transform 0.28s var(--ease),
-    box-shadow 0.28s var(--ease),
-    border-color 0.28s var(--ease);
+    transform var(--duration-slow) var(--ease),
+    box-shadow var(--duration-slow) var(--ease),
+    border-color var(--duration-slow) var(--ease);
 }
 
 .service-card:hover {
@@ -1169,7 +1194,7 @@ details {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.55s var(--ease);
+  transition: transform var(--duration-slow) var(--ease);
 }
 
 .service-card .optimized-picture {
@@ -1265,13 +1290,13 @@ details p {
   color: var(--espresso);
   font-weight: 950;
   transition:
-    color 0.2s var(--ease),
-    gap 0.2s var(--ease);
+    color var(--duration-fast) var(--ease),
+    border-color var(--duration-fast) var(--ease);
 }
 
 .text-link:hover {
-  gap: 11px;
   color: var(--gold-dark);
+  border-color: currentColor;
 }
 
 .compact-grid,
@@ -1326,8 +1351,8 @@ details p {
     linear-gradient(155deg, rgba(255, 255, 255, 0.92), rgba(245, 236, 228, 0.76)),
     var(--paper);
   transition:
-    transform 0.28s var(--ease),
-    box-shadow 0.28s var(--ease);
+    transform var(--duration-slow) var(--ease),
+    box-shadow var(--duration-slow) var(--ease);
 }
 
 .process-step:hover {
@@ -1444,8 +1469,8 @@ details p {
     rgba(255, 255, 255, 0.82);
   box-shadow: var(--shadow-soft);
   transition:
-    transform 0.28s var(--ease),
-    box-shadow 0.28s var(--ease);
+    transform var(--duration-slow) var(--ease),
+    box-shadow var(--duration-slow) var(--ease);
 }
 
 .menu-card:hover {
@@ -1540,11 +1565,11 @@ details p {
   font-weight: 950;
   cursor: pointer;
   transition:
-    transform 0.22s var(--ease),
-    background 0.22s var(--ease),
-    border-color 0.22s var(--ease),
-    color 0.22s var(--ease),
-    box-shadow 0.22s var(--ease);
+    transform var(--duration-fast) var(--ease),
+    background var(--duration-fast) var(--ease),
+    border-color var(--duration-fast) var(--ease),
+    color var(--duration-fast) var(--ease),
+    box-shadow var(--duration-fast) var(--ease);
 }
 
 .gallery-tab:hover {
@@ -1575,8 +1600,8 @@ details p {
   cursor: pointer;
   box-shadow: var(--shadow-soft);
   transition:
-    transform 0.28s var(--ease),
-    box-shadow 0.28s var(--ease);
+    transform var(--duration-slow) var(--ease),
+    box-shadow var(--duration-slow) var(--ease);
 }
 
 .gallery-item::after {
@@ -1585,7 +1610,7 @@ details p {
   inset: 0;
   background: linear-gradient(180deg, transparent 28%, rgba(17, 13, 16, 0.7));
   opacity: 0.78;
-  transition: opacity 0.3s var(--ease);
+  transition: opacity var(--duration-slow) var(--ease);
 }
 
 .gallery-item .optimized-picture {
@@ -1599,8 +1624,8 @@ details p {
   height: 100%;
   object-fit: cover;
   transition:
-    transform 0.55s var(--ease),
-    filter 0.55s var(--ease);
+    transform var(--duration-slow) var(--ease),
+    filter var(--duration-slow) var(--ease);
 }
 
 .gallery-item.tall .optimized-picture {
@@ -1639,8 +1664,8 @@ details p {
   font-weight: 900;
   backdrop-filter: blur(12px);
   transition:
-    transform 0.28s var(--ease),
-    background 0.28s var(--ease);
+    transform var(--duration-slow) var(--ease),
+    background var(--duration-slow) var(--ease);
 }
 
 .gallery-item:hover span {
@@ -1768,8 +1793,8 @@ details p {
   background: #fff;
   color: var(--ink);
   transition:
-    border-color 0.2s var(--ease),
-    box-shadow 0.2s var(--ease);
+    border-color var(--duration-fast) var(--ease),
+    box-shadow var(--duration-fast) var(--ease);
 }
 
 .contact-form input:focus,
@@ -1875,8 +1900,8 @@ details p {
   color: #fff;
   box-shadow: 0 16px 36px rgba(0, 0, 0, 0.24);
   transition:
-    transform 0.24s var(--ease),
-    box-shadow 0.24s var(--ease);
+    transform var(--duration-base) var(--ease),
+    box-shadow var(--duration-base) var(--ease);
 }
 
 .floating-whatsapp:hover {
@@ -1931,7 +1956,7 @@ details p {
   place-items: center;
   padding: 28px;
   background: rgba(8, 5, 4, 0.88);
-  animation: lightboxIn 0.22s var(--ease);
+  animation: lightboxIn var(--duration-fast) var(--ease);
 }
 
 .lightbox img {
@@ -1940,7 +1965,7 @@ details p {
   border-radius: 8px;
   object-fit: contain;
   box-shadow: var(--shadow-deep);
-  animation: lightboxImageIn 0.28s var(--ease);
+  animation: lightboxImageIn var(--duration-slow) var(--ease);
 }
 
 .lightbox-caption {
@@ -1986,8 +2011,8 @@ details p {
   cursor: pointer;
   transform: translateY(-50%);
   transition:
-    transform 0.22s var(--ease),
-    background 0.22s var(--ease);
+    transform var(--duration-fast) var(--ease),
+    background var(--duration-fast) var(--ease);
 }
 
 .lightbox-nav:hover {
@@ -2003,24 +2028,6 @@ details p {
   inset-inline-end: 22px;
 }
 
-@keyframes heroDrift {
-  from {
-    transform: scale(1.04) translate3d(0, 0, 0);
-  }
-  to {
-    transform: scale(1.1) translate3d(1.4%, -1.2%, 0);
-  }
-}
-
-@keyframes scanTexture {
-  from {
-    transform: translateY(-4%);
-  }
-  to {
-    transform: translateY(4%);
-  }
-}
-
 @keyframes titleLift {
   from {
     opacity: 0;
@@ -2031,36 +2038,6 @@ details p {
     opacity: 1;
     transform: translateY(0) rotateX(0deg) scale(1);
     filter: blur(0);
-  }
-}
-
-@keyframes proofSweep {
-  0%,
-  42% {
-    transform: translateX(120%);
-  }
-  68%,
-  100% {
-    transform: translateX(-120%);
-  }
-}
-
-@keyframes floatChip {
-  0%,
-  100% {
-    transform: translateY(0) rotate(0deg);
-  }
-  50% {
-    transform: translateY(-12px) rotate(-1deg);
-  }
-}
-
-@keyframes railRun {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(112%);
   }
 }
 

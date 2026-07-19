@@ -17,6 +17,19 @@ describe('site preview primitives', () => {
     expect(screen.getByRole('link', { name: 'גלריה' })).toHaveAttribute('href', '#gallery');
   });
 
+  it('forwards stable loading, disabled and outcome states', () => {
+    render(<>
+      <Button type="button" aria-busy="true">שולח</Button>
+      <Button type="button" disabled>לא זמין</Button>
+      <Button type="button" data-state="success">נשלח</Button>
+      <Button type="button" data-state="error">נכשל</Button>
+    </>);
+    expect(screen.getByRole('button', { name: 'שולח' })).toHaveAttribute('aria-busy', 'true');
+    expect(screen.getByRole('button', { name: 'לא זמין' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'נשלח' })).toHaveAttribute('data-state', 'success');
+    expect(screen.getByRole('button', { name: 'נכשל' })).toHaveAttribute('data-state', 'error');
+  });
+
   it('opens one accordion item at a time with accessible state', () => {
     render(<Accordion items={[{ id: 'one', question: 'שאלה אחת', answer: 'תשובה אחת' }, { id: 'two', question: 'שאלה שתיים', answer: 'תשובה שתיים' }]} />);
     const first = screen.getByRole('button', { name: 'שאלה אחת' });
