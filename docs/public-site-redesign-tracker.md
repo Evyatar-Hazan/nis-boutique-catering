@@ -791,7 +791,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - **Definition:** ליצור D1 ו־R2 נפרדים ל־preview/production ולתעד bindings ב־Wrangler config של הסטודיו.
 - **Acceptance criteria:** bindings מסוג `DB` ו־`MEDIA` קיימים בכל environment; IDs אינם hardcoded בקוד; bucket פרטי כברירת מחדל; local dev משתמש במשאבים מקומיים.
 - **Verification:** `wrangler pages dev`, binding smoke test, Cloudflare dashboard/API inventory והשוואת preview מול production.
-- **Evidence:** pending.
+- **Evidence:** נוצרו D1 נפרדים באזור EEUR: `nis-content-preview` (`80b4a9b2-4f3b-42a7-af3f-1e4d629c0c7d`) ו־`nis-content-production` (`fd74127a-fea6-4517-8c54-f467a8fc6437`); `wrangler d1 list --json` מאמת inventory. יצירת R2 חסומה ברמת החשבון עם Cloudflare API code `10042`: יש להפעיל R2 דרך Dashboard ולהשלים subscription/checkout. לפי תיעוד Cloudflare הרשמי קיימת מכסה חודשית חינמית, אך חריגה ממנה מחויבת; נדרש אישור אנושי מפורש לפני הפעלת subscription. המשימה נשארת `IN_PROGRESS`; טרם נוספו bindings ולא בוצע deploy חלקי שעלול לשבור production.
 
 #### CF-002 — Add versioned D1 migrations and seed strategy
 
@@ -1323,3 +1323,9 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - 19/19 בדיקות schema, ‏18/18 בדיקות `site-preview`, ‏11/11 בדיקות frontend ו־`pnpm validate` עברו; valid flow מאשר URL WhatsApp מקודד ו־invalid flow מאשר focus/errors.
 - Playwright לוקאלי ב־375/1440 אישר 4 FAQ/6 fields, accordion נגיש, input modes למובייל, טור/שתי עמודות, ‏0 כפילות/overflow/errors ובדיקה חזותית תקינה.
 - commit `edba315` עבר CI `29707932127` ו־deploy `29707932147`; production אישר invalid flow עם שלוש שגיאות ו־focus ראשון, 4 FAQ/6 fields, layout responsive, ‏0 כפילות/overflow/errors ו־HTTP 200 בשני המשטחים. `WEB-006` נסגר; `WEB-003` נשאר תלוי ב־`CF-007`, ולכן העבודה עברה ל־`CF-001`.
+
+### 2026-07-20 — CF-001 resource provisioning started
+
+- חשבון Cloudflare אומת ב־Wrangler עם הרשאות D1/Pages, ונוצרו `nis-content-preview` ו־`nis-content-production` כמשאבים נפרדים באזור EEUR.
+- בדיקת R2 נעצרה עם API code `10042`: R2 טרם הופעל בחשבון ודורש subscription/checkout דרך ה־Dashboard.
+- לא נוסף config חלקי ולא בוצע deploy של bindings חסרים. `CF-001` נשאר `IN_PROGRESS` עד אישור אנושי להפעלת R2, יצירת שני buckets, חיבור `DB`/`MEDIA` ואימות local/preview/production.
