@@ -56,6 +56,22 @@ const heroSectionSchema = sectionHeadingSchema.extend({
   mediaId: idSchema,
 });
 
+export const publicHeroDefaults = {
+  eyebrow: 'Nis Boutique Catering',
+  title: 'אירוח שנראה מוקפד ומרגיש ביתי.',
+  description: 'אוכל לשבת, אירוח קטן ומארזים לדרך בהתאמה אישית.',
+  primaryCta: {
+    label: 'דברו איתנו בוואטסאפ',
+    message: 'אוכל לשבת, אירוח קטן או מארזים לדרך',
+  },
+  secondaryCta: {
+    label: 'לגלריה',
+    targetSection: 'gallery',
+  },
+  valuePoints: ['הכנה טרייה', 'הגשה מוכנה', 'תיאום אישי'],
+  mediaId: 'salmon-skewers-lemon',
+} as const;
+
 const serviceOfferSchema = z.object({
   id: idSchema,
   title: shortTextSchema,

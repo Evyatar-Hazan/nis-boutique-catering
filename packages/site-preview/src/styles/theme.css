@@ -7,6 +7,159 @@
     linear-gradient(180deg, #f8efe6 0%, var(--ivory) 16%, var(--cream) 58%, #fffaf8 100%);
 }
 
+/* Canonical six-section hero. The modifier isolates it from legacy preview styles during migration. */
+.hero.hero--public {
+  display: block;
+  min-height: min(720px, calc(100dvh - 89px));
+  padding: clamp(32px, 5vw, 72px) 0;
+  background:
+    radial-gradient(circle at 16% 18%, rgba(216, 187, 132, 0.2), transparent 22rem),
+    linear-gradient(135deg, #fffaf6 0%, #f5ece4 100%);
+  color: var(--ink);
+}
+
+.hero.hero--public::before,
+.hero.hero--public::after {
+  content: none;
+}
+
+.hero--public .hero-layout {
+  display: grid;
+  grid-template-areas: 'media content';
+  grid-template-columns: minmax(320px, 0.92fr) minmax(0, 1.08fr);
+  align-items: center;
+  gap: clamp(36px, 6vw, 88px);
+  width: min(var(--content-max), calc(100% - 48px));
+  min-height: 0;
+  margin: 0 auto;
+  padding: 0;
+  direction: ltr;
+}
+
+.hero--public .hero-content {
+  grid-area: content;
+  display: grid;
+  gap: 0;
+  max-width: 650px;
+  padding: 0;
+  color: var(--ink);
+  direction: rtl;
+}
+
+.hero--public .eyebrow {
+  margin: 0 0 var(--space-4);
+  color: var(--rose);
+}
+
+.hero.hero--public h1 {
+  max-width: 11ch;
+  margin: 0;
+  color: var(--espresso);
+  font-size: var(--type-display);
+  line-height: 1.08;
+  text-shadow: none;
+}
+
+.hero--public .hero-text {
+  max-width: 32rem;
+  margin: var(--space-5) 0 0;
+  color: var(--muted);
+  font-size: clamp(1.08rem, 1.5vw, 1.3rem);
+  line-height: var(--leading-body);
+}
+
+.hero--public .hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin: var(--space-6) 0 0;
+}
+
+.hero--public .button.secondary {
+  background: var(--paper);
+  border-color: var(--line-strong);
+  color: var(--espresso);
+  backdrop-filter: none;
+}
+
+.hero--public .hero-values {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-5);
+  padding: var(--space-6) 0 0;
+  margin: 0;
+  border-top: 1px solid var(--line);
+  list-style: none;
+}
+
+.hero--public .hero-values li {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--espresso);
+  font-weight: 800;
+}
+
+.hero--public .hero-values svg {
+  flex: 0 0 auto;
+  color: var(--success);
+}
+
+.hero--public .hero-visual {
+  grid-area: media;
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  aspect-ratio: 4 / 5;
+  border-radius: var(--radius-lg);
+  background: var(--linen);
+  box-shadow: var(--shadow-deep);
+}
+
+.hero--public .hero-main-image,
+.hero--public .hero-main-image > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@media (max-width: 767px) {
+  .hero.hero--public {
+    min-height: 0;
+    padding: var(--space-5) 0 var(--space-7);
+  }
+
+  .hero--public .hero-layout {
+    grid-template-areas:
+      'media'
+      'content';
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+    width: min(100% - 32px, 34rem);
+  }
+
+  .hero--public .hero-visual {
+    aspect-ratio: 16 / 11;
+    border-radius: var(--radius-md);
+  }
+
+  .hero.hero--public h1 {
+    max-width: 12ch;
+    font-size: clamp(2.35rem, 11vw, 3.25rem);
+  }
+
+  .hero--public .hero-actions,
+  .hero--public .hero-actions .button {
+    width: 100%;
+  }
+
+  .hero--public .hero-values {
+    display: grid;
+    gap: var(--space-3);
+  }
+}
+
 .site-shell::after {
   opacity: 0.28;
   mix-blend-mode: multiply;

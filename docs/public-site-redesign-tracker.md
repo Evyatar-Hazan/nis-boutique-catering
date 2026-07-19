@@ -706,7 +706,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### WEB-001 — Implement Hero
 
-- **Status:** `IN_PROGRESS`
+- **Status:** `VERIFYING`
 - **Dependencies:** `ARC-002`, `UI-002`, `UI-003`.
 - **Definition:** להחליף את Hero + Intro Band + Manifesto + Audience בפתיחה מאוחדת אחת.
 - **Acceptance criteria:**
@@ -715,7 +715,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
   - תמונה מרכזית responsive ללא CLS.
   - ה־sections הישנים אינם rendered ואינם חוזרים מה־content defaults.
 - **Verification:** unit test ל־CTA, DOM assertion, screenshots בכל breakpoint ו־production content check.
-- **Evidence:** pending.
+- **Evidence (2026-07-20):** the public and studio preview now consume one `HeroSection` from `packages/site-preview/src/PrimarySections.tsx`; the duplicate Hero implementation in `MainSections.tsx` was removed. `publicHeroDefaults` in the shared content contract is the single approved fallback for title, description, CTA copy/message and exactly three value points, preventing legacy Sheets hero/hero-badges defaults from restoring the old public composition before v2 migration. The Hero renders one eager responsive image with explicit 1500×2000 dimensions, one title, one description, primary WhatsApp CTA, direct `#gallery` CTA and exactly three value points. Video, background collage, stats, notes, Intro Band, Manifesto and Audience are no longer rendered; the legacy component exports were removed. Content-schema has 15/15 tests, site-preview 9/9 and frontend 11/11; full workspace validation and both app builds passed. Local Playwright at 375/768/1024/1440 confirmed the exact approved copy and values, correct CTA URL, image-first mobile order, content-right/image-left desktop order, 0 overflow/errors and no legacy sections/video. The reserved media dimensions produced measured CLS 0 at 375px; ignored screenshots: `output/playwright/web-001-hero-{375,768,1024,1440}.png`.
 
 #### WEB-002 — Implement Services
 
@@ -1282,3 +1282,10 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - נוספו מצבי pressed/focus/disabled/loading/success/error משותפים ו־9/9 בדיקות primitives עברו.
 - נוסף `pnpm motion:check` לשער `validate`; validation מלא עבר. Playwright לוקאלי אישר reduced-motion עם תוכן גלוי, 0 infinite animations, ‏0 overflow/errors ו־layout יציב ל־CTA.
 - commit `c6221bf` עבר CI `29706365006` ו־deploy `29706364983`; production אישר את כל 40 רכיבי reveal גלויים ב־reduced-motion, ‏0 active/infinite animations, ‏0 overflow/errors ו־HTTP 200. `UI-004` נסגר, Phase 2 הושלם והעבודה עברה ל־`WEB-001`.
+
+### 2026-07-20 — WEB-001 unified Hero
+
+- `WEB-001` עבר ל־`VERIFYING`; Hero/Intro/Manifesto/Audience הוחלפו ב־Hero יחיד, והוסרו מימוש Hero כפול ו־legacy component exports.
+- `publicHeroDefaults` בחוזה המשותף הוא ברירת המחדל היחידה לכותרת, תיאור, CTA ושלוש נקודות הערך המאושרות; שורות legacy אינן יכולות להחזיר את הקומפוזיציה הישנה.
+- ה־Hero כולל תמונה responsive אחת עם dimensions, שני CTA ושלושה ערכים בלבד; אין וידאו, collage, stats או notes.
+- 15/15 בדיקות schema, ‏9/9 preview ו־11/11 frontend עברו; validation מלא עבר. Playwright בארבעה breakpoints אישר סדר responsive, ‏0 overflow/errors ו־CLS 0 ב־375px.

@@ -3,6 +3,7 @@ import {
   getPreviewCopySection,
   getPreviewMicrocopy,
   getPreviewMicrocopyItems,
+  publicHeroDefaults,
   type ContentSnapshot,
   type ImageAssetRecord,
 } from '@monorepo/content-schema';
@@ -34,9 +35,7 @@ export const buildSiteSectionPreviewData = (
   mediaById: ReadonlyMap<string, ImageAssetRecord>,
 ): SiteSectionPreviewData => {
   const defaults = fallbackSiteSectionPreviewData;
-  const hero = content.sections.find((section) => section.id === 'hero' && section.active && !section.deletedAt);
   const heroMedia = content.sections.find((section) => section.id === 'hero-media' && section.active && !section.deletedAt);
-  const heroBadges = content.sections.find((section) => section.id === 'hero-badges' && section.active && !section.deletedAt);
   const heroStatsSections = getActiveSectionsByGroup(content, 'hero-stats');
   const heroNoteSections = getActiveSectionsByGroup(content, 'hero-notes');
   const manifestoSections = getActiveSectionsByGroup(content, 'manifesto');
@@ -85,10 +84,10 @@ export const buildSiteSectionPreviewData = (
     ...defaults,
     phoneHref: content.settings.phoneHref || defaults.phoneHref,
     heroContent: {
-      eyebrow: hero?.items[0] || defaults.heroContent.eyebrow,
-      title: hero?.title || defaults.heroContent.title,
-      kicker: hero?.items[1] || defaults.heroContent.kicker,
-      text: hero?.text || defaults.heroContent.text,
+      eyebrow: publicHeroDefaults.eyebrow,
+      title: publicHeroDefaults.title,
+      kicker: publicHeroDefaults.description,
+      text: publicHeroDefaults.description,
     },
     heroMedia: {
       background: resolvePreviewImage(mediaById, heroMedia?.items[0], defaults.heroMedia.background),
@@ -96,7 +95,7 @@ export const buildSiteSectionPreviewData = (
       side: resolvePreviewImage(mediaById, heroMedia?.items[2], defaults.heroMedia.side),
       tall: resolvePreviewImage(mediaById, heroMedia?.items[3], defaults.heroMedia.tall),
     },
-    heroBadges: heroBadges?.items.length ? heroBadges.items : defaults.heroBadges,
+    heroBadges: publicHeroDefaults.valuePoints,
     heroStats: heroStatsSections.length
       ? heroStatsSections.map((section, index) => ({
           value: section.title || defaults.heroStats[index]?.value || defaults.heroStats[0].value,
@@ -111,8 +110,8 @@ export const buildSiteSectionPreviewData = (
       : defaults.heroSceneNotes,
     siteMicrocopy: {
       ...defaults.siteMicrocopy,
-      heroPrimaryCta: getPreviewMicrocopy(content, 'hero-primary-cta', defaults.siteMicrocopy.heroPrimaryCta),
-      heroSecondaryCta: getPreviewMicrocopy(content, 'hero-secondary-cta', defaults.siteMicrocopy.heroSecondaryCta),
+      heroPrimaryCta: publicHeroDefaults.primaryCta.label,
+      heroSecondaryCta: publicHeroDefaults.secondaryCta.label,
       heroMicrocopy: getPreviewMicrocopy(content, 'hero-microcopy', defaults.siteMicrocopy.heroMicrocopy),
       heroShowcaseTitle: getPreviewMicrocopy(content, 'hero-showcase-title', defaults.siteMicrocopy.heroShowcaseTitle),
       heroShowcaseText: getPreviewMicrocopy(content, 'hero-showcase-text', defaults.siteMicrocopy.heroShowcaseText),
@@ -137,7 +136,7 @@ export const buildSiteSectionPreviewData = (
       formDeliveryLabel: getPreviewMicrocopy(content, 'form-delivery-label', defaults.siteMicrocopy.formDeliveryLabel),
       formMessageLabel: getPreviewMicrocopy(content, 'form-message-label', defaults.siteMicrocopy.formMessageLabel),
       formSubmitLabel: getPreviewMicrocopy(content, 'form-submit-label', defaults.siteMicrocopy.formSubmitLabel),
-      whatsappHeroTopic: getPreviewMicrocopy(content, 'whatsapp-hero-topic', defaults.siteMicrocopy.whatsappHeroTopic),
+      whatsappHeroTopic: publicHeroDefaults.primaryCta.message,
     },
     galleryCategories: [
       { id: 'all', label: getPreviewMicrocopy(content, 'gallery-all-label', defaults.galleryCategories[0].label) },

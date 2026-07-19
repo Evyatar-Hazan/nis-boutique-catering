@@ -20,7 +20,7 @@ import {
   Users,
   type LucideIcon,
 } from 'lucide-react';
-import type { ContentSnapshot } from '@monorepo/content-schema';
+import { publicHeroDefaults, type ContentSnapshot } from '@monorepo/content-schema';
 import { contentSnapshot as generatedContentSnapshot } from '../generated/siteContent.generated';
 
 const contentSnapshot = generatedContentSnapshot as unknown as ContentSnapshot;
@@ -837,16 +837,13 @@ const generatedGalleryImages = contentSnapshot.gallery
 export const galleryImages: readonly GalleryImage[] =
   generatedGalleryImages.length > 0 ? generatedGalleryImages : fallbackGalleryImages;
 
-const heroSection = getGeneratedSection('hero');
 const heroMediaSection = getGeneratedSection('hero-media');
 
 export const heroContent = {
-  eyebrow: heroSection?.items[0] || 'מהרובע היהודי לביתר עילית',
-  title: heroSection?.title || 'קייטרינג בוטיק ביתי\nלשבתות ואירועים קטנים',
-  kicker: heroSection?.items[1] || 'שבתות, מגשי אירוח ו־Travel Nis, עם אוכל מוקפד, נראות יפה ושיחה קצרה שסוגרת כיוון.',
-  text:
-    heroSection?.text ||
-    'רואים את הסגנון, בוחרים את סוג ההזמנה, ומשאירים פנייה מסודרת. Nis כבר תהפוך את זה לתפריט, מגשים או מארז שמתאימים לאירוח שלכם.',
+  eyebrow: publicHeroDefaults.eyebrow,
+  title: publicHeroDefaults.title,
+  kicker: publicHeroDefaults.description,
+  text: publicHeroDefaults.description,
 } as const;
 
 export const heroMedia = {
@@ -876,8 +873,8 @@ export const siteMicrocopy: SiteMicrocopy = {
   mobileActionsAria: getGeneratedMicrocopy('mobile-actions-aria', 'פעולות מהירות ליצירת קשר'),
   mobileWhatsappLabel: getGeneratedMicrocopy('mobile-whatsapp-label', 'וואטסאפ'),
   mobilePhoneLabel: getGeneratedMicrocopy('mobile-phone-label', 'טלפון'),
-  heroPrimaryCta: getGeneratedMicrocopy('hero-primary-cta', 'דברו איתנו בוואטסאפ'),
-  heroSecondaryCta: getGeneratedMicrocopy('hero-secondary-cta', 'ראו איך זה נראה'),
+  heroPrimaryCta: publicHeroDefaults.primaryCta.label,
+  heroSecondaryCta: publicHeroDefaults.secondaryCta.label,
   heroMicrocopy: getGeneratedMicrocopy('hero-microcopy', 'אפשר גם למלא את הטופס בסוף האתר ולשלוח פנייה מסודרת לוואטסאפ.'),
   heroShowcaseTitle: getGeneratedMicrocopy('hero-showcase-title', 'שבתות, אירוח קטן ומארזים'),
   heroShowcaseText: getGeneratedMicrocopy('hero-showcase-text', 'אותה שפה של טעם, נראות ושקט למארח.'),
@@ -897,7 +894,7 @@ export const siteMicrocopy: SiteMicrocopy = {
   formMessageLabel: getGeneratedMicrocopy('form-message-label', 'הודעה קצרה'),
   formSubmitLabel: getGeneratedMicrocopy('form-submit-label', 'שלחו פנייה בוואטסאפ'),
   whatsappTopbarMessage: getGeneratedMicrocopy('whatsapp-topbar-message', 'שלום Nis, אשמח ליצור קשר.'),
-  whatsappHeroTopic: getGeneratedMicrocopy('whatsapp-hero-topic', 'קייטרינג בוטיק לאירוח'),
+  whatsappHeroTopic: publicHeroDefaults.primaryCta.message,
   whatsappContactMessage: getGeneratedMicrocopy('whatsapp-contact-message', 'שלום Nis, אשמח ליצור קשר לגבי הזמנה.'),
   whatsappFooterMessage: getGeneratedMicrocopy('whatsapp-footer-message', 'שלום Nis, אשמח לקבל פרטים.'),
   whatsappFloatingMessage: getGeneratedMicrocopy('whatsapp-floating-message', 'שלום Nis, אשמח לקבל פרטים דרך האתר.'),
@@ -1089,16 +1086,7 @@ export const heroMarquee: readonly string[] = heroMarqueeSection?.items.length ?
   'אריזה שנראית כמו מותג',
 ];
 
-const fallbackHeroBadges: readonly string[] = [
-  'שבתות',
-  'מגשי אירוח',
-  'Travel Nis',
-  'מומלץ לפנות מוקדם',
-];
-
-const heroBadgesSection = getGeneratedSection('hero-badges');
-
-export const heroBadges: readonly string[] = heroBadgesSection?.items.length ? heroBadgesSection.items : fallbackHeroBadges;
+export const heroBadges: readonly string[] = publicHeroDefaults.valuePoints;
 
 const fallbackSignatureMoments: readonly Readonly<{ title: string; text: string; image: ImageAsset }>[] = [
   {

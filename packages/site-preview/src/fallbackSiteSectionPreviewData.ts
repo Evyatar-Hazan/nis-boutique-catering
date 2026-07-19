@@ -13,6 +13,7 @@ import {
   Utensils,
   type LucideIcon,
 } from 'lucide-react';
+import { publicHeroDefaults } from '@monorepo/content-schema';
 import type { SiteSectionPreviewData } from './SiteSectionPreviewData';
 
 const image = (
@@ -93,12 +94,12 @@ export const fallbackSiteSectionPreviewData: SiteSectionPreviewData = {
       tall: true,
     },
   ],
-  heroBadges: ['שבתות', 'מגשי אירוח', 'Travel Nis'],
+  heroBadges: publicHeroDefaults.valuePoints,
   heroContent: {
-    eyebrow: 'קייטרינג בוטיק ביתי',
-    title: 'אוכל מוקפד לשבתות ואירועים קטנים',
-    kicker: 'חוויה ביתית עם נראות מסודרת ושיחה קצרה שסוגרת כיוון.',
-    text: 'ה-preview בסטודיו נשען קודם כול על תוכן ה-snapshot, וה-fallback הזה קיים רק כדי לשמור על יציבות התצוגה.',
+    eyebrow: publicHeroDefaults.eyebrow,
+    title: publicHeroDefaults.title,
+    kicker: publicHeroDefaults.description,
+    text: publicHeroDefaults.description,
   },
   heroMedia: {
     background: fallbackFoodImage,
@@ -170,8 +171,8 @@ export const fallbackSiteSectionPreviewData: SiteSectionPreviewData = {
     mobileActionsAria: 'פעולות מהירות ליצירת קשר',
     mobileWhatsappLabel: 'וואטסאפ',
     mobilePhoneLabel: 'טלפון',
-    heroPrimaryCta: 'דברו איתנו בוואטסאפ',
-    heroSecondaryCta: 'ראו איך זה נראה',
+    heroPrimaryCta: publicHeroDefaults.primaryCta.label,
+    heroSecondaryCta: publicHeroDefaults.secondaryCta.label,
     heroMicrocopy: 'אפשר גם למלא את הטופס ולשלוח פנייה מסודרת.',
     heroShowcaseTitle: 'שבתות, אירוח קטן ומארזים',
     heroShowcaseText: 'אותה שפה של טעם, נראות ושקט למארח.',
@@ -191,7 +192,7 @@ export const fallbackSiteSectionPreviewData: SiteSectionPreviewData = {
     formMessageLabel: 'הודעה קצרה',
     formSubmitLabel: 'שלחו פנייה בוואטסאפ',
     whatsappTopbarMessage: 'שלום Nis, אשמח ליצור קשר.',
-    whatsappHeroTopic: 'קייטרינג בוטיק לאירוח',
+    whatsappHeroTopic: publicHeroDefaults.primaryCta.message,
     whatsappContactMessage: 'שלום Nis, אשמח ליצור קשר לגבי הזמנה.',
     whatsappFooterMessage: 'שלום Nis, אשמח לקבל פרטים.',
     whatsappFloatingMessage: 'שלום Nis, אשמח לקבל פרטים דרך האתר.',

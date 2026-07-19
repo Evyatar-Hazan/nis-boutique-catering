@@ -32,31 +32,6 @@ export const EditorialSection = () => {
   );
 };
 
-export const AudienceSection = () => {
-  const { audienceCards, sectionCopy } = useSiteSectionPreviewData();
-  return (
-    <section className="section" aria-labelledby="audience-title">
-      <div className="container">
-        <SectionHeading eyebrow={sectionCopy.audience.eyebrow} title={sectionCopy.audience.title} id="audience-title">
-          <TextParagraphs text={sectionCopy.audience.text} />
-        </SectionHeading>
-        <div className="compact-grid">
-          {audienceCards.map((card) => {
-            const Icon = card.icon;
-            return (
-              <article className="compact-card reveal" key={card.title}>
-                <Icon aria-hidden="true" className="card-icon" />
-                <h3>{card.title}</h3>
-                <p>{card.text}</p>
-              </article>
-            );
-          })}
-        </div>
-      </div>
-    </section>
-  );
-};
-
 interface ExperienceLabSectionProps {
   readonly activeExperienceIndex: number;
   readonly onChangeExperience: (index: number) => void;

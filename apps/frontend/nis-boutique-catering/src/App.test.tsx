@@ -13,23 +13,35 @@ afterEach(() => {
 
 describe('Nis boutique catering app', () => {
   it('renders the main navigation and hero content', () => {
-    render(<App />);
+    const { container } = render(<App />);
 
     expect(screen.getByRole('navigation')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'מה מזמינים' })).toHaveAttribute('href', '#experiences');
     expect(screen.getByRole('link', { name: 'גלריה' })).toHaveAttribute('href', '#gallery');
     expect(
       screen.getByRole('heading', {
-        name: /קייטרינג בוטיק ביתי/i,
+        name: 'אירוח שנראה מוקפד ומרגיש ביתי.',
       }),
     ).toBeInTheDocument();
-    expect(
-      screen.getAllByRole('link', { name: /דברו איתנו בוואטסאפ/i })[0],
-    ).toBeInTheDocument();
-    expect(screen.getAllByText('מגשי אירוח')[0]).toBeInTheDocument();
-    expect(screen.getAllByText('מומלץ לפנות מוקדם')[0]).toBeInTheDocument();
-    expect(screen.getByText('אירוח קטן')).toBeInTheDocument();
-    expect(screen.getByText('מארזים חכמים לדרך ולרגעים מיוחדים')).toBeInTheDocument();
+    const hero = container.querySelector<HTMLElement>('.hero--public');
+    expect(hero).not.toBeNull();
+    if (!hero) {
+      throw new Error('Public hero was not found');
+    }
+    const heroView = within(hero);
+    expect(heroView.getByText('אוכל לשבת, אירוח קטן ומארזים לדרך בהתאמה אישית.')).toBeInTheDocument();
+    const primaryCta = heroView.getByRole('link', { name: 'דברו איתנו בוואטסאפ' });
+    expect(decodeURIComponent(primaryCta.getAttribute('href') ?? '')).toContain('אוכל לשבת, אירוח קטן או מארזים לדרך');
+    expect(heroView.getByRole('link', { name: 'לגלריה' })).toHaveAttribute('href', '#gallery');
+    expect(within(heroView.getByRole('list', { name: 'היתרונות של Nis' })).getAllByRole('listitem')).toHaveLength(3);
+    expect(heroView.getByText('הכנה טרייה')).toBeInTheDocument();
+    expect(heroView.getByText('הגשה מוכנה')).toBeInTheDocument();
+    expect(heroView.getByText('תיאום אישי')).toBeInTheDocument();
+    expect(heroView.getByRole('img', { name: 'שיפודי סלמון עם לימון, מוכנים להגשה' })).toHaveAttribute('width', '1500');
+    expect(hero.querySelector('video')).not.toBeInTheDocument();
+    expect(container.querySelector('.intro-band')).not.toBeInTheDocument();
+    expect(container.querySelector('.manifesto-section')).not.toBeInTheDocument();
+    expect(container.querySelector('#audience-title')).not.toBeInTheDocument();
   });
 
   it('filters the gallery by category', async () => {
@@ -92,6 +104,7 @@ describe('Nis boutique catering app', () => {
     expect(screen.queryByRole('heading', { name: 'בוטיק זו לא מילה. זו הדרך שבה כל פרט מרגיש נכון יותר.' })).not.toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: 'כיוונים טעימים שקל להתחיל מהם שיחה.' })).not.toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: 'פחות סימני שאלה, יותר תחושה שיש עם מי לדבר.' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: /קייטרינג בוטיק ביתי.*לשבתות ואירועים קטנים/i })).not.toBeInTheDocument();
   });
 
   it('builds a whatsapp inquiry from the contact form submit', async () => {

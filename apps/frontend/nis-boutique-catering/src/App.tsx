@@ -1,8 +1,6 @@
 import { lazy, Suspense, type CSSProperties, type FormEvent, useCallback, useMemo, useState } from 'react';
 import {
   HeroSection,
-  IntroBandSection,
-  ManifestoSection,
   SiteSectionPreviewDataProvider,
 } from '@monorepo/site-preview';
 import { DeferredSections } from './components/DeferredSections';
@@ -92,8 +90,6 @@ function App() {
 
       <main id="main">
         <HeroSection heroWhatsapp={heroWhatsapp} />
-        <IntroBandSection />
-        <ManifestoSection />
         <DeferredSections>
           <Suspense fallback={<SectionSkeleton />}>
             <LazySiteSections

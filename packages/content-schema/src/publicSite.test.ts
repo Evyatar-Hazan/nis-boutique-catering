@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { publicSiteDocumentSchema, type PublicSiteDocument } from './publicSite';
+import { publicHeroDefaults, publicSiteDocumentSchema, type PublicSiteDocument } from './publicSite';
 
 const image = (id: string) => ({
   id,
@@ -95,6 +95,12 @@ const validDocument: PublicSiteDocument = {
 };
 
 describe('public site v2 content contract', () => {
+  it('keeps the approved hero copy and exactly three value points in one shared default', () => {
+    expect(publicHeroDefaults.title).toBe('אירוח שנראה מוקפד ומרגיש ביתי.');
+    expect(publicHeroDefaults.description).toBe('אוכל לשבת, אירוח קטן ומארזים לדרך בהתאמה אישית.');
+    expect(publicHeroDefaults.valuePoints).toEqual(['הכנה טרייה', 'הגשה מוכנה', 'תיאום אישי']);
+  });
+
   it('accepts the exact six-section document', () => {
     const result = publicSiteDocumentSchema.parse(validDocument);
     expect(Object.keys(result.sections)).toEqual(['hero', 'services', 'gallery', 'process', 'trust', 'contact']);

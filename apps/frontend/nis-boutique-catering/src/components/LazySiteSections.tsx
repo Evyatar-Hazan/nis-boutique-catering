@@ -1,6 +1,5 @@
 import { type FormEventHandler } from 'react';
 import {
-  AudienceSection,
   ContactSection,
   CoordinationSection,
   ExperienceLabSection,
@@ -42,7 +41,6 @@ export default function LazySiteSections({
 
   return (
     <>
-      <AudienceSection />
       <ExperienceLabSection
         activeExperienceIndex={activeExperienceIndex}
         onChangeExperience={onChangeExperience}
