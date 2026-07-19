@@ -691,7 +691,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### UI-004 — Normalize motion and interaction states
 
-- **Status:** `VERIFYING`
+- **Status:** `DONE`
 - **Dependencies:** `UI-001`, `UI-002`.
 - **Definition:** להסיר motion דקורטיבי מיותר, לאחד durations/easing ולכסות hover/focus/pressed/loading/error/success/reduced-motion.
 - **Acceptance criteria:**
@@ -700,13 +700,13 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
   - reduced-motion מציג את כל התוכן מיד.
   - כל interactive state ברור ללא שינוי layout bounds.
 - **Verification:** DevTools reduced motion, keyboard walkthrough ו־performance trace.
-- **Evidence (2026-07-20):** all continuous decorative animations were removed, including primary/contact CTA breathing, floating hero notes, proof sweeps and moving rails. Every remaining entrance/interaction transition uses the shared 180/240/280ms motion tokens; the topbar no longer transitions padding, the experience meter uses a compositor transform instead of inset and text-link hover no longer changes gap. Shared controls now expose stable pressed, focus-visible, disabled, `aria-busy`, success and error states without changing layout dimensions. `scripts/check-motion-system.mjs` runs in root `validate` and rejects infinite animation, layout-property transitions, non-token transition durations, missing interaction selectors or an incomplete reduced-motion override. Site-preview has 9/9 tests including forwarded loading/disabled/outcome states; full workspace validation passed. Local Playwright at 375px found 0 infinite animations, 0 overflow and 0 console errors; the visible primary CTA kept its 347×50 layout size through hover and reported `animation-name: none`. Emulated `prefers-reduced-motion: reduce` found 7 reveal nodes immediately visible (one identity transform from the hero layout), 0 animations over 20ms and 0 overflow. A keyboard/hover performance trace completed without console errors; local trace is an ignored artifact.
+- **Evidence (2026-07-20):** all continuous decorative animations were removed, including primary/contact CTA breathing, floating hero notes, proof sweeps and moving rails. Every remaining entrance/interaction transition uses the shared 180/240/280ms motion tokens; the topbar no longer transitions padding, the experience meter uses a compositor transform instead of inset and text-link hover no longer changes gap. Shared controls now expose stable pressed, focus-visible, disabled, `aria-busy`, success and error states without changing layout dimensions. `scripts/check-motion-system.mjs` runs in root `validate` and rejects infinite animation, layout-property transitions, non-token transition durations, missing interaction selectors or an incomplete reduced-motion override. Site-preview has 9/9 tests including forwarded loading/disabled/outcome states; full workspace validation passed. Local Playwright at 375px found 0 infinite animations, 0 overflow and 0 console errors; the visible primary CTA kept its 347×50 layout size through hover and reported `animation-name: none`. Emulated `prefers-reduced-motion: reduce` found 7 reveal nodes immediately visible (one identity transform from the hero layout), 0 animations over 20ms and 0 overflow. A keyboard/hover performance trace completed without console errors; local trace is an ignored artifact. Commit `c6221bf`; CI `29706365006` and deploy `29706364983` succeeded. Production at 375px confirmed 0 infinite animations, primary CTA `animation-name: none` at 347×50, 0 overflow/errors and HTTP 200 on public/studio. Production reduced-motion confirmed all 40 reveal nodes visible, 0 active animations over 20ms and 0 overflow.
 
 ### Phase 3 — Implement the public six-section experience
 
 #### WEB-001 — Implement Hero
 
-- **Status:** `BACKLOG`
+- **Status:** `IN_PROGRESS`
 - **Dependencies:** `ARC-002`, `UI-002`, `UI-003`.
 - **Definition:** להחליף את Hero + Intro Band + Manifesto + Audience בפתיחה מאוחדת אחת.
 - **Acceptance criteria:**
@@ -1167,8 +1167,8 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 |---|---|---:|---:|
 | Phase 0 — Governance | Done | 4 | 4 |
 | Phase 1 — Architecture | Done | 4 | 4 |
-| Phase 2 — Design system | In progress | 3 | 4 |
-| Phase 3 — Public site | Ready with dependencies | 0 | 6 |
+| Phase 2 — Design system | Done | 4 | 4 |
+| Phase 3 — Public site | In progress | 0 | 6 |
 | Phase 4 — Cloudflare backend | Ready with dependencies | 0 | 10 |
 | Phase 5 — Migration | Ready with dependencies | 0 | 6 |
 | Phase 6 — Admin rebuild | Ready with dependencies | 0 | 8 |
@@ -1281,3 +1281,4 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - כל transitions שנותרו משתמשים ב־tokens של 180/240/280ms; אנימציות inset/padding/gap הוחלפו ב־transform או state ללא reflow.
 - נוספו מצבי pressed/focus/disabled/loading/success/error משותפים ו־9/9 בדיקות primitives עברו.
 - נוסף `pnpm motion:check` לשער `validate`; validation מלא עבר. Playwright לוקאלי אישר reduced-motion עם תוכן גלוי, 0 infinite animations, ‏0 overflow/errors ו־layout יציב ל־CTA.
+- commit `c6221bf` עבר CI `29706365006` ו־deploy `29706364983`; production אישר את כל 40 רכיבי reveal גלויים ב־reduced-motion, ‏0 active/infinite animations, ‏0 overflow/errors ו־HTTP 200. `UI-004` נסגר, Phase 2 הושלם והעבודה עברה ל־`WEB-001`.
