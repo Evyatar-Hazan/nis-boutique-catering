@@ -706,7 +706,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### WEB-001 — Implement Hero
 
-- **Status:** `VERIFYING`
+- **Status:** `DONE`
 - **Dependencies:** `ARC-002`, `UI-002`, `UI-003`.
 - **Definition:** להחליף את Hero + Intro Band + Manifesto + Audience בפתיחה מאוחדת אחת.
 - **Acceptance criteria:**
@@ -715,11 +715,11 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
   - תמונה מרכזית responsive ללא CLS.
   - ה־sections הישנים אינם rendered ואינם חוזרים מה־content defaults.
 - **Verification:** unit test ל־CTA, DOM assertion, screenshots בכל breakpoint ו־production content check.
-- **Evidence (2026-07-20):** the public and studio preview now consume one `HeroSection` from `packages/site-preview/src/PrimarySections.tsx`; the duplicate Hero implementation in `MainSections.tsx` was removed. `publicHeroDefaults` in the shared content contract is the single approved fallback for title, description, CTA copy/message and exactly three value points, preventing legacy Sheets hero/hero-badges defaults from restoring the old public composition before v2 migration. The Hero renders one eager responsive image with explicit source dimensions and source-independent accurate alt text, one title, one description, primary WhatsApp CTA, direct `#gallery` CTA and exactly three value points. Video, background collage, stats, notes, Intro Band, Manifesto and Audience are no longer rendered; the legacy component exports were removed. Content-schema has 15/15 tests, site-preview 9/9 and frontend 11/11; full workspace validation and both app builds passed. Local Playwright at 375/768/1024/1440 confirmed the exact approved copy and values, correct CTA URL, image-first mobile order, content-right/image-left desktop order, 0 overflow/errors and no legacy sections/video. The reserved media dimensions produced measured CLS 0 at 375px; ignored screenshots: `output/playwright/web-001-hero-{375,768,1024,1440}.png`. The first production pass exposed that remote content sync selected `vegetable-focaccia.webp` (2000×1500) rather than the committed local fallback; the image alt was corrected from a dish-specific salmon label to the accurate generic label before task closure.
+- **Evidence (2026-07-20):** the public and studio preview now consume one `HeroSection` from `packages/site-preview/src/PrimarySections.tsx`; the duplicate Hero implementation in `MainSections.tsx` was removed. `publicHeroDefaults` in the shared content contract is the single approved fallback for title, description, CTA copy/message and exactly three value points, preventing legacy Sheets hero/hero-badges defaults from restoring the old public composition before v2 migration. The Hero renders one eager responsive image with explicit source dimensions and source-independent accurate alt text, one title, one description, primary WhatsApp CTA, direct `#gallery` CTA and exactly three value points. Video, background collage, stats, notes, Intro Band, Manifesto and Audience are no longer rendered; the legacy component exports were removed. Content-schema has 15/15 tests, site-preview 9/9 and frontend 11/11; full workspace validation and both app builds passed. Local Playwright at 375/768/1024/1440 confirmed the exact approved copy and values, correct CTA URL, image-first mobile order, content-right/image-left desktop order, 0 overflow/errors and no legacy sections/video. The reserved media dimensions produced measured CLS 0 at 375px; ignored screenshots: `output/playwright/web-001-hero-{375,768,1024,1440}.png`. The first production pass exposed that remote content sync selected `vegetable-focaccia.webp` (2000×1500) rather than the committed local fallback; the image alt was corrected from a dish-specific salmon label to the accurate generic label before task closure. Implementation commit `916e806` passed CI `29706759177` and deploy `29706759207`; corrective commit `8b45c5e` passed CI `29706860904` and deploy `29706860944`. Cache-busted production verification confirmed the final alt, exact copy/three values, correct WhatsApp/gallery URLs, image-first mobile and content-right desktop layouts, 0 legacy nodes/video/overflow/errors, measured CLS 0 and HTTP 200 on public/studio.
 
 #### WEB-002 — Implement Services
 
-- **Status:** `BACKLOG`
+- **Status:** `IN_PROGRESS`
 - **Dependencies:** `ARC-002`, `UI-002`.
 - **Definition:** להציג שלושה שירותים ברורים מתוך מקור התוכן המשותף.
 - **Acceptance criteria:**
@@ -1168,7 +1168,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 | Phase 0 — Governance | Done | 4 | 4 |
 | Phase 1 — Architecture | Done | 4 | 4 |
 | Phase 2 — Design system | Done | 4 | 4 |
-| Phase 3 — Public site | In progress | 0 | 6 |
+| Phase 3 — Public site | In progress | 1 | 6 |
 | Phase 4 — Cloudflare backend | Ready with dependencies | 0 | 10 |
 | Phase 5 — Migration | Ready with dependencies | 0 | 6 |
 | Phase 6 — Admin rebuild | Ready with dependencies | 0 | 8 |
@@ -1289,3 +1289,5 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - `publicHeroDefaults` בחוזה המשותף הוא ברירת המחדל היחידה לכותרת, תיאור, CTA ושלוש נקודות הערך המאושרות; שורות legacy אינן יכולות להחזיר את הקומפוזיציה הישנה.
 - ה־Hero כולל תמונה responsive אחת עם dimensions, שני CTA ושלושה ערכים בלבד; אין וידאו, collage, stats או notes.
 - 15/15 בדיקות schema, ‏9/9 preview ו־11/11 frontend עברו; validation מלא עבר. Playwright בארבעה breakpoints אישר סדר responsive, ‏0 overflow/errors ו־CLS 0 ב־375px.
+- commit `916e806` עבר CI `29706759177` ו־deploy `29706759207`; בדיקת production חשפה alt ספציפי שלא תאם את תמונת ה־Sheets המרוחקת.
+- commit מתקן `8b45c5e` עבר CI `29706860904` ו־deploy `29706860944`; production אישר alt מדויק, copy/CTA, ‏0 legacy/video/overflow/errors ו־CLS 0. `WEB-001` נסגר והעבודה עברה ל־`WEB-002`.
