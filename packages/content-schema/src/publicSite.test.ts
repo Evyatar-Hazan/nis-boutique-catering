@@ -4,6 +4,7 @@ import {
   publicProcessDefaults,
   publicServicesDefaults,
   publicSiteDocumentSchema,
+  publicTrustDefaults,
   type PublicSiteDocument,
 } from './publicSite';
 
@@ -120,6 +121,15 @@ describe('public site v2 content contract', () => {
       { title: 'אוספים או מקבלים במשלוח', order: 4 },
     ]);
     expect(publicProcessDefaults.operationalNotes).toHaveLength(3);
+  });
+
+  it('keeps exactly three approved trust points and no unverified testimonials', () => {
+    expect(publicTrustDefaults.points.map(({ title }) => title)).toEqual([
+      'אוכל טרי ומוקפד',
+      'הגשה אסתטית ומוכנה לשולחן',
+      'התאמה אישית ושירות אנושי',
+    ]);
+    expect(publicTrustDefaults.testimonials).toHaveLength(0);
   });
 
   it('accepts the exact six-section document', () => {

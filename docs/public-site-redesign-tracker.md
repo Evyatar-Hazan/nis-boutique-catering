@@ -758,7 +758,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### WEB-005 — Implement Trust without owner portrait
 
-- **Status:** `IN_PROGRESS`
+- **Status:** `VERIFYING`
 - **Dependencies:** `ARC-002`, `UI-002`.
 - **Definition:** להחליף את story הארוך באזור אמון ממוקד תוצרים ושירות.
 - **Acceptance criteria:**
@@ -767,7 +767,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
   - המלצות מוצגות רק אם יש להן מקור מאומת.
   - אין section ביוגרפי נוסף או copy שחוזר מה־Hero.
 - **Verification:** DOM/text search, content-source review ו־visual review.
-- **Evidence:** pending.
+- **Evidence:** `publicTrustDefaults` הוא מקור יחיד לשלוש נקודות האמון המאושרות ורשימת ההמלצות בו ריקה; `TrustSection` יחיד החליף את ה־story הביוגרפי ואת trust הישן ומשתמש בתמונת אוכל עם alt משמעותי. 18/18 בדיקות schema, ‏15/15 בדיקות `site-preview`, ‏11/11 בדיקות frontend ו־`pnpm validate` עברו. Playwright לוקאלי ב־375/1440 אישר 3 נקודות, תמונת אוכל אחת, ‏0 אזכורי יהודית/סיפור מותג/blockquote, פריסה responsive ו־0 overflow/errors. צילומי מסך: `output/playwright/web-005-trust-375.png`, ‏`output/playwright/web-005-trust-1440.png`. ממתין ל־CI/deploy ולבדיקת production.
 
 #### WEB-006 — Implement FAQ and contact conversion section
 
@@ -1307,3 +1307,10 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - 17/17 בדיקות schema, ‏13/13 בדיקות `site-preview`, ‏11/11 בדיקות frontend ו־`pnpm validate` עברו.
 - Playwright לוקאלי ב־375/1440 אישר 4 שלבים/3 הערות, section יחיד, סדר ופריסה נכונים, ‏0 copy ישן/overflow/errors ובדיקה חזותית תקינה.
 - commit `e49d915` עבר CI `29707490546` ו־deploy `29707490510`; production אישר את אותו תוכן ו־layout ב־375/1440, ‏0 coordination כפול/overflow/errors ו־HTTP 200 בשני המשטחים. `WEB-004` נסגר והעבודה עברה ל־`WEB-005`.
+
+### 2026-07-20 — WEB-005 trust
+
+- `WEB-005` עבר ל־`VERIFYING`; `publicTrustDefaults` מרכז בדיוק שלוש נקודות מאושרות, media reference ורשימת testimonials ריקה.
+- `TrustSection` יחיד החליף את ה־story הביוגרפי ואת trust הישן; אין תמונת בעלים, אזכור יהודית, copy ביוגרפי או המלצה ללא מקור.
+- 18/18 בדיקות schema, ‏15/15 בדיקות `site-preview`, ‏11/11 בדיקות frontend ו־`pnpm validate` עברו.
+- Playwright לוקאלי ב־375/1440 אישר שלוש נקודות ותמונת אוכל אחת, פריסת טור/שתי עמודות, ‏0 owner/story/testimonials/overflow/errors ובדיקה חזותית תקינה. ממתין ל־CI/deploy ולבדיקת production.

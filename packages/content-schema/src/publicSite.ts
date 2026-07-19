@@ -100,6 +100,19 @@ export const publicProcessDefaults = {
   ],
 } as const;
 
+export const publicTrustDefaults = {
+  eyebrow: 'למה לבחור ב־Nis',
+  title: 'אוכל, הגשה ושירות שאפשר לסמוך עליהם.',
+  description: 'האמון נבנה במה שמגיע לשולחן ובדרך שבה מתאמים את ההזמנה.',
+  mediaId: 'hosting-table-overview',
+  points: [
+    { id: 'fresh-careful-food', title: 'אוכל טרי ומוקפד', text: 'המנות מוכנות בתשומת לב לטעם, לסדר ולפרטים הקטנים.' },
+    { id: 'table-ready-presentation', title: 'הגשה אסתטית ומוכנה לשולחן', text: 'המגשים והמארזים מגיעים מסודרים ונוחים לפתיחה ולהגשה.' },
+    { id: 'personal-human-service', title: 'התאמה אישית ושירות אנושי', text: 'מתאמים ישירות את סוג האירוח, הכמות והפרטים החשובים לכם.' },
+  ],
+  testimonials: [],
+} as const;
+
 const serviceOfferSchema = z.object({
   id: idSchema,
   title: shortTextSchema,

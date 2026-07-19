@@ -6,7 +6,7 @@ import {
   ProcessSection,
   RealMediaSection,
   ServicesSection,
-  StorySection,
+  TrustSection,
 } from '@monorepo/site-preview';
 import { email, galleryImages, type GalleryCategory } from '../data/siteContent';
 
@@ -45,7 +45,7 @@ export default function LazySiteSections({
       />
       <RealMediaSection />
       <ProcessSection />
-      <StorySection />
+      <TrustSection />
       <FaqSection />
       <ContactSection
         contactWhatsapp={contactWhatsapp}

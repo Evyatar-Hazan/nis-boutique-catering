@@ -96,37 +96,6 @@ export const BoutiqueSection = () => {
   );
 };
 
-export const StorySection = () => {
-  const { foodMedia, sectionCopy, storyMoments } = useSiteSectionPreviewData();
-  return (
-    <section className="section story-section" aria-labelledby="story-title">
-    <div className="container story-grid">
-      <div className="story-copy reveal">
-        <p className="eyebrow">{sectionCopy.story.eyebrow}</p>
-        <h2 id="story-title">{sectionCopy.story.title}</h2>
-        <TextParagraphs text={sectionCopy.story.text} />
-        <TextParagraphs text={sectionCopy.story.extraText} />
-        <div className="story-moments" aria-label="הדרך של Nis">
-          {storyMoments.map((moment) => (
-            <article key={moment.title}>
-              <h3>{moment.title}</h3>
-              <p>{moment.text}</p>
-            </article>
-          ))}
-        </div>
-      </div>
-      <OptimizedImage
-        className="reveal"
-        image={foodMedia.tableSettingBlueGold}
-        alt="שולחן אירוח ערוך ומוכן לאורחים"
-        loading="lazy"
-        decoding="async"
-      />
-    </div>
-    </section>
-  );
-};
-
 export const SamplesSection = () => {
   const { menuGroups, sectionCopy } = useSiteSectionPreviewData();
   return (
@@ -287,29 +256,6 @@ export const SeoSection = () => {
             <span key={topic}>{topic}</span>
           ))}
         </div>
-      </div>
-    </div>
-    </section>
-  );
-};
-
-export const TrustSection = () => {
-  const { sectionCopy, trustCards } = useSiteSectionPreviewData();
-  return (
-    <section className="section trust-section" aria-labelledby="trust-title">
-    <div className="container">
-      <SectionHeading eyebrow={sectionCopy.trust.eyebrow} title={sectionCopy.trust.title} id="trust-title" />
-      <div className="testimonial-grid">
-        {trustCards.map((card) => {
-          const Icon = card.icon;
-          return (
-            <article className="testimonial-card reveal" key={card.title}>
-              <Icon aria-hidden="true" className="card-icon" />
-              <h3>{card.title}</h3>
-              <p>{card.text}</p>
-            </article>
-          );
-        })}
       </div>
     </div>
     </section>

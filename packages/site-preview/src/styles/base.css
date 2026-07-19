@@ -1391,6 +1391,56 @@ details p {
   margin-block-start: 6px;
 }
 
+.trust-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 0.8fr);
+  gap: clamp(28px, 5vw, 72px);
+  align-items: center;
+}
+
+.trust-points {
+  display: grid;
+  gap: 14px;
+}
+
+.trust-point {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 14px;
+  align-items: start;
+  padding: 18px;
+  border: 1px solid rgba(31, 23, 24, 0.1);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.trust-point h3,
+.trust-point p {
+  margin: 0;
+}
+
+.trust-point p {
+  margin-block-start: 5px;
+  color: var(--muted);
+}
+
+.trust-media,
+.trust-media > img {
+  width: 100%;
+  min-height: 0;
+}
+
+.trust-media {
+  overflow: hidden;
+  border-radius: 10px;
+  aspect-ratio: 4 / 5;
+}
+
+.trust-media > img {
+  height: 100%;
+  object-fit: cover;
+}
+
 .process-step:hover {
   transform: translateY(-8px);
   box-shadow: 0 28px 60px rgba(18, 10, 15, 0.12);
@@ -2174,11 +2224,16 @@ details p {
   .compact-grid,
   .process-list,
   .process-notes,
+  .trust-layout,
   .testimonial-grid,
   .signature-grid,
   .boutique-layout,
   .boutique-grid {
     grid-template-columns: 1fr;
+  }
+
+  .trust-media {
+    aspect-ratio: 4 / 3;
   }
 
   .process-list::after {
