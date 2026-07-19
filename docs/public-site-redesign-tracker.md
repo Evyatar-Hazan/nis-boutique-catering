@@ -745,7 +745,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### WEB-004 — Implement Process
 
-- **Status:** `VERIFYING`
+- **Status:** `DONE`
 - **Dependencies:** `ARC-002`, `UI-002`.
 - **Definition:** למזג את process וה־coordination לארבעה שלבים ומידע תפעולי קצר.
 - **Acceptance criteria:**
@@ -754,11 +754,11 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
   - desktop horizontal ו־mobile vertical ללא כפילות markup.
   - אין טענות תפעוליות שלא אושרו.
 - **Verification:** content fixture, responsive DOM/CSS test ו־manual content review.
-- **Evidence:** `publicProcessDefaults` הוא מקור יחיד לארבעת השלבים ולשלוש ההערות התפעוליות המאושרות; `ProcessSection` יחיד החליף את process ו־coordination הנפרדים ומציג empty state אם המקור חלקי. 17/17 בדיקות schema, ‏13/13 בדיקות `site-preview`, ‏11/11 בדיקות frontend ו־`pnpm validate` עברו. Playwright לוקאלי ב־375/1440 אישר ארבעה שלבים בסדר המאושר, 3 הערות, section יחיד, timeline אנכי/שורה אופקית, ‏0 copy ישן/overflow/errors. צילומי מסך: `output/playwright/web-004-process-375.png`, ‏`output/playwright/web-004-process-1440.png`. ממתין ל־CI/deploy ולבדיקת production.
+- **Evidence:** `publicProcessDefaults` הוא מקור יחיד לארבעת השלבים ולשלוש ההערות התפעוליות המאושרות; `ProcessSection` יחיד החליף את process ו־coordination הנפרדים ומציג empty state אם המקור חלקי. 17/17 בדיקות schema, ‏13/13 בדיקות `site-preview`, ‏11/11 בדיקות frontend ו־`pnpm validate` עברו. Playwright לוקאלי וב־production ב־375/1440 אישר ארבעה שלבים בסדר המאושר, 3 הערות, section יחיד, timeline אנכי/שורה אופקית, ‏0 copy ישן/overflow/errors. צילומי מסך לוקאליים: `output/playwright/web-004-process-375.png`, ‏`output/playwright/web-004-process-1440.png`. commit `e49d915`; CI `29707490546`; deploy `29707490510`; public/studio החזירו HTTP 200.
 
 #### WEB-005 — Implement Trust without owner portrait
 
-- **Status:** `BACKLOG`
+- **Status:** `IN_PROGRESS`
 - **Dependencies:** `ARC-002`, `UI-002`.
 - **Definition:** להחליף את story הארוך באזור אמון ממוקד תוצרים ושירות.
 - **Acceptance criteria:**
@@ -1168,7 +1168,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 | Phase 0 — Governance | Done | 4 | 4 |
 | Phase 1 — Architecture | Done | 4 | 4 |
 | Phase 2 — Design system | Done | 4 | 4 |
-| Phase 3 — Public site | In progress | 2 | 6 |
+| Phase 3 — Public site | In progress | 3 | 6 |
 | Phase 4 — Cloudflare backend | Ready with dependencies | 0 | 10 |
 | Phase 5 — Migration | Ready with dependencies | 0 | 6 |
 | Phase 6 — Admin rebuild | Ready with dependencies | 0 | 8 |
@@ -1305,4 +1305,5 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - `WEB-004` עבר ל־`VERIFYING`; `publicProcessDefaults` מרכז את ארבעת השלבים ואת שלוש ההערות התפעוליות המאושרות, בלי לשכפל את חוזה התוכן.
 - `ProcessSection` ייעודי החליף את שני ה־sections הישנים process/coordination; אותו markup מוצג כשורה מחוברת בדסקטופ וכ־timeline אנכי במובייל, עם מצב חסר מפורש למקור חלקי.
 - 17/17 בדיקות schema, ‏13/13 בדיקות `site-preview`, ‏11/11 בדיקות frontend ו־`pnpm validate` עברו.
-- Playwright לוקאלי ב־375/1440 אישר 4 שלבים/3 הערות, section יחיד, סדר ופריסה נכונים, ‏0 copy ישן/overflow/errors ובדיקה חזותית תקינה. ממתין ל־CI/deploy ולבדיקת production.
+- Playwright לוקאלי ב־375/1440 אישר 4 שלבים/3 הערות, section יחיד, סדר ופריסה נכונים, ‏0 copy ישן/overflow/errors ובדיקה חזותית תקינה.
+- commit `e49d915` עבר CI `29707490546` ו־deploy `29707490510`; production אישר את אותו תוכן ו־layout ב־375/1440, ‏0 coordination כפול/overflow/errors ו־HTTP 200 בשני המשטחים. `WEB-004` נסגר והעבודה עברה ל־`WEB-005`.
