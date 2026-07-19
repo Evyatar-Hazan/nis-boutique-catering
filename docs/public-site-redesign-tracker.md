@@ -446,6 +446,61 @@ Cloudflare Pages + Pages Functions /api/*
 
 Audit measurements captured for `ARC-001`: frontend `App.tsx` 140 lines; admin `App.tsx` 1,016; `site-preview/MainSections.tsx` 919; `buildSiteSectionPreviewData.ts` 249. Exact duplicate confirmed for `IntroBandSectionContent`; near-duplicate pairs confirmed for `OptimizedImage` and media helpers. No new package is justified: the existing `content-schema` and `site-preview` boundaries cover the shared contracts and rendering needs.
 
+### Package boundary contract and target layout
+
+Dependency direction is fixed and enforced by `pnpm architecture:boundaries`:
+
+```text
+apps/frontend ───────┐
+                    ├──► packages/site-preview ───► packages/content-schema
+apps/admin ─────────┘                 │
+                                     └── React/lucide only
+
+studio Pages Functions ─────────────────► packages/content-schema
+packages/content-schema ─────────────────► zod only
+```
+
+No shared package may import an app. Cross-workspace imports use package public exports only; `/src` deep imports, relative imports that escape a workspace and dependency cycles fail validation.
+
+Target layout, implemented incrementally by the task that owns each area:
+
+```text
+packages/content-schema/src/
+  publicSite.ts                 # public v2 document and media contract
+  cms.ts                        # future API/session/revision DTOs
+
+packages/site-preview/src/
+  primitives/                   # Button, Section, Heading, OptimizedImage, Dialog, fields
+  sections/                     # Hero, Services, Gallery, Process, Trust, Contact
+  model/                        # ContentSnapshot -> render model, no business fallback copy
+  index.ts                      # deliberate public exports only
+
+apps/frontend/nis-boutique-catering/src/
+  App.tsx                       # composition root
+  components/chrome/            # header, footer, floating actions
+  hooks/                        # browser-only behavior
+  data/                         # generated document adapter only
+
+apps/admin/nis-content-studio/src/
+  app/                          # shell and tab routing
+  api/                          # one typed API client
+  features/auth/
+  features/admins/
+  features/content/
+  features/media/
+  features/publish/
+  components/                   # admin-only reusable primitives
+
+apps/admin/nis-content-studio/functions/
+  api/[[path]].ts               # thin entry/router
+  _lib/auth/                    # Google verification and sessions
+  _lib/content/                 # revision repository/domain service
+  _lib/media/                   # R2 repository/domain service
+  _lib/publish/                 # publish jobs and GitHub dispatch
+```
+
+Non-trivial React components live in dedicated files. Shared primitives contain no NIS copy and accept typed children/variants; domain copy comes only from `PublicSiteDocument`. Existing large files are temporary migration sources and must be split by `UI-002` and `ADM-001`, without changing the public package API until their consumers migrate.
+
 ## תוכנית משימות לפי שלבים
 
 ### Phase 0 — Governance, baseline and readiness
@@ -527,7 +582,7 @@ Audit measurements captured for `ARC-001`: frontend `App.tsx` 140 lines; admin `
 
 #### ARC-002 — Define the six-section content contract
 
-- **Status:** `VERIFYING`
+- **Status:** `DONE`
 - **Dependencies:** `ARC-001`, Cloudflare architecture from `GOV-003`.
 - **Definition:** להגדיר schema טיפוסי יחיד עבור Hero, Services, Gallery, Process, Trust ו־Contact.
 - **Acceptance criteria:**
@@ -536,11 +591,11 @@ Audit measurements captured for `ARC-001`: frontend `App.tsx` 140 lines; admin `
   - אין שדות כפולים בין `settings`, `sections`, `services`, `gallery` ו־`media`.
   - defaults, validation errors ו־migration behavior מוגדרים.
 - **Verification:** type-check, schema unit tests, valid/invalid fixtures וצריכה משותפת על ידי studio/sync/frontend.
-- **Evidence (2026-07-20):** `packages/content-schema/src/publicSite.ts` exports strict `publicSiteDocumentSchema` version 2 and inferred readonly-compatible types; the document contains exactly Hero, Services, Gallery, Process, Trust and Contact plus one media registry and settings object. Counts, IDs, order uniqueness, R2 object metadata and active image/video references are validated. The legacy schema remains exported only for staged migration and cannot be parsed as v2. `publicSite.test.ts` covers valid, extra legacy section, count, media-reference and duplicate-order fixtures. Package type-check/lint and 14 tests passed; full workspace `pnpm validate` passed.
+- **Evidence (2026-07-20):** `packages/content-schema/src/publicSite.ts` exports strict `publicSiteDocumentSchema` version 2 and inferred readonly-compatible types; the document contains exactly Hero, Services, Gallery, Process, Trust and Contact plus one media registry and settings object. Counts, IDs, order uniqueness, R2 object metadata and active image/video references are validated. The legacy schema remains exported only for staged migration and cannot be parsed as v2. `publicSite.test.ts` covers valid, extra legacy section, count, media-reference and duplicate-order fixtures. Package type-check/lint and 14 tests passed; full workspace `pnpm validate` passed. Commit `60b14e8`; CI `29704706825` and deploy `29704706847` succeeded; public/studio returned HTTP 200 post-deploy.
 
 #### ARC-003 — Define component and package boundaries
 
-- **Status:** `BACKLOG`
+- **Status:** `VERIFYING`
 - **Dependencies:** `ARC-001`, `ARC-002`.
 - **Definition:** לקבוע מבנה קבצים ו־public APIs כך שכל section מורכב מ־primitives משותפים בלי להפוך package אחד למונולית.
 - **Acceptance criteria:**
@@ -549,7 +604,7 @@ Audit measurements captured for `ARC-001`: frontend `App.tsx` 140 lines; admin `
   - אין import מתוך `src` פרטי של package אחר.
   - אין circular dependency או deep dependency chain.
 - **Verification:** build workspace, dependency inspection, lint boundaries ו־code review checklist.
-- **Evidence:** pending.
+- **Evidence (2026-07-20):** target package/file layout and dependency diagram documented above. `scripts/check-architecture-boundaries.mjs` scans all workspace source imports, forbids undeclared workspace dependencies, app imports from shared packages, `/src` deep imports, relative workspace escapes and dependency cycles. `pnpm architecture:boundaries` is part of root `validate`; full validation passed.
 
 #### ARC-004 — Plan legacy-content migration and rollback
 
@@ -1143,3 +1198,9 @@ Audit measurements captured for `ARC-001`: frontend `App.tsx` 140 lines; admin `
 - החוזה אוכף שישה sections בלבד, counts עסקיים, IDs/orders ייחודיים והפניות תקינות למדיה מסוג image/video עם R2 object metadata.
 - שדות settings/media/section קיימים פעם אחת בלבד; testimonials דורשים `source` מאומת וברירת המחדל שלהם ריקה.
 - נוספו חמישה tests ממוקדים; חבילת schema מציגה 14/14 tests וכל `pnpm validate` עבר.
+
+### 2026-07-20 — ARC-003 package boundaries
+
+- `ARC-003` עבר ל־`VERIFYING`; תועדו dependency direction ו־target layout ל־schema, ‏site-preview, ‏frontend, ‏admin ו־Pages Functions.
+- נוסף `pnpm architecture:boundaries` שסורק imports וחוסם deep imports, workspace escapes, תלות הפוכה ו־cycles.
+- הבדיקה חוברה ל־`pnpm validate`; כל validation עבר.
