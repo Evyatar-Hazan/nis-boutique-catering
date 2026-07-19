@@ -427,6 +427,25 @@ Cloudflare Pages + Pages Functions /api/*
 - [Pages Wrangler configuration](https://developers.cloudflare.com/pages/functions/wrangler-configuration/)
 - [Verify the Google ID token on the server](https://developers.google.com/identity/gsi/web/guides/verify-google-id-token)
 
+### Component ownership and duplication map
+
+| Capability | Current owner(s) | Target owner | Action |
+|---|---|---|---|
+| Business content contract and validation | `packages/content-schema` | `packages/content-schema` | לשמור ולהרחיב; אין להגדיר DTO/domain type מקביל באפליקציות |
+| Public section rendering | `packages/site-preview` | `packages/site-preview` | לשמר כמימוש היחיד שמשמש public ו־studio preview; לפצל את `MainSections.tsx` לקבצים לפי section בלי לשנות public exports |
+| Public composition and browser state | frontend `App.tsx`, `LazySiteSections.tsx` | frontend app | לצמצם לשישה sections; app owns routing/composition בלבד, לא markup של sections |
+| Header, footer, floating CTA and lightbox shell | frontend `SiteChrome.tsx` | frontend app + shared primitives from `site-preview` | להשאיר chrome ייחודי לאתר; להעביר image/button/dialog primitives משותפים לחבילה |
+| ContentSnapshot → preview model | frontend `siteContent.ts` וגם `site-preview/buildSiteSectionPreviewData.ts` | `packages/site-preview` consuming `content-schema` | לאחד transformation; frontend יקבל model מוכן ולא יחזיק mapping מקביל |
+| Responsive image rendering | frontend `components/OptimizedImage.tsx` + `utils/media.ts`; package `OptimizedImage.tsx` + `mediaHelpers.ts` | `packages/site-preview` | להסיר implementation ציבורי כפול ולהשתמש ב־export יחיד; לשמר במפורש את כלל CMS WebP-only עד pipeline חדש |
+| Intro band renderer | frontend `components/sections/IntroBandSection.tsx`; package `IntroBandSectionContent.tsx` | `packages/site-preview` | הקובץ ב־frontend זהה byte-for-byte ואינו נצרך; להסיר בזמן refactor |
+| Design CSS | `site-preview/styles/*`; frontend wrapper imports; admin `styles.css` | package styles for public/preview; admin tokens/primitives ייעודיים | wrappers של import אינם duplication; אין להעתיק selectors ל־admin |
+| Contact/WhatsApp formatting | frontend `utils/contact.ts`; package `contactHelpers.ts` | contract/helper משותף ב־`site-preview` | לאחד builder אחד; UI יכול לספק labels אך encoding/business formatting לא יוכפל |
+| Admin UI and editor state | admin `App.tsx` (1,016 lines) | admin feature modules | לפרק ל־shell, auth, admins, sections, services, media, publish; primitives משותפים נשמרים פעם אחת |
+| Admin persistence | admin `googleApi.ts` | Pages Functions API + typed client | client לא מכיל business authorization; Google code מוסר אחרי cutover |
+| Backend routing/domain logic | לא קיים | studio `functions/api` modules | route modules קטנים לפי auth/content/media/admins/publish; shared validation מ־`content-schema` |
+
+Audit measurements captured for `ARC-001`: frontend `App.tsx` 140 lines; admin `App.tsx` 1,016; `site-preview/MainSections.tsx` 919; `buildSiteSectionPreviewData.ts` 249. Exact duplicate confirmed for `IntroBandSectionContent`; near-duplicate pairs confirmed for `OptimizedImage` and media helpers. No new package is justified: the existing `content-schema` and `site-preview` boundaries cover the shared contracts and rendering needs.
+
 ## תוכנית משימות לפי שלבים
 
 ### Phase 0 — Governance, baseline and readiness
@@ -495,7 +514,7 @@ Cloudflare Pages + Pages Functions /api/*
 
 #### ARC-001 — Map component ownership and duplication
 
-- **Status:** `BACKLOG`
+- **Status:** `VERIFYING`
 - **Dependencies:** `GOV-002`.
 - **Definition:** למפות את כל רכיבי האתר הקיים וה־preview, לזהות מה נשמר, מה מתמזג, מה נמחק ומה הופך ל־primitive משותף.
 - **Acceptance criteria:**
@@ -504,7 +523,7 @@ Cloudflare Pages + Pages Functions /api/*
   - נבדקו `apps/frontend`, `packages/site-preview` והסטודיו העתידי לפני יצירת abstractions.
   - כל abstraction חדשה מוצדקת על ידי יותר מצרכן אחד או business contract ברור.
 - **Verification:** duplication table + `rg` על שמות/markup/styles חוזרים + review של dependency graph.
-- **Evidence:** pending.
+- **Evidence (2026-07-20):** component ownership table above; `rg` consumer/export audit; file-size audit; `shasum`/`diff` confirmed exact duplicate IntroBand renderer and near-duplicate image/media helpers. Target ownership assigned for every current section, preview, chrome, editor and backend capability; no additional shared package approved.
 
 #### ARC-002 — Define the six-section content contract
 
@@ -1109,3 +1128,10 @@ Cloudflare Pages + Pages Functions /api/*
 - production console נקי משגיאות; נותרה אזהרת preload אחת שתיכנס להשוואת הביצועים.
 - commit `3e02bf9` עבר CI run `29704351376` ו־Cloudflare deploy run `29704351375`; בדיקת post-deploy אישרה HTTP 200, ‏12 sections, גרסת תוכן זהה ו־0 שגיאות console.
 - `GOV-002` נסגר כ־`DONE`; המשימה הבאה היא `ARC-001`.
+
+### 2026-07-20 — ARC-001 ownership and duplication audit
+
+- `ARC-001` עבר ל־`VERIFYING`; נוספה טבלת ownership לכל capability בין frontend, ‏studio, ‏`site-preview`, ‏`content-schema` ו־Pages Functions.
+- אותרו duplicate מדויק של IntroBand ו־near-duplicates של OptimizedImage/media helpers; הוגדר owner יחיד ב־`packages/site-preview`.
+- תועדו המונוליתים לפיצול: admin `App.tsx` עם 1,016 שורות ו־`site-preview/MainSections.tsx` עם 919 שורות.
+- נקבע שלא ליצור package משותף חדש; החבילות הקיימות מכסות contracts ו־section rendering.
