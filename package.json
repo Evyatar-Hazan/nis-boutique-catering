@@ -12,6 +12,7 @@
     "doctor:runtime": "node scripts/check-runtime.mjs",
     "architecture:boundaries": "node scripts/check-architecture-boundaries.mjs",
     "migration:plan:audit": "node scripts/audit-legacy-migration-plan.mjs",
+    "tracker:check": "node scripts/check-redesign-tracker.mjs",
     "security:headers": "node scripts/check-response-headers.mjs",
     "artifacts:list": "node scripts/local-artifacts.mjs list",
     "artifacts:clean": "node scripts/local-artifacts.mjs clean",
@@ -35,7 +36,7 @@
     "test": "turbo run test",
     "clean": "turbo run clean && rm -rf node_modules",
     "type-check": "turbo run type-check",
-    "validate": "pnpm architecture:boundaries && pnpm security:headers && turbo run content:check media:check lint test type-check && turbo run build"
+    "validate": "pnpm tracker:check && pnpm architecture:boundaries && pnpm security:headers && turbo run content:check media:check lint test type-check && turbo run build"
   },
   "volta": {
     "node": "24.11.0",

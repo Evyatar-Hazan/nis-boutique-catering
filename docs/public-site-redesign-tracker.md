@@ -5,7 +5,7 @@ owner: Evyatar Hazan
 created: 2026-07-20
 updated: 2026-07-20
 source_of_truth: true
-implementation_gate: blocked_pending_baseline_and_readiness_review
+implementation_gate: ready
 ---
 
 # NIS Public Site Redesign — Source of Truth and Execution Tracker
@@ -35,14 +35,16 @@ implementation_gate: blocked_pending_baseline_and_readiness_review
 
 ## שער מימוש גלובלי
 
-**סטטוס נוכחי: `BLOCKED`**
+**סטטוס נוכחי: `READY`**
 
-תוכנית השרת/קליינט, בניית מסך האדמין מחדש והמעבר מ־Google Sheets/Drive ל־Cloudflare D1/R2 נוספו למסמך ב־2026-07-20. אין להתחיל עדיין שינויי קוד במוצר עד השלמת:
+תוכנית השרת/קליינט, בניית מסך האדמין מחדש והמעבר מ־Google Sheets/Drive ל־Cloudflare D1/R2 נוספו למסמך ב־2026-07-20. שער המימוש נפתח לאחר השלמת:
 
 - `GOV-002` — baseline מלא של repository ו־production.
 - `ARC-001`–`ARC-004` — contracts, ownership ומיפוי migration סופי.
 - הכרעות התוכן וה־UI המסומנות כ־blockers בטבלת ההחלטות.
 - `GOV-004` — Impact Review ועדכון מפורש של השער ל־`READY`.
+
+סדר הביצוע המאושר מונע עבודה זמנית: Design system → חלקי public שאינם תלויי backend → Cloudflare foundation/API/media/publish/build → migration preview → admin rebuild → cutover production → השלמת public gallery → QA/release. כל cutover או retire עדיין כפוף לתלות ולאישור המפורש שמוגדר במשימה שלו.
 
 ## סטטוסים מותרים
 
@@ -581,7 +583,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### GOV-004 — Run the final implementation readiness review
 
-- **Status:** `BLOCKED`
+- **Status:** `VERIFYING`
 - **Dependencies:** `GOV-002`, `GOV-003`, `ARC-001`, `ARC-002`, `ARC-003`.
 - **Definition:** לבצע review של כל התוכנית המאוחדת ולאשר סדר ביצוע שאינו יוצר כפילות או עבודה זמנית שתימחק בשלב האדמין/Drive.
 - **Acceptance criteria:**
@@ -590,7 +592,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
   - הוגדר rollback לכל שינוי migration/deploy-sensitive.
   - שער המימוש עודכן מ־`BLOCKED` ל־`READY` בהחלטה מפורשת.
 - **Verification:** review של המסמך מתחילתו ועד סופו ורישום החלטת readiness ב־Change Log.
-- **Evidence:** pending.
+- **Evidence (2026-07-20):** all 51 task definitions and dependency order were reviewed against the v2 contract, package ownership, migration map, rollback gates and production workflow. All 12 implementation decisions are now decided. `scripts/check-redesign-tracker.mjs` enforces 51 unique task IDs, one Definition/Acceptance/Verification/Evidence block per task, known task references, no open decision and a READY gate; it is part of root `validate`. `pnpm tracker:check`, the migration audit and `git diff --check` passed. Implementation gate is explicitly `READY`; production cutover/retirement approvals remain scoped to their later tasks.
 
 ### Phase 1 — Architecture and contracts
 
@@ -635,7 +637,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### ARC-004 — Plan legacy-content migration and rollback
 
-- **Status:** `VERIFYING`
+- **Status:** `DONE`
 - **Dependencies:** `ARC-002`, `GOV-003`.
 - **Definition:** למפות כל section ושדה ישן ליעד חדש, כולל rows שיש לארכב ו־defaults שיש להסיר כדי למנוע חזרה אוטומטית.
 - **Acceptance criteria:**
@@ -644,7 +646,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
   - rollback נבדק על snapshot נפרד.
   - אין content loss ואין duplicate active rows.
 - **Verification:** dry run, schema validation והשוואת counts/IDs לפני ואחרי.
-- **Evidence (2026-07-20):** the complete legacy collection/group/field mapping and rollback rules are documented above. `scripts/audit-legacy-migration-plan.mjs` covered all 14 fallback groups and all 13 generated groups, detected 0 duplicate IDs and 0 missing media references, simulated archive without removing rows, restored a separate in-memory snapshot byte-for-byte and proved both source files unchanged. Fallback counts: 41 sections, 3 services, 15 gallery, 15 media, SHA-256 `bbc1f16e…`; generated counts: 40/3/15/15, SHA-256 `1d824d5b…`. The committed snapshots are the pre-mutation local backup; `MIG-001` remains the mandatory immutable remote Sheets/Drive backup gate before any external write. `pnpm migration:plan:audit`, `content:check` and `git diff --check` passed.
+- **Evidence (2026-07-20):** the complete legacy collection/group/field mapping and rollback rules are documented above. `scripts/audit-legacy-migration-plan.mjs` covered all 14 fallback groups and all 13 generated groups, detected 0 duplicate IDs and 0 missing media references, simulated archive without removing rows, restored a separate in-memory snapshot byte-for-byte and proved both source files unchanged. Fallback counts: 41 sections, 3 services, 15 gallery, 15 media, SHA-256 `bbc1f16e…`; generated counts: 40/3/15/15, SHA-256 `1d824d5b…`. The committed snapshots are the pre-mutation local backup; `MIG-001` remains the mandatory immutable remote Sheets/Drive backup gate before any external write. `pnpm migration:plan:audit`, `content:check` and full `pnpm validate` passed. Commit `eb9c3f5`; CI `29705005543` and deploy `29705005549` succeeded; public/studio returned HTTP 200 post-deploy.
 
 ### Phase 2 — Shared design system and primitives
 
@@ -1127,18 +1129,18 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 | ID | Decision | Status | Blocks |
 |---|---|---|---|
-| DEC-001 | בחירה סופית בין `Frank Ruhl Libre` ל־`Noto Serif Hebrew` | Open | `UI-001` |
-| DEC-002 | נוסח סופי ל־Hero ולשלושת ערכי הליבה | Open | `WEB-001` |
-| DEC-003 | שמות ונוסחים סופיים לשלושת השירותים | Open | `WEB-002` |
-| DEC-004 | בחירת 6–9 תמונות והווידאו המרכזי | Open | `WEB-003` |
-| DEC-005 | שאלות FAQ ושדות הטופס הסופיים | Open | `WEB-006` |
+| DEC-001 | `Noto Serif Hebrew` לכותרות; body נשאר sans עברי מקומי/מערכתי | Decided | — |
+| DEC-002 | Hero: `אירוח שנראה מוקפד ומרגיש ביתי.`; ערכים: הכנה טרייה, הגשה מוכנה, תיאום אישי | Decided | — |
+| DEC-003 | שמות השירותים: `אוכל לשבת`, ‏`אירוח קטן`, ‏`מארזים לדרך` | Decided | — |
+| DEC-004 | gallery IDs: hosting table, event buffet, salmon lemon, focaccia, mini burgers, caprese, roasted vegetables, dips, table setting; video: `nis-event-table-video.mp4` | Decided | — |
+| DEC-005 | FAQ: lead time, delivery, custom menu, preferences; required form: name/phone/service; optional: date/quantity/note | Decided | — |
 | DEC-006 | הסטודיו נשאר אפליקציית Pages נפרדת ומקבל Pages Functions same-origin תחת `/api/*` | Decided | — |
 | DEC-007 | D1 מחליף Sheets כמקור אמת ו־R2 מחליף Drive למדיה; אין Base64 ב־D1 | Decided | — |
 | DEC-008 | Google משמש לזיהוי בלבד; השרת מנפיק session cookie revocable שה־hash שלו ב־D1 | Decided | — |
 | DEC-009 | האתר הציבורי נשאר static-first; build צורך published revision ומדיה מ־D1/R2 | Decided | — |
 | DEC-010 | תוכן נשמר כ־versioned `ContentSnapshot` אטומי ב־`content_revisions`, validated בחוזה המשותף | Decided | — |
-| DEC-011 | משך session, תקופת שמירת revisions ו־grace למחיקת media | Open | `CF-004`, `CF-007`, `CF-010` |
-| DEC-012 | האם published endpoint ציבורי עם ETag או מוגן ב־build secret | Open | `CF-009` |
+| DEC-011 | session של 8 שעות; revisions נשמרות 90 יום ולפחות 50 אחרונות; media delete grace של 30 יום | Decided | — |
+| DEC-012 | published endpoint ציבורי, read-only ו־versioned עם `ETag`; internal metadata אינו נכלל בתגובה | Decided | — |
 
 ## Risk register
 
@@ -1164,12 +1166,12 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 | Phase | Status | Done | Total |
 |---|---|---:|---:|
 | Phase 0 — Governance | In progress | 3 | 4 |
-| Phase 1 — Architecture | In progress | 3 | 4 |
-| Phase 2 — Design system | Blocked | 0 | 4 |
-| Phase 3 — Public site | Blocked | 0 | 6 |
-| Phase 4 — Cloudflare backend | Blocked | 0 | 10 |
-| Phase 5 — Migration | Blocked | 0 | 6 |
-| Phase 6 — Admin rebuild | Blocked | 0 | 8 |
+| Phase 1 — Architecture | Done | 4 | 4 |
+| Phase 2 — Design system | Ready | 0 | 4 |
+| Phase 3 — Public site | Ready with dependencies | 0 | 6 |
+| Phase 4 — Cloudflare backend | Ready with dependencies | 0 | 10 |
+| Phase 5 — Migration | Ready with dependencies | 0 | 6 |
+| Phase 6 — Admin rebuild | Ready with dependencies | 0 | 8 |
 | Phase 7 — Quality | Blocked | 0 | 5 |
 | Phase 8 — Release | Blocked | 0 | 4 |
 
@@ -1239,3 +1241,12 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - נוספו כללי stable IDs, category mapping, archive ללא hard delete, media parity ו־rollback באמצעות revision קודמת.
 - נוסף `pnpm migration:plan:audit`; הוא כיסה את שני ה־snapshots, מצא 0 כפילויות/הפניות חסרות, הוכיח rollback מבודד והוכיח שקובצי המקור לא השתנו.
 - אין mutation חיצונית בשלב התכנון; `MIG-001` נשאר שער מחייב ל־backup מלא של Sheets/Drive לפני write ראשון.
+- commit `eb9c3f5` עבר CI `29705005543` ו־deploy `29705005549`; שני משטחי production החזירו 200. ‏`ARC-004` נסגר והעבודה עברה ל־`GOV-004`.
+
+### 2026-07-20 — GOV-004 implementation readiness review
+
+- כל 51 המשימות נסקרו מול dependency graph, חוזה v2, ownership map, migration/rollback ודרישות production.
+- הוכרעו כל החלטות התוכן, הטיפוגרפיה, המדיה, retention וה־published endpoint שחסמו מימוש.
+- סדר הביצוע עודכן כך שה־public אינו משכפל שכבות זמניות שיימחקו במעבר ל־D1/R2 והאדמין החדש מתחיל רק לאחר API foundation.
+- שער המימוש הועבר ל־`READY`; cutover ו־retirement ממשיכים לדרוש את האישורים המפורשים המוגדרים ב־`MIG-004`/`MIG-006`.
+- נוסף `pnpm tracker:check` לשער `validate`; הוא מאמת 51 משימות ייחודיות, מבנה acceptance/evidence מלא, references תקינים, 12 החלטות סגורות ושער `READY`.
