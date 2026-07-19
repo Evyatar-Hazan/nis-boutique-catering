@@ -771,7 +771,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### WEB-006 — Implement FAQ and contact conversion section
 
-- **Status:** `VERIFYING`
+- **Status:** `DONE`
 - **Dependencies:** `ARC-002`, `UI-002`.
 - **Definition:** לאחד FAQ וטופס פנייה למסך סיום אחד עם progressive disclosure.
 - **Acceptance criteria:**
@@ -780,13 +780,13 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
   - errors מוצגים ליד השדה ו־focus עובר לשגיאה הראשונה.
   - submit יוצר הודעת WhatsApp תקינה ומקודדת.
 - **Verification:** form unit tests, invalid/valid flows, mobile keyboard test, WhatsApp URL assertion ו־screen reader smoke test.
-- **Evidence:** `publicContactDefaults` מרכז 4 שאלות ו־CTA; `ContactSection` יחיד החליף FAQ וטופס נפרדים ומשתמש ב־Accordion/FormField/Button המשותפים. הטופס כולל 3 שדות חובה ו־3 אופציונליים בלבד, validation inline עם `aria-invalid`/`aria-describedby` ו־focus לשגיאה הראשונה. 19/19 בדיקות schema, ‏18/18 בדיקות `site-preview`, ‏11/11 בדיקות frontend ו־`pnpm validate` עברו, כולל invalid/valid flows ו־WhatsApp URL מקודד. Playwright לוקאלי ב־375/1440 אישר 4 FAQ, ‏6 fields, mobile input modes, טור/שתי עמודות, ‏0 section כפול/overflow/errors ו־screen-reader smoke. צילומי מסך: `output/playwright/web-006-contact-errors-375.png`, ‏`output/playwright/web-006-contact-1440.png`. ממתין ל־CI/deploy ולבדיקת production.
+- **Evidence:** `publicContactDefaults` מרכז 4 שאלות ו־CTA; `ContactSection` יחיד החליף FAQ וטופס נפרדים ומשתמש ב־Accordion/FormField/Button המשותפים. הטופס כולל 3 שדות חובה ו־3 אופציונליים בלבד, validation inline עם `aria-invalid`/`aria-describedby` ו־focus לשגיאה הראשונה. 19/19 בדיקות schema, ‏18/18 בדיקות `site-preview`, ‏11/11 בדיקות frontend ו־`pnpm validate` עברו, כולל invalid/valid flows ו־WhatsApp URL מקודד. Playwright לוקאלי וב־production ב־375/1440 אישר 4 FAQ, ‏6 fields, mobile input modes, טור/שתי עמודות, ‏0 section כפול/overflow/errors ו־screen-reader smoke. צילומי מסך לוקאליים: `output/playwright/web-006-contact-errors-375.png`, ‏`output/playwright/web-006-contact-1440.png`. commit `edba315`; CI `29707932127`; deploy `29707932147`; public/studio החזירו HTTP 200.
 
 ### Phase 4 — Cloudflare backend foundation
 
 #### CF-001 — Provision preview and production D1/R2 resources
 
-- **Status:** `BACKLOG`
+- **Status:** `IN_PROGRESS`
 - **Dependencies:** `GOV-004`.
 - **Definition:** ליצור D1 ו־R2 נפרדים ל־preview/production ולתעד bindings ב־Wrangler config של הסטודיו.
 - **Acceptance criteria:** bindings מסוג `DB` ו־`MEDIA` קיימים בכל environment; IDs אינם hardcoded בקוד; bucket פרטי כברירת מחדל; local dev משתמש במשאבים מקומיים.
@@ -1168,8 +1168,8 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 | Phase 0 — Governance | Done | 4 | 4 |
 | Phase 1 — Architecture | Done | 4 | 4 |
 | Phase 2 — Design system | Done | 4 | 4 |
-| Phase 3 — Public site | In progress | 4 | 6 |
-| Phase 4 — Cloudflare backend | Ready with dependencies | 0 | 10 |
+| Phase 3 — Public site | In progress | 5 | 6 |
+| Phase 4 — Cloudflare backend | In progress | 0 | 10 |
 | Phase 5 — Migration | Ready with dependencies | 0 | 6 |
 | Phase 6 — Admin rebuild | Ready with dependencies | 0 | 8 |
 | Phase 7 — Quality | Blocked | 0 | 5 |
@@ -1321,4 +1321,5 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - `WEB-006` עבר ל־`VERIFYING`; ארבע שאלות ו־CTA אחד מגיעים מ־`publicContactDefaults`, ו־`ContactSection` יחיד מחליף את שני ה־sections הישנים.
 - הטופס צומצם לשם/טלפון/סוג הזמנה כחובה ולתאריך/כמות/הערה כאופציונליים; validation משותף מציג שגיאות inline, מקשר אותן לשדות ומעביר focus לשגיאה הראשונה.
 - 19/19 בדיקות schema, ‏18/18 בדיקות `site-preview`, ‏11/11 בדיקות frontend ו־`pnpm validate` עברו; valid flow מאשר URL WhatsApp מקודד ו־invalid flow מאשר focus/errors.
-- Playwright לוקאלי ב־375/1440 אישר 4 FAQ/6 fields, accordion נגיש, input modes למובייל, טור/שתי עמודות, ‏0 כפילות/overflow/errors ובדיקה חזותית תקינה. ממתין ל־CI/deploy ולבדיקת production.
+- Playwright לוקאלי ב־375/1440 אישר 4 FAQ/6 fields, accordion נגיש, input modes למובייל, טור/שתי עמודות, ‏0 כפילות/overflow/errors ובדיקה חזותית תקינה.
+- commit `edba315` עבר CI `29707932127` ו־deploy `29707932147`; production אישר invalid flow עם שלוש שגיאות ו־focus ראשון, 4 FAQ/6 fields, layout responsive, ‏0 כפילות/overflow/errors ו־HTTP 200 בשני המשטחים. `WEB-006` נסגר; `WEB-003` נשאר תלוי ב־`CF-007`, ולכן העבודה עברה ל־`CF-001`.
