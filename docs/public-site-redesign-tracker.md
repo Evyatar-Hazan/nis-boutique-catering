@@ -445,7 +445,7 @@ Cloudflare Pages + Pages Functions /api/*
 
 #### GOV-002 — Capture the production and repository baseline
 
-- **Status:** `VERIFYING`
+- **Status:** `DONE`
 - **Dependencies:** `GOV-001`.
 - **Definition:** לתעד לפני שינוי את מבנה ה־DOM החי, screenshots, headings, navigation, CTA behavior, console/network, bundle sizes, Lighthouse ו־current content version.
 - **Acceptance criteria:**
@@ -462,7 +462,8 @@ Cloudflare Pages + Pages Functions /api/*
   - Local validation: `npx pnpm@9.15.9 validate` passed; public bundle JS 339.60KB + lazy 10.89KB, CSS 60.27KB; studio JS 299.61KB, CSS 7.92KB.
   - HTTP/security: public and studio returned 200 with HSTS, CSP, X-Frame-Options and X-Content-Type-Options; studio also returned noindex headers.
   - Known baseline warning: preloaded `salmon-skewers-lemon-720w.avif` was not consumed shortly after load.
-  - Deployment verification: pending commit, CI and post-deploy production check.
+  - Deployment verification: commit `3e02bf9`; CI run `29704351376` and Cloudflare deploy run `29704351375` succeeded.
+  - Post-deploy production: public/studio HTTP 200; public remained at 12 sections and version `studio-2026-06-24-18-43-53`; both surfaces had 0 console errors and no mobile horizontal overflow.
 
 #### GOV-003 — Add the admin rebuild and Cloudflare persistence plans
 
@@ -1061,7 +1062,7 @@ Cloudflare Pages + Pages Functions /api/*
 
 | Phase | Status | Done | Total |
 |---|---|---:|---:|
-| Phase 0 — Governance | In progress | 2 | 4 |
+| Phase 0 — Governance | In progress | 3 | 4 |
 | Phase 1 — Architecture | Blocked | 0 | 4 |
 | Phase 2 — Design system | Blocked | 0 | 4 |
 | Phase 3 — Public site | Blocked | 0 | 6 |
@@ -1106,3 +1107,5 @@ Cloudflare Pages + Pages Functions /api/*
 - נמדדו bundle sizes ו־Lighthouse mobile; קו הבסיס הוא Performance 64 ו־LCP 9.32s.
 - `npx pnpm@9.15.9 validate` עבר; public/studio החזירו HTTP 200 ו־security headers תקינים.
 - production console נקי משגיאות; נותרה אזהרת preload אחת שתיכנס להשוואת הביצועים.
+- commit `3e02bf9` עבר CI run `29704351376` ו־Cloudflare deploy run `29704351375`; בדיקת post-deploy אישרה HTTP 200, ‏12 sections, גרסת תוכן זהה ו־0 שגיאות console.
+- `GOV-002` נסגר כ־`DONE`; המשימה הבאה היא `ARC-001`.
