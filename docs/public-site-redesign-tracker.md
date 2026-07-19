@@ -758,7 +758,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### WEB-005 — Implement Trust without owner portrait
 
-- **Status:** `VERIFYING`
+- **Status:** `DONE`
 - **Dependencies:** `ARC-002`, `UI-002`.
 - **Definition:** להחליף את story הארוך באזור אמון ממוקד תוצרים ושירות.
 - **Acceptance criteria:**
@@ -767,11 +767,11 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
   - המלצות מוצגות רק אם יש להן מקור מאומת.
   - אין section ביוגרפי נוסף או copy שחוזר מה־Hero.
 - **Verification:** DOM/text search, content-source review ו־visual review.
-- **Evidence:** `publicTrustDefaults` הוא מקור יחיד לשלוש נקודות האמון המאושרות ורשימת ההמלצות בו ריקה; `TrustSection` יחיד החליף את ה־story הביוגרפי ואת trust הישן ומשתמש בתמונת אוכל עם alt משמעותי. 18/18 בדיקות schema, ‏15/15 בדיקות `site-preview`, ‏11/11 בדיקות frontend ו־`pnpm validate` עברו. Playwright לוקאלי ב־375/1440 אישר 3 נקודות, תמונת אוכל אחת, ‏0 אזכורי יהודית/סיפור מותג/blockquote, פריסה responsive ו־0 overflow/errors. צילומי מסך: `output/playwright/web-005-trust-375.png`, ‏`output/playwright/web-005-trust-1440.png`. ממתין ל־CI/deploy ולבדיקת production.
+- **Evidence:** `publicTrustDefaults` הוא מקור יחיד לשלוש נקודות האמון המאושרות ורשימת ההמלצות בו ריקה; `TrustSection` יחיד החליף את ה־story הביוגרפי ואת trust הישן ומשתמש בתמונת אוכל עם alt משמעותי. 18/18 בדיקות schema, ‏15/15 בדיקות `site-preview`, ‏11/11 בדיקות frontend ו־`pnpm validate` עברו. Playwright לוקאלי וב־production ב־375/1440 אישר 3 נקודות, תמונת אוכל אחת, ‏0 אזכורי יהודית/סיפור מותג/blockquote, פריסה responsive ו־0 overflow/errors. צילומי מסך לוקאליים: `output/playwright/web-005-trust-375.png`, ‏`output/playwright/web-005-trust-1440.png`. commit `88d939d`; CI `29707679675`; deploy `29707679717`; public/studio החזירו HTTP 200. לאחר חלון propagation קצר asset ה־JS אומת שוב כ־`application/javascript` והבדיקה עברה בדפדפן נקי.
 
 #### WEB-006 — Implement FAQ and contact conversion section
 
-- **Status:** `BACKLOG`
+- **Status:** `IN_PROGRESS`
 - **Dependencies:** `ARC-002`, `UI-002`.
 - **Definition:** לאחד FAQ וטופס פנייה למסך סיום אחד עם progressive disclosure.
 - **Acceptance criteria:**
@@ -1168,7 +1168,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 | Phase 0 — Governance | Done | 4 | 4 |
 | Phase 1 — Architecture | Done | 4 | 4 |
 | Phase 2 — Design system | Done | 4 | 4 |
-| Phase 3 — Public site | In progress | 3 | 6 |
+| Phase 3 — Public site | In progress | 4 | 6 |
 | Phase 4 — Cloudflare backend | Ready with dependencies | 0 | 10 |
 | Phase 5 — Migration | Ready with dependencies | 0 | 6 |
 | Phase 6 — Admin rebuild | Ready with dependencies | 0 | 8 |
@@ -1313,4 +1313,5 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - `WEB-005` עבר ל־`VERIFYING`; `publicTrustDefaults` מרכז בדיוק שלוש נקודות מאושרות, media reference ורשימת testimonials ריקה.
 - `TrustSection` יחיד החליף את ה־story הביוגרפי ואת trust הישן; אין תמונת בעלים, אזכור יהודית, copy ביוגרפי או המלצה ללא מקור.
 - 18/18 בדיקות schema, ‏15/15 בדיקות `site-preview`, ‏11/11 בדיקות frontend ו־`pnpm validate` עברו.
-- Playwright לוקאלי ב־375/1440 אישר שלוש נקודות ותמונת אוכל אחת, פריסת טור/שתי עמודות, ‏0 owner/story/testimonials/overflow/errors ובדיקה חזותית תקינה. ממתין ל־CI/deploy ולבדיקת production.
+- Playwright לוקאלי ב־375/1440 אישר שלוש נקודות ותמונת אוכל אחת, פריסת טור/שתי עמודות, ‏0 owner/story/testimonials/overflow/errors ובדיקה חזותית תקינה.
+- commit `88d939d` עבר CI `29707679675` ו־deploy `29707679717`; לאחר חלון propagation קצר asset ה־JS אומת כתקין ובדפדפן נקי production אישר את אותו תוכן/פריסה, ‏0 owner/story/testimonials/overflow/errors ו־HTTP 200 בשני המשטחים. `WEB-005` נסגר והעבודה עברה ל־`WEB-006`.
