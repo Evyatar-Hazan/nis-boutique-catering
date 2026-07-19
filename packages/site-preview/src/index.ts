@@ -1,11 +1,10 @@
 export * from './PrimarySections';
-export * from './DeferredSections';
+export * from './ServicesSection';
 export * from './buildSiteSectionPreviewData';
 export * from './fallbackSiteSectionPreviewData';
 export {
   SignatureSection,
   BoutiqueSection,
-  ServicesSection,
   ProcessSection,
   StorySection,
   SamplesSection,

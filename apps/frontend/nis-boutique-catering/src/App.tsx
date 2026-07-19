@@ -19,7 +19,6 @@ const LazySiteSections = lazy(() => import('./components/LazySiteSections'));
 function App() {
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
   const [activeGalleryCategory, setActiveGalleryCategory] = useState<GalleryCategory>('all');
-  const [activeExperienceIndex, setActiveExperienceIndex] = useState(0);
   const [leadSource, setLeadSource] = useState(contactInterestOptions[0] ?? 'ניס בטעם של שבת');
 
   useRevealOnScroll();
@@ -93,11 +92,9 @@ function App() {
         <DeferredSections>
           <Suspense fallback={<SectionSkeleton />}>
             <LazySiteSections
-              activeExperienceIndex={activeExperienceIndex}
               activeGalleryCategory={activeGalleryCategory}
               contactWhatsapp={contactWhatsapp}
               leadSource={leadSource}
-              onChangeExperience={setActiveExperienceIndex}
               onFilterChange={(category) => {
                 setActiveGalleryCategory(category);
                 setSelectedImageIndex(null);

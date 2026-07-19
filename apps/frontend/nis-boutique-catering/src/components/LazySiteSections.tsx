@@ -2,21 +2,19 @@ import { type FormEventHandler } from 'react';
 import {
   ContactSection,
   CoordinationSection,
-  ExperienceLabSection,
   FaqSection,
   GallerySection,
   ProcessSection,
   RealMediaSection,
+  ServicesSection,
   StorySection,
 } from '@monorepo/site-preview';
 import { email, galleryImages, type GalleryCategory } from '../data/siteContent';
 
 type LazySiteSectionsProps = {
-  readonly activeExperienceIndex: number;
   readonly activeGalleryCategory: GalleryCategory;
   readonly contactWhatsapp: string;
   readonly leadSource: string;
-  readonly onChangeExperience: (index: number) => void;
   readonly onFilterChange: (category: GalleryCategory) => void;
   readonly onLeadSourceChange: (value: string) => void;
   readonly onOpenImage: (index: number | null) => void;
@@ -24,11 +22,9 @@ type LazySiteSectionsProps = {
 };
 
 export default function LazySiteSections({
-  activeExperienceIndex,
   activeGalleryCategory,
   contactWhatsapp,
   leadSource,
-  onChangeExperience,
   onFilterChange,
   onLeadSourceChange,
   onOpenImage,
@@ -41,10 +37,7 @@ export default function LazySiteSections({
 
   return (
     <>
-      <ExperienceLabSection
-        activeExperienceIndex={activeExperienceIndex}
-        onChangeExperience={onChangeExperience}
-      />
+      <ServicesSection />
       <GallerySection
         activeCategory={activeGalleryCategory}
         images={filteredGalleryImages}

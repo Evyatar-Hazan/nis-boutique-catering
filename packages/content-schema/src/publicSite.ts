@@ -72,6 +72,17 @@ export const publicHeroDefaults = {
   mediaId: 'salmon-skewers-lemon',
 } as const;
 
+export const publicServicesDefaults = {
+  eyebrow: 'מה אפשר להזמין',
+  title: 'שלוש דרכים לארח עם Nis.',
+  description: 'בוחרים את סוג האירוח שמתאים לכם וממשיכים לשיחה קצרה בוואטסאפ.',
+  items: [
+    { id: 'shabbat-food', title: 'אוכל לשבת', ctaLabel: 'לפרטים על אוכל לשבת', message: 'אוכל לשבת', order: 1 },
+    { id: 'small-hosting', title: 'אירוח קטן', ctaLabel: 'לפרטים על אירוח קטן', message: 'אירוח קטן', order: 2 },
+    { id: 'travel-boxes', title: 'מארזים לדרך', ctaLabel: 'לפרטים על מארזים לדרך', message: 'מארזים לדרך', order: 3 },
+  ],
+} as const;
+
 const serviceOfferSchema = z.object({
   id: idSchema,
   title: shortTextSchema,

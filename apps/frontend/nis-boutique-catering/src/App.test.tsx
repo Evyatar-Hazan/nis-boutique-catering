@@ -77,20 +77,22 @@ describe('Nis boutique catering app', () => {
     expect(triggerButton).toHaveFocus();
   });
 
-  it('lets visitors choose between the three service experiences', async () => {
+  it('shows all three service offers without a hidden carousel state', async () => {
     render(<App />);
 
-    const experienceHeading = await screen.findByRole('heading', { name: /מהרגע שבוחרים כיוון/i });
+    const experienceHeading = await screen.findByRole('heading', { name: 'שלוש דרכים לארח עם Nis.' });
     const experienceSection = experienceHeading.closest('section');
     expect(experienceSection).not.toBeNull();
     if (!experienceSection) {
       throw new Error('Experience section was not found');
     }
 
-    const experienceChooser = within(experienceSection);
-    expect(experienceChooser.getByRole('tab', { name: 'ניס בטעם של שבת' })).toBeInTheDocument();
-    expect(experienceChooser.getByRole('tab', { name: 'ניס בכיס' })).toBeInTheDocument();
-    expect(experienceChooser.getByRole('tab', { name: 'Travel Nis' })).toBeInTheDocument();
+    const offers = within(experienceSection);
+    expect(offers.getAllByRole('article')).toHaveLength(3);
+    expect(offers.getByRole('heading', { level: 3, name: 'אוכל לשבת' })).toBeInTheDocument();
+    expect(offers.getByRole('heading', { level: 3, name: 'אירוח קטן' })).toBeInTheDocument();
+    expect(offers.getByRole('heading', { level: 3, name: 'מארזים לדרך' })).toBeInTheDocument();
+    expect(offers.queryByRole('tablist')).not.toBeInTheDocument();
   });
 
   it('does not render removed duplicate sections', () => {

@@ -40,13 +40,14 @@ export interface ServiceCardProps {
   readonly ctaLabel: string;
   readonly description: string;
   readonly image: ImageAsset;
+  readonly imageAlt: string;
   readonly title: string;
 }
 
-export const ServiceCard = ({ bestFor, ctaHref, ctaLabel, description, image, title }: ServiceCardProps) => (
-  <MediaCard alt="" image={image} title={title}>
+export const ServiceCard = ({ bestFor, ctaHref, ctaLabel, description, image, imageAlt, title }: ServiceCardProps) => (
+  <MediaCard alt={imageAlt} image={image} title={title}>
     <p>{description}</p>
-    <p className="service-card__fit">{bestFor}</p>
+    <p className="service-card__fit"><strong>מתאים במיוחד:</strong> {bestFor}</p>
     <Button href={ctaHref} size="compact">{ctaLabel}</Button>
   </MediaCard>
 );

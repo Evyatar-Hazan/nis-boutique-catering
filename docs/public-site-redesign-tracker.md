@@ -719,7 +719,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### WEB-002 — Implement Services
 
-- **Status:** `IN_PROGRESS`
+- **Status:** `VERIFYING`
 - **Dependencies:** `ARC-002`, `UI-002`.
 - **Definition:** להציג שלושה שירותים ברורים מתוך מקור התוכן המשותף.
 - **Acceptance criteria:**
@@ -728,7 +728,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
   - השירותים אינם משוכפלים ב־section נוסף.
   - empty/disabled service state מוגדר.
 - **Verification:** schema/service fixtures, DOM count, WhatsApp context tests ו־mobile browser test.
-- **Evidence:** pending.
+- **Evidence:** `publicServicesDefaults` הוא מקור שמות/סדר/CTA יחיד; `ServicesSection` המשותף מציג בדיוק שלושה כרטיסים ומצב חסר מפורש, וקומפוננטות השירותים הישנות הוסרו. 16/16 בדיקות schema, ‏11/11 בדיקות `site-preview`, ‏11/11 בדיקות frontend ו־`pnpm validate` עברו. Playwright לוקאלי ב־375/1440 אישר את שלושת השמות בסדר הנכון, media/copy/fit/CTA בכל כרטיס, URL וואטסאפ תלוי־שירות, טור מובייל/שורת desktop, ‏0 tablist כפול ו־0 overflow/console errors. צילומי מסך: `output/playwright/web-002-services-375.png`, ‏`output/playwright/web-002-services-1440.png`. ממתין ל־CI/deploy ולבדיקת production.
 
 #### WEB-003 — Implement Gallery with integrated video
 
@@ -1291,3 +1291,10 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - 15/15 בדיקות schema, ‏9/9 preview ו־11/11 frontend עברו; validation מלא עבר. Playwright בארבעה breakpoints אישר סדר responsive, ‏0 overflow/errors ו־CLS 0 ב־375px.
 - commit `916e806` עבר CI `29706759177` ו־deploy `29706759207`; בדיקת production חשפה alt ספציפי שלא תאם את תמונת ה־Sheets המרוחקת.
 - commit מתקן `8b45c5e` עבר CI `29706860904` ו־deploy `29706860944`; production אישר alt מדויק, copy/CTA, ‏0 legacy/video/overflow/errors ו־CLS 0. `WEB-001` נסגר והעבודה עברה ל־`WEB-002`.
+
+### 2026-07-20 — WEB-002 services
+
+- `WEB-002` עבר ל־`VERIFYING`; שלושת השירותים משתמשים ב־`publicServicesDefaults` משותף לשמות, לסדר ולהקשר ה־CTA, בלי לשכפל schema או section.
+- מימושי השירותים הישנים הוסרו; `ServicesSection` ו־`ServiceCard` המשותפים מציגים media, copy, התאמה ו־CTA, ומצב חסר מפורש אם המקור אינו מכיל בדיוק שלושה שירותים.
+- 16/16 בדיקות schema, ‏11/11 בדיקות `site-preview`, ‏11/11 בדיקות frontend ו־`pnpm validate` עברו.
+- Playwright לוקאלי ב־375/1440 אישר שלושה כרטיסים בסדר המאושר, URLs תלויי־שירות, פריסה responsive, ‏0 כפילות/overflow/errors וצילומי מסך חזותיים תקינים. ממתין ל־CI/deploy ולבדיקת production.

@@ -1,7 +1,6 @@
-import { type CSSProperties, type FormEventHandler, type KeyboardEvent as ReactKeyboardEvent } from 'react';
-import { ArrowLeft, CheckCircle2, Mail, MapPin, MessageCircle, Phone, Send } from 'lucide-react';
+import { type CSSProperties, type FormEventHandler } from 'react';
+import { CheckCircle2, Mail, MapPin, MessageCircle, Phone, Send } from 'lucide-react';
 import type { GalleryCategory, GalleryImage } from './sitePreviewTypes';
-import { buildInquiryWhatsappLink } from './contactHelpers';
 import { OptimizedImage } from './OptimizedImage';
 import { useSiteSectionPreviewData } from './SiteSectionPreviewData';
 import { SectionHeading, TextParagraphs } from './SectionShared';
@@ -35,121 +34,6 @@ export const EditorialSection = () => {
         })}
       </div>
     </div>
-    </section>
-  );
-};
-
-interface ExperienceLabSectionProps {
-  readonly activeExperienceIndex: number;
-  readonly onChangeExperience: (index: number) => void;
-}
-
-export const ExperienceLabSection = ({
-  activeExperienceIndex,
-  onChangeExperience,
-}: ExperienceLabSectionProps) => {
-  const { foodMedia, sectionCopy, services, siteMicrocopy, whatsappBase } = useSiteSectionPreviewData();
-  const handleTabNavigation = (event: ReactKeyboardEvent<HTMLButtonElement>, index: number) => {
-    if (event.key === 'ArrowRight') {
-      event.preventDefault();
-      onChangeExperience((index - 1 + services.length) % services.length);
-    }
-
-    if (event.key === 'ArrowLeft') {
-      event.preventDefault();
-      onChangeExperience((index + 1) % services.length);
-    }
-
-    if (event.key === 'Home') {
-      event.preventDefault();
-      onChangeExperience(0);
-    }
-
-    if (event.key === 'End') {
-      event.preventDefault();
-      onChangeExperience(services.length - 1);
-    }
-  };
-
-  return (
-    <section
-      className="section experience-lab-section"
-      aria-labelledby="experience-lab-title"
-      style={{ '--experience-media-image': `url('${foodMedia.dipsTrayClose.src}')` } as CSSProperties}
-    >
-      <div className="container experience-lab">
-        <div className="experience-copy reveal">
-          <p className="eyebrow">{sectionCopy.experienceLab.eyebrow}</p>
-          <h2 id="experience-lab-title">{sectionCopy.experienceLab.title}</h2>
-          <TextParagraphs text={sectionCopy.experienceLab.text} />
-          <div className="experience-switcher" role="tablist" aria-label="בחירת חוויית אירוח">
-            {services.map((service, index) => {
-              const Icon = service.icon;
-              const isActive = index === activeExperienceIndex;
-              const tabId = `experience-tab-${index}`;
-              const panelId = `experience-panel-${index}`;
-
-              return (
-                <button
-                  id={tabId}
-                  key={service.title}
-                  role="tab"
-                  type="button"
-                  aria-selected={isActive}
-                  aria-controls={panelId}
-                  tabIndex={isActive ? 0 : -1}
-                  className={isActive ? 'experience-pill is-active' : 'experience-pill'}
-                  onClick={() => onChangeExperience(index)}
-                  onFocus={() => onChangeExperience(index)}
-                  onMouseEnter={() => onChangeExperience(index)}
-                  onKeyDown={(event) => handleTabNavigation(event, index)}
-                >
-                  <Icon aria-hidden="true" size={18} />
-                  <span>{service.title}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-        <div className="experience-stage reveal" aria-live="polite">
-          {services.map((service, index) => {
-            const isActive = index === activeExperienceIndex;
-            const panelId = `experience-panel-${index}`;
-            const tabId = `experience-tab-${index}`;
-
-            return (
-              <div
-                key={service.title}
-                id={panelId}
-                role="tabpanel"
-                aria-labelledby={tabId}
-                hidden={!isActive}
-              >
-                <div className="experience-frame">
-                  <OptimizedImage image={service.image} alt="" loading="lazy" decoding="async" />
-                  <div className="experience-overlay">
-                    <span>0{index + 1}</span>
-                    <h3>{service.title}</h3>
-                    <p>{service.promise}</p>
-                    <ul className="experience-detail-list" aria-label={`מה כולל ${service.title}`}>
-                      {service.details.slice(0, 3).map((detail) => (
-                        <li key={detail}>{detail}</li>
-                      ))}
-                    </ul>
-                    <a href={buildInquiryWhatsappLink(whatsappBase, service.title)}>
-                      {siteMicrocopy.experienceCta}
-                      <ArrowLeft aria-hidden="true" size={16} />
-                    </a>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-          <div className="experience-meter" aria-hidden="true">
-            <span style={{ '--meter-index': activeExperienceIndex } as CSSProperties} />
-          </div>
-        </div>
-      </div>
     </section>
   );
 };
@@ -203,44 +87,6 @@ export const BoutiqueSection = () => {
               <Icon aria-hidden="true" className="card-icon" />
               <h3>{reason.title}</h3>
               <p>{reason.text}</p>
-            </article>
-          );
-        })}
-      </div>
-    </div>
-    </section>
-  );
-};
-
-export const ServicesSection = () => {
-  const { sectionCopy, services, whatsappBase } = useSiteSectionPreviewData();
-  return (
-    <section id="experiences" className="section" aria-labelledby="experiences-title">
-    <div className="container">
-      <SectionHeading eyebrow={sectionCopy.services.eyebrow} title={sectionCopy.services.title} id="experiences-title">
-        <TextParagraphs text={sectionCopy.services.text} />
-      </SectionHeading>
-      <div className="service-grid">
-        {services.map((service) => {
-          const Icon = service.icon;
-          return (
-            <article className="service-card reveal" key={service.title}>
-              <OptimizedImage image={service.image} alt="" loading="lazy" decoding="async" />
-              <div className="service-body">
-                <Icon aria-hidden="true" className="card-icon" />
-                <h3>{service.title}</h3>
-                <p className="service-subtitle">{service.subtitle}</p>
-                <p>{service.description}</p>
-                <ul>
-                  {service.details.slice(0, 4).map((detail) => (
-                    <li key={detail}>{detail}</li>
-                  ))}
-                </ul>
-                <a href={buildInquiryWhatsappLink(whatsappBase, service.title)} className="text-link">
-                  {service.cta}
-                  <ArrowLeft aria-hidden="true" size={16} />
-                </a>
-              </div>
             </article>
           );
         })}
