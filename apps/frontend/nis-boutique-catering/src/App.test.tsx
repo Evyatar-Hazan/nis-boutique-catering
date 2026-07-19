@@ -37,7 +37,7 @@ describe('Nis boutique catering app', () => {
     expect(heroView.getByText('הכנה טרייה')).toBeInTheDocument();
     expect(heroView.getByText('הגשה מוכנה')).toBeInTheDocument();
     expect(heroView.getByText('תיאום אישי')).toBeInTheDocument();
-    expect(heroView.getByRole('img', { name: 'שיפודי סלמון עם לימון, מוכנים להגשה' })).toHaveAttribute('width', '1500');
+    expect(heroView.getByRole('img', { name: 'מנת אירוח של Nis, מוכנה להגשה' })).toHaveAttribute('width', '1500');
     expect(hero.querySelector('video')).not.toBeInTheDocument();
     expect(container.querySelector('.intro-band')).not.toBeInTheDocument();
     expect(container.querySelector('.manifesto-section')).not.toBeInTheDocument();

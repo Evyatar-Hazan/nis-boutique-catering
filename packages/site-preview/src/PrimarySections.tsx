@@ -37,7 +37,7 @@ export const HeroSection = ({ heroWhatsapp }: { readonly heroWhatsapp: string })
           <OptimizedImage
             className="hero-main-image"
             image={heroMedia.primary}
-            alt="שיפודי סלמון עם לימון, מוכנים להגשה"
+            alt="מנת אירוח של Nis, מוכנה להגשה"
             loading="eager"
             fetchPriority="high"
             decoding="async"
