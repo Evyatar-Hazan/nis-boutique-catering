@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+export * from './publicSite';
+
 export const galleryCategoryIds = ['all', 'tables', 'trays', 'salads', 'coffee', 'fish'] as const;
 
 export const editableGalleryCategorySchema = z.enum(['tables', 'trays', 'salads', 'coffee', 'fish']);

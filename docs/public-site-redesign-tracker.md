@@ -514,7 +514,7 @@ Audit measurements captured for `ARC-001`: frontend `App.tsx` 140 lines; admin `
 
 #### ARC-001 — Map component ownership and duplication
 
-- **Status:** `VERIFYING`
+- **Status:** `DONE`
 - **Dependencies:** `GOV-002`.
 - **Definition:** למפות את כל רכיבי האתר הקיים וה־preview, לזהות מה נשמר, מה מתמזג, מה נמחק ומה הופך ל־primitive משותף.
 - **Acceptance criteria:**
@@ -523,11 +523,11 @@ Audit measurements captured for `ARC-001`: frontend `App.tsx` 140 lines; admin `
   - נבדקו `apps/frontend`, `packages/site-preview` והסטודיו העתידי לפני יצירת abstractions.
   - כל abstraction חדשה מוצדקת על ידי יותר מצרכן אחד או business contract ברור.
 - **Verification:** duplication table + `rg` על שמות/markup/styles חוזרים + review של dependency graph.
-- **Evidence (2026-07-20):** component ownership table above; `rg` consumer/export audit; file-size audit; `shasum`/`diff` confirmed exact duplicate IntroBand renderer and near-duplicate image/media helpers. Target ownership assigned for every current section, preview, chrome, editor and backend capability; no additional shared package approved.
+- **Evidence (2026-07-20):** component ownership table above; `rg` consumer/export audit; file-size audit; `shasum`/`diff` confirmed exact duplicate IntroBand renderer and near-duplicate image/media helpers. Target ownership assigned for every current section, preview, chrome, editor and backend capability; no additional shared package approved. Local `pnpm validate` passed; commit `6e2ba21`; CI `29704553125` and deploy `29704553137` succeeded; public/studio returned HTTP 200 post-deploy.
 
 #### ARC-002 — Define the six-section content contract
 
-- **Status:** `BACKLOG`
+- **Status:** `VERIFYING`
 - **Dependencies:** `ARC-001`, Cloudflare architecture from `GOV-003`.
 - **Definition:** להגדיר schema טיפוסי יחיד עבור Hero, Services, Gallery, Process, Trust ו־Contact.
 - **Acceptance criteria:**
@@ -536,7 +536,7 @@ Audit measurements captured for `ARC-001`: frontend `App.tsx` 140 lines; admin `
   - אין שדות כפולים בין `settings`, `sections`, `services`, `gallery` ו־`media`.
   - defaults, validation errors ו־migration behavior מוגדרים.
 - **Verification:** type-check, schema unit tests, valid/invalid fixtures וצריכה משותפת על ידי studio/sync/frontend.
-- **Evidence:** pending.
+- **Evidence (2026-07-20):** `packages/content-schema/src/publicSite.ts` exports strict `publicSiteDocumentSchema` version 2 and inferred readonly-compatible types; the document contains exactly Hero, Services, Gallery, Process, Trust and Contact plus one media registry and settings object. Counts, IDs, order uniqueness, R2 object metadata and active image/video references are validated. The legacy schema remains exported only for staged migration and cannot be parsed as v2. `publicSite.test.ts` covers valid, extra legacy section, count, media-reference and duplicate-order fixtures. Package type-check/lint and 14 tests passed; full workspace `pnpm validate` passed.
 
 #### ARC-003 — Define component and package boundaries
 
@@ -1082,7 +1082,7 @@ Audit measurements captured for `ARC-001`: frontend `App.tsx` 140 lines; admin `
 | Phase | Status | Done | Total |
 |---|---|---:|---:|
 | Phase 0 — Governance | In progress | 3 | 4 |
-| Phase 1 — Architecture | Blocked | 0 | 4 |
+| Phase 1 — Architecture | In progress | 1 | 4 |
 | Phase 2 — Design system | Blocked | 0 | 4 |
 | Phase 3 — Public site | Blocked | 0 | 6 |
 | Phase 4 — Cloudflare backend | Blocked | 0 | 10 |
@@ -1135,3 +1135,11 @@ Audit measurements captured for `ARC-001`: frontend `App.tsx` 140 lines; admin `
 - אותרו duplicate מדויק של IntroBand ו־near-duplicates של OptimizedImage/media helpers; הוגדר owner יחיד ב־`packages/site-preview`.
 - תועדו המונוליתים לפיצול: admin `App.tsx` עם 1,016 שורות ו־`site-preview/MainSections.tsx` עם 919 שורות.
 - נקבע שלא ליצור package משותף חדש; החבילות הקיימות מכסות contracts ו־section rendering.
+- commit `6e2ba21` עבר CI `29704553125` ו־deploy `29704553137`; שני משטחי production החזירו 200. ‏`ARC-001` נסגר והעבודה עברה ל־`ARC-002`.
+
+### 2026-07-20 — ARC-002 six-section content contract
+
+- `ARC-002` עבר ל־`VERIFYING`; נוסף `publicSiteDocumentSchema` version 2 תחת `packages/content-schema` בלי לשבור את חוזה ה־legacy לפני migration.
+- החוזה אוכף שישה sections בלבד, counts עסקיים, IDs/orders ייחודיים והפניות תקינות למדיה מסוג image/video עם R2 object metadata.
+- שדות settings/media/section קיימים פעם אחת בלבד; testimonials דורשים `source` מאומת וברירת המחדל שלהם ריקה.
+- נוספו חמישה tests ממוקדים; חבילת schema מציגה 14/14 tests וכל `pnpm validate` עבר.
