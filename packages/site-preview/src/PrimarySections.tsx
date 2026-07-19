@@ -4,6 +4,7 @@ import { OptimizedImage } from './OptimizedImage';
 import { useSiteSectionPreviewData } from './SiteSectionPreviewData';
 import { IntroBandSectionContent } from './IntroBandSectionContent';
 import { MultilineTitle, TextParagraphs, heroBadgeIcons } from './SectionShared';
+import { Button } from './primitives/Button';
 
 export const HeroSection = ({ heroWhatsapp }: { readonly heroWhatsapp: string }) => {
   const { brandMedia, heroBadges, heroContent, heroMedia, heroSceneNotes, heroStats, siteMicrocopy, videoMedia } = useSiteSectionPreviewData();
@@ -84,14 +85,14 @@ export const HeroSection = ({ heroWhatsapp }: { readonly heroWhatsapp: string })
           <p className="hero-kicker">{heroContent.kicker}</p>
           <p className="hero-text">{heroContent.text}</p>
           <div className="hero-actions" aria-label="פעולות ראשיות">
-            <a className="button primary" href={heroWhatsapp} data-event="hero_whatsapp">
+            <Button href={heroWhatsapp} data-event="hero_whatsapp">
               <MessageCircle aria-hidden="true" />
               {siteMicrocopy.heroPrimaryCta}
-            </a>
-            <a className="button secondary" href="#gallery">
+            </Button>
+            <Button href="#gallery" variant="secondary">
               <Camera aria-hidden="true" />
               {siteMicrocopy.heroSecondaryCta}
-            </a>
+            </Button>
           </div>
           <p className="microcopy">{siteMicrocopy.heroMicrocopy}</p>
           <div className="hero-badges" aria-label="נקודות אמון">

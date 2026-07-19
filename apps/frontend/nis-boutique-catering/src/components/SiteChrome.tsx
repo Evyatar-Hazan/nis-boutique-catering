@@ -1,7 +1,6 @@
-import { type RefObject } from 'react';
 import { ChevronLeft, ChevronRight, MessageCircle, Phone, X } from 'lucide-react';
+import { Dialog, OptimizedImage } from '@monorepo/site-preview';
 import { brandMedia, navItems, phoneDisplay, phoneHref, siteMicrocopy, type ImageAsset } from '../data/siteContent';
-import { OptimizedImage } from './OptimizedImage';
 
 interface TopbarProps {
   readonly activeNavSection: string;
@@ -87,7 +86,6 @@ export const FloatingActions = ({ floatingWhatsapp }: { readonly floatingWhatsap
 );
 
 interface LightboxDialogProps {
-  readonly dialogRef: RefObject<HTMLDivElement | null>;
   readonly image: {
     readonly alt: string;
     readonly image: ImageAsset;
@@ -100,7 +98,6 @@ interface LightboxDialogProps {
 }
 
 export const LightboxDialog = ({
-  dialogRef,
   image,
   imageCount,
   onClose,
@@ -112,13 +109,16 @@ export const LightboxDialog = ({
   }
 
   return (
-    <div
-      ref={dialogRef}
+    <Dialog
+      bodyClassName="is-lightbox-open"
       className="lightbox"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="lightbox-caption"
-      tabIndex={-1}
+      labelledBy="lightbox-caption"
+      onClose={onClose}
+      open
+      onKeyDown={(event) => {
+        if (event.key === 'ArrowLeft') { event.preventDefault(); onNext(); }
+        if (event.key === 'ArrowRight') { event.preventDefault(); onPrevious(); }
+      }}
     >
       <button
         className="lightbox-backdrop"
@@ -165,6 +165,6 @@ export const LightboxDialog = ({
       <p id="lightbox-caption" className="lightbox-caption">
         {image.title}
       </p>
-    </div>
+    </Dialog>
   );
 };

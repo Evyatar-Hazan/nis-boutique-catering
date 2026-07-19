@@ -1,56 +1,12 @@
-import { type CSSProperties, type FormEventHandler, type KeyboardEvent as ReactKeyboardEvent, type ReactNode, useEffect, useState } from 'react';
-import { ArrowLeft, Camera, CheckCircle2, ChefHat, Clock, Mail, MapPin, MessageCircle, Package, Phone, Play, Send, Utensils } from 'lucide-react';
+import { type CSSProperties, type FormEventHandler, type KeyboardEvent as ReactKeyboardEvent, useEffect, useState } from 'react';
+import { ArrowLeft, Camera, CheckCircle2, Mail, MapPin, MessageCircle, Phone, Play, Send } from 'lucide-react';
 import type { GalleryCategory, GalleryImage } from './sitePreviewTypes';
 import { buildInquiryWhatsappLink } from './contactHelpers';
 import { OptimizedImage } from './OptimizedImage';
 import { useSiteSectionPreviewData } from './SiteSectionPreviewData';
 import { IntroBandSectionContent } from './IntroBandSectionContent';
-
-const SectionHeading = ({
-  eyebrow,
-  title,
-  children,
-  id,
-  className,
-}: {
-  readonly eyebrow: string;
-  readonly title: string;
-  readonly children?: ReactNode;
-  readonly id: string;
-  readonly className?: string;
-}) => (
-  <div className={className ?? 'section-heading reveal'}>
-    <p className="eyebrow">{eyebrow}</p>
-    <h2 id={id}>{title}</h2>
-    {children}
-  </div>
-);
-
-const MultilineTitle = ({ text }: { readonly text: string }) => (
-  <>
-    {text.split('\n').map((line, index, lines) => (
-      <span key={line}>
-        {line}
-        {index < lines.length - 1 ? (
-          <>
-            <br />
-            {' '}
-          </>
-        ) : null}
-      </span>
-    ))}
-  </>
-);
-
-const TextParagraphs = ({ text }: { readonly text?: string }) => (
-  <>
-    {text?.split('|').filter(Boolean).map((paragraph) => (
-      <p key={paragraph}>{paragraph}</p>
-    ))}
-  </>
-);
-
-const heroBadgeIcons = [ChefHat, Utensils, Package, Clock] as const;
+import { MultilineTitle, SectionHeading, TextParagraphs, heroBadgeIcons } from './SectionShared';
+import { Button } from './primitives/Button';
 
 export const HeroSection = ({ heroWhatsapp }: { readonly heroWhatsapp: string }) => {
   const { brandMedia, heroBadges, heroContent, heroMedia, heroSceneNotes, heroStats, siteMicrocopy, videoMedia } = useSiteSectionPreviewData();
@@ -135,14 +91,14 @@ export const HeroSection = ({ heroWhatsapp }: { readonly heroWhatsapp: string })
           {heroContent.text}
         </p>
         <div className="hero-actions" aria-label="פעולות ראשיות">
-          <a className="button primary" href={heroWhatsapp} data-event="hero_whatsapp">
+          <Button href={heroWhatsapp} data-event="hero_whatsapp">
             <MessageCircle aria-hidden="true" />
             {siteMicrocopy.heroPrimaryCta}
-          </a>
-          <a className="button secondary" href="#gallery">
+          </Button>
+          <Button href="#gallery" variant="secondary">
             <Camera aria-hidden="true" />
             {siteMicrocopy.heroSecondaryCta}
-          </a>
+          </Button>
         </div>
         <p className="microcopy">{siteMicrocopy.heroMicrocopy}</p>
         <div className="hero-badges" aria-label="נקודות אמון">
@@ -841,14 +797,14 @@ export const ContactSection = ({
         <h2 id="contact-title">{sectionCopy.contact.title}</h2>
         <TextParagraphs text={sectionCopy.contact.text} />
         <div className="contact-actions">
-          <a className="button primary" href={contactWhatsapp} data-event="contact_whatsapp">
+          <Button href={contactWhatsapp} data-event="contact_whatsapp">
             <MessageCircle aria-hidden="true" />
             {siteMicrocopy.contactPrimaryCta}
-          </a>
-          <a className="button secondary" href={phoneHref}>
+          </Button>
+          <Button href={phoneHref} variant="secondary">
             <Phone aria-hidden="true" />
             {siteMicrocopy.contactPhoneCta}
-          </a>
+          </Button>
           <a className="contact-line" href={`mailto:${email}`}>
             <Mail aria-hidden="true" />
             {email}
@@ -908,10 +864,10 @@ export const ContactSection = ({
           {siteMicrocopy.formMessageLabel}
           <textarea name="message" rows={5} />
         </label>
-        <button className="button primary full-field" type="submit">
+        <Button fullWidth type="submit">
           <Send aria-hidden="true" />
           {siteMicrocopy.formSubmitLabel}
-        </button>
+        </Button>
       </form>
     </div>
     </section>

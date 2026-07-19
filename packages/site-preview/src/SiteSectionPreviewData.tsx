@@ -5,15 +5,34 @@ import type {
   GalleryImage,
   ImageAsset,
 } from './sitePreviewTypes';
+import type { IconComponent } from './primitives/Cards';
+
+export interface SiteMicrocopy {
+  readonly navExperiencesLabel: string; readonly navGalleryLabel: string; readonly navProcessLabel: string;
+  readonly navFaqLabel: string; readonly navContactLabel: string; readonly galleryAllLabel: string;
+  readonly galleryTablesLabel: string; readonly galleryTraysLabel: string; readonly gallerySaladsLabel: string;
+  readonly galleryCoffeeLabel: string; readonly galleryFishLabel: string; readonly topbarWhatsappLabel: string;
+  readonly footerTagline: string; readonly footerWhatsappLabel: string; readonly studioLoginLabel: string;
+  readonly floatingWhatsappAria: string; readonly mobileActionsAria: string; readonly mobileWhatsappLabel: string;
+  readonly mobilePhoneLabel: string; readonly heroPrimaryCta: string; readonly heroSecondaryCta: string;
+  readonly heroMicrocopy: string; readonly heroShowcaseTitle: string; readonly heroShowcaseText: string;
+  readonly heroVideoChip: string; readonly experienceCta: string; readonly contactPrimaryCta: string;
+  readonly contactPhoneCta: string; readonly contactLocation: string; readonly contactPromiseHeading: string;
+  readonly formNameLabel: string; readonly formPhoneLabel: string; readonly formEmailLabel: string;
+  readonly formInterestLabel: string; readonly formDateLabel: string; readonly formGuestsLabel: string;
+  readonly formDeliveryLabel: string; readonly formMessageLabel: string; readonly formSubmitLabel: string;
+  readonly whatsappTopbarMessage: string; readonly whatsappHeroTopic: string; readonly whatsappContactMessage: string;
+  readonly whatsappFooterMessage: string; readonly whatsappFloatingMessage: string;
+}
 
 export type SiteSectionPreviewData = {
-  readonly audienceCards: readonly { readonly title: string; readonly text: string; readonly icon: React.ComponentType<any> }[];
+  readonly audienceCards: readonly { readonly title: string; readonly text: string; readonly icon: IconComponent }[];
   readonly brandMedia: Record<string, ImageAsset>;
-  readonly boutiqueReasons: readonly { readonly title: string; readonly text: string; readonly icon: React.ComponentType<any> }[];
+  readonly boutiqueReasons: readonly { readonly title: string; readonly text: string; readonly icon: IconComponent }[];
   readonly contactDeliveryOptions: readonly string[];
   readonly contactInterestOptions: readonly string[];
-  readonly coordinationCards: readonly { readonly title: string; readonly text: string; readonly icon: React.ComponentType<any> }[];
-  readonly editorialCards: readonly { readonly label: string; readonly title: string; readonly text: string; readonly icon: React.ComponentType<any>; readonly image: ImageAsset }[];
+  readonly coordinationCards: readonly { readonly title: string; readonly text: string; readonly icon: IconComponent }[];
+  readonly editorialCards: readonly { readonly label: string; readonly title: string; readonly text: string; readonly icon: IconComponent; readonly image: ImageAsset }[];
   readonly faqs: readonly { readonly question: string; readonly answer: string }[];
   readonly foodMedia: Record<string, ImageAsset>;
   readonly galleryCategories: readonly Readonly<{ id: GalleryCategory; label: string }>[];
@@ -26,9 +45,9 @@ export type SiteSectionPreviewData = {
   readonly manifestoMoments: readonly { readonly label: string; readonly title: string; readonly text: string; readonly image: ImageAsset }[];
   readonly menuGroups: readonly { readonly title: string; readonly intro: string; readonly items: readonly string[] }[];
   readonly phoneHref: string;
-  readonly processSteps: readonly { readonly title: string; readonly text: string; readonly icon: React.ComponentType<any> }[];
+  readonly processSteps: readonly { readonly title: string; readonly text: string; readonly icon: IconComponent }[];
   readonly sectionCopy: Record<string, { readonly eyebrow: string; readonly title: string; readonly text?: string; readonly extraText?: string }>;
-  readonly siteMicrocopy: any;
+  readonly siteMicrocopy: SiteMicrocopy;
   readonly seoTopics: readonly string[];
   readonly services: readonly {
     readonly title: string;
@@ -39,11 +58,11 @@ export type SiteSectionPreviewData = {
     readonly details: readonly string[];
     readonly cta: string;
     readonly image: ImageAsset;
-    readonly icon: React.ComponentType<any>;
+    readonly icon: IconComponent;
   }[];
   readonly signatureMoments: readonly { readonly title: string; readonly text: string; readonly image: ImageAsset }[];
   readonly storyMoments: readonly { readonly title: string; readonly text: string }[];
-  readonly trustCards: readonly { readonly title: string; readonly text: string; readonly icon: React.ComponentType<any> }[];
+  readonly trustCards: readonly { readonly title: string; readonly text: string; readonly icon: IconComponent }[];
   readonly videoMedia: Record<string, string>;
   readonly whatsappBase: string;
 };

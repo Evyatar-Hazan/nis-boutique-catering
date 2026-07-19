@@ -20,3 +20,4 @@ export {
 } from './MainSections';
 export * from './SiteSectionPreviewData';
 export * from './sitePreviewTypes';
+export * from './primitives';

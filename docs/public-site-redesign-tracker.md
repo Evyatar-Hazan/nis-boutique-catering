@@ -652,7 +652,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### UI-001 — Consolidate design tokens and Hebrew typography
 
-- **Status:** `VERIFYING`
+- **Status:** `DONE`
 - **Dependencies:** `ARC-003`.
 - **Definition:** לאחד colors, spacing, type scale, radius, shadows, z-index, motion ו־breakpoints למקור יחיד.
 - **Acceptance criteria:**
@@ -661,11 +661,11 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
   - כל color pair עומד ב־WCAG AA.
   - font loading אינו חוסם rendering ואינו גורם CLS משמעותי.
 - **Verification:** style audit, contrast check, screenshots בעברית ו־Lighthouse.
-- **Evidence (2026-07-20):** `packages/site-preview/src/styles/tokens.css` is the single public/preview token source for typography, brand/semantic colors, spacing, layout, radii, shadows, z-index, motion and documented breakpoints; both public and studio preview consume it through the package base stylesheet. All legacy `Playfair Display` declarations were replaced by `--font-display`; `Noto Serif Hebrew` 600/700/800 and Assistant 400–800 load with preconnect and `display=swap`, with explicit Hebrew/system fallbacks. `scripts/check-design-tokens.mjs` enforces eight token groups, font loading rules and eight WCAG AA text pairs and runs in root `validate`. Local Playwright at 1440/375 confirmed the computed heading/body families, loaded fonts, 0 console errors and no horizontal overflow; screenshots are in ignored `output/playwright/ui-001-{1440,375}.png`. Mobile Lighthouse: Accessibility 100, Best Practices 100, SEO 100, contrast pass, CLS 0; dev-server performance score is non-comparable to the production baseline. The WhatsApp surface was darkened to the semantic token `#0d6b60`, improving its ivory contrast from 3.98:1 to 6.16:1.
+- **Evidence (2026-07-20):** `packages/site-preview/src/styles/tokens.css` is the single public/preview token source for typography, brand/semantic colors, spacing, layout, radii, shadows, z-index, motion and documented breakpoints; both public and studio preview consume it through the package base stylesheet. All legacy `Playfair Display` declarations were replaced by `--font-display`; `Noto Serif Hebrew` 600/700/800 and Assistant 400–800 load with preconnect and `display=swap`, with explicit Hebrew/system fallbacks. `scripts/check-design-tokens.mjs` enforces eight token groups, font loading rules and eight WCAG AA text pairs and runs in root `validate`. Local Playwright at 1440/375 confirmed computed families, 0 console errors and no horizontal overflow; screenshots are ignored local artifacts. Production mobile Lighthouse: Performance 65, Accessibility 100, Best Practices 96, SEO 100, contrast pass, LCP 9.2s, TBT 0ms and CLS 0. The WhatsApp surface changed to semantic `#0d6b60`, improving ivory contrast from 3.98:1 to 6.16:1. Commit `d74897e`; CI `29705344793` and deploy `29705344824` succeeded; public/studio HTTP 200 and production browser re-confirmed loaded Noto, 0 errors and no overflow.
 
 #### UI-002 — Build or refine reusable primitives
 
-- **Status:** `BACKLOG`
+- **Status:** `VERIFYING`
 - **Dependencies:** `UI-001`, `ARC-003`.
 - **Definition:** ליצור או לשפר רק את ה־primitives שנדרשים בפועל: `Section`, `SectionHeading`, `Button`, `MediaCard`, `ServiceCard`, `IconTextItem`, `Accordion`, `FormField`, `OptimizedImage` ו־`Dialog/Lightbox`.
 - **Acceptance criteria:**
@@ -674,7 +674,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
   - variants משתמשים ב־union מפורש ולא boolean soup.
   - קיימות בדיקות לרכיבים אינטראקטיביים ולמצבי edge.
 - **Verification:** component tests, keyboard tests, visual states ו־duplication review.
-- **Evidence:** pending.
+- **Evidence (2026-07-20):** `packages/site-preview/src/primitives/` now owns typed `Section`, `SectionHeading`, discriminated `Button`, `MediaCard`, `ServiceCard`, `IconTextItem`, `Accordion`, `FormField`, `OptimizedImage` and focus-trapping `Dialog`. The package public API exports them deliberately; compatibility re-exports avoid breaking consumers. The duplicate frontend `OptimizedImage` and app-specific lightbox focus hook were removed; `SiteChrome` consumes the shared image/dialog, both section entrypoints consume the shared Button/Heading, and the duplicate MainSections helpers were deleted. All primitive props are readonly, variants are explicit unions and remaining package/app TypeScript contains no `any`. The site-preview package now participates in lint/test/type-check and is compiled through both consuming app builds; 8/8 package tests cover link/button variants, accordion single-open behavior, form error associations, dialog Escape/focus restoration, responsive image dimensions and existing media/contact helpers. Frontend 9/9 tests cover lightbox keyboard behavior after the refactor. Local mobile browser smoke had 0 console errors and no overflow; architecture boundary check and full workspace validation passed.
 
 #### UI-003 — Simplify global navigation and conversion surfaces
 
@@ -1167,7 +1167,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 |---|---|---:|---:|
 | Phase 0 — Governance | Done | 4 | 4 |
 | Phase 1 — Architecture | Done | 4 | 4 |
-| Phase 2 — Design system | Ready | 0 | 4 |
+| Phase 2 — Design system | In progress | 1 | 4 |
 | Phase 3 — Public site | Ready with dependencies | 0 | 6 |
 | Phase 4 — Cloudflare backend | Ready with dependencies | 0 | 10 |
 | Phase 5 — Migration | Ready with dependencies | 0 | 6 |
@@ -1258,3 +1258,11 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - כל כותרות `Playfair Display` הועברו ל־`Noto Serif Hebrew`; Assistant נשאר body, עם preconnect, ‏`display=swap` ו־fallback מפורש.
 - נוסף `pnpm design:tokens:check` לשער `validate`; הוא בודק שמונה קבוצות tokens, font loading ושמונה זוגות צבעים WCAG AA.
 - Playwright ב־1440/375 אישר fonts מחושבים, 0 שגיאות console ו־0 overflow; Lighthouse mobile אישר Accessibility/Best Practices/SEO 100 ו־CLS 0.
+- commit `d74897e` עבר CI `29705344793` ו־deploy `29705344824`; production Lighthouse נתן Performance 65, Accessibility 100, LCP 9.2s ו־CLS 0. ‏`UI-001` נסגר והעבודה עברה ל־`UI-002`.
+
+### 2026-07-20 — UI-002 reusable primitives
+
+- `UI-002` עבר ל־`VERIFYING`; נוספה ספריית primitives typed ו־readonly ב־`packages/site-preview`, בלי package חדש.
+- הוסרו המימוש הכפול של `OptimizedImage`, העתק ה־SectionHeading ולוגיקת focus trap ייעודית מה־frontend; ה־Dialog וה־image משותפים כעת ל־public ול־preview.
+- נוספו Button variants כ־union מפורש, cards, icon item, accordion, form field, dialog, section ו־heading; אין `any` בחבילת ה־preview או באפליקציית public.
+- חבילת `site-preview` צורפה לשערי build/lint/test/type-check; 8/8 בדיקות package ו־9/9 בדיקות frontend עברו, כולל keyboard/focus/lightbox.

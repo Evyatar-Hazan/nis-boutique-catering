@@ -1,25 +1,5 @@
-import { type ReactNode } from 'react';
 import { ChefHat, Clock, Package, Utensils } from 'lucide-react';
-
-export const SectionHeading = ({
-  eyebrow,
-  title,
-  children,
-  id,
-  className,
-}: {
-  readonly eyebrow: string;
-  readonly title: string;
-  readonly children?: ReactNode;
-  readonly id: string;
-  readonly className?: string;
-}) => (
-  <div className={className ?? 'section-heading reveal'}>
-    <p className="eyebrow">{eyebrow}</p>
-    <h2 id={id}>{title}</h2>
-    {children}
-  </div>
-);
+export { SectionHeading } from './primitives/SectionHeading';
 
 export const MultilineTitle = ({ text }: { readonly text: string }) => (
   <>

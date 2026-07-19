@@ -10,7 +10,6 @@ import { SectionSkeleton } from './components/SectionSkeleton';
 import { FloatingActions, Footer, LightboxDialog, Topbar } from './components/SiteChrome';
 import { contactInterestOptions, email, galleryImages, sectionIds, siteMicrocopy, siteVersion, type GalleryCategory } from './data/siteContent';
 import { defaultSiteSectionPreviewData } from './data/sitePreviewData';
-import { useLightboxDialog } from './hooks/useLightboxDialog';
 import { usePointerGlow } from './hooks/usePointerGlow';
 import { useRevealOnScroll } from './hooks/useRevealOnScroll';
 import { useScrollState } from './hooks/useScrollState';
@@ -53,13 +52,6 @@ function App() {
     },
     [filteredGalleryImages.length],
   );
-
-  const lightboxRef = useLightboxDialog({
-    isOpen: selectedImage !== null,
-    onClose: () => setSelectedImageIndex(null),
-    onNext: () => showAdjacentImage(1),
-    onPrevious: () => showAdjacentImage(-1),
-  });
 
   const topbarWhatsapp = buildWhatsappLink(siteMicrocopy.whatsappTopbarMessage);
   const heroWhatsapp = buildInquiryWhatsappLink(siteMicrocopy.whatsappHeroTopic);
@@ -125,7 +117,6 @@ function App() {
       <Footer email={email} footerWhatsapp={footerWhatsapp} version={siteVersion} />
       <FloatingActions floatingWhatsapp={floatingWhatsapp} />
       <LightboxDialog
-        dialogRef={lightboxRef}
         image={selectedImage}
         imageCount={filteredGalleryImages.length}
         onClose={() => setSelectedImageIndex(null)}
