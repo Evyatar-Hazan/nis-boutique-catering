@@ -1,22 +1,10 @@
 /* Wow pass: stronger cinematic/editorial direction */
 
-:root {
-  --ink-deep: #0f0a0d;
-  --ink-soft: #20161a;
-  --champagne: #f3e0bb;
-  --champagne-2: #c99a53;
-  --mist: rgba(255, 249, 242, 0.78);
-  --glass-dark: rgba(22, 14, 18, 0.56);
-  --glass-light: rgba(255, 248, 238, 0.12);
-  --hero-line: rgba(255, 240, 220, 0.16);
-  --lift-ease: cubic-bezier(0.19, 1, 0.22, 1);
-}
-
 .site-shell {
   background:
     radial-gradient(circle at 12% 12%, rgba(160, 74, 87, 0.18), transparent 22rem),
     radial-gradient(circle at 85% 18%, rgba(216, 187, 132, 0.14), transparent 24rem),
-    linear-gradient(180deg, #f8efe6 0%, #fffaf6 16%, #f5ece4 58%, #fffaf8 100%);
+    linear-gradient(180deg, #f8efe6 0%, var(--ivory) 16%, var(--cream) 58%, #fffaf8 100%);
 }
 
 .site-shell::after {
@@ -85,7 +73,7 @@
 }
 
 .hero h1 {
-  font-size: clamp(2.6rem, 3.32vw, 3.75rem);
+  font-size: var(--type-display);
   line-height: 0.94;
   max-width: 10.8ch;
 }
@@ -265,7 +253,7 @@
 }
 
 .hero-stage-caption strong {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--font-display);
   font-size: 1.46rem;
   line-height: 1.05;
 }
@@ -530,7 +518,7 @@
 
 .manifesto-card-copy span {
   color: var(--champagne);
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--font-display);
   font-size: 1.34rem;
   font-weight: 700;
 }
@@ -538,7 +526,7 @@
 .manifesto-card-copy h3 {
   margin: 0;
   color: var(--ivory);
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--font-display);
   font-size: clamp(1.32rem, 1.75vw, 1.86rem);
   line-height: 1.08;
 }
@@ -612,7 +600,7 @@
 
 .signature-section,
 .trust-section {
-  background: linear-gradient(180deg, #fffaf6 0%, #f9efe6 100%);
+  background: linear-gradient(180deg, var(--ivory) 0%, #f9efe6 100%);
 }
 
 .boutique-section {
@@ -757,7 +745,7 @@
 .booking-basics-section {
   background:
     linear-gradient(135deg, rgba(89, 115, 97, 0.14), transparent 42%),
-    linear-gradient(180deg, #fffaf6 0%, #f6eee7 100%);
+    linear-gradient(180deg, var(--ivory) 0%, #f6eee7 100%);
 }
 
 .booking-basics-content {
@@ -1102,7 +1090,7 @@
 .floating-whatsapp {
   background:
     linear-gradient(135deg, rgba(255, 255, 255, 0.08), transparent),
-    linear-gradient(135deg, #1f1718, #100b0e);
+    linear-gradient(135deg, var(--ink), #100b0e);
   border: 1px solid rgba(255, 239, 214, 0.12);
   box-shadow: 0 28px 68px rgba(0, 0, 0, 0.3);
 }

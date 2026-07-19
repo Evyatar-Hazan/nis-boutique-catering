@@ -583,7 +583,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### GOV-004 — Run the final implementation readiness review
 
-- **Status:** `VERIFYING`
+- **Status:** `DONE`
 - **Dependencies:** `GOV-002`, `GOV-003`, `ARC-001`, `ARC-002`, `ARC-003`.
 - **Definition:** לבצע review של כל התוכנית המאוחדת ולאשר סדר ביצוע שאינו יוצר כפילות או עבודה זמנית שתימחק בשלב האדמין/Drive.
 - **Acceptance criteria:**
@@ -592,7 +592,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
   - הוגדר rollback לכל שינוי migration/deploy-sensitive.
   - שער המימוש עודכן מ־`BLOCKED` ל־`READY` בהחלטה מפורשת.
 - **Verification:** review של המסמך מתחילתו ועד סופו ורישום החלטת readiness ב־Change Log.
-- **Evidence (2026-07-20):** all 51 task definitions and dependency order were reviewed against the v2 contract, package ownership, migration map, rollback gates and production workflow. All 12 implementation decisions are now decided. `scripts/check-redesign-tracker.mjs` enforces 51 unique task IDs, one Definition/Acceptance/Verification/Evidence block per task, known task references, no open decision and a READY gate; it is part of root `validate`. `pnpm tracker:check`, the migration audit and `git diff --check` passed. Implementation gate is explicitly `READY`; production cutover/retirement approvals remain scoped to their later tasks.
+- **Evidence (2026-07-20):** all 51 task definitions and dependency order were reviewed against the v2 contract, package ownership, migration map, rollback gates and production workflow. All 12 implementation decisions are now decided. `scripts/check-redesign-tracker.mjs` enforces 51 unique task IDs, one Definition/Acceptance/Verification/Evidence block per task, known task references, no open decision and a READY gate; it is part of root `validate`. Full `pnpm validate` passed. Commit `af1e9e8`; CI `29705118399` and deploy `29705118395` succeeded; public/studio returned HTTP 200 post-deploy. Implementation gate is explicitly `READY`; production cutover/retirement approvals remain scoped to their later tasks.
 
 ### Phase 1 — Architecture and contracts
 
@@ -652,7 +652,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### UI-001 — Consolidate design tokens and Hebrew typography
 
-- **Status:** `BACKLOG`
+- **Status:** `VERIFYING`
 - **Dependencies:** `ARC-003`.
 - **Definition:** לאחד colors, spacing, type scale, radius, shadows, z-index, motion ו־breakpoints למקור יחיד.
 - **Acceptance criteria:**
@@ -661,7 +661,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
   - כל color pair עומד ב־WCAG AA.
   - font loading אינו חוסם rendering ואינו גורם CLS משמעותי.
 - **Verification:** style audit, contrast check, screenshots בעברית ו־Lighthouse.
-- **Evidence:** pending.
+- **Evidence (2026-07-20):** `packages/site-preview/src/styles/tokens.css` is the single public/preview token source for typography, brand/semantic colors, spacing, layout, radii, shadows, z-index, motion and documented breakpoints; both public and studio preview consume it through the package base stylesheet. All legacy `Playfair Display` declarations were replaced by `--font-display`; `Noto Serif Hebrew` 600/700/800 and Assistant 400–800 load with preconnect and `display=swap`, with explicit Hebrew/system fallbacks. `scripts/check-design-tokens.mjs` enforces eight token groups, font loading rules and eight WCAG AA text pairs and runs in root `validate`. Local Playwright at 1440/375 confirmed the computed heading/body families, loaded fonts, 0 console errors and no horizontal overflow; screenshots are in ignored `output/playwright/ui-001-{1440,375}.png`. Mobile Lighthouse: Accessibility 100, Best Practices 100, SEO 100, contrast pass, CLS 0; dev-server performance score is non-comparable to the production baseline. The WhatsApp surface was darkened to the semantic token `#0d6b60`, improving its ivory contrast from 3.98:1 to 6.16:1.
 
 #### UI-002 — Build or refine reusable primitives
 
@@ -1165,7 +1165,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 | Phase | Status | Done | Total |
 |---|---|---:|---:|
-| Phase 0 — Governance | In progress | 3 | 4 |
+| Phase 0 — Governance | Done | 4 | 4 |
 | Phase 1 — Architecture | Done | 4 | 4 |
 | Phase 2 — Design system | Ready | 0 | 4 |
 | Phase 3 — Public site | Ready with dependencies | 0 | 6 |
@@ -1250,3 +1250,11 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - סדר הביצוע עודכן כך שה־public אינו משכפל שכבות זמניות שיימחקו במעבר ל־D1/R2 והאדמין החדש מתחיל רק לאחר API foundation.
 - שער המימוש הועבר ל־`READY`; cutover ו־retirement ממשיכים לדרוש את האישורים המפורשים המוגדרים ב־`MIG-004`/`MIG-006`.
 - נוסף `pnpm tracker:check` לשער `validate`; הוא מאמת 51 משימות ייחודיות, מבנה acceptance/evidence מלא, references תקינים, 12 החלטות סגורות ושער `READY`.
+- commit `af1e9e8` עבר CI `29705118399` ו־deploy `29705118395`; שני משטחי production החזירו 200. ‏`GOV-004` נסגר והעבודה עברה ל־`UI-001`.
+
+### 2026-07-20 — UI-001 design tokens and Hebrew typography
+
+- `UI-001` עבר ל־`VERIFYING`; נוסף מקור tokens יחיד ב־`packages/site-preview` ונמחקו הגדרות root כפולות בין base/theme.
+- כל כותרות `Playfair Display` הועברו ל־`Noto Serif Hebrew`; Assistant נשאר body, עם preconnect, ‏`display=swap` ו־fallback מפורש.
+- נוסף `pnpm design:tokens:check` לשער `validate`; הוא בודק שמונה קבוצות tokens, font loading ושמונה זוגות צבעים WCAG AA.
+- Playwright ב־1440/375 אישר fonts מחושבים, 0 שגיאות console ו־0 overflow; Lighthouse mobile אישר Accessibility/Best Practices/SEO 100 ו־CLS 0.

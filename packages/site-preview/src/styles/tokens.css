@@ -1,0 +1,80 @@
+:root {
+  /* Runtime state */
+  --pointer-x: 50%;
+  --pointer-y: 32%;
+  --scroll-progress: 0;
+
+  /* Typography */
+  --font-display: 'Noto Serif Hebrew', 'Times New Roman', serif;
+  --font-body: 'Assistant', 'Noto Sans Hebrew', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --type-xs: 0.75rem;
+  --type-sm: 0.875rem;
+  --type-base: 1rem;
+  --type-lg: 1.125rem;
+  --type-xl: 1.5rem;
+  --type-display: clamp(2.6rem, 3.32vw, 3.75rem);
+  --leading-tight: 0.98;
+  --leading-body: 1.65;
+
+  /* Brand and semantic colors */
+  --espresso: #110d10;
+  --espresso-2: #1a1318;
+  --cocoa: #2e1f28;
+  --ivory: #fffaf6;
+  --cream: #f5ece4;
+  --linen: #e8d9ca;
+  --sage: #597361;
+  --sage-soft: #dde7de;
+  --rose: #a04a57;
+  --clay: #ba6e4f;
+  --gold: #d8bb84;
+  --gold-dark: #a68142;
+  --ink: #1f1718;
+  --muted: #6f6260;
+  --paper: #ffffff;
+  --focus: #8a641f;
+  --danger: #9d2f2f;
+  --success: #2f6b46;
+  --whatsapp: #0d6b60;
+  --line: rgba(31, 23, 24, 0.12);
+  --line-strong: rgba(31, 23, 24, 0.24);
+  --ink-deep: #0f0a0d;
+  --ink-soft: #20161a;
+  --champagne: #f3e0bb;
+  --champagne-2: #c99a53;
+  --mist: rgba(255, 249, 242, 0.78);
+  --glass-dark: rgba(22, 14, 18, 0.56);
+  --glass-light: rgba(255, 248, 238, 0.12);
+  --hero-line: rgba(255, 240, 220, 0.16);
+
+  /* Spacing and layout */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --content-max: 73.75rem;
+  --breakpoint-mobile: 48rem;
+  --breakpoint-desktop: 61.25rem;
+
+  /* Shape, depth, layers and motion */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1.25rem;
+  --radius-pill: 999px;
+  --shadow-soft: 0 20px 52px rgba(18, 10, 15, 0.12);
+  --shadow-deep: 0 42px 110px rgba(18, 10, 15, 0.28);
+  --shadow-ring: 0 0 0 4px rgba(216, 187, 132, 0.24);
+  --z-content: 1;
+  --z-sticky: 40;
+  --z-progress: 90;
+  --z-overlay: 100;
+  --duration-fast: 180ms;
+  --duration-base: 240ms;
+  --duration-slow: 280ms;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --lift-ease: cubic-bezier(0.19, 1, 0.22, 1);
+}
