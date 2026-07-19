@@ -181,6 +181,18 @@
   transform: scaleX(1);
 }
 
+.mobile-menu-toggle {
+  display: none;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--paper);
+  color: var(--espresso);
+  cursor: pointer;
+}
+
 .topbar-cta,
 .button {
   position: relative;
@@ -1617,7 +1629,7 @@ details p {
 .gallery-item span {
   position: absolute;
   inset-inline: 12px;
-  inset-block-end: 12px;
+  inset-block-end: calc(12px + env(safe-area-inset-bottom));
   border: 1px solid rgba(255, 250, 242, 0.18);
   border-radius: 8px;
   background: rgba(24, 16, 12, 0.74);
@@ -2100,11 +2112,38 @@ details p {
   }
 
   .topbar {
-    grid-template-columns: 1fr auto;
+    grid-template-columns: minmax(0, 1fr) auto auto;
   }
 
   .nav-links {
     display: none;
+  }
+
+  .nav-links.is-open {
+    position: absolute;
+    inset-block-start: calc(100% + 8px);
+    inset-inline: 14px;
+    display: grid;
+    gap: var(--space-1);
+    padding: var(--space-3);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: var(--paper);
+    box-shadow: var(--shadow-soft);
+  }
+
+  .nav-links.is-open a {
+    min-height: 48px;
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-sm);
+  }
+
+  .nav-links.is-open a.is-active {
+    background: var(--cream);
+  }
+
+  .mobile-menu-toggle {
+    display: grid;
   }
 }
 
@@ -2167,13 +2206,13 @@ details p {
   }
 
   .topbar {
-    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-columns: minmax(0, 1fr) auto auto;
     padding: 10px 14px;
-    gap: 12px;
+    gap: 8px;
   }
 
   .brand {
-    width: clamp(188px, 48vw, 226px);
+    width: clamp(120px, 35vw, 160px);
     height: 54px;
     min-height: 54px;
     min-width: 0;

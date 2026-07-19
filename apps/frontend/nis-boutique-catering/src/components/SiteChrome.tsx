@@ -1,4 +1,5 @@
-import { ChevronLeft, ChevronRight, MessageCircle, Phone, X } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { ChevronLeft, ChevronRight, Menu, MessageCircle, Phone, X } from 'lucide-react';
 import { Dialog, OptimizedImage } from '@monorepo/site-preview';
 import { brandMedia, navItems, phoneDisplay, phoneHref, siteMicrocopy, type ImageAsset } from '../data/siteContent';
 
@@ -8,33 +9,43 @@ interface TopbarProps {
   readonly topbarWhatsapp: string;
 }
 
-export const Topbar = ({ activeNavSection, isScrolled, topbarWhatsapp }: TopbarProps) => (
-  <header className={isScrolled ? 'topbar is-scrolled' : 'topbar'} aria-label="ניווט ראשי">
-    <a className="brand" href="#top" aria-label="Nis, boutique catering">
-      <OptimizedImage
-        className="brand-logo"
-        image={brandMedia.logo}
-        alt="Nis - boutique catering"
-        decoding="async"
-      />
-    </a>
-    <nav className="nav-links">
-      {navItems.map((item) => (
-        <a
-          key={item.href}
-          href={item.href}
-          className={activeNavSection === item.href ? 'is-active' : undefined}
-        >
-          {item.label}
-        </a>
-      ))}
-    </nav>
-    <a className="topbar-cta" href={topbarWhatsapp} data-event="topbar_whatsapp">
-      <MessageCircle aria-hidden="true" size={18} />
-      {siteMicrocopy.topbarWhatsappLabel}
-    </a>
-  </header>
-);
+export const Topbar = ({ activeNavSection, isScrolled, topbarWhatsapp }: TopbarProps) => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement | null>(null);
+  useEffect(() => {
+    if (!isMenuOpen) return undefined;
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        setIsMenuOpen(false);
+        menuButtonRef.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [isMenuOpen]);
+  return (
+    <header className={isScrolled ? 'topbar is-scrolled' : 'topbar'} aria-label="ניווט ראשי">
+      <a className="brand" href="#top" aria-label="Nis, boutique catering">
+        <OptimizedImage className="brand-logo" image={brandMedia.logo} alt="Nis - boutique catering" decoding="async" />
+      </a>
+      <nav id="primary-navigation" className={isMenuOpen ? 'nav-links is-open' : 'nav-links'} aria-label="עמודי האתר">
+        {navItems.map((item) => (
+          <a key={item.href} href={item.href} className={activeNavSection === item.href ? 'is-active' : undefined} onClick={() => setIsMenuOpen(false)}>
+            {item.label}
+          </a>
+        ))}
+      </nav>
+      <a className="topbar-cta" href={topbarWhatsapp} data-event="topbar_whatsapp">
+        <MessageCircle aria-hidden="true" size={18} />
+        {siteMicrocopy.topbarWhatsappLabel}
+      </a>
+      <button ref={menuButtonRef} className="mobile-menu-toggle" type="button" aria-expanded={isMenuOpen} aria-controls="primary-navigation" aria-label={isMenuOpen ? 'סגירת תפריט' : 'פתיחת תפריט'} onClick={() => setIsMenuOpen((current) => !current)}>
+        {isMenuOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
+      </button>
+    </header>
+  );
+};
 
 export const Footer = ({
   email,

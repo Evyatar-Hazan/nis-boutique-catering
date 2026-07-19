@@ -33,7 +33,7 @@ export const email = generatedSettings.email || 'nisboutiquecatering@gmail.com';
 export const whatsappBase = generatedSettings.whatsappBase || 'https://wa.me/972503502615';
 export const siteVersion = generatedSettings.siteVersion || 'v0.1.1';
 
-export const sectionIds = ['top', 'experiences', 'gallery', 'process', 'faq', 'contact'] as const;
+export const sectionIds = ['top', 'experiences', 'gallery', 'process', 'contact'] as const;
 
 export interface ImageAsset {
   readonly src: string;
@@ -907,7 +907,6 @@ export const navItems: readonly NavItem[] = [
   { label: siteMicrocopy.navExperiencesLabel, href: '#experiences' },
   { label: siteMicrocopy.navGalleryLabel, href: '#gallery' },
   { label: siteMicrocopy.navProcessLabel, href: '#process' },
-  { label: siteMicrocopy.navFaqLabel, href: '#faq' },
   { label: siteMicrocopy.navContactLabel, href: '#contact' },
 ];
 

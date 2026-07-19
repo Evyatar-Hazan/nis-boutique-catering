@@ -665,7 +665,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### UI-002 — Build or refine reusable primitives
 
-- **Status:** `VERIFYING`
+- **Status:** `DONE`
 - **Dependencies:** `UI-001`, `ARC-003`.
 - **Definition:** ליצור או לשפר רק את ה־primitives שנדרשים בפועל: `Section`, `SectionHeading`, `Button`, `MediaCard`, `ServiceCard`, `IconTextItem`, `Accordion`, `FormField`, `OptimizedImage` ו־`Dialog/Lightbox`.
 - **Acceptance criteria:**
@@ -674,11 +674,11 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
   - variants משתמשים ב־union מפורש ולא boolean soup.
   - קיימות בדיקות לרכיבים אינטראקטיביים ולמצבי edge.
 - **Verification:** component tests, keyboard tests, visual states ו־duplication review.
-- **Evidence (2026-07-20):** `packages/site-preview/src/primitives/` now owns typed `Section`, `SectionHeading`, discriminated `Button`, `MediaCard`, `ServiceCard`, `IconTextItem`, `Accordion`, `FormField`, `OptimizedImage` and focus-trapping `Dialog`. The package public API exports them deliberately; compatibility re-exports avoid breaking consumers. The duplicate frontend `OptimizedImage` and app-specific lightbox focus hook were removed; `SiteChrome` consumes the shared image/dialog, both section entrypoints consume the shared Button/Heading, and the duplicate MainSections helpers were deleted. All primitive props are readonly, variants are explicit unions and remaining package/app TypeScript contains no `any`. The site-preview package now participates in lint/test/type-check and is compiled through both consuming app builds; 8/8 package tests cover link/button variants, accordion single-open behavior, form error associations, dialog Escape/focus restoration, responsive image dimensions and existing media/contact helpers. Frontend 9/9 tests cover lightbox keyboard behavior after the refactor. Local mobile browser smoke had 0 console errors and no overflow; architecture boundary check and full workspace validation passed.
+- **Evidence (2026-07-20):** `packages/site-preview/src/primitives/` now owns typed `Section`, `SectionHeading`, discriminated `Button`, `MediaCard`, `ServiceCard`, `IconTextItem`, `Accordion`, `FormField`, `OptimizedImage` and focus-trapping `Dialog`. The package public API exports them deliberately; compatibility re-exports avoid breaking consumers. The duplicate frontend `OptimizedImage` and app-specific lightbox focus hook were removed; `SiteChrome` consumes the shared image/dialog, both section entrypoints consume the shared Button/Heading, and duplicate MainSections helpers were deleted. All primitive props are readonly, variants explicit unions and remaining package/app TypeScript contains no `any`. The package participates in lint/test/type-check and both app builds; 8/8 package tests and 9/9 frontend tests passed, including keyboard/focus/lightbox. Full workspace validation passed. Commit `5c1b6c4`; CI `29705702981` and deploy `29705702982` succeeded; public/studio HTTP 200. Production 375px smoke had 6 gallery triggers, no overflow/errors; shared dialog focused its close surface, locked body, closed on Escape and cleared the lock. Only the known image-preload warning remained.
 
 #### UI-003 — Simplify global navigation and conversion surfaces
 
-- **Status:** `BACKLOG`
+- **Status:** `VERIFYING`
 - **Dependencies:** `UI-002`.
 - **Definition:** לבנות header, mobile navigation, WhatsApp CTA ו־footer לפי ארבעת יעדי הניווט החדשים.
 - **Acceptance criteria:**
@@ -687,7 +687,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
   - mobile menu נגיש ונסגר אחרי בחירה/Escape.
   - CTA קבוע אינו מכסה תוכן או safe area.
 - **Verification:** keyboard, screen reader smoke test, mobile/desktop browser tests ו־direct anchor URLs.
-- **Evidence:** pending.
+- **Evidence (2026-07-20):** `Topbar` now renders exactly four primary anchors (`#experiences`, `#gallery`, `#process`, `#contact`) with scroll-derived active state; FAQ remains content inside the conversion path, not a primary destination. The responsive menu is controlled by one button with `aria-expanded`/`aria-controls`, labelled navigation, 48px menu targets, close-on-selection, Escape close and focus return. Desktop hides the toggle and shows all four links; 375px shows logo, compact WhatsApp CTA and menu. Mobile sticky conversion uses `env(safe-area-inset-bottom)`. Two focused component tests bring frontend to 11/11 and cover link count, active state, selection close, Escape and focus. Local Playwright at 375/1440 confirmed direct `#gallery`, 4 links, menu grid/open/close, desktop/mobile visibility, 0 overflow and 0 console errors; ignored screenshots: `output/playwright/ui-003-{menu-375,nav-1440}.png`.
 
 #### UI-004 — Normalize motion and interaction states
 
@@ -1167,7 +1167,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 |---|---|---:|---:|
 | Phase 0 — Governance | Done | 4 | 4 |
 | Phase 1 — Architecture | Done | 4 | 4 |
-| Phase 2 — Design system | In progress | 1 | 4 |
+| Phase 2 — Design system | In progress | 2 | 4 |
 | Phase 3 — Public site | Ready with dependencies | 0 | 6 |
 | Phase 4 — Cloudflare backend | Ready with dependencies | 0 | 10 |
 | Phase 5 — Migration | Ready with dependencies | 0 | 6 |
@@ -1266,3 +1266,10 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - הוסרו המימוש הכפול של `OptimizedImage`, העתק ה־SectionHeading ולוגיקת focus trap ייעודית מה־frontend; ה־Dialog וה־image משותפים כעת ל־public ול־preview.
 - נוספו Button variants כ־union מפורש, cards, icon item, accordion, form field, dialog, section ו־heading; אין `any` בחבילת ה־preview או באפליקציית public.
 - חבילת `site-preview` צורפה לשערי build/lint/test/type-check; 8/8 בדיקות package ו־9/9 בדיקות frontend עברו, כולל keyboard/focus/lightbox.
+- commit `5c1b6c4` עבר CI `29705702981` ו־deploy `29705702982`; production smoke אישר dialog keyboard/body-lock ו־0 שגיאות console. ‏`UI-002` נסגר והעבודה עברה ל־`UI-003`.
+
+### 2026-07-20 — UI-003 navigation and conversion surfaces
+
+- `UI-003` עבר ל־`VERIFYING`; הניווט הראשי צומצם לארבעה יעדים בלבד ו־FAQ נשאר בתוך מסלול ההמרה.
+- נוסף mobile menu נגיש עם aria state, סגירה בבחירה/Escape והחזרת focus; CTA התחתון מכבד safe-area.
+- 11/11 בדיקות frontend עברו; Playwright ב־375/1440 אישר direct anchor, תפריט פתוח/סגור, visibility נכונה ו־0 overflow/errors.
