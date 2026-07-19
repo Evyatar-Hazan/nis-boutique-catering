@@ -1,7 +1,6 @@
-import { type FormEventHandler } from 'react';
 import {
   ContactSection,
-  FaqSection,
+  type ContactInquiry,
   GallerySection,
   ProcessSection,
   RealMediaSection,
@@ -13,21 +12,17 @@ import { email, galleryImages, type GalleryCategory } from '../data/siteContent'
 type LazySiteSectionsProps = {
   readonly activeGalleryCategory: GalleryCategory;
   readonly contactWhatsapp: string;
-  readonly leadSource: string;
   readonly onFilterChange: (category: GalleryCategory) => void;
-  readonly onLeadSourceChange: (value: string) => void;
+  readonly onInquirySubmit: (inquiry: ContactInquiry) => void;
   readonly onOpenImage: (index: number | null) => void;
-  readonly onSubmit: FormEventHandler<HTMLFormElement>;
 };
 
 export default function LazySiteSections({
   activeGalleryCategory,
   contactWhatsapp,
-  leadSource,
   onFilterChange,
-  onLeadSourceChange,
+  onInquirySubmit,
   onOpenImage,
-  onSubmit,
 }: LazySiteSectionsProps) {
   const filteredGalleryImages =
     activeGalleryCategory === 'all'
@@ -46,13 +41,10 @@ export default function LazySiteSections({
       <RealMediaSection />
       <ProcessSection />
       <TrustSection />
-      <FaqSection />
       <ContactSection
         contactWhatsapp={contactWhatsapp}
         email={email}
-        leadSource={leadSource}
-        onLeadSourceChange={onLeadSourceChange}
-        onSubmit={onSubmit}
+        onInquirySubmit={onInquirySubmit}
       />
     </>
   );

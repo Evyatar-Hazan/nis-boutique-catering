@@ -113,6 +113,22 @@ export const publicTrustDefaults = {
   testimonials: [],
 } as const;
 
+export const publicContactDefaults = {
+  eyebrow: 'שאלות ויצירת קשר',
+  title: 'מספרים בקצרה מה צריך וממשיכים לוואטסאפ.',
+  description: 'התשובות החשובות והפרטים הבסיסיים מרוכזים במקום אחד.',
+  faqs: [
+    { id: 'advance-notice', question: 'כמה זמן מראש צריך להזמין?', answer: 'מומלץ לפנות מוקדם ככל האפשר, במיוחד לקראת שבתות, חגים ואירועים.' },
+    { id: 'delivery', question: 'האם יש משלוחים?', answer: 'איסוף או משלוח נקבעים לפי המיקום, התאריך וסוג ההזמנה.' },
+    { id: 'custom-menu', question: 'האם אפשר להתאים את ההזמנה?', answer: 'כן. בשיחה קצרה מדייקים את סוג האירוח, הכמות והעדפות חשובות.' },
+    { id: 'preferences', question: 'מה חשוב לציין בפנייה?', answer: 'כדאי לציין תאריך, כמות, סוג אירוח וכל רגישות או העדפה שחשוב לבדוק.' },
+  ],
+  submitCta: {
+    label: 'שלחו פנייה בוואטסאפ',
+    message: 'שלום Nis, אשמח לקבל פרטים על הזמנה.',
+  },
+} as const;
+
 const serviceOfferSchema = z.object({
   id: idSchema,
   title: shortTextSchema,

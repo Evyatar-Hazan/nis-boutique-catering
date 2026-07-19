@@ -1,10 +1,9 @@
-import { type CSSProperties, type FormEventHandler } from 'react';
-import { CheckCircle2, Mail, MapPin, MessageCircle, Phone, Send } from 'lucide-react';
+import { type CSSProperties } from 'react';
+import { CheckCircle2 } from 'lucide-react';
 import type { GalleryCategory, GalleryImage } from './sitePreviewTypes';
 import { OptimizedImage } from './OptimizedImage';
 import { useSiteSectionPreviewData } from './SiteSectionPreviewData';
 import { SectionHeading, TextParagraphs } from './SectionShared';
-import { Button } from './primitives/Button';
 
 export const EditorialSection = () => {
   const { editorialCards, sectionCopy } = useSiteSectionPreviewData();
@@ -257,136 +256,6 @@ export const SeoSection = () => {
           ))}
         </div>
       </div>
-    </div>
-    </section>
-  );
-};
-
-export const FaqSection = () => {
-  const { faqs, sectionCopy } = useSiteSectionPreviewData();
-  return (
-    <section id="faq" className="section soft-section" aria-labelledby="faq-title">
-    <div className="container faq-grid">
-      <div className="reveal">
-        <p className="eyebrow">{sectionCopy.faq.eyebrow}</p>
-        <h2 id="faq-title">{sectionCopy.faq.title}</h2>
-        <TextParagraphs text={sectionCopy.faq.text} />
-      </div>
-      <div className="faq-list reveal">
-        {faqs.map((faq) => (
-          <details key={faq.question}>
-            <summary>{faq.question}</summary>
-            <p>{faq.answer}</p>
-          </details>
-        ))}
-      </div>
-    </div>
-    </section>
-  );
-};
-
-interface ContactSectionProps {
-  readonly contactWhatsapp: string;
-  readonly email: string;
-  readonly leadSource: string;
-  readonly onLeadSourceChange: (value: string) => void;
-  readonly onSubmit: FormEventHandler<HTMLFormElement>;
-}
-
-export const ContactSection = ({
-  contactWhatsapp,
-  email,
-  leadSource,
-  onLeadSourceChange,
-  onSubmit,
-}: ContactSectionProps) => {
-  const { contactDeliveryOptions, contactInterestOptions, foodMedia, phoneHref, sectionCopy, siteMicrocopy } = useSiteSectionPreviewData();
-
-  return (
-    <section
-      id="contact"
-      className="section contact-section"
-      aria-labelledby="contact-title"
-      style={{ '--contact-media-image': `url('${foodMedia.tableSettingBlueGold.src}')` } as CSSProperties}
-    >
-    <div className="container contact-grid">
-      <div className="contact-copy reveal">
-        <p className="eyebrow">{sectionCopy.contact.eyebrow}</p>
-        <h2 id="contact-title">{sectionCopy.contact.title}</h2>
-        <TextParagraphs text={sectionCopy.contact.text} />
-        <div className="contact-actions">
-          <Button href={contactWhatsapp} data-event="contact_whatsapp">
-            <MessageCircle aria-hidden="true" />
-            {siteMicrocopy.contactPrimaryCta}
-          </Button>
-          <Button href={phoneHref} variant="secondary">
-            <Phone aria-hidden="true" />
-            {siteMicrocopy.contactPhoneCta}
-          </Button>
-          <a className="contact-line" href={`mailto:${email}`}>
-            <Mail aria-hidden="true" />
-            {email}
-          </a>
-          <span className="contact-line">
-            <MapPin aria-hidden="true" />
-            {siteMicrocopy.contactLocation}
-          </span>
-        </div>
-        <div className="contact-promise" aria-label={siteMicrocopy.contactPromiseHeading}>
-          <strong>{siteMicrocopy.contactPromiseHeading}</strong>
-          <span>{sectionCopy.contact.extraText}</span>
-        </div>
-      </div>
-      <form className="contact-form reveal" onSubmit={onSubmit}>
-        <label>
-          {siteMicrocopy.formNameLabel}
-          <input name="name" autoComplete="name" required />
-        </label>
-        <label>
-          {siteMicrocopy.formPhoneLabel}
-          <input name="phone" type="tel" autoComplete="tel" required />
-        </label>
-        <label>
-          {siteMicrocopy.formEmailLabel}
-          <input name="email" type="email" autoComplete="email" />
-        </label>
-        <label>
-          {siteMicrocopy.formInterestLabel}
-          <select
-            name="interest"
-            value={leadSource}
-            onChange={(event) => onLeadSourceChange(event.target.value)}
-          >
-            {contactInterestOptions.map((option) => (
-              <option key={option}>{option}</option>
-            ))}
-          </select>
-        </label>
-        <label>
-          {siteMicrocopy.formDateLabel}
-          <input name="date" type="date" />
-        </label>
-        <label>
-          {siteMicrocopy.formGuestsLabel}
-          <input name="guests" type="number" min="1" inputMode="numeric" />
-        </label>
-        <label>
-          {siteMicrocopy.formDeliveryLabel}
-          <select name="delivery">
-            {contactDeliveryOptions.map((option) => (
-              <option key={option}>{option}</option>
-            ))}
-          </select>
-        </label>
-        <label className="full-field">
-          {siteMicrocopy.formMessageLabel}
-          <textarea name="message" rows={5} />
-        </label>
-        <Button fullWidth type="submit">
-          <Send aria-hidden="true" />
-          {siteMicrocopy.formSubmitLabel}
-        </Button>
-      </form>
     </div>
     </section>
   );

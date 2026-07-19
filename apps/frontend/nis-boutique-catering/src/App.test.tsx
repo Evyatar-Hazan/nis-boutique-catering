@@ -122,14 +122,13 @@ describe('Nis boutique catering app', () => {
 
     render(<App />);
 
-    fireEvent.change(await screen.findByLabelText('שם מלא'), { target: { value: 'שרה כהן' } });
-    fireEvent.change(screen.getByLabelText('טלפון'), { target: { value: '0501234567' } });
-    fireEvent.change(screen.getByLabelText('מייל'), { target: { value: 'sara@example.com' } });
-    fireEvent.change(screen.getByLabelText('במה אתם מתעניינים?'), {
-      target: { value: 'Travel Nis' },
+    fireEvent.change(await screen.findByLabelText('שם מלא (חובה)'), { target: { value: 'שרה כהן' } });
+    fireEvent.change(screen.getByLabelText('טלפון (חובה)'), { target: { value: '0501234567' } });
+    fireEvent.change(screen.getByLabelText('במה אתם מתעניינים? (חובה)'), {
+      target: { value: 'ניס בטעם של שבת' },
     });
-    fireEvent.change(screen.getByLabelText('מספר סועדים'), { target: { value: '12' } });
-    fireEvent.change(screen.getByLabelText('הודעה קצרה'), {
+    fireEvent.change(screen.getByLabelText('מספר סועדים (אופציונלי)'), { target: { value: '12' } });
+    fireEvent.change(screen.getByLabelText('הודעה קצרה (אופציונלי)'), {
       target: { value: 'נשמח למארז לדרך' },
     });
 
@@ -137,7 +136,7 @@ describe('Nis boutique catering app', () => {
 
     expect(window.location.href).toContain('https://wa.me/972503502615?text=');
     expect(decodeURIComponent(window.location.href)).toContain('שם מלא: שרה כהן');
-    expect(decodeURIComponent(window.location.href)).toContain('במה אתם מתעניינים?: Travel Nis');
+    expect(decodeURIComponent(window.location.href)).toContain('במה אתם מתעניינים?: ניס בטעם של שבת');
     expect(decodeURIComponent(window.location.href)).toContain('הודעה קצרה: נשמח למארז לדרך');
   });
 

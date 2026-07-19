@@ -1308,6 +1308,18 @@
   background: rgba(255, 248, 238, 0.06);
 }
 
+.contact-faq .accordion__item {
+  border-color: rgba(255, 239, 214, 0.14);
+}
+
+.contact-faq .accordion__item button {
+  color: var(--ivory);
+}
+
+.contact-faq .accordion__item [role='region'] {
+  color: rgba(255, 249, 242, 0.76);
+}
+
 .site-footer {
   background: #120d10;
   color: rgba(255, 249, 242, 0.72);

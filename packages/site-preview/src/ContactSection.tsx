@@ -1,0 +1,123 @@
+import { useState, type FormEvent } from 'react';
+import { Mail, MessageCircle, Phone, Send } from 'lucide-react';
+import { publicContactDefaults } from '@monorepo/content-schema';
+import { Accordion, Button, FormField, Section } from './primitives';
+import { useSiteSectionPreviewData } from './SiteSectionPreviewData';
+
+export interface ContactInquiry {
+  readonly date: string;
+  readonly guests: string;
+  readonly interest: string;
+  readonly message: string;
+  readonly name: string;
+  readonly phone: string;
+}
+
+type ContactField = keyof ContactInquiry;
+type ContactErrors = Partial<Record<ContactField, string>>;
+
+const readField = (formData: FormData, field: ContactField) => String(formData.get(field) ?? '').trim();
+
+export const validateContactInquiry = (inquiry: ContactInquiry): ContactErrors => {
+  const errors: ContactErrors = {};
+  if (inquiry.name.length < 2) errors.name = 'כתבו שם של לפחות שני תווים.';
+  if (inquiry.phone.replace(/\D/g, '').length < 9) errors.phone = 'כתבו מספר טלפון תקין.';
+  if (!inquiry.interest) errors.interest = 'בחרו סוג הזמנה.';
+  if (inquiry.guests && Number(inquiry.guests) < 1) errors.guests = 'מספר הסועדים חייב להיות גדול מאפס.';
+  return errors;
+};
+
+interface ContactSectionProps {
+  readonly contactWhatsapp: string;
+  readonly email: string;
+  readonly onInquirySubmit: (inquiry: ContactInquiry) => void;
+}
+
+export const ContactSection = ({ contactWhatsapp, email, onInquirySubmit }: ContactSectionProps) => {
+  const { contactInterestOptions, phoneHref, siteMicrocopy } = useSiteSectionPreviewData();
+  const [errors, setErrors] = useState<ContactErrors>({});
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+    const inquiry: ContactInquiry = {
+      name: readField(formData, 'name'),
+      phone: readField(formData, 'phone'),
+      interest: readField(formData, 'interest'),
+      date: readField(formData, 'date'),
+      guests: readField(formData, 'guests'),
+      message: readField(formData, 'message'),
+    };
+    const nextErrors = validateContactInquiry(inquiry);
+    setErrors(nextErrors);
+
+    const firstInvalidField = Object.keys(nextErrors)[0] as ContactField | undefined;
+    if (firstInvalidField) {
+      (form.elements.namedItem(firstInvalidField) as HTMLElement | null)?.focus();
+      return;
+    }
+
+    onInquirySubmit(inquiry);
+  };
+
+  return (
+    <Section id="contact" className="contact-section" labelledBy="contact-title" tone="dark">
+      <div className="container">
+        <div className="contact-conversion-heading reveal">
+          <p className="eyebrow">{publicContactDefaults.eyebrow}</p>
+          <h2 id="contact-title">{publicContactDefaults.title}</h2>
+          <p>{publicContactDefaults.description}</p>
+          <div className="contact-actions">
+            <Button href={contactWhatsapp} data-event="contact_whatsapp">
+              <MessageCircle aria-hidden="true" />
+              {siteMicrocopy.contactPrimaryCta}
+            </Button>
+            <Button href={phoneHref} variant="secondary">
+              <Phone aria-hidden="true" />
+              {siteMicrocopy.contactPhoneCta}
+            </Button>
+            <a className="contact-line" href={`mailto:${email}`}>
+              <Mail aria-hidden="true" />
+              {email}
+            </a>
+          </div>
+        </div>
+
+        <div className="contact-conversion-grid">
+          <div className="contact-faq reveal" aria-label="שאלות נפוצות">
+            <Accordion items={publicContactDefaults.faqs} />
+          </div>
+
+          <form className="contact-form reveal" noValidate onSubmit={handleSubmit}>
+            <FormField label={`${siteMicrocopy.formNameLabel} (חובה)`} error={errors.name}>
+              <input name="name" autoComplete="name" />
+            </FormField>
+            <FormField label={`${siteMicrocopy.formPhoneLabel} (חובה)`} error={errors.phone}>
+              <input name="phone" type="tel" autoComplete="tel" inputMode="tel" />
+            </FormField>
+            <FormField label={`${siteMicrocopy.formInterestLabel} (חובה)`} error={errors.interest}>
+              <select name="interest" defaultValue="">
+                <option value="" disabled>בחרו סוג הזמנה</option>
+                {contactInterestOptions.map((option) => <option key={option}>{option}</option>)}
+              </select>
+            </FormField>
+            <FormField label={`${siteMicrocopy.formDateLabel} (אופציונלי)`}>
+              <input name="date" type="date" />
+            </FormField>
+            <FormField label={`${siteMicrocopy.formGuestsLabel} (אופציונלי)`} error={errors.guests}>
+              <input name="guests" type="number" min="1" inputMode="numeric" />
+            </FormField>
+            <FormField label={`${siteMicrocopy.formMessageLabel} (אופציונלי)`}>
+              <textarea name="message" rows={4} />
+            </FormField>
+            <Button fullWidth type="submit">
+              <Send aria-hidden="true" />
+              {publicContactDefaults.submitCta.label}
+            </Button>
+          </form>
+        </div>
+      </div>
+    </Section>
+  );
+};

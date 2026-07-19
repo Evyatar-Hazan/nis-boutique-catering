@@ -1,12 +1,13 @@
-import { lazy, Suspense, type CSSProperties, type FormEvent, useCallback, useMemo, useState } from 'react';
+import { lazy, Suspense, type CSSProperties, useCallback, useMemo, useState } from 'react';
 import {
+  type ContactInquiry,
   HeroSection,
   SiteSectionPreviewDataProvider,
 } from '@monorepo/site-preview';
 import { DeferredSections } from './components/DeferredSections';
 import { SectionSkeleton } from './components/SectionSkeleton';
 import { FloatingActions, Footer, LightboxDialog, Topbar } from './components/SiteChrome';
-import { contactInterestOptions, email, galleryImages, sectionIds, siteMicrocopy, siteVersion, type GalleryCategory } from './data/siteContent';
+import { email, galleryImages, sectionIds, siteMicrocopy, siteVersion, type GalleryCategory } from './data/siteContent';
 import { defaultSiteSectionPreviewData } from './data/sitePreviewData';
 import { usePointerGlow } from './hooks/usePointerGlow';
 import { useRevealOnScroll } from './hooks/useRevealOnScroll';
@@ -19,7 +20,6 @@ const LazySiteSections = lazy(() => import('./components/LazySiteSections'));
 function App() {
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
   const [activeGalleryCategory, setActiveGalleryCategory] = useState<GalleryCategory>('all');
-  const [leadSource, setLeadSource] = useState(contactInterestOptions[0] ?? 'ניס בטעם של שבת');
 
   useRevealOnScroll();
   usePointerGlow();
@@ -56,21 +56,17 @@ function App() {
   const footerWhatsapp = buildWhatsappLink(siteMicrocopy.whatsappFooterMessage);
   const floatingWhatsapp = buildWhatsappLink(siteMicrocopy.whatsappFloatingMessage);
 
-  const handleContactSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
+  const handleContactSubmit = (inquiry: ContactInquiry) => {
     const lines = [
-      `${siteMicrocopy.formNameLabel}: ${formData.get('name') ?? ''}`,
-      `${siteMicrocopy.formPhoneLabel}: ${formData.get('phone') ?? ''}`,
-      `${siteMicrocopy.formEmailLabel}: ${formData.get('email') ?? ''}`,
-      `${siteMicrocopy.formInterestLabel}: ${formData.get('interest') ?? ''}`,
-      `${siteMicrocopy.formDateLabel}: ${formData.get('date') ?? ''}`,
-      `${siteMicrocopy.formGuestsLabel}: ${formData.get('guests') ?? ''}`,
-      `${siteMicrocopy.formDeliveryLabel}: ${formData.get('delivery') ?? ''}`,
-      `${siteMicrocopy.formMessageLabel}: ${formData.get('message') ?? ''}`,
+      `${siteMicrocopy.formNameLabel}: ${inquiry.name}`,
+      `${siteMicrocopy.formPhoneLabel}: ${inquiry.phone}`,
+      `${siteMicrocopy.formInterestLabel}: ${inquiry.interest}`,
+      inquiry.date ? `${siteMicrocopy.formDateLabel}: ${inquiry.date}` : '',
+      inquiry.guests ? `${siteMicrocopy.formGuestsLabel}: ${inquiry.guests}` : '',
+      inquiry.message ? `${siteMicrocopy.formMessageLabel}: ${inquiry.message}` : '',
     ];
 
-    window.location.href = buildWhatsappLink(`שלום Nis,\n${lines.join('\n')}`);
+    window.location.href = buildWhatsappLink(`שלום Nis,\n${lines.filter(Boolean).join('\n')}`);
   };
 
   return (
@@ -94,14 +90,12 @@ function App() {
             <LazySiteSections
               activeGalleryCategory={activeGalleryCategory}
               contactWhatsapp={contactWhatsapp}
-              leadSource={leadSource}
               onFilterChange={(category) => {
                 setActiveGalleryCategory(category);
                 setSelectedImageIndex(null);
               }}
-              onLeadSourceChange={setLeadSource}
+              onInquirySubmit={handleContactSubmit}
               onOpenImage={setSelectedImageIndex}
-              onSubmit={handleContactSubmit}
             />
           </Suspense>
         </DeferredSections>

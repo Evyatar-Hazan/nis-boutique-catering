@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   publicHeroDefaults,
+  publicContactDefaults,
   publicProcessDefaults,
   publicServicesDefaults,
   publicSiteDocumentSchema,
@@ -130,6 +131,12 @@ describe('public site v2 content contract', () => {
       'התאמה אישית ושירות אנושי',
     ]);
     expect(publicTrustDefaults.testimonials).toHaveLength(0);
+  });
+
+  it('keeps four approved FAQs and one WhatsApp conversion CTA', () => {
+    expect(publicContactDefaults.faqs).toHaveLength(4);
+    expect(new Set(publicContactDefaults.faqs.map(({ id }) => id)).size).toBe(4);
+    expect(publicContactDefaults.submitCta.label).toBe('שלחו פנייה בוואטסאפ');
   });
 
   it('accepts the exact six-section document', () => {

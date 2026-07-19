@@ -771,7 +771,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### WEB-006 — Implement FAQ and contact conversion section
 
-- **Status:** `IN_PROGRESS`
+- **Status:** `VERIFYING`
 - **Dependencies:** `ARC-002`, `UI-002`.
 - **Definition:** לאחד FAQ וטופס פנייה למסך סיום אחד עם progressive disclosure.
 - **Acceptance criteria:**
@@ -780,7 +780,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
   - errors מוצגים ליד השדה ו־focus עובר לשגיאה הראשונה.
   - submit יוצר הודעת WhatsApp תקינה ומקודדת.
 - **Verification:** form unit tests, invalid/valid flows, mobile keyboard test, WhatsApp URL assertion ו־screen reader smoke test.
-- **Evidence:** pending.
+- **Evidence:** `publicContactDefaults` מרכז 4 שאלות ו־CTA; `ContactSection` יחיד החליף FAQ וטופס נפרדים ומשתמש ב־Accordion/FormField/Button המשותפים. הטופס כולל 3 שדות חובה ו־3 אופציונליים בלבד, validation inline עם `aria-invalid`/`aria-describedby` ו־focus לשגיאה הראשונה. 19/19 בדיקות schema, ‏18/18 בדיקות `site-preview`, ‏11/11 בדיקות frontend ו־`pnpm validate` עברו, כולל invalid/valid flows ו־WhatsApp URL מקודד. Playwright לוקאלי ב־375/1440 אישר 4 FAQ, ‏6 fields, mobile input modes, טור/שתי עמודות, ‏0 section כפול/overflow/errors ו־screen-reader smoke. צילומי מסך: `output/playwright/web-006-contact-errors-375.png`, ‏`output/playwright/web-006-contact-1440.png`. ממתין ל־CI/deploy ולבדיקת production.
 
 ### Phase 4 — Cloudflare backend foundation
 
@@ -1315,3 +1315,10 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - 18/18 בדיקות schema, ‏15/15 בדיקות `site-preview`, ‏11/11 בדיקות frontend ו־`pnpm validate` עברו.
 - Playwright לוקאלי ב־375/1440 אישר שלוש נקודות ותמונת אוכל אחת, פריסת טור/שתי עמודות, ‏0 owner/story/testimonials/overflow/errors ובדיקה חזותית תקינה.
 - commit `88d939d` עבר CI `29707679675` ו־deploy `29707679717`; לאחר חלון propagation קצר asset ה־JS אומת כתקין ובדפדפן נקי production אישר את אותו תוכן/פריסה, ‏0 owner/story/testimonials/overflow/errors ו־HTTP 200 בשני המשטחים. `WEB-005` נסגר והעבודה עברה ל־`WEB-006`.
+
+### 2026-07-20 — WEB-006 FAQ and contact conversion
+
+- `WEB-006` עבר ל־`VERIFYING`; ארבע שאלות ו־CTA אחד מגיעים מ־`publicContactDefaults`, ו־`ContactSection` יחיד מחליף את שני ה־sections הישנים.
+- הטופס צומצם לשם/טלפון/סוג הזמנה כחובה ולתאריך/כמות/הערה כאופציונליים; validation משותף מציג שגיאות inline, מקשר אותן לשדות ומעביר focus לשגיאה הראשונה.
+- 19/19 בדיקות schema, ‏18/18 בדיקות `site-preview`, ‏11/11 בדיקות frontend ו־`pnpm validate` עברו; valid flow מאשר URL WhatsApp מקודד ו־invalid flow מאשר focus/errors.
+- Playwright לוקאלי ב־375/1440 אישר 4 FAQ/6 fields, accordion נגיש, input modes למובייל, טור/שתי עמודות, ‏0 כפילות/overflow/errors ובדיקה חזותית תקינה. ממתין ל־CI/deploy ולבדיקת production.
