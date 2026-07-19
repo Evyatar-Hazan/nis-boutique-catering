@@ -719,7 +719,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### WEB-002 — Implement Services
 
-- **Status:** `VERIFYING`
+- **Status:** `DONE`
 - **Dependencies:** `ARC-002`, `UI-002`.
 - **Definition:** להציג שלושה שירותים ברורים מתוך מקור התוכן המשותף.
 - **Acceptance criteria:**
@@ -728,7 +728,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
   - השירותים אינם משוכפלים ב־section נוסף.
   - empty/disabled service state מוגדר.
 - **Verification:** schema/service fixtures, DOM count, WhatsApp context tests ו־mobile browser test.
-- **Evidence:** `publicServicesDefaults` הוא מקור שמות/סדר/CTA יחיד; `ServicesSection` המשותף מציג בדיוק שלושה כרטיסים ומצב חסר מפורש, וקומפוננטות השירותים הישנות הוסרו. 16/16 בדיקות schema, ‏11/11 בדיקות `site-preview`, ‏11/11 בדיקות frontend ו־`pnpm validate` עברו. Playwright לוקאלי ב־375/1440 אישר את שלושת השמות בסדר הנכון, media/copy/fit/CTA בכל כרטיס, URL וואטסאפ תלוי־שירות, טור מובייל/שורת desktop, ‏0 tablist כפול ו־0 overflow/console errors. צילומי מסך: `output/playwright/web-002-services-375.png`, ‏`output/playwright/web-002-services-1440.png`. ממתין ל־CI/deploy ולבדיקת production.
+- **Evidence:** `publicServicesDefaults` הוא מקור שמות/סדר/CTA יחיד; `ServicesSection` המשותף מציג בדיוק שלושה כרטיסים ומצב חסר מפורש, וקומפוננטות השירותים הישנות הוסרו. 16/16 בדיקות schema, ‏11/11 בדיקות `site-preview`, ‏11/11 בדיקות frontend ו־`pnpm validate` עברו. Playwright לוקאלי וב־production ב־375/1440 אישר את שלושת השמות בסדר הנכון, media/copy/fit/CTA בכל כרטיס, URL וואטסאפ תלוי־שירות, טור מובייל/שורת desktop, ‏0 tablist כפול ו־0 overflow/console errors. צילומי מסך לוקאליים: `output/playwright/web-002-services-375.png`, ‏`output/playwright/web-002-services-1440.png`. commit `54eff13`; CI `29707226525`; deploy `29707226533`; public/studio החזירו HTTP 200.
 
 #### WEB-003 — Implement Gallery with integrated video
 
@@ -745,7 +745,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### WEB-004 — Implement Process
 
-- **Status:** `BACKLOG`
+- **Status:** `IN_PROGRESS`
 - **Dependencies:** `ARC-002`, `UI-002`.
 - **Definition:** למזג את process וה־coordination לארבעה שלבים ומידע תפעולי קצר.
 - **Acceptance criteria:**
@@ -1168,7 +1168,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 | Phase 0 — Governance | Done | 4 | 4 |
 | Phase 1 — Architecture | Done | 4 | 4 |
 | Phase 2 — Design system | Done | 4 | 4 |
-| Phase 3 — Public site | In progress | 1 | 6 |
+| Phase 3 — Public site | In progress | 2 | 6 |
 | Phase 4 — Cloudflare backend | Ready with dependencies | 0 | 10 |
 | Phase 5 — Migration | Ready with dependencies | 0 | 6 |
 | Phase 6 — Admin rebuild | Ready with dependencies | 0 | 8 |
@@ -1297,4 +1297,5 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - `WEB-002` עבר ל־`VERIFYING`; שלושת השירותים משתמשים ב־`publicServicesDefaults` משותף לשמות, לסדר ולהקשר ה־CTA, בלי לשכפל schema או section.
 - מימושי השירותים הישנים הוסרו; `ServicesSection` ו־`ServiceCard` המשותפים מציגים media, copy, התאמה ו־CTA, ומצב חסר מפורש אם המקור אינו מכיל בדיוק שלושה שירותים.
 - 16/16 בדיקות schema, ‏11/11 בדיקות `site-preview`, ‏11/11 בדיקות frontend ו־`pnpm validate` עברו.
-- Playwright לוקאלי ב־375/1440 אישר שלושה כרטיסים בסדר המאושר, URLs תלויי־שירות, פריסה responsive, ‏0 כפילות/overflow/errors וצילומי מסך חזותיים תקינים. ממתין ל־CI/deploy ולבדיקת production.
+- Playwright לוקאלי ב־375/1440 אישר שלושה כרטיסים בסדר המאושר, URLs תלויי־שירות, פריסה responsive, ‏0 כפילות/overflow/errors וצילומי מסך חזותיים תקינים.
+- commit `54eff13` עבר CI `29707226525` ו־deploy `29707226533`; production עם asset העדכני אישר 3 כרטיסים/תמונות, שמות/סדר/URLs, פריסת 375/1440, ‏0 tablist/overflow/errors ו־HTTP 200 בשני המשטחים. `WEB-002` נסגר; `WEB-003` נשאר תלוי ב־`CF-007`, ולכן העבודה עברה למשימה העצמאית הבאה `WEB-004`.
