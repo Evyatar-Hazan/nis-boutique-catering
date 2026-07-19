@@ -1,14 +1,13 @@
 export * from './PrimarySections';
 export * from './ServicesSection';
+export * from './ProcessSection';
 export * from './buildSiteSectionPreviewData';
 export * from './fallbackSiteSectionPreviewData';
 export {
   SignatureSection,
   BoutiqueSection,
-  ProcessSection,
   StorySection,
   SamplesSection,
-  CoordinationSection,
   RealMediaSection,
   GallerySection,
   BookingBasicsSection,

@@ -745,7 +745,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### WEB-004 — Implement Process
 
-- **Status:** `IN_PROGRESS`
+- **Status:** `VERIFYING`
 - **Dependencies:** `ARC-002`, `UI-002`.
 - **Definition:** למזג את process וה־coordination לארבעה שלבים ומידע תפעולי קצר.
 - **Acceptance criteria:**
@@ -754,7 +754,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
   - desktop horizontal ו־mobile vertical ללא כפילות markup.
   - אין טענות תפעוליות שלא אושרו.
 - **Verification:** content fixture, responsive DOM/CSS test ו־manual content review.
-- **Evidence:** pending.
+- **Evidence:** `publicProcessDefaults` הוא מקור יחיד לארבעת השלבים ולשלוש ההערות התפעוליות המאושרות; `ProcessSection` יחיד החליף את process ו־coordination הנפרדים ומציג empty state אם המקור חלקי. 17/17 בדיקות schema, ‏13/13 בדיקות `site-preview`, ‏11/11 בדיקות frontend ו־`pnpm validate` עברו. Playwright לוקאלי ב־375/1440 אישר ארבעה שלבים בסדר המאושר, 3 הערות, section יחיד, timeline אנכי/שורה אופקית, ‏0 copy ישן/overflow/errors. צילומי מסך: `output/playwright/web-004-process-375.png`, ‏`output/playwright/web-004-process-1440.png`. ממתין ל־CI/deploy ולבדיקת production.
 
 #### WEB-005 — Implement Trust without owner portrait
 
@@ -1299,3 +1299,10 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - 16/16 בדיקות schema, ‏11/11 בדיקות `site-preview`, ‏11/11 בדיקות frontend ו־`pnpm validate` עברו.
 - Playwright לוקאלי ב־375/1440 אישר שלושה כרטיסים בסדר המאושר, URLs תלויי־שירות, פריסה responsive, ‏0 כפילות/overflow/errors וצילומי מסך חזותיים תקינים.
 - commit `54eff13` עבר CI `29707226525` ו־deploy `29707226533`; production עם asset העדכני אישר 3 כרטיסים/תמונות, שמות/סדר/URLs, פריסת 375/1440, ‏0 tablist/overflow/errors ו־HTTP 200 בשני המשטחים. `WEB-002` נסגר; `WEB-003` נשאר תלוי ב־`CF-007`, ולכן העבודה עברה למשימה העצמאית הבאה `WEB-004`.
+
+### 2026-07-20 — WEB-004 process
+
+- `WEB-004` עבר ל־`VERIFYING`; `publicProcessDefaults` מרכז את ארבעת השלבים ואת שלוש ההערות התפעוליות המאושרות, בלי לשכפל את חוזה התוכן.
+- `ProcessSection` ייעודי החליף את שני ה־sections הישנים process/coordination; אותו markup מוצג כשורה מחוברת בדסקטופ וכ־timeline אנכי במובייל, עם מצב חסר מפורש למקור חלקי.
+- 17/17 בדיקות schema, ‏13/13 בדיקות `site-preview`, ‏11/11 בדיקות frontend ו־`pnpm validate` עברו.
+- Playwright לוקאלי ב־375/1440 אישר 4 שלבים/3 הערות, section יחיד, סדר ופריסה נכונים, ‏0 copy ישן/overflow/errors ובדיקה חזותית תקינה. ממתין ל־CI/deploy ולבדיקת production.

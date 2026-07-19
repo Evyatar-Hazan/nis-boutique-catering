@@ -83,6 +83,23 @@ export const publicServicesDefaults = {
   ],
 } as const;
 
+export const publicProcessDefaults = {
+  eyebrow: 'איך מזמינים',
+  title: 'ארבעה צעדים קצרים עד שהאירוח מוכן.',
+  description: 'מתחילים בפרטים הבסיסיים ומסיימים באיסוף או במשלוח שתואמו מראש.',
+  steps: [
+    { id: 'process-whatsapp', title: 'שולחים פרטים בוואטסאפ', description: 'סוג האירוח, התאריך והכמות המשוערת.', order: 1 },
+    { id: 'process-details', title: 'מדייקים את ההזמנה', description: 'מתאמים יחד את סוג האירוח, הכמות והפרטים החשובים.', order: 2 },
+    { id: 'process-prepare', title: 'Nis מכינה ואורזת', description: 'האוכל מוכן ונארז בהתאם להזמנה שסוכמה.', order: 3 },
+    { id: 'process-receive', title: 'אוספים או מקבלים במשלוח', description: 'אופן הקבלה והשעה נקבעים מראש בתיאום אישי.', order: 4 },
+  ],
+  operationalNotes: [
+    { id: 'service-area', title: 'אזור פעילות', text: 'ביתר עילית והסביבה, בהתאם לתיאום.' },
+    { id: 'collection-delivery', title: 'אופן קבלה', text: 'איסוף או משלוח נקבעים לפי ההזמנה והתיאום.' },
+    { id: 'advance-coordination', title: 'תיאום מראש', text: 'תאריך, כמות וזמינות נסגרים בשיחה לפני אישור ההזמנה.' },
+  ],
+} as const;
+
 const serviceOfferSchema = z.object({
   id: idSchema,
   title: shortTextSchema,

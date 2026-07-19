@@ -1,7 +1,6 @@
 import { type FormEventHandler } from 'react';
 import {
   ContactSection,
-  CoordinationSection,
   FaqSection,
   GallerySection,
   ProcessSection,
@@ -47,7 +46,6 @@ export default function LazySiteSections({
       <RealMediaSection />
       <ProcessSection />
       <StorySection />
-      <CoordinationSection />
       <FaqSection />
       <ContactSection
         contactWhatsapp={contactWhatsapp}

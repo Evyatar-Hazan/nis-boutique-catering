@@ -1341,18 +1341,54 @@ details p {
 }
 
 .process-list {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.process-list::after {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  inset-inline: 8%;
+  inset-block-start: 45px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
 }
 
 .process-step {
+  z-index: 1;
   background:
     linear-gradient(155deg, rgba(255, 255, 255, 0.92), rgba(245, 236, 228, 0.76)),
     var(--paper);
   transition:
     transform var(--duration-slow) var(--ease),
     box-shadow var(--duration-slow) var(--ease);
+}
+
+.process-notes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-block-start: 24px;
+}
+
+.process-note {
+  border-block-start: 1px solid rgba(31, 23, 24, 0.14);
+  padding-block-start: 16px;
+}
+
+.process-note h3,
+.process-note p {
+  margin: 0;
+}
+
+.process-note p {
+  margin-block-start: 6px;
 }
 
 .process-step:hover {
@@ -2137,11 +2173,21 @@ details p {
   .menu-grid,
   .compact-grid,
   .process-list,
+  .process-notes,
   .testimonial-grid,
   .signature-grid,
   .boutique-layout,
   .boutique-grid {
     grid-template-columns: 1fr;
+  }
+
+  .process-list::after {
+    inset-inline-start: 20px;
+    inset-inline-end: auto;
+    inset-block: 34px;
+    width: 2px;
+    height: auto;
+    background: linear-gradient(180deg, transparent, var(--gold), transparent);
   }
 
   .signature-card:nth-child(2) {

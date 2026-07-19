@@ -96,30 +96,6 @@ export const BoutiqueSection = () => {
   );
 };
 
-export const ProcessSection = () => {
-  const { processSteps, sectionCopy } = useSiteSectionPreviewData();
-  return (
-    <section id="process" className="section" aria-labelledby="process-title">
-    <div className="container">
-      <SectionHeading eyebrow={sectionCopy.process.eyebrow} title={sectionCopy.process.title} id="process-title" />
-      <div className="process-list">
-        {processSteps.map((step, index) => {
-          const Icon = step.icon;
-          return (
-            <article className="process-step reveal" key={step.title}>
-              <span className="step-number">{index + 1}</span>
-              <Icon aria-hidden="true" className="card-icon" />
-              <h3>{step.title}</h3>
-              <p>{step.text}</p>
-            </article>
-          );
-        })}
-      </div>
-    </div>
-    </section>
-  );
-};
-
 export const StorySection = () => {
   const { foodMedia, sectionCopy, storyMoments } = useSiteSectionPreviewData();
   return (
@@ -179,29 +155,6 @@ export const SamplesSection = () => {
             </ul>
           </article>
         ))}
-      </div>
-    </div>
-    </section>
-  );
-};
-
-export const CoordinationSection = () => {
-  const { coordinationCards, sectionCopy } = useSiteSectionPreviewData();
-  return (
-    <section className="section coordination-section" aria-labelledby="coordination-title">
-    <div className="container">
-      <SectionHeading eyebrow={sectionCopy.coordination.eyebrow} title={sectionCopy.coordination.title} id="coordination-title" />
-      <div className="compact-grid">
-        {coordinationCards.map((card) => {
-          const Icon = card.icon;
-          return (
-            <article className="compact-card reveal" key={card.title}>
-              <Icon aria-hidden="true" className="card-icon" />
-              <h3>{card.title}</h3>
-              <p>{card.text}</p>
-            </article>
-          );
-        })}
       </div>
     </div>
     </section>

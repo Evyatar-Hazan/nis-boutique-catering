@@ -907,6 +907,14 @@
   transition: transform var(--duration-slow) var(--lift-ease), box-shadow var(--duration-slow) var(--lift-ease);
 }
 
+.process-note {
+  color: var(--muted);
+}
+
+.process-note h3 {
+  color: var(--espresso);
+}
+
 .process-step:hover {
   transform: translateY(-8px);
   box-shadow: 0 26px 56px rgba(22, 14, 18, 0.12);

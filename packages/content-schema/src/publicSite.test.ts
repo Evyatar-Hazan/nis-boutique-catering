@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { publicHeroDefaults, publicServicesDefaults, publicSiteDocumentSchema, type PublicSiteDocument } from './publicSite';
+import {
+  publicHeroDefaults,
+  publicProcessDefaults,
+  publicServicesDefaults,
+  publicSiteDocumentSchema,
+  type PublicSiteDocument,
+} from './publicSite';
 
 const image = (id: string) => ({
   id,
@@ -104,6 +110,16 @@ describe('public site v2 content contract', () => {
   it('keeps the three approved public service names in fixed order', () => {
     expect(publicServicesDefaults.items.map(({ title }) => title)).toEqual(['אוכל לשבת', 'אירוח קטן', 'מארזים לדרך']);
     expect(publicServicesDefaults.items.map(({ order }) => order)).toEqual([1, 2, 3]);
+  });
+
+  it('keeps the approved process and operational notes in one shared source', () => {
+    expect(publicProcessDefaults.steps.map(({ title, order }) => ({ title, order }))).toEqual([
+      { title: 'שולחים פרטים בוואטסאפ', order: 1 },
+      { title: 'מדייקים את ההזמנה', order: 2 },
+      { title: 'Nis מכינה ואורזת', order: 3 },
+      { title: 'אוספים או מקבלים במשלוח', order: 4 },
+    ]);
+    expect(publicProcessDefaults.operationalNotes).toHaveLength(3);
   });
 
   it('accepts the exact six-section document', () => {
