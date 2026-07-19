@@ -413,6 +413,33 @@ Cloudflare Pages + Pages Functions /api/*
 7. תקופת rollback שבה Sheets/Drive נשמרים read-only ולא נמחקים.
 8. לאחר אישור production: הסרת OAuth scopes ל־Sheets/Drive, Apps Script, service account secrets וקוד legacy.
 
+### Legacy content migration and rollback map
+
+הטבלה הבאה היא מפת ההגירה המחייבת. `ARC-004` מתכננת ומאמתת dry run בלבד; היא אינה משנה את Sheets/Drive או את production. לפני write ראשון יבוצע `MIG-001`, שייצר export חיצוני immutable עם hashes. עד אז שני snapshots הקיימים נשמרים ב־Git, וכל dry run חייב להוכיח שה־SHA שלהם לא השתנה.
+
+| Legacy source | Fields used | V2 destination | ID/default/archive rule |
+|---|---|---|---|
+| `settings` | phone, email, WhatsApp, SEO | `settings` | העתקה ישירה; `siteVersion` מוסר כי `version` הוא owner יחיד |
+| `media[]` | `id`, dimensions, Drive/source metadata | `media[]` + R2 manifest | `id` נשמר; `driveFileId` משמש רק בייבוא; `objectKey`, MIME, bytes ו־checksum מגיעים מ־R2; מדיה שלא נבחרה נשמרת archived |
+| `services[]` | title, description, bestFor, cta, mediaId | `sections.services.items[]` | שלושת ה־IDs נשמרים; subtitle/promise/details מוזגים ל־summary או נארכבים בלי שדות כפולים; order מפורש 1–3 |
+| `gallery[]` | id, title, alt, category, mediaId, order | `sections.gallery.items[]` | נבחרים 6–9 IDs פעילים; `tables→tables`, ‏`trays→trays`, ‏`salads/fish/coffee→dishes`; יתר הפריטים archived ולא נמחקים |
+| `sections:hero` | title, text, items | `sections.hero` | ID רעיוני נשמר; copy מוחלף בנוסח המאושר; אין fallback שמחזיר copy ישן |
+| `sections:hero-media` | `items[]` | `sections.hero.mediaId` | נבחר ID תמונה אחד; שאר הרשימה אינה נשמרת ב־Hero |
+| `sections:hero-notes` | title/text | `sections.hero.valuePoints[]` | בדיוק שלוש נקודות מאושרות; שתי השורות הישנות הן מקור טיוטה בלבד |
+| `sections:hero-marquee` | items | archive | decorative duplicate; אין default ואין renderer ב־v2 |
+| `sections:editorial` | title/text/items | `sections.services.items[]` | ממוזג לפי shabbat/events/travel; rows ישנים archived |
+| `sections:audience` | title/text | `sections.services.items[].bestFor` | ממוזג לפי אותו service ID; rows ישנים archived |
+| `sections:samples` | title/text/items | archive | פירוט תפריט אינו בחוזה public v2; נשמר בארכיון בלבד עד החלטת מוצר עתידית |
+| `sections:manifesto` | title/text/media ref | `sections.trust.points[]` | תוכן הוכחה נבחר בלבד; rows ישנים archived ואין section עצמאי |
+| `sections:boutique` | title/text | `sections.trust.points[]` | נבחרות בדיוק שלוש נקודות ללא כפילות עם Hero |
+| `sections:signature` | title/text | `sections.trust.points[]` או archive | רק טענה מאושרת ולא כפולה יכולה להתמזג; rows ישנים archived |
+| `sections:story` | title/text | optional one-line Trust description | אין תמונת יהודית ואין section ביוגרפי; כל rows הישנים archived |
+| `sections:process` | title/text/order | `sections.process.steps[]` | ארבעת IDs נשמרים עם order 1–4; הנוסח מתעדכן לתהליך המאושר |
+| `sections:coordination` | title/text | `sections.process.operationalNotes[]` | עד שלושה פריטים מאושרים; rows שלא נבחרו archived |
+| `sections:faq` | title/text | `sections.contact.faqs[]` | נבחרות 3–4 שאלות מאושרות תוך שמירת ID; יתר השאלות archived |
+
+כללי parity: כל row ישן מופיע פעם אחת במפה כ־destination או archive; אין hard delete בזמן migration; IDs פעילים ו־order ייחודיים; כל media reference מצביע ל־asset קיים; אותו input והחלטות בחירה מפיקים אותו output. Rollback הוא פרסום revision קודמת, לא עריכה הפוכה של rows. `pnpm migration:plan:audit` בודק את שתי תמונות המצב המקומיות, כיסוי כל group, כפילויות, media references, סימולציית archive מבודדת, שחזור והשארת קובצי המקור ללא שינוי.
+
 ### התאמה למסלול החינמי של Cloudflare
 
 נכון לבדיקה ב־2026-07-20, הארכיטקטורה מתאימה היטב לאתר קטן: Pages static assets הם חינמיים וללא מגבלת בקשות; Pages Functions נספרים בתוך מכסת Workers Free של 100,000 בקשות ביום; D1 Free כולל 5 מיליון rows read ביום, 100 אלף rows written ביום ו־5GB אחסון; R2 Free כולל 10GB-month, מיליון Class A ו־10 מיליון Class B בחודש וללא egress charge. הפעלת R2 בחשבון עשויה לדרוש השלמת תהליך subscription/checkout גם כשהשימוש נשאר בתוך ה־Free tier. אלה limits ולא התחייבות שהעלות תמיד תהיה אפס, ולכן `CF-010` מוסיף ניטור שימוש ותקציב.
@@ -595,7 +622,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### ARC-003 — Define component and package boundaries
 
-- **Status:** `VERIFYING`
+- **Status:** `DONE`
 - **Dependencies:** `ARC-001`, `ARC-002`.
 - **Definition:** לקבוע מבנה קבצים ו־public APIs כך שכל section מורכב מ־primitives משותפים בלי להפוך package אחד למונולית.
 - **Acceptance criteria:**
@@ -604,11 +631,11 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
   - אין import מתוך `src` פרטי של package אחר.
   - אין circular dependency או deep dependency chain.
 - **Verification:** build workspace, dependency inspection, lint boundaries ו־code review checklist.
-- **Evidence (2026-07-20):** target package/file layout and dependency diagram documented above. `scripts/check-architecture-boundaries.mjs` scans all workspace source imports, forbids undeclared workspace dependencies, app imports from shared packages, `/src` deep imports, relative workspace escapes and dependency cycles. `pnpm architecture:boundaries` is part of root `validate`; full validation passed.
+- **Evidence (2026-07-20):** target package/file layout and dependency diagram documented above. `scripts/check-architecture-boundaries.mjs` scans all workspace source imports, forbids undeclared workspace dependencies, app imports from shared packages, `/src` deep imports, relative workspace escapes and dependency cycles. `pnpm architecture:boundaries` is part of root `validate`; full validation passed. Commit `74e7f35`; CI `29704843089` and deploy `29704843111` succeeded; public/studio returned HTTP 200 post-deploy.
 
 #### ARC-004 — Plan legacy-content migration and rollback
 
-- **Status:** `BACKLOG`
+- **Status:** `VERIFYING`
 - **Dependencies:** `ARC-002`, `GOV-003`.
 - **Definition:** למפות כל section ושדה ישן ליעד חדש, כולל rows שיש לארכב ו־defaults שיש להסיר כדי למנוע חזרה אוטומטית.
 - **Acceptance criteria:**
@@ -617,7 +644,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
   - rollback נבדק על snapshot נפרד.
   - אין content loss ואין duplicate active rows.
 - **Verification:** dry run, schema validation והשוואת counts/IDs לפני ואחרי.
-- **Evidence:** pending.
+- **Evidence (2026-07-20):** the complete legacy collection/group/field mapping and rollback rules are documented above. `scripts/audit-legacy-migration-plan.mjs` covered all 14 fallback groups and all 13 generated groups, detected 0 duplicate IDs and 0 missing media references, simulated archive without removing rows, restored a separate in-memory snapshot byte-for-byte and proved both source files unchanged. Fallback counts: 41 sections, 3 services, 15 gallery, 15 media, SHA-256 `bbc1f16e…`; generated counts: 40/3/15/15, SHA-256 `1d824d5b…`. The committed snapshots are the pre-mutation local backup; `MIG-001` remains the mandatory immutable remote Sheets/Drive backup gate before any external write. `pnpm migration:plan:audit`, `content:check` and `git diff --check` passed.
 
 ### Phase 2 — Shared design system and primitives
 
@@ -1137,7 +1164,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 | Phase | Status | Done | Total |
 |---|---|---:|---:|
 | Phase 0 — Governance | In progress | 3 | 4 |
-| Phase 1 — Architecture | In progress | 1 | 4 |
+| Phase 1 — Architecture | In progress | 3 | 4 |
 | Phase 2 — Design system | Blocked | 0 | 4 |
 | Phase 3 — Public site | Blocked | 0 | 6 |
 | Phase 4 — Cloudflare backend | Blocked | 0 | 10 |
@@ -1204,3 +1231,11 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - `ARC-003` עבר ל־`VERIFYING`; תועדו dependency direction ו־target layout ל־schema, ‏site-preview, ‏frontend, ‏admin ו־Pages Functions.
 - נוסף `pnpm architecture:boundaries` שסורק imports וחוסם deep imports, workspace escapes, תלות הפוכה ו־cycles.
 - הבדיקה חוברה ל־`pnpm validate`; כל validation עבר.
+- commit `74e7f35` עבר CI `29704843089` ו־deploy `29704843111`; שני משטחי production החזירו 200. ‏`ARC-003` נסגר והעבודה עברה ל־`ARC-004`.
+
+### 2026-07-20 — ARC-004 legacy migration and rollback plan
+
+- `ARC-004` עבר ל־`VERIFYING`; נוספה מפת field/group מלאה מה־legacy אל ששת חלקי v2 או archive מפורש.
+- נוספו כללי stable IDs, category mapping, archive ללא hard delete, media parity ו־rollback באמצעות revision קודמת.
+- נוסף `pnpm migration:plan:audit`; הוא כיסה את שני ה־snapshots, מצא 0 כפילויות/הפניות חסרות, הוכיח rollback מבודד והוכיח שקובצי המקור לא השתנו.
+- אין mutation חיצונית בשלב התכנון; `MIG-001` נשאר שער מחייב ל־backup מלא של Sheets/Drive לפני write ראשון.

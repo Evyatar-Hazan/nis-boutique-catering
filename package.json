@@ -11,6 +11,7 @@
   "scripts": {
     "doctor:runtime": "node scripts/check-runtime.mjs",
     "architecture:boundaries": "node scripts/check-architecture-boundaries.mjs",
+    "migration:plan:audit": "node scripts/audit-legacy-migration-plan.mjs",
     "security:headers": "node scripts/check-response-headers.mjs",
     "artifacts:list": "node scripts/local-artifacts.mjs list",
     "artifacts:clean": "node scripts/local-artifacts.mjs clean",
