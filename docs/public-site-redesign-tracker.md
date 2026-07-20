@@ -988,16 +988,16 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### ADM-007 — Implement draft, publish, history and rollback UX
 
-- **Status:** `IN_PROGRESS`
+- **Status:** `DONE`
 - **Dependencies:** `ADM-004`, `ADM-005`, `CF-008`.
 - **Definition:** להציג save state, revision history, publish progress/failure ו־rollback מפורש בלי לערבב save draft עם live deploy.
 - **Acceptance criteria:** draft/published badges מדויקים; publish confirmation מציג revision; failed job ניתן retry; rollback דורש confirmation ומציג תוצאה; double-submit חסום.
 - **Verification:** component/integration tests לכל state ו־authenticated preview workflow כולל dispatch failure.
-- **Evidence:** pending.
+- **Evidence:** נוסף `PublishPanel` יחיד המחובר ל־typed API הקיים ל־history/publish/retry/rollback, עם badges מדויקים לטיוטה ולגרסה החיה, חסימת פרסום כשיש שינוי לא שמור, confirmation הכולל revision/version, busy guard נגד double-submit, סטטוס dispatch שאינו מוצג בטעות כ־deployment completed, retry רק ל־failed job ו־rollback מפורש שיוצר audit חדש. לאחר publish ניתן לפתוח טיוטה חדשה מהתוכן החי בלי מנגנון תוכן מקביל. ‏5 בדיקות רכיב חדשות מכסות badges/dirty, confirmation/idempotency/double-submit, dispatch failure/retry, rollback ויצירת טיוטה; ‏70/70 בדיקות סטודיו ו־full `pnpm validate` עברו. Wrangler local + Chrome אישרו empty history ובקרת auth. Preview deployment `c0708653` מול D1/R2 האמיתיים אישר dirty publish guard, publish confirmation, failure `publish_dispatch_unconfigured`, retry attempt ‏1→2, rollback לגרסה חיה חדשה ופתיחת טיוטה מהגרסה החיה. לאחר הבדיקה Preview שוחזר ב־Time Travel ל־bookmark `00000013-00000000-000050ae-1dc470640bd16ec10565779e3c03b15a` ואומת עם שתי גרסאות המקור, 16 media, ‏0 jobs/sessions/FK. Commits `41a0acf` ו־`d0d9d73`; CI `29736709319` ו־deploy `29736709296` עברו. Production deployments ‏`96aae2c8`/`49395ef5` עלו, bundle חי כולל את כל פעולות הפרסום, history לא מאומת נשאר `401`, Production D1 נשאר עם 0 revisions/jobs/sessions/FK ושני roots/health החזירו `200`.
 
 #### ADM-008 — Complete admin accessibility, resilience and E2E gate
 
-- **Status:** `BACKLOG`
+- **Status:** `IN_PROGRESS`
 - **Dependencies:** `ADM-002`–`ADM-007`.
 - **Definition:** להשלים responsive, keyboard, focus, error recovery ו־owner E2E לפני cutover.
 - **Acceptance criteria:** כל פעולה קריטית עובדת ב־375px ובדסקטופ; אין אובדן שינוי ללא warning; focus/errors נגישים; reload/network interruption ניתנים להתאוששות; owner flow מלא עובר ב־preview.
@@ -1507,3 +1507,10 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - נוסף מסך responsive לניהול גישה עם סטטוס Google/session, אישור השבתה מפורש, הסברי נעילה והפעלה מחדש. ‏65/65 בדיקות סטודיו ו־full validation עברו.
 - Wrangler local + Chrome בשני contexts אישרו create/deactivate/revoke browser session/reactivate/self protection; כל נתוני הבדיקה נוקו ו־FK נשאר תקין.
 - commit `a2ccb76` עבר CI `29735767725` ו־deploy `29735767757`; Production deployments ‏`f38e2557`/`143a99a3` עלו, roots/health החזירו `200`, endpoint נשאר חסום ב־`401` ללא session ו־Production D1 נשאר עם מנהל פעיל יחיד ו־0 sessions/FK violations. `ADM-006` נסגרה כ־`DONE` ו־`ADM-007` החלה.
+
+### 2026-07-20 — ADM-007 publish, history and rollback UX
+
+- נוסף מסך typed יחיד שמפריד בין save draft לבין publish live, עם badges מדויקים, dirty guard, אישור revision, idempotency, double-submit guard, היסטוריית jobs/revisions, retry ו־rollback; לאחר פרסום אפשר ליצור טיוטה חדשה מהגרסה החיה.
+- ‏70/70 בדיקות סטודיו ו־full validation עברו. Wrangler local אישר empty state מאומת; Preview `c0708653` אישר publish failure, retry attempt ‏1→2, rollback ויצירת draft מול D1/R2 אמיתיים.
+- Preview שוחזר במדויק דרך bookmark `00000013-00000000-000050ae-1dc470640bd16ec10565779e3c03b15a` וחזר ל־2 revisions, ‏16 media, ‏0 jobs/sessions/FK.
+- commits `41a0acf`/`d0d9d73`, ‏CI `29736709319` ו־deploy `29736709296` עברו; Production deployments ‏`96aae2c8`/`49395ef5` עלו, bundle/401/roots/health אומתו ו־Production D1 נשאר נקי. `ADM-007` נסגרה כ־`DONE` ו־`ADM-008` החלה.
