@@ -17,7 +17,7 @@ vi.mock('../../api/studioApi', () => ({
   },
 }));
 
-const session = { admin: { displayName: 'Owner', email: 'owner@example.com' }, expiresAt: 2_000_000_000 };
+const session = { admin: { displayName: 'Owner', email: 'owner@example.com', id: 'admin-owner' }, expiresAt: 2_000_000_000 };
 
 describe('server session hook', () => {
   beforeEach(() => {

@@ -1,4 +1,5 @@
 import type { ApiRoute } from "../http/types";
+import { createAdminRoute, listAdminsRoute, updateAdminRoute } from "./admins";
 import { googleLoginRoute, logoutRoute, sessionRoute } from "./auth";
 import { readDraftRoute, saveDraftRoute } from "./content";
 import { healthRoute } from "./health";
@@ -28,6 +29,9 @@ export const apiRoutes: readonly ApiRoute<Env>[] = [
   googleLoginRoute,
   sessionRoute,
   logoutRoute,
+  listAdminsRoute,
+  createAdminRoute,
+  updateAdminRoute,
   readDraftRoute,
   saveDraftRoute,
   listMediaRoute,

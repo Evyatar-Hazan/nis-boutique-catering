@@ -19,6 +19,7 @@ const googleLoginSchema = z.object({
 
 const presentSession = (session: Awaited<ReturnType<typeof requireAdminSession>>) => ({
   admin: {
+    id: session.adminId,
     displayName: session.displayName,
     email: session.email,
   },

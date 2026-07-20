@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { StudioApiError, studioApiRequest, studioApiUpload } from './client';
 
 const sessionSchema = z.object({
-  admin: z.object({ displayName: z.string().min(1), email: z.string().email() }).strict(),
+  admin: z.object({ displayName: z.string().min(1), email: z.string().email(), id: z.string().min(1) }).strict(),
   expiresAt: z.number().int().positive(),
 }).strict();
 const revisionSchema = z.object({
@@ -30,9 +30,22 @@ const mediaAssetSchema = z.object({
 }).strict();
 const mediaResponseSchema = z.object({ media: z.array(mediaAssetSchema) }).strict();
 const mediaItemResponseSchema = z.object({ media: mediaAssetSchema }).strict();
+const adminSchema = z.object({
+  activeSessionCount: z.number().int().nonnegative(),
+  createdAt: z.number().int(),
+  displayName: z.string().min(1),
+  email: z.string().email(),
+  googleSubject: z.string().min(1).nullable(),
+  id: z.string().min(1),
+  isActive: z.boolean(),
+  updatedAt: z.number().int(),
+}).strict();
+const adminsResponseSchema = z.object({ admins: z.array(adminSchema) }).strict();
+const adminItemResponseSchema = z.object({ admin: adminSchema }).strict();
 
 export type ContentRevisionDto = z.infer<typeof revisionSchema>;
 export type MediaAssetDto = z.infer<typeof mediaAssetSchema>;
+export type AdminDto = z.infer<typeof adminSchema>;
 export type StudioServerSession = z.infer<typeof sessionSchema>;
 
 const jsonBody = (body: unknown) => ({
@@ -54,10 +67,14 @@ const imageDimensions = async (file: File): Promise<{ readonly height: number; r
 };
 
 export const studioApi = {
+  createAdmin: (input: { readonly displayName: string; readonly email: string }, signal?: AbortSignal) => studioApiRequest({
+    ...jsonBody(input), method: 'POST', path: '/api/admins', schema: adminItemResponseSchema, signal,
+  }),
   exchangeGoogleCredential: (credential: string, signal?: AbortSignal) => studioApiRequest({
     ...jsonBody({ credential }), method: 'POST', path: '/api/auth/google', schema: sessionSchema, signal,
   }),
   listMedia: (signal?: AbortSignal) => studioApiRequest({ path: '/api/media', schema: mediaResponseSchema, signal }),
+  listAdmins: (signal?: AbortSignal) => studioApiRequest({ path: '/api/admins', schema: adminsResponseSchema, signal }),
   mediaFileUrl: (id: string) => `/api/media/file?id=${encodeURIComponent(id)}`,
   logout: (signal?: AbortSignal) => studioApiRequest({
     method: 'POST', path: '/api/auth/logout', schema: z.object({ status: z.literal('signed_out') }).strict(), signal,
@@ -79,6 +96,9 @@ export const studioApi = {
   }),
   updateMedia: (input: { readonly altText?: string; readonly archived?: boolean; readonly id: string }, signal?: AbortSignal) => studioApiRequest({
     ...jsonBody(input), method: 'PATCH', path: '/api/media', schema: mediaItemResponseSchema, signal,
+  }),
+  updateAdmin: (input: { readonly displayName?: string; readonly id: string; readonly isActive?: boolean }, signal?: AbortSignal) => studioApiRequest({
+    ...jsonBody(input), method: 'PATCH', path: '/api/admins', schema: adminItemResponseSchema, signal,
   }),
   uploadMedia: async (input: {
     readonly altText: string;

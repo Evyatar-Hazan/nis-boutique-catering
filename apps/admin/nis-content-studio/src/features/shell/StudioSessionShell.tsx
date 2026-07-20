@@ -3,6 +3,7 @@ import { AlertTriangle, LoaderCircle, LogOut } from 'lucide-react';
 import { publicSiteOrigin } from '../../assetUrlHelpers';
 import { studioApi, type StudioServerSession } from '../../api/studioApi';
 import { useStudioQuery } from '../../hooks/useStudioQuery';
+import { AdminManagement } from '../admin/AdminManagement';
 import { ContentStudio } from '../content/ContentStudio';
 
 export const StudioSessionShell = ({
@@ -37,5 +38,6 @@ export const StudioSessionShell = ({
       onReload={draft.reload}
       onUnauthorized={onUnauthorized}
     />}
+    <AdminManagement currentAdminId={session.admin.id} onUnauthorized={onUnauthorized} />
   </main>;
 };
