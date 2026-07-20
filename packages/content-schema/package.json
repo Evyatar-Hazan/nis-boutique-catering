@@ -7,6 +7,10 @@
     ".": {
       "types": "./src/index.ts",
       "import": "./src/index.ts"
+    },
+    "./test-fixtures": {
+      "types": "./src/testFixtures.ts",
+      "import": "./src/testFixtures.ts"
     }
   },
   "scripts": {
