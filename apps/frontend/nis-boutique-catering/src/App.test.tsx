@@ -12,6 +12,14 @@ afterEach(() => {
 });
 
 describe('Nis boutique catering app', () => {
+  it('moves focus past repeated navigation with the skip link', () => {
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('link', { name: 'דלג לתוכן המרכזי' }));
+
+    expect(screen.getByRole('main')).toHaveFocus();
+  });
+
   it('renders the main navigation and hero content', () => {
     const { container } = render(<App />);
 
@@ -70,7 +78,7 @@ describe('Nis boutique catering app', () => {
     const closeButton = within(dialog).getByRole('button', { name: 'סגור תמונה' });
     expect(dialog).toBeInTheDocument();
     expect(document.body).toHaveClass('is-lightbox-open');
-    expect(closeButton).toBeInTheDocument();
+    expect(closeButton).toHaveFocus();
 
     fireEvent.keyDown(window, { key: 'Escape' });
 

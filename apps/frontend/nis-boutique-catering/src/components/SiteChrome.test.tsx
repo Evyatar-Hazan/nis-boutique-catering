@@ -16,8 +16,10 @@ describe('Topbar', () => {
     const openButton = screen.getByRole('button', { name: 'פתיחת תפריט' });
     fireEvent.click(openButton);
     expect(screen.getByRole('button', { name: 'סגירת תפריט' })).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getByRole('link', { name: 'מה מזמינים' })).toHaveFocus();
     fireEvent.click(screen.getByRole('link', { name: 'גלריה' }));
     expect(screen.getByRole('button', { name: 'פתיחת תפריט' })).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.getByRole('button', { name: 'פתיחת תפריט' })).toHaveFocus();
     fireEvent.click(screen.getByRole('button', { name: 'פתיחת תפריט' }));
     fireEvent.keyDown(window, { key: 'Escape' });
     expect(screen.getByRole('button', { name: 'פתיחת תפריט' })).toHaveFocus();

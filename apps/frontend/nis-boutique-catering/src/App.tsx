@@ -1,4 +1,4 @@
-import { lazy, Suspense, type CSSProperties, useCallback, useMemo, useState } from 'react';
+import { lazy, Suspense, type CSSProperties, type MouseEvent, useCallback, useMemo, useState } from 'react';
 import {
   type ContactInquiry,
   HeroSection,
@@ -56,6 +56,11 @@ function App() {
   const footerWhatsapp = buildWhatsappLink(siteMicrocopy.whatsappFooterMessage);
   const floatingWhatsapp = buildWhatsappLink(siteMicrocopy.whatsappFloatingMessage);
 
+  const handleSkipLinkClick = (event: MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    document.getElementById('main')?.focus();
+  };
+
   const handleContactSubmit = (inquiry: ContactInquiry) => {
     const lines = [
       `${siteMicrocopy.formNameLabel}: ${inquiry.name}`,
@@ -72,7 +77,7 @@ function App() {
   return (
     <SiteSectionPreviewDataProvider value={defaultSiteSectionPreviewData}>
     <div className="site-shell" style={{ '--scroll-progress': scrollProgress } as CSSProperties}>
-      <a className="skip-link" href="#main">
+      <a className="skip-link" href="#main" onClick={handleSkipLinkClick}>
         דלג לתוכן המרכזי
       </a>
       <div className="scroll-progress" aria-hidden="true" />
@@ -83,7 +88,7 @@ function App() {
         topbarWhatsapp={topbarWhatsapp}
       />
 
-      <main id="main">
+      <main id="main" tabIndex={-1}>
         <HeroSection heroWhatsapp={heroWhatsapp} />
         <DeferredSections>
           <Suspense fallback={<SectionSkeleton />}>

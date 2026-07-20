@@ -53,7 +53,8 @@ describe('site preview primitives', () => {
     const { rerender } = render(<><button type="button">פתחו</button><Dialog open={false} labelledBy="title" onClose={onClose}><h2 id="title">כותרת</h2></Dialog></>);
     const trigger = screen.getByRole('button', { name: 'פתחו' });
     trigger.focus();
-    rerender(<><button type="button">פתחו</button><Dialog open labelledBy="title" onClose={onClose}><h2 id="title">כותרת</h2><button type="button">סגרו</button></Dialog></>);
+    rerender(<><button type="button">פתחו</button><Dialog open labelledBy="title" onClose={onClose}><h2 id="title">כותרת</h2><button type="button" tabIndex={-1}>רקע</button><button type="button">סגרו</button></Dialog></>);
+    expect(screen.getByRole('button', { name: 'סגרו' })).toHaveFocus();
     fireEvent.keyDown(screen.getByRole('dialog'), { key: 'Escape' });
     expect(onClose).toHaveBeenCalledOnce();
     rerender(<><button type="button">פתחו</button><Dialog open={false} labelledBy="title" onClose={onClose}><h2 id="title">כותרת</h2></Dialog></>);

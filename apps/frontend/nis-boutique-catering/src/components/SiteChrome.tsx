@@ -12,8 +12,10 @@ interface TopbarProps {
 export const Topbar = ({ activeNavSection, isScrolled, topbarWhatsapp }: TopbarProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement | null>(null);
+  const navigationRef = useRef<HTMLElement | null>(null);
   useEffect(() => {
     if (!isMenuOpen) return undefined;
+    navigationRef.current?.querySelector<HTMLAnchorElement>('a')?.focus();
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         event.preventDefault();
@@ -29,9 +31,18 @@ export const Topbar = ({ activeNavSection, isScrolled, topbarWhatsapp }: TopbarP
       <a className="brand" href="#top" aria-label="Nis, boutique catering">
         <OptimizedImage className="brand-logo" image={brandMedia.logo} alt="Nis - boutique catering" decoding="async" />
       </a>
-      <nav id="primary-navigation" className={isMenuOpen ? 'nav-links is-open' : 'nav-links'} aria-label="עמודי האתר">
+      <nav ref={navigationRef} id="primary-navigation" className={isMenuOpen ? 'nav-links is-open' : 'nav-links'} aria-label="עמודי האתר">
         {navItems.map((item) => (
-          <a key={item.href} href={item.href} className={activeNavSection === item.href ? 'is-active' : undefined} onClick={() => setIsMenuOpen(false)}>
+          <a
+            key={item.href}
+            href={item.href}
+            className={activeNavSection === item.href ? 'is-active' : undefined}
+            onClick={() => {
+              if (!isMenuOpen) return;
+              setIsMenuOpen(false);
+              menuButtonRef.current?.focus();
+            }}
+          >
             {item.label}
           </a>
         ))}
