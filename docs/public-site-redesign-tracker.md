@@ -896,12 +896,12 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### MIG-003 — Import and validate in preview
 
-- **Status:** `VERIFYING`
+- **Status:** `DONE`
 - **Dependencies:** `MIG-002`, `CF-006`, `CF-007`.
 - **Definition:** לייבא את כל התוכן והמדיה ל־D1/R2 preview ולהריץ parity מלאה בלי להשפיע על production.
 - **Acceptance criteria:** counts/IDs/hashes תואמים; כל media נפתחת; draft/published מוגדרים; אין orphan/duplicate object; admin bootstrap תקין.
 - **Verification:** automated parity report, R2 object HEAD/read sampling, preview studio login ו־preview public build.
-- **Evidence:** נוסף importer מוגבל בקוד ל־Preview בלבד, עם flag כתיבה מפורש, preflight שחוסם rows זרים, source SHA/bytes לפני העלאה, verification בהורדה מלאה מ־R2 ו־D1 parity לאחר כתיבה. לפני import נשמר Time Travel bookmark ‏`0000000d-00000000-000050ae-8614f9eb76c612c2e43f1018390cf725`. שתי הרצות מלאות עברו idempotently והשאירו 16 media rows עם 16 IDs/object keys/hashes ייחודיים, draft יחיד ‏`b5bd90fb-ded3-583c-ab50-8bfa17f2bd26`, published יחיד ‏`b6398b25-f48f-5eeb-a6a8-bbd4d83add2f`, ‏0 jobs ו־0 FK violations. כל 16 objects הורדו מחדש ואומתו byte-for-byte; authenticated Preview API deployment `2c1d0682` החזיר `200` ל־session/draft/media/orphans ול־published, עם 0 missing ו־0 orphan objects, וה־sessions הזמניים נמחקו. שני ה־content JSON זהים למקור עם normalized SHA ‏`3e2ea58a…`. clean Preview public sync הוריד 9 referenced objects, יצר 57 files, עבר content/media checks ו־build. בדיקת browser אישרה שה־studio Preview נטען; ה־UI הישן עדיין משתמש ב־Google Sheets עד Phase 6, בעוד login/session של API החדש אומת ישירות. ‏46/46 בדיקות סטודיו ו־full `pnpm validate` עברו. Production נבדק בנפרד ונשאר עם 0 revisions/media/jobs/sessions ו־0 FK violations; המשימה ממתינה ל־push, CI/deploy ו־Production smoke לפני `DONE`.
+- **Evidence:** נוסף importer מוגבל בקוד ל־Preview בלבד, עם flag כתיבה מפורש, preflight שחוסם rows זרים, source SHA/bytes לפני העלאה, verification בהורדה מלאה מ־R2 ו־D1 parity לאחר כתיבה. לפני import נשמר Time Travel bookmark ‏`0000000d-00000000-000050ae-8614f9eb76c612c2e43f1018390cf725`. שתי הרצות מלאות עברו idempotently והשאירו 16 media rows עם 16 IDs/object keys/hashes ייחודיים, draft יחיד ‏`b5bd90fb-ded3-583c-ab50-8bfa17f2bd26`, published יחיד ‏`b6398b25-f48f-5eeb-a6a8-bbd4d83add2f`, ‏0 jobs ו־0 FK violations. כל 16 objects הורדו מחדש ואומתו byte-for-byte; authenticated Preview API deployment `2c1d0682` החזיר `200` ל־session/draft/media/orphans ול־published, עם 0 missing ו־0 orphan objects, וה־sessions הזמניים נמחקו. שני ה־content JSON זהים למקור עם normalized SHA ‏`3e2ea58a…`. clean Preview public sync הוריד 9 referenced objects, יצר 57 files, עבר content/media checks ו־build. בדיקת browser אישרה שה־studio Preview נטען; ה־UI הישן עדיין משתמש ב־Google Sheets עד Phase 6, בעוד login/session של API החדש אומת ישירות. ‏46/46 בדיקות סטודיו ו־full `pnpm validate` עברו. Commit `a16b747`, ‏CI `29728841864` ו־deploy `29728841874` עברו; deployments ‏`fc265dac`/`98dbe6b0` נפרסו ושני ה־roots וה־health החזירו `200`. Production נשאר עם 0 revisions/media/jobs/sessions ו־0 FK violations.
 
 #### MIG-004 — Run the production freeze, delta import and cutover
 
@@ -934,12 +934,12 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### ADM-001 — Split the admin monolith into owned modules
 
-- **Status:** `BACKLOG`
+- **Status:** `IN_PROGRESS`
 - **Dependencies:** `ARC-003`, `CF-003`.
 - **Definition:** לפרק את `App.tsx` ל־shell, routes/tabs ו־feature modules בלי ליצור wrappers או UI כפולים.
 - **Acceptance criteria:** `App.tsx` הוא composition root; כל feature בקובץ/תיקייה ייעודיים; primitives משותפים reused; imports לפי public boundaries.
 - **Verification:** component ownership review, dependency graph, type-check ו־duplication search.
-- **Evidence:** pending.
+- **Evidence:** העבודה החלה לאחר סגירת Preview parity; נקודת המוצא היא `App.tsx` legacy מונוליתי המחזיק auth, data access, tabs וכל editors בקובץ אחד.
 
 #### ADM-002 — Replace Google OAuth data access with session UX
 
@@ -1457,3 +1457,4 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - נוסף importer write-gated ל־Preview עם preflight, source verification, ‏D1 upsert, ‏R2 upload/download verification ודוח parity קנוני.
 - שתי הרצות מלאות השאירו draft/published יחידים ו־16 assets/objects ללא duplicate, missing, orphan או FK violation; כל session בדיקה נמחק.
 - deployment ‏`2c1d0682` אישר את מסלולי ה־API המאומתים והציבוריים, ו־clean Cloudflare sync/build עבר מול published Preview. Production נשאר ריק וללא שינוי. `MIG-003` עברה ל־`VERIFYING` עד push/CI/deploy ו־Production smoke.
+- commit `a16b747` עבר CI `29728841864` ו־deploy `29728841874`; Production smoke אישר `200` בשני ה־roots וב־health וה־D1 production נשאר ריק. `MIG-003` נסגרה כ־`DONE`; לפי dependency order, `ADM-001` החלה לפני cutover.
