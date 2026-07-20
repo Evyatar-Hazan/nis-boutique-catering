@@ -28,7 +28,7 @@ describe('createHeroPreload', () => {
     expect(preload.type).toBe('image/avif');
     expect(preload.href).toBe('/media/hero-1500w.avif');
     expect(preload.imageSrcSet).toContain('/media/hero-720w.avif 720w');
-    expect(preload.imageSizes).toBe('100vw');
+    expect(preload.imageSizes).toContain('calc(100vw - 32px)');
   });
 
   it('matches the first v2 Hero media and uses WebP for CMS assets', () => {

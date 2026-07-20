@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import {
   getPrimaryHeroMediaId,
+  heroImageSizes,
   publicHeroDefaults,
   type ContentSnapshot,
 } from '@monorepo/content-schema';
@@ -836,6 +837,10 @@ export const galleryImages: readonly GalleryImage[] =
   generatedGalleryImages.length > 0 ? generatedGalleryImages : fallbackGalleryImages;
 
 const heroMediaSection = getGeneratedSection('hero-media');
+const primaryHeroMedia = getGeneratedMedia(
+  getPrimaryHeroMediaId(contentSnapshot),
+  foodMedia.salmonSkewersLemon,
+);
 
 export const heroContent = {
   eyebrow: publicHeroDefaults.eyebrow,
@@ -846,7 +851,7 @@ export const heroContent = {
 
 export const heroMedia = {
   background: getGeneratedMedia(heroMediaSection?.items[0], foodMedia.hostingTableOverview),
-  primary: getGeneratedMedia(getPrimaryHeroMediaId(contentSnapshot), foodMedia.salmonSkewersLemon),
+  primary: { ...primaryHeroMedia, sizes: heroImageSizes },
   side: getGeneratedMedia(heroMediaSection?.items[2], foodMedia.dipsTrayClose),
   tall: getGeneratedMedia(heroMediaSection?.items[3], foodMedia.tableSettingBlueGold),
 } as const;

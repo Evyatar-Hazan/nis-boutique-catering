@@ -1,6 +1,7 @@
 import {
   getPrimaryHeroMediaId,
   getResponsiveImageSrcSet,
+  heroImageSizes,
   type ResponsiveImageAsset,
 } from '@monorepo/content-schema/media';
 import type { ContentSnapshot } from '@monorepo/content-schema';
@@ -39,7 +40,7 @@ export const createHeroPreload = (
   return {
     href,
     ...(imageSrcSet ? { imageSrcSet } : {}),
-    ...(image.sizes ? { imageSizes: image.sizes } : {}),
+    imageSizes: heroImageSizes,
     type: format === 'avif' ? 'image/avif' : 'image/webp',
   };
 };
