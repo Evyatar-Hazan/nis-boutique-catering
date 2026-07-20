@@ -961,16 +961,16 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### ADM-004 — Implement six-section content editing and preview
 
-- **Status:** `VERIFYING`
+- **Status:** `DONE`
 - **Dependencies:** `ADM-003`, `ARC-002`, `CF-006`.
 - **Definition:** לבנות עורכים ברורים ל־Hero, Services, Gallery, Process, Trust ו־Contact על אותו `ContentSnapshot`.
 - **Acceptance criteria:** אין legacy sections; validation field-level; dirty/conflict states ברורים; preview משתמש ב־`packages/site-preview`/shared contracts ולא ב־markup מועתק.
 - **Verification:** load→edit→validate→save→reload לכל section, component tests ו־preview parity screenshots.
-- **Evidence:** נוסף `ContentStudio` אחד עם navigation לששת חלקי v2: Hero, Services, Gallery, Process, Trust ו־Contact. `contentEditorModel` מייצר groups/fields מאותו `PublicSiteDocument` וממחזר `FieldControl` יחיד לכל text/textarea/select/media/checkbox, כך שאין טפסים או handlers משוכפלים. כל שינוי מסומן dirty, מזהיר לפני יציאה, עובר Zod field-level validation, נשמר עם `expectedVersion`, ו־auth/conflict/network מוצגים בנפרד בלי למחוק state מקומי. `PublicSiteDocumentPreview` נמצא ב־`packages/site-preview`, מקבל ישירות את החוזה המשותף ומציג את כל ששת החלקים בלי markup מועתק באדמין. ‏8 בדיקות רכיב חדשות כוללות load→edit→validate→save→reload לכל ששת החלקים, invalid field ו־conflict; ‏54/54 בדיקות סטודיו ו־full `pnpm validate` עברו. Wrangler local + דפדפן ברירת המחדל אישרו session, preview חי, dirty state, שמירת Hero מגרסה 1 ל־2 ו־reload ששמר את הערך; נתוני הבדיקה המקומיים נוקו ל־0 sessions/revisions ו־0 FK violations. המשימה ממתינה ל־push, CI/deploy ו־Preview/Production verification.
+- **Evidence:** נוסף `ContentStudio` אחד עם navigation לששת חלקי v2: Hero, Services, Gallery, Process, Trust ו־Contact. `contentEditorModel` מייצר groups/fields מאותו `PublicSiteDocument` וממחזר `FieldControl` יחיד לכל text/textarea/select/media/checkbox, כך שאין טפסים או handlers משוכפלים. כל שינוי מסומן dirty, מזהיר לפני יציאה, עובר Zod field-level validation, נשמר עם `expectedVersion`, ו־auth/conflict/network מוצגים בנפרד בלי למחוק state מקומי. `PublicSiteDocumentPreview` נמצא ב־`packages/site-preview`, מקבל ישירות את החוזה המשותף ומציג את כל ששת החלקים בלי markup מועתק באדמין. ‏8 בדיקות רכיב חדשות כוללות load→edit→validate→save→reload לכל ששת החלקים, invalid field ו־conflict; ‏54/54 בדיקות סטודיו ו־full `pnpm validate` עברו. Wrangler local + דפדפן ברירת המחדל אישרו session, preview חי, dirty state, שמירת Hero מגרסה 1 ל־2 ו־reload ששמר את הערך; נתוני הבדיקה המקומיים נוקו ל־0 sessions/revisions ו־0 FK violations. Commit `6eb0546`, ‏CI `29732124343` ו־deploy `29732124329` עברו; deployments ‏`c0212f95` Preview ו־`5acccdab` Production מצביעים לאותו commit. Preview browser אישר session/draft/media/save/reload/logout כולם `200`, כולל ארבעה assets אמיתיים מה־R2; לאחר הבדיקה הטיוטה הוחזרה byte-equivalent למקור, לגרסה 1 ול־updated timestamp המקורי, עם 16 media, ‏0 sessions ו־0 FK violations. Production authenticated browser הציג נכון empty-draft, logout ביטל session, וה־cleanup החזיר 0 sessions/revisions/media ו־0 FK violations; roots/health החזירו `200`.
 
 #### ADM-005 — Implement R2 media library and safe editing
 
-- **Status:** `BACKLOG`
+- **Status:** `IN_PROGRESS`
 - **Dependencies:** `ADM-003`, `CF-007`, `WEB-003`.
 - **Definition:** לבנות library אחת ל־upload/select/alt/replace/archive/restore של תמונות ווידאו.
 - **Acceptance criteria:** progress/error/retry; preview מקומי בטוח; alt חובה לשימוש ציבורי; reference count מוצג לפני archive; אותו picker משמש Hero/Services/Gallery.
@@ -1484,3 +1484,4 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - נוסף editor data-driven יחיד לששת חלקי v2, עם controls גנריים, dirty/unload guard, ‏field-level Zod errors ו־optimistic conflict handling בלי שכפול טפסים או handlers.
 - נוסף `PublicSiteDocumentPreview` משותף ב־`packages/site-preview`; האדמין מעביר אליו את אותו `PublicSiteDocument` ומקבל preview חי לכל ששת החלקים בלי להעתיק markup.
 - ‏8 בדיקות רכיב מכסות load→edit→validate→save→reload לכל חלק, invalid field ו־conflict; ‏54/54 בדיקות סטודיו ו־full validation עברו. Browser מקומי אישר שינוי Hero חי, save גרסה 1→2 ו־reload; local D1 נוקה לאחר הבדיקה. `ADM-004` עברה ל־`VERIFYING` עד push, CI/deploy ואימות Preview/Production.
+- commit `6eb0546` עבר CI `29732124343` ו־deploy `29732124329`; Preview deployment `c0212f95` אישר media/save/reload/logout ב־`200`, ולאחר restore נשאר עם טיוטה מקורית גרסה 1, ‏16 media ו־0 sessions/FK violations. Production deployment `5acccdab` אישר authenticated empty-draft/logout ונשאר נקי. `ADM-004` נסגרה כ־`DONE` ו־`ADM-005` החלה.
