@@ -20,5 +20,5 @@ jobs:
       - name: Check Cloudflare free-tier usage
         env:
           CLOUDFLARE_ACCOUNT_ID: 9b3262d42898067352168901679a4936
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_USAGE_API_TOKEN }}
         run: node scripts/check-cloudflare-usage.mjs
