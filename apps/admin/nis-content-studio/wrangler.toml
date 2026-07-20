@@ -1,0 +1,35 @@
+# Based on the existing Cloudflare Pages project configuration downloaded with
+# `wrangler pages download config nis-content-studio` on 2026-07-20.
+name = "nis-content-studio"
+pages_build_output_dir = "./dist"
+compatibility_date = "2026-07-20"
+compatibility_flags = ["nodejs_compat"]
+
+# Local development uses Wrangler's local persistence. The preview resources
+# define the binding shape without connecting local requests to remote data.
+[[d1_databases]]
+binding = "DB"
+database_name = "nis-content-preview"
+database_id = "80b4a9b2-4f3b-42a7-af3f-1e4d629c0c7d"
+
+[[r2_buckets]]
+binding = "MEDIA"
+bucket_name = "nis-media-preview"
+
+[[env.preview.d1_databases]]
+binding = "DB"
+database_name = "nis-content-preview"
+database_id = "80b4a9b2-4f3b-42a7-af3f-1e4d629c0c7d"
+
+[[env.preview.r2_buckets]]
+binding = "MEDIA"
+bucket_name = "nis-media-preview"
+
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "nis-content-production"
+database_id = "fd74127a-fea6-4517-8c54-f467a8fc6437"
+
+[[env.production.r2_buckets]]
+binding = "MEDIA"
+bucket_name = "nis-media-production"

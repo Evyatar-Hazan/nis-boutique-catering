@@ -9,10 +9,12 @@
   },
   "scripts": {
     "dev": "vite --host 127.0.0.1",
+    "pages:dev": "wrangler pages dev",
+    "cloudflare:types": "wrangler types",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "test": "vitest run",
-    "type-check": "tsc --noEmit",
+    "type-check": "tsc --noEmit && tsc -p tsconfig.functions.json",
     "clean": "rm -rf dist .turbo node_modules/.tmp",
     "format": "prettier --write src"
   },
@@ -41,6 +43,7 @@
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.48.0",
     "vite": "^7.3.1",
-    "vitest": "^4.1.5"
+    "vitest": "^4.1.5",
+    "wrangler": "^4.112.0"
   }
 }

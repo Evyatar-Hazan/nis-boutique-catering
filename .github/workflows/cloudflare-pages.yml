@@ -86,6 +86,7 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
 
       - name: Deploy admin studio to Cloudflare Pages
+        working-directory: apps/admin/nis-content-studio
         run: |
           deploy_pages() {
             local attempt=1
@@ -101,7 +102,7 @@ jobs:
             done
           }
 
-          deploy_pages apps/admin/nis-content-studio/dist "${ADMIN_STUDIO_PROJECT}"
+          deploy_pages dist "${ADMIN_STUDIO_PROJECT}"
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ env.CLOUDFLARE_ACCOUNT_ID }}

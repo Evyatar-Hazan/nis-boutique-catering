@@ -23,6 +23,8 @@
     "dev": "turbo run dev --filter @monorepo/nis-boutique-catering",
     "dev:all": "turbo run dev",
     "admin:dev": "turbo run dev --filter @monorepo/nis-content-studio",
+    "admin:pages:dev": "pnpm --filter @monorepo/nis-content-studio pages:dev",
+    "cloudflare:types": "pnpm --filter @monorepo/nis-content-studio cloudflare:types",
     "admin:build": "turbo run build --filter @monorepo/nis-content-studio",
     "build": "turbo run build",
     "cloudflare:build:admin": "pnpm --filter @monorepo/nis-content-studio build",

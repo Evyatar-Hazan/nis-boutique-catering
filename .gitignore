@@ -34,6 +34,9 @@ pnpm-debug.log*
 # Turbo
 .turbo/
 
+# Cloudflare local state
+.wrangler/
+
 # Testing
 coverage/
 .nyc_output/
