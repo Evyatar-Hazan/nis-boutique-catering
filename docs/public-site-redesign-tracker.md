@@ -970,16 +970,16 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### ADM-005 — Implement R2 media library and safe editing
 
-- **Status:** `VERIFYING`
+- **Status:** `DONE`
 - **Dependencies:** `ADM-003`, `CF-007`, `WEB-003`.
 - **Definition:** לבנות library אחת ל־upload/select/alt/replace/archive/restore של תמונות ווידאו.
 - **Acceptance criteria:** progress/error/retry; preview מקומי בטוח; alt חובה לשימוש ציבורי; reference count מוצג לפני archive; אותו picker משמש Hero/Services/Gallery.
 - **Verification:** real preview uploads, invalid files, reuse same media, referenced delete, keyboard flow ו־mobile flow.
-- **Evidence:** נוסף `MediaLibrary` יחיד שמשרת את Hero, ‏Services, ‏Gallery ואת מסך הניהול הכללי; הוא משתמש ב־typed API הקיים ל־list/upload/update/archive/restore וב־Dialog המשותף ל־focus trap, ‏Escape והחזרת focus. upload שולח raw body ב־XHR מרוכז עם SHA-256, dimensions, progress, שגיאה ו־retry, ללא Base64; alt נדרש לפני שימוש ציבורי ווידאו דורש poster. נוסף endpoint מאומת לקריאת קובצי טיוטה ישירות מ־R2, ולכן preview חי אינו תלוי בגרסה שפורסמה. רשימת המדיה מציגה שימושים בטיוטה ובגרסאות שרת, וחוסמת archive מקומית ובשרת לפני מחיקה רכה; IDs הותאמו גם לנכסי migration קריאים ולא רק UUID. ‏59/59 בדיקות סטודיו ו־full `pnpm validate` עברו. Wrangler local + Chrome אישרו upload PNG אמיתי 492,063 bytes ל־R2 עם progress 100%, preview, בחירה/החלפה, save ‏v1→v2→reload, reuse כפול `409`, alt edit, archive→restore, picker משותף ב־Hero/Services, mobile ‏500px ללא overflow, media/file ‏200 ו־orphan scan ריק. לאחר הבדיקה נמחקו שני objects וכל rows/sessions/revisions הזמניים; D1 חזר ל־0/0/0 ו־0 FK violations. ממתין ל־push, CI/deploy ואימות Preview/Production.
+- **Evidence:** נוסף `MediaLibrary` יחיד שמשרת את Hero, ‏Services, ‏Gallery ואת מסך הניהול הכללי; הוא משתמש ב־typed API הקיים ל־list/upload/update/archive/restore וב־Dialog המשותף ל־focus trap, ‏Escape והחזרת focus. upload שולח raw body ב־XHR מרוכז עם SHA-256, dimensions, progress, שגיאה ו־retry, ללא Base64; alt נדרש לפני שימוש ציבורי ווידאו דורש poster. נוסף endpoint מאומת לקריאת קובצי טיוטה ישירות מ־R2, ולכן preview חי אינו תלוי בגרסה שפורסמה. רשימת המדיה מציגה שימושים בטיוטה ובגרסאות שרת, וחוסמת archive מקומית ובשרת לפני מחיקה רכה; IDs הותאמו גם לנכסי migration קריאים ולא רק UUID. ‏59/59 בדיקות סטודיו ו־full `pnpm validate` עברו. Wrangler local + Chrome אישרו upload PNG אמיתי 492,063 bytes ל־R2 עם progress 100%, preview, בחירה/החלפה, save ‏v1→v2→reload, reuse כפול `409`, alt edit, archive→restore, picker משותף ב־Hero/Services, mobile ‏500px ללא overflow, media/file ‏200 ו־orphan scan ריק. לאחר הבדיקה נמחקו שני objects וכל rows/sessions/revisions הזמניים; D1 חזר ל־0/0/0 ו־0 FK violations. Commit `9fe2a54`, ‏CI `29734691146` ו־deploy `29734691163` עברו; Production deployment `c394d49f` ו־Preview `5bc5be59` מצביעים לאותו commit. Preview אמיתי טען 16 assets, העלה PNG ‏143,919 bytes ל־R2, הציג progress/preview, חסם asset עם 3 שימושי טיוטה ו־2 גרסאות, החזיר duplicate ‏409, והשלים archive→restore, mobile ו־Escape→focus. ה־object/row/session נמחקו ו־Preview חזר ל־16 media, ‏2 revisions, ‏0 sessions/FK/orphans; Production נשאר 0/0/0 עם endpoints מאובטחים ב־401. שני ה־roots ושני health endpoints החזירו `200`.
 
 #### ADM-006 — Implement admin management and session revocation
 
-- **Status:** `BACKLOG`
+- **Status:** `IN_PROGRESS`
 - **Dependencies:** `ADM-003`, `CF-004`, `CF-005`.
 - **Definition:** להעביר ניהול אדמינים ל־D1 ולהוסיף add/activate/deactivate תוך הגנה מנעילה עצמית.
 - **Acceptance criteria:** email normalized/unique; לא ניתן להשבית את האדמין הפעיל האחרון או את עצמך בלי handoff; deactivation מבטלת sessions; אין public bootstrap route.
@@ -1499,3 +1499,4 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - נוסף picker/library יחיד ל־Hero, ‏Services ו־Gallery עם upload progress/retry, תצוגת R2 מאומתת, alt/poster, reference counts, replace, archive ו־restore; אין Base64 או picker מקביל.
 - endpoint מאומת חדש מציג media של טיוטה ישירות מ־R2, ו־D1 reference guard נשאר הסמכות הסופית. נתמכים גם IDs הקריאים של migration וגם UUID של העלאות חדשות.
 - ‏59/59 בדיקות סטודיו ו־full validation עברו. בדיקת Wrangler/Chrome מקומית השלימה upload→preview→replace→save→reload, duplicate ‏409, alt edit, archive/restore, mobile/keyboard ו־orphan scan ריק; כל נתוני הבדיקה נוקו. `ADM-005` עברה ל־`VERIFYING` עד push, CI/deploy ואימות Preview/Production.
+- commit `9fe2a54` עבר CI `29734691146` ו־deploy `29734691163`; Preview deployment `5bc5be59` אישר upload/preview/duplicate/reference guard/archive/restore/mobile/keyboard מול D1/R2 אמיתיים. לאחר cleanup נשארו 16 media, ‏2 revisions, ‏0 sessions/FK/orphans; Production deployment `c394d49f` נשאר נקי ומאובטח. `ADM-005` נסגרה כ־`DONE` ו־`ADM-006` החלה.
