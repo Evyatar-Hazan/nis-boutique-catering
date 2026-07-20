@@ -1,4 +1,5 @@
 export * from './PrimarySections';
+export * from './PublicSiteDocumentPreview';
 export * from './ServicesSection';
 export * from './ProcessSection';
 export * from './TrustSection';

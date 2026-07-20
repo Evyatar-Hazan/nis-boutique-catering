@@ -1,8 +1,9 @@
-import { LogOut, ShieldCheck } from 'lucide-react';
+import { AlertTriangle, LoaderCircle, LogOut } from 'lucide-react';
 
 import { publicSiteOrigin } from '../../assetUrlHelpers';
 import { studioApi, type StudioServerSession } from '../../api/studioApi';
 import { useStudioQuery } from '../../hooks/useStudioQuery';
+import { ContentStudio } from '../content/ContentStudio';
 
 export const StudioSessionShell = ({
   session,
@@ -14,13 +15,6 @@ export const StudioSessionShell = ({
   readonly onUnauthorized: () => void;
 }) => {
   const draft = useStudioQuery({ onUnauthorized, query: studioApi.readDraft });
-  const draftStatus = draft.status === 'loading'
-    ? 'טוענים טיוטה מאובטחת...'
-    : draft.status === 'error'
-      ? draft.error.message
-      : draft.data?.revision
-        ? `טיוטה גרסה ${draft.data.revision.version} מוכנה.`
-        : 'אין עדיין טיוטה.';
 
   return <main className="admin-root">
     <div className="admin-grain" aria-hidden="true" />
@@ -34,12 +28,14 @@ export const StudioSessionShell = ({
         <button type="button" className="ghost-button" onClick={onLogout}><LogOut aria-hidden="true" />התנתק</button>
       </div>
     </header>
-    <section className="panel" aria-labelledby="session-ready-title">
-      <div className="empty-state">
-        <ShieldCheck aria-hidden="true" />
-        <h2 id="session-ready-title">החיבור לשרת מוכן</h2>
-        <p>{draftStatus}</p>
-      </div>
-    </section>
+    {draft.status === 'loading' && <section className="empty-state" role="status"><LoaderCircle aria-hidden="true" />טוענים טיוטה מאובטחת...</section>}
+    {draft.status === 'error' && <section className="empty-state config-warning" role="alert"><AlertTriangle aria-hidden="true" />{draft.error.message}<button className="ghost-button" type="button" onClick={draft.reload}>נסה שוב</button></section>}
+    {draft.status === 'success' && !draft.data.revision && <section className="empty-state" role="status">אין עדיין טיוטה לעריכה.</section>}
+    {draft.status === 'success' && draft.data.revision && <ContentStudio
+      initialRevision={draft.data.revision}
+      key={`${draft.data.revision.id}:${draft.data.revision.version}`}
+      onReload={draft.reload}
+      onUnauthorized={onUnauthorized}
+    />}
   </main>;
 };
