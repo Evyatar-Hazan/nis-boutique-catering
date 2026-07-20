@@ -38,6 +38,11 @@ export const shouldRevealEntry = (
   entry: Pick<IntersectionObserverEntry, 'boundingClientRect' | 'isIntersecting'>,
 ): boolean => entry.isIntersecting || entry.boundingClientRect.bottom <= 0;
 
+export const getRevealObserverRootMargin = (
+  documentHeight: number,
+  viewportHeight: number,
+): string => `${Math.ceil(Math.max(0, documentHeight) + Math.max(0, viewportHeight))}px 0px -8% 0px`;
+
 export const markRevealVisible = (element: HTMLElement): void => {
   element.dataset.revealVisible = 'true';
   element.classList.add('is-visible');
@@ -106,7 +111,13 @@ export const useScrollAnimation = ({ selector = '.reveal' }: ScrollAnimationOpti
           }
         });
       },
-      { rootMargin: '0px 0px -8% 0px', threshold: THRESHOLD_STEPS },
+      {
+        rootMargin: getRevealObserverRootMargin(
+          document.documentElement.scrollHeight,
+          window.innerHeight,
+        ),
+        threshold: THRESHOLD_STEPS,
+      },
     );
 
     const observePendingElements = () => {

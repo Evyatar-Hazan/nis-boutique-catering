@@ -1,6 +1,7 @@
 export {
   applyScrollAnimationConfig,
   applyStaggerDelays,
+  getRevealObserverRootMargin,
   markRevealHidden,
   markRevealVisible,
   readScrollAnimationConfig,

@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import {
   applyScrollAnimationConfig,
   applyStaggerDelays,
+  getRevealObserverRootMargin,
   markRevealHidden,
   markRevealVisible,
   readScrollAnimationConfig,
@@ -20,6 +21,11 @@ describe('scroll reveal policy', () => {
     expect(shouldRevealEntry(entryAt(400, true))).toBe(true);
     expect(shouldRevealEntry(entryAt(-1))).toBe(true);
     expect(shouldRevealEntry(entryAt(400))).toBe(false);
+  });
+
+  it('keeps the observer root extended across the full scroll history for fast jumps', () => {
+    expect(getRevealObserverRootMargin(6_242, 1_000)).toBe('7242px 0px -8% 0px');
+    expect(getRevealObserverRootMargin(-1, 812)).toBe('812px 0px -8% 0px');
   });
 
   it('restores visibility when a React rerender rewrites the class attribute', () => {
