@@ -934,12 +934,12 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### ADM-001 — Split the admin monolith into owned modules
 
-- **Status:** `IN_PROGRESS`
+- **Status:** `VERIFYING`
 - **Dependencies:** `ARC-003`, `CF-003`.
 - **Definition:** לפרק את `App.tsx` ל־shell, routes/tabs ו־feature modules בלי ליצור wrappers או UI כפולים.
 - **Acceptance criteria:** `App.tsx` הוא composition root; כל feature בקובץ/תיקייה ייעודיים; primitives משותפים reused; imports לפי public boundaries.
 - **Verification:** component ownership review, dependency graph, type-check ו־duplication search.
-- **Evidence:** העבודה החלה לאחר סגירת Preview parity; נקודת המוצא היא `App.tsx` legacy מונוליתי המחזיק auth, data access, tabs וכל editors בקובץ אחד.
+- **Evidence:** `App.tsx` ירד מ־1,016 שורות ל־composition root של 3 שורות בלבד. מימוש ה־legacy כולו הועבר ל־feature boundary מבודד תחת `features/legacy`, וה־login gate, ניווט ה־tabs וה־primitives הגנריים פוצלו לקבצים ייעודיים; אין wrapper או component כפול. עורכי Google הישנים נשארו יחד רק בתוך migration feature יחיד כדי שיוחלפו בשלמות ב־ADM-002–ADM-007 בלי להריץ שתי מערכות או ליצור UI זמני. imports נשארו בכיוון App→feature→shared local modules, חיפוש declarations אישר owner יחיד לכל primitive/navigation/login. ‏46/46 בדיקות סטודיו, type-check, lint, full `pnpm validate` ושני builds עברו. browser מקומי ב־`127.0.0.1:5173` אישר login shell זהה וללא console errors; המשימה ממתינה ל־push, CI/deploy ו־Production smoke לפני `DONE`.
 
 #### ADM-002 — Replace Google OAuth data access with session UX
 
@@ -1458,3 +1458,8 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - שתי הרצות מלאות השאירו draft/published יחידים ו־16 assets/objects ללא duplicate, missing, orphan או FK violation; כל session בדיקה נמחק.
 - deployment ‏`2c1d0682` אישר את מסלולי ה־API המאומתים והציבוריים, ו־clean Cloudflare sync/build עבר מול published Preview. Production נשאר ריק וללא שינוי. `MIG-003` עברה ל־`VERIFYING` עד push/CI/deploy ו־Production smoke.
 - commit `a16b747` עבר CI `29728841864` ו־deploy `29728841874`; Production smoke אישר `200` בשני ה־roots וב־health וה־D1 production נשאר ריק. `MIG-003` נסגרה כ־`DONE`; לפי dependency order, `ADM-001` החלה לפני cutover.
+
+### 2026-07-20 — ADM-001 admin ownership split
+
+- `App.tsx` הומר ל־composition root של 3 שורות; ה־legacy migration feature, ‏login gate, navigation ו־generic primitives קיבלו ownership וקבצים מפורשים ללא duplication.
+- כל 46 בדיקות הסטודיו, full validation ושני builds עברו; browser local אישר את login shell ללא console errors. `ADM-001` עברה ל־`VERIFYING` עד push/CI/deploy ו־Production smoke.
