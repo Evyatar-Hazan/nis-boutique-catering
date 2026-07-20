@@ -795,12 +795,12 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### CF-002 — Add versioned D1 migrations and seed strategy
 
-- **Status:** `VERIFYING`
+- **Status:** `DONE`
 - **Dependencies:** `CF-001`, `ARC-002`.
 - **Definition:** להוסיף migrations ל־`admins`, ‏`admin_sessions`, ‏`content_revisions`, ‏`media_assets` ו־`publish_jobs`, בלי runtime `CREATE TABLE`.
 - **Acceptance criteria:** migrations idempotent לפי מנגנון Wrangler; indexes על email/session/status; foreign keys ו־constraints קריטיים; bootstrap admin מגיע מ־seed מאובטח ולא מ־UI ציבורי.
 - **Verification:** apply על DB מקומי ריק, apply חוזר ללא drift, schema inspection, migration rollback rehearsal על backup.
-- **Evidence:** נוסף migration versioned בשם `0001_initial_content_platform.sql` ל־`admins`, ‏`admin_sessions`, ‏`content_revisions`, ‏`media_assets` ו־`publish_jobs`, עם STRICT tables, ‏foreign keys, status/check constraints, optimistic revision version, JSON validation, unique published revision ואינדקסים ל־email/session/status. `wrangler.toml` מגדיר `migrations_dir`/`d1_migrations` בכל environment ואין runtime schema creation. כלי `seed-bootstrap-admin.mjs` מקבל email/name רק מ־environment, דורש confirmation מפורש ל־production ומבצע upsert server-side; אין bootstrap UI. migration הוחל על DB מקומי ריק, apply חוזר החזיר `No migrations to apply`, ‏schema/foreign-key inspection עבר, ו־backup/restore rehearsal החזיר את מצב pre-migration בלי טבלאות היעד. seed מקומי כפול השאיר admin פעיל יחיד. Preview remote הוחל ונזרע, עם migration אחד, admin פעיל אחד ו־0 foreign-key violations. נדרש עדיין full validation, push/CI/deploy, bookmark לפני production, apply/seed/inspection ב־production ואימות חוזר לפני `DONE`.
+- **Evidence:** נוסף migration versioned בשם `0001_initial_content_platform.sql` ל־`admins`, ‏`admin_sessions`, ‏`content_revisions`, ‏`media_assets` ו־`publish_jobs`, עם STRICT tables, ‏foreign keys, status/check constraints, optimistic revision version, JSON validation, unique published revision ואינדקסים ל־email/session/status. `wrangler.toml` מגדיר `migrations_dir`/`d1_migrations` בכל environment ואין runtime schema creation. כלי `seed-bootstrap-admin.mjs` מקבל email/name רק מ־environment, דורש confirmation מפורש ל־production ומבצע upsert server-side; אין bootstrap UI. migration הוחל על DB מקומי ריק, apply חוזר החזיר `No migrations to apply`, ‏schema/foreign-key inspection עבר, ו־backup/restore rehearsal החזיר את מצב pre-migration בלי טבלאות היעד. seed מקומי כפול השאיר admin פעיל יחיד. Preview remote הוחל ונזרע, עם migration אחד, admin פעיל אחד ו־0 foreign-key violations. `pnpm validate` עבר; commit `58a611a` עבר CI `29719632920` ו־deploy `29719632890`. לפני Production נשמר Time Travel bookmark `00000002-00000000-000050ae-d8bd4822629525ba61881ef35e4c36ab`; migration וה־seed הוחלו, apply חוזר היה no-op, ונמצאו 5 domain tables, ‏migration אחד, admin פעיל אחד ו־0 foreign-key violations. Production health וה־public/studio roots החזירו `200`.
 
 #### CF-003 — Build the typed Pages Functions API foundation
 
@@ -1169,7 +1169,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 | Phase 1 — Architecture | Done | 4 | 4 |
 | Phase 2 — Design system | Done | 4 | 4 |
 | Phase 3 — Public site | In progress | 5 | 6 |
-| Phase 4 — Cloudflare backend | In progress | 1 | 10 |
+| Phase 4 — Cloudflare backend | In progress | 2 | 10 |
 | Phase 5 — Migration | Ready with dependencies | 0 | 6 |
 | Phase 6 — Admin rebuild | Ready with dependencies | 0 | 8 |
 | Phase 7 — Quality | Blocked | 0 | 5 |
@@ -1361,3 +1361,9 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - בוצע rollback rehearsal מ־SQLite backup מקומי: לאחר migration טבלת `admins` הייתה קיימת, ושחזור ה־backup החזיר את marker הישן ללא טבלת `admins`.
 - כלי bootstrap server-side נבדק פעמיים והשאיר admin פעיל יחיד. אותו migration וה־seed הוחלו על Preview remote; נמצאו migration אחד, admin פעיל אחד ו־0 הפרות foreign key.
 - `CF-002` עברה ל־`VERIFYING` עד validation, deploy והחלה מבוקרת על Production עם Time Travel bookmark.
+
+### 2026-07-20 — CF-002 production migration
+
+- commit `58a611a` עבר CI `29719632920` ו־Cloudflare deploy `29719632890`; לפני שינוי Production נשמר Time Travel bookmark `00000002-00000000-000050ae-d8bd4822629525ba61881ef35e4c36ab`.
+- migration הוחל על `nis-content-production`, כלי ה־bootstrap הוסיף admin פעיל יחיד, ו־apply חוזר החזיר `No migrations to apply`.
+- inspection אישר חמש טבלאות domain, ‏migration אחד, admin פעיל אחד ו־0 foreign-key violations; production health וה־public/studio roots החזירו `200`. `CF-002` נסגרה כ־`DONE`.
