@@ -7,5 +7,5 @@ export const App = () => {
   if (serverSession.state !== 'authorized' || !serverSession.session) {
     return <ServerLoginGate state={serverSession.state} status={serverSession.status} onCredential={serverSession.login} />;
   }
-  return <StudioSessionShell session={serverSession.session} onLogout={() => { void serverSession.logout(); }} />;
+  return <StudioSessionShell session={serverSession.session} onLogout={() => { void serverSession.logout(); }} onUnauthorized={serverSession.expireSession} />;
 };

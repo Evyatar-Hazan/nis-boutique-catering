@@ -9,10 +9,12 @@ const mocks = vi.hoisted(() => ({
   read: vi.fn(),
 }));
 
-vi.mock('../../api/authClient', () => ({
-  exchangeGoogleCredential: mocks.exchange,
-  logoutServerSession: mocks.logout,
-  readServerSession: mocks.read,
+vi.mock('../../api/studioApi', () => ({
+  studioApi: {
+    exchangeGoogleCredential: mocks.exchange,
+    logout: mocks.logout,
+    readSession: mocks.read,
+  },
 }));
 
 const session = { admin: { displayName: 'Owner', email: 'owner@example.com' }, expiresAt: 2_000_000_000 };

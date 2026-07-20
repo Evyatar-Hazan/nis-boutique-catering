@@ -952,12 +952,12 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### ADM-003 — Build one typed API client and query-state layer
 
-- **Status:** `IN_PROGRESS`
+- **Status:** `VERIFYING`
 - **Dependencies:** `CF-003`, `ADM-001`.
 - **Definition:** ליצור client יחיד ל־API עם credentials, schema parsing, error mapping, cancellation ו־retry מוגבל לקריאות idempotent.
 - **Acceptance criteria:** feature modules אינם קוראים `fetch` ישירות; DTOs מגיעים מהחוזה המשותף; conflict/auth/network errors מובחנים; אין retry אוטומטי ל־publish/upload mutation.
 - **Verification:** client unit tests, mocked failure matrix ו־`rg "fetch\("` שמאשר בעלות מרכזית.
-- **Evidence:** העבודה החלה לאחר סגירת server-session UX; auth client הקיים יאוחד לתשתית request אחת שתשרת את כל domains בלי `fetch` בתוך features.
+- **Evidence:** `src/api/client.ts` הוא owner יחיד של `fetch`: הוא מוסיף same-origin credentials, cancellation, schema parsing, error mapping נפרד ל־auth/conflict/network/rate-limit/server/validation ושני retries לכל היותר ל־GET idempotent בלבד; mutations אינן נשלחות מחדש. `studioApi.ts` מרכז DTO schemas ו־domain methods, ו־`useStudioQuery` מרכז loading/success/error, cancellation ו־session expiry. ה־auth וה־shell הועברו לאותה שכבה, וטעינת draft אמיתית מחליפה placeholder. חיפוש `fetch(` תחת source/functions מצא קריאת runtime יחידה ב־client; ‏46/46 בדיקות סטודיו, failure matrix, full `pnpm validate`, lint, type-check ושני builds עברו. המשימה ממתינה ל־push, CI/deploy ואימות Preview/Production לפני סגירה.
 
 #### ADM-004 — Implement six-section content editing and preview
 
@@ -1471,3 +1471,9 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - נוסף auth client typed ו־server-session hook ל־restore/expiry/logout, ו־CSP צומצם ל־Google Identity. Wrangler local browser אישר refresh ו־logout עם revoke ב־D1.
 - ‏42/42 בדיקות סטודיו ו־full validation עברו; `ADM-002` עברה ל־`VERIFYING` עד push/CI/deploy ו־Production verification.
 - commit `ea58359` עבר CI `29730112539` ו־deploy `29730112487`; Production אישר Google Identity תחת CSP המצומצם ו־session→logout→revoke אמיתי, ולאחר cleanup נשאר עם 0 sessions ו־0 FK violations. `ADM-002` נסגרה כ־`DONE` ו־`ADM-003` החלה.
+
+### 2026-07-20 — ADM-003 typed API client and query state
+
+- auth client הנפרד אוחד ל־transport typed יחיד עם same-origin credentials, ‏Zod parsing, cancellation, error taxonomy ו־retry מוגבל ל־GET בלבד; אין `fetch` ישיר ב־features או ב־hooks.
+- נוסף `studioApi` מרכזי ל־auth/content/media ו־query-state hook גנרי; session shell טוען draft מאומת דרך אותה שכבה ומטפל ב־401 דרך owner יחיד של ה־session.
+- ‏46/46 בדיקות סטודיו ו־full `pnpm validate` עברו, כולל failure matrix ל־retry, mutation conflict, network, cancellation ו־invalid response. `ADM-003` עברה ל־`VERIFYING` עד push, CI/deploy ואימות Preview/Production.

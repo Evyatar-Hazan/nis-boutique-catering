@@ -1,16 +1,28 @@
 import { LogOut, ShieldCheck } from 'lucide-react';
 
 import { publicSiteOrigin } from '../../assetUrlHelpers';
-import type { StudioServerSession } from '../../api/authClient';
+import { studioApi, type StudioServerSession } from '../../api/studioApi';
+import { useStudioQuery } from '../../hooks/useStudioQuery';
 
 export const StudioSessionShell = ({
   session,
   onLogout,
+  onUnauthorized,
 }: {
   readonly session: StudioServerSession;
   readonly onLogout: () => void;
-}) => (
-  <main className="admin-root">
+  readonly onUnauthorized: () => void;
+}) => {
+  const draft = useStudioQuery({ onUnauthorized, query: studioApi.readDraft });
+  const draftStatus = draft.status === 'loading'
+    ? 'טוענים טיוטה מאובטחת...'
+    : draft.status === 'error'
+      ? draft.error.message
+      : draft.data?.revision
+        ? `טיוטה גרסה ${draft.data.revision.version} מוכנה.`
+        : 'אין עדיין טיוטה.';
+
+  return <main className="admin-root">
     <div className="admin-grain" aria-hidden="true" />
     <header className="admin-header">
       <div className="admin-brand">
@@ -26,8 +38,8 @@ export const StudioSessionShell = ({
       <div className="empty-state">
         <ShieldCheck aria-hidden="true" />
         <h2 id="session-ready-title">החיבור לשרת מוכן</h2>
-        <p>התוכן ייטען דרך API מאובטח בשלב הבא.</p>
+        <p>{draftStatus}</p>
       </div>
     </section>
-  </main>
-);
+  </main>;
+};

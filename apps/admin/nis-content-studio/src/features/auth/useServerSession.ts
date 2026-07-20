@@ -1,11 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import {
-  exchangeGoogleCredential,
-  logoutServerSession,
-  readServerSession,
-  type StudioServerSession,
-} from '../../api/authClient';
+import { studioApi, type StudioServerSession } from '../../api/studioApi';
 
 export type ServerSessionState = 'loading' | 'signed-out' | 'authorized';
 
@@ -24,7 +19,7 @@ export const useServerSession = () => {
 
   useEffect(() => {
     let active = true;
-    void readServerSession()
+    void studioApi.readSession()
       .then((restored) => {
         if (!active) return;
         setSession(restored);
@@ -42,7 +37,7 @@ export const useServerSession = () => {
   const login = useCallback(async (credential: string) => {
     setStatus('מאמתים את החשבון...');
     try {
-      const next = await exchangeGoogleCredential(credential);
+      const next = await studioApi.exchangeGoogleCredential(credential);
       setSession(next);
       setState('authorized');
       setStatus('התחברת בהצלחה.');
@@ -55,7 +50,7 @@ export const useServerSession = () => {
 
   const logout = useCallback(async () => {
     try {
-      await logoutServerSession();
+      await studioApi.logout();
       window.google?.accounts?.id?.disableAutoSelect();
       setSession(null);
       setState('signed-out');
