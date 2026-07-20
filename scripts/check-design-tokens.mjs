@@ -21,6 +21,23 @@ const requiredTokenGroups = {
   layers: ['z-content', 'z-sticky', 'z-progress', 'z-overlay'],
   motion: ['duration-fast', 'duration-base', 'duration-slow', 'ease', 'lift-ease'],
   breakpoints: ['breakpoint-mobile', 'breakpoint-desktop'],
+  theme: [
+    'theme-surface-page',
+    'theme-surface-paper',
+    'theme-surface-soft',
+    'theme-surface-dark',
+    'theme-text-primary',
+    'theme-text-muted',
+    'theme-text-on-dark',
+    'theme-accent-brand',
+    'theme-accent-premium',
+    'theme-accent-secondary',
+    'theme-border-subtle',
+    'theme-focus',
+    'theme-danger',
+    'theme-success',
+    'theme-whatsapp',
+  ],
 };
 
 for (const [group, names] of Object.entries(requiredTokenGroups)) {
@@ -28,12 +45,40 @@ for (const [group, names] of Object.entries(requiredTokenGroups)) {
   if (missing.length > 0) errors.push(`${group} tokens missing: ${missing.join(', ')}`);
 }
 
+const requiredSemanticConsumers = [
+  'theme-surface-page',
+  'theme-surface-paper',
+  'theme-surface-dark',
+  'theme-text-primary',
+  'theme-text-muted',
+  'theme-accent-brand',
+  'theme-accent-premium',
+  'theme-accent-secondary',
+  'theme-border-subtle',
+  'theme-danger',
+  'theme-success',
+  'theme-whatsapp',
+];
+const unusedSemanticTokens = requiredSemanticConsumers.filter((name) => !publicStyles.includes(`var(--${name})`));
+if (unusedSemanticTokens.length > 0) errors.push(`semantic theme tokens are not consumed: ${unusedSemanticTokens.join(', ')}`);
+
 if (!basePath || !publicStyles.includes("@import './tokens.css';")) errors.push('base stylesheet does not import the canonical token source');
 if (/Playfair Display/.test(publicStyles)) errors.push('legacy Playfair Display usage remains');
 if (/@import\s+url\([^)]*fonts\.googleapis/.test(publicStyles)) errors.push('render-delaying Google Fonts CSS import remains');
 if (!html.includes('family=Noto+Serif+Hebrew')) errors.push('Noto Serif Hebrew is not loaded');
 if (!html.includes('display=swap')) errors.push('font loading does not use display=swap');
 if (!html.includes('rel="preconnect" href="https://fonts.gstatic.com" crossorigin')) errors.push('font origin is not preconnected');
+
+const authoredThemeStyles = [basePath, themePath, indexCssPath]
+  .map((path) => ({ path, source: readFileSync(path, 'utf8') }));
+const rawColorPattern = /#[0-9a-fA-F]{3,8}\b|\b(?:rgb|rgba|hsl|hsla)\s*\((?!\s*var\()/g;
+
+for (const { path, source } of authoredThemeStyles) {
+  const rawColors = source.match(rawColorPattern) ?? [];
+  if (rawColors.length > 0) {
+    errors.push(`${path} contains ${rawColors.length} raw color values; move every palette value to tokens.css`);
+  }
+}
 
 const parseHexToken = (name) => {
   const match = tokens.match(new RegExp(`--${name}:\\s*(#[0-9a-fA-F]{6})`));
@@ -73,5 +118,5 @@ if (errors.length > 0) {
   for (const error of errors) console.error(`Design token error: ${error}`);
   process.exitCode = 1;
 } else {
-  console.log(`Design token check passed: ${Object.keys(requiredTokenGroups).length} token groups, ${textPairs.length} WCAG AA text pairs, Noto Serif Hebrew with display=swap.`);
+  console.log(`Design token check passed: ${Object.keys(requiredTokenGroups).length} token groups, ${textPairs.length} WCAG AA text pairs, zero raw colors in authored theme styles, Noto Serif Hebrew with display=swap.`);
 }

@@ -16,7 +16,13 @@
   --leading-tight: 0.98;
   --leading-body: 1.65;
 
-  /* Brand and semantic colors */
+  /*
+   * Palette primitives
+   * ------------------
+   * Raw color values are allowed only in this file. A future palette change
+   * starts here; component styles consume these primitives or the semantic
+   * theme contract below.
+   */
   --espresso: #110d10;
   --espresso-2: #1a1318;
   --cocoa: #2e1f28;
@@ -46,6 +52,98 @@
   --glass-dark: rgba(22, 14, 18, 0.56);
   --glass-light: rgba(255, 248, 238, 0.12);
   --hero-line: rgba(255, 240, 220, 0.16);
+
+  /* Neutral and supporting solid primitives used by gradients and surfaces. */
+  --palette-black: #000000;
+  --palette-white: #ffffff;
+  --palette-warm-white: #fff8f2;
+  --palette-warm-canvas: #f8efe6;
+  --palette-warm-surface: #f9efe6;
+  --palette-linen-soft: #f6eee7;
+  --palette-blush-white: #fffaf8;
+  --palette-blush-surface: #fff9f5;
+  --palette-gold-light: #fce7c2;
+  --palette-sage-ink: #294035;
+  --palette-espresso-deep: #100b0e;
+  --palette-espresso-night: #100c0f;
+  --palette-espresso-footer: #120d10;
+  --palette-plum-deep: #22151c;
+  --palette-cocoa-deep: #22171b;
+
+  /* RGB channels preserve alpha variants without repeating palette values. */
+  --palette-black-rgb: 0 0 0;
+  --palette-white-rgb: 255 255 255;
+  --palette-ivory-rgb: 255 250 246;
+  --palette-ivory-warm-rgb: 255 250 242;
+  --palette-mist-rgb: 255 249 242;
+  --palette-cream-light-rgb: 255 248 238;
+  --palette-cream-blush-rgb: 255 248 241;
+  --palette-paper-blush-rgb: 255 248 242;
+  --palette-paper-warm-rgb: 255 251 247;
+  --palette-champagne-light-rgb: 255 239 214;
+  --palette-champagne-pale-rgb: 255 240 220;
+  --palette-champagne-soft-rgb: 255 245 228;
+  --palette-champagne-wash-rgb: 255 236 206;
+  --palette-cream-wash-rgb: 255 247 235;
+  --palette-warm-canvas-rgb: 248 239 230;
+  --palette-linen-light-rgb: 249 241 234;
+  --palette-cream-rgb: 245 236 228;
+  --palette-champagne-rgb: 243 224 187;
+  --palette-gold-rgb: 216 187 132;
+  --palette-amber-rgb: 215 173 96;
+  --palette-champagne-2-rgb: 201 154 83;
+  --palette-rose-rgb: 160 74 87;
+  --palette-sage-rgb: 89 115 97;
+  --palette-sage-deep-rgb: 79 111 95;
+  --palette-sage-soft-rgb: 221 231 222;
+  --palette-sage-mist-rgb: 223 232 220;
+  --palette-whatsapp-glow-rgb: 18 140 126;
+  --palette-ink-rgb: 31 23 24;
+  --palette-cocoa-rgb: 46 31 40;
+  --palette-umber-rgb: 32 23 19;
+  --palette-ink-soft-rgb: 32 22 26;
+  --palette-plum-rgb: 33 22 28;
+  --palette-plum-cool-rgb: 33 22 29;
+  --palette-plum-deep-rgb: 30 20 24;
+  --palette-plum-muted-rgb: 29 20 24;
+  --palette-coffee-rgb: 24 16 12;
+  --palette-coffee-deep-rgb: 24 15 12;
+  --palette-shadow-plum-rgb: 22 14 18;
+  --palette-shadow-rgb: 18 10 15;
+  --palette-espresso-rgb: 17 13 16;
+  --palette-cacao-rgb: 16 10 8;
+  --palette-ink-deep-rgb: 15 10 13;
+  --palette-ink-muted-rgb: 14 11 13;
+  --palette-ink-cool-rgb: 13 10 12;
+  --palette-night-rgb: 12 9 11;
+  --palette-midnight-rgb: 11 9 11;
+  --palette-night-cool-rgb: 10 8 11;
+  --palette-night-soft-rgb: 9 8 10;
+  --palette-night-deep-rgb: 8 7 9;
+  --palette-coffee-black-rgb: 8 5 4;
+
+  /*
+   * Semantic theme contract
+   * -----------------------
+   * Map a new palette to these roles before touching component selectors.
+   */
+  --theme-surface-page: var(--cream);
+  --theme-surface-paper: var(--paper);
+  --theme-surface-soft: var(--ivory);
+  --theme-surface-dark: var(--espresso);
+  --theme-surface-dark-raised: var(--espresso-2);
+  --theme-text-primary: var(--ink);
+  --theme-text-muted: var(--muted);
+  --theme-text-on-dark: var(--ivory);
+  --theme-accent-brand: var(--rose);
+  --theme-accent-premium: var(--gold);
+  --theme-accent-secondary: var(--sage);
+  --theme-border-subtle: var(--line);
+  --theme-border-strong: var(--line-strong);
+  --theme-focus: var(--focus);
+  --theme-danger: var(--danger);
+  --theme-success: var(--success);
+  --theme-whatsapp: var(--whatsapp);
 
   /* Spacing and layout */
   --space-1: 0.25rem;
