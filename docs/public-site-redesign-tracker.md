@@ -1,11 +1,11 @@
 ---
 title: NIS Public Site Redesign Tracker
-status: in_progress
+status: completed
 owner: Evyatar Hazan
 created: 2026-07-20
-updated: 2026-07-20
+updated: 2026-07-21
 source_of_truth: true
-implementation_gate: ready
+implementation_gate: closed
 ---
 
 # NIS Public Site Redesign — Source of Truth and Execution Tracker
@@ -35,9 +35,9 @@ implementation_gate: ready
 
 ## שער מימוש גלובלי
 
-**סטטוס נוכחי: `READY`**
+**סטטוס נוכחי: `COMPLETED`**
 
-ה־release המקורי הושלם ואומת בפרודקשן. ב־2026-07-20 נפתח שער תחזוקה ממוקד עבור `UI-005`: סידור שכבת הצבעים כך שניתן יהיה להחליף פלטה בעתיד ממקור מרכזי, בלי לשנות כעת את הפלטה החיה.
+ה־release המקורי ומשימת התחזוקה `UI-005` הושלמו ואומתו בפרודקשן. שכבת הצבעים מרוכזת כעת בחוזה semantic יחיד, והפלטה החיה לא שונתה.
 
 תוכנית השרת/קליינט, בניית מסך האדמין מחדש והמעבר מ־Google Sheets/Drive ל־Cloudflare D1/R2 נוספו למסמך ב־2026-07-20. שער המימוש נפתח לאחר השלמת:
 
@@ -1133,7 +1133,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### UI-005 — Make the public palette centrally swappable without visual drift
 
-- **Status:** `VERIFYING`
+- **Status:** `DONE`
 - **Dependencies:** `UI-001`, `QA-002`, `REL-004`.
 - **Definition:** לבנות חוזה צבעים מרכזי וברור ב־`packages/site-preview/src/styles/tokens.css`, להעביר אליו את כל ערכי הצבע של האתר וה־Studio preview ולהשאיר את הפלטה הנוכחית ללא שינוי חזותי.
 - **Acceptance criteria:**
@@ -1143,7 +1143,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
   - computed colors, gradients, shadows ו־contrast של הפלטה הנוכחית נשארים זהים לפני ואחרי הרפקטור ב־desktop וב־mobile.
   - בדיקה אוטומטית נכשלת אם צבע מותג קשיח חוזר ל־`base.css` או ל־`theme.css`, והיא חלק מ־`pnpm validate`.
 - **Verification:** audit אוטומטי של literals ו־token references; `pnpm design:tokens:check`; ‏`pnpm validate`; השוואת computed styles ב־375px וב־1440px מול production וצילומי מסך חזותיים; component/build validation ל־Studio preview; Lighthouse contrast; לאחר push — CI/deploy ואימות production של שני המשטחים ללא overflow, broken media או console errors.
-- **Evidence (local, 2026-07-20):** tracker נקרא מחדש; audit baseline מצא 351 מופעי צבע ישירים ב־`base.css`/`theme.css` (178/173), ‏50 ערכי RGB בסיסיים ו־19 ערכי hex. כל 351 המופעים הועברו ל־`tokens.css`, שנבנה כעת משכבת palette primitives, ערוצי RGB לשקיפויות וחוזה semantic פעיל; audit חוזר מצא 0 raw colors בשני קובצי ה־styles. ‏`design:tokens:check` אוכף גם הגדרה וגם צריכה של semantic roles ונשאר חלק מ־`validate`. שינוי ב־CSS המשותף נוסף ל־`turbo.json` כ־global dependency לאחר ש־audit גילה cache hit שגוי; הרצה רגילה שלאחר התיקון בנתה מחדש את שני היישומים. ‏`pnpm validate` עבר עם 138/138 בדיקות, lint, type-check, architecture/security/content/media וכל builds. בדפדפן ב־375×812 וב־1440×1000 הושוו 16 selectors ותשעה מאפייני computed color/gradient/shadow מול production: כל הערכים זהים, מלבד serialization שקול של `0%/100%` בגרדיאנט ה־Hero; בשני הגדלים אין overflow, media שבורה או console errors וששת ה־sections נטענו. Lighthouse מקומי החזיר Accessibility ‏100, contrast pass, ‏CLS 0 ו־Performance ‏77. ה־public CSS עלה מ־69.47KB/13.83KB gzip ל־82.30KB/14.98KB gzip כתוצאה משמות הטוקנים; תוספת gzip ‏1.15KB התקבלה עבור חוזה palette מרכזי. המשימה עברה ל־`VERIFYING` עד CI/deploy ואימות production.
+- **Evidence (2026-07-20–21):** tracker נקרא מחדש; audit baseline מצא 351 מופעי צבע ישירים ב־`base.css`/`theme.css` (178/173), ‏50 ערכי RGB בסיסיים ו־19 ערכי hex. כל 351 המופעים הועברו ל־`tokens.css`, שנבנה כעת משכבת palette primitives, ערוצי RGB לשקיפויות וחוזה semantic פעיל; audit חוזר מצא 0 raw colors בשני קובצי ה־styles וב־CSS הכניסה הציבורי. ‏`design:tokens:check` אוכף גם הגדרה וגם צריכה של semantic roles ונשאר חלק מ־`validate`. שינוי ב־CSS המשותף נוסף ל־`turbo.json` כ־global dependency לאחר ש־audit גילה cache hit שגוי; הרצה רגילה שלאחר התיקון בנתה מחדש את שני היישומים. ‏`pnpm validate` עבר עם 138/138 בדיקות, lint, type-check, architecture/security/content/media וכל builds. בדפדפן ב־375×812 וב־1440×1000 הושוו 16 selectors ותשעה מאפייני computed color/gradient/shadow מול production: כל הערכים זהים, מלבד serialization שקול של `0%/100%` בגרדיאנט ה־Hero; אין overflow, media שבורה או console errors. Lighthouse מקומי החזיר Accessibility ‏100, contrast pass, ‏CLS 0 ו־Performance ‏77. ה־public CSS עלה מ־69.47KB/13.83KB gzip ל־82.30KB/14.98KB gzip; תוספת gzip ‏1.15KB התקבלה עבור חוזה palette מרכזי. commit `b3b493e` עבר CI `29760391196` ו־deploy `29760391044`. האתר החי מגיש asset שמכיל את חוזה `--theme-*`; בדיקות production ב־1440px וב־375×812 אישרו את כל חלקי המסלול, 0 overflow, ‏0 broken media ו־0 console warnings/errors. ה־Studio החי הציג את login shell ללא overflow או media שבורה; `401` של `/api/auth/session` ללא session הוא מצב האבטחה הצפוי. המשימה נסגרה `DONE` ללא שינוי בפלטה הפעילה.
 
 ## Open decisions before implementation
 
@@ -1200,9 +1200,15 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 | Phase 6 — Admin rebuild | Done | 8 | 8 |
 | Phase 7 — Quality | Done | 5 | 5 |
 | Phase 8 — Release | Done | 4 | 4 |
-| Phase 9 — Theme maintainability | In progress | 0 | 1 |
+| Phase 9 — Theme maintainability | Done | 1 | 1 |
 
 ## Change Log
+
+### 2026-07-21 — UI-005 semantic palette refactor completed
+
+- commit `b3b493e` עבר CI `29760391196` ו־Cloudflare deploy `29760391044`; שני המשטחים החיים אומתו לאחר הפריסה.
+- האתר הציבורי מגיש את חוזה `--theme-*` המרכזי, וב־desktop וב־375×812 נמצאו 0 overflow, ‏0 broken media ו־0 console warnings/errors.
+- ה־Studio login shell תקין; תגובת session לא־מאומתת נשארה `401` כמצופה. `UI-005` נסגרה `DONE`, Phase 9 הושלמה והשער נסגר מחדש.
 
 ### 2026-07-20 — UI-005 semantic palette refactor started
 
