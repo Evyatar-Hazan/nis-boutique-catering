@@ -804,12 +804,12 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### CF-003 — Build the typed Pages Functions API foundation
 
-- **Status:** `BACKLOG`
+- **Status:** `VERIFYING`
 - **Dependencies:** `CF-001`, `ARC-003`.
 - **Definition:** להוסיף router קטן ל־`/api/*`, error envelope, request IDs, typed env ו־shared validation בלי קובץ handler מונוליתי.
 - **Acceptance criteria:** route modules לפי domain; `unknown` payloads עוברים Zod; same-origin admin responses ללא wildcard CORS; health endpoint אינו חושף secrets.
 - **Verification:** unit tests ל־router/errors, Miniflare/Wrangler integration tests, type-check ו־404/405/invalid-body tests.
-- **Evidence:** pending.
+- **Evidence:** נוסף entry יחיד `functions/api/[[path]].ts` שמאציל ל־router ול־domain route modules. שכבת `_lib/http` מרכזת typed route contracts, ‏crypto request IDs, security headers, ‏404/405/500 error envelope ו־Zod body parsing מ־`unknown`; אין wildcard CORS ואין `Env` ידני. health הועבר ל־`_lib/routes/health.ts` ואינו חושף IDs/secrets. ‏21/21 בדיקות הסטודיו עברו, כולל router/error/404/405/unexpected error ו־valid/invalid/malformed/content-type validation; type-check ולינט עברו. `wrangler pages dev` integration החזיר health `200`, missing `404`, method `405` עם `Allow: GET`, request IDs/security headers וללא `Access-Control-Allow-Origin`; full `pnpm validate` עבר. Preview deployment `c4b57d3e` החזיר אותם contracts מול D1/R2 האמיתיים. נדרש עדיין push/CI/deploy ואימות production לפני `DONE`.
 
 #### CF-004 — Implement Google identity verification and server sessions
 
@@ -1367,3 +1367,16 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - commit `58a611a` עבר CI `29719632920` ו־Cloudflare deploy `29719632890`; לפני שינוי Production נשמר Time Travel bookmark `00000002-00000000-000050ae-d8bd4822629525ba61881ef35e4c36ab`.
 - migration הוחל על `nis-content-production`, כלי ה־bootstrap הוסיף admin פעיל יחיד, ו־apply חוזר החזיר `No migrations to apply`.
 - inspection אישר חמש טבלאות domain, ‏migration אחד, admin פעיל אחד ו־0 foreign-key violations; production health וה־public/studio roots החזירו `200`. `CF-002` נסגרה כ־`DONE`.
+
+### 2026-07-20 — CF-003 API foundation started
+
+- `CF-003` עברה ל־`IN_PROGRESS`; התלויות `CF-001` ו־`ARC-003` סגורות.
+- נקודת הפתיחה היא health handler יחיד שנוסף ב־`CF-001`; הוא יועבר ל־domain route וייכנס דרך entry/router קטן עם request IDs, error envelope ו־shared Zod validation.
+
+### 2026-07-20 — CF-003 local API verification
+
+- health handler הועבר ל־domain route, ונוסף wildcard Pages entry דק שמאציל ל־router משותף במקום handlers מונוליתיים.
+- שכבת HTTP יחידה מרכזת route contracts, ‏request IDs קריפטוגרפיים, security headers, error envelopes ו־Zod parsing; אין `any`, ‏Env ידני או wildcard CORS.
+- 21/21 בדיקות הסטודיו, type-check ולינט עברו; local Wrangler integration אישר `200/404/405`, ‏`Allow`, ‏`X-Request-ID`, security headers ו־health מוכן עבור D1/R2.
+- full `pnpm validate` עבר; Preview deployment `c4b57d3e` אישר שוב `200/404/405`, ‏error envelopes, ‏`Allow`, ‏request IDs/security headers, ללא wildcard CORS, ו־D1/R2 במצב ready.
+- `CF-003` נשארת `VERIFYING` עד push/CI/deploy ואימות Production.
