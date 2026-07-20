@@ -943,12 +943,12 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### ADM-002 — Replace Google OAuth data access with session UX
 
-- **Status:** `IN_PROGRESS`
+- **Status:** `VERIFYING`
 - **Dependencies:** `CF-004`, `ADM-001`.
 - **Definition:** להשתמש ב־Google רק לכניסה, להחליף access-token lifecycle ב־`/api/auth/*` cookie session ולהוסיף logout/session-expired UX.
 - **Acceptance criteria:** אין Sheets/Drive scopes; אין token ב־storage/state מעבר לרגע exchange; refresh משחזר session; 401 מחזיר למסך כניסה בלי אובדן טיוטה מקומית לא צפוי.
 - **Verification:** browser login/refresh/logout/expiry/revocation tests ו־storage/network inspection.
-- **Evidence:** העבודה החלה לאחר בידוד ה־legacy feature; היעד הוא למחוק את access-token/Sheets session lifecycle מה־React ולהשתמש רק ב־Google ID credential exchange וב־`__Host-` server session.
+- **Evidence:** שכבת Google data הישנה נמחקה בשלמותה: אין OAuth scopes ל־Sheets/Drive, ‏Picker, access token, browser storage, editor allowlist או Google API/Sheet/Drive/Apps Script env בחבילת האדמין. Google Identity Services מחזיר ID credential חד־פעמי בלבד ל־`POST /api/auth/google`; client typed יחיד משתמש ב־same-origin credentials, ‏`GET /api/auth/session` משחזר cookie session אחרי refresh ו־`POST /api/auth/logout` מבטל אותה בשרת. `401` מעביר לכניסה דרך `expireSession` עם הודעה ששינויים מקומיים אינם נמחקים. CSP צומצם ל־Google Identity בלבד וה־header contract עודכן. בדיקות client/hook מכסות 401, credential exchange, restore ללא storage, expiry ו־logout; ‏42/42 בדיקות סטודיו ו־full `pnpm validate` עברו. Wrangler local + browser ב־`localhost:8788` אישרו login gate, session restore אחרי reload, authenticated shell ו־logout; session הבדיקה נשאר עם 0 active rows לאחר logout. audit ממוקד מצא 0 runtime references ל־Sheets/Drive scopes/Picker/access token. המשימה ממתינה ל־push, CI/deploy, בדיקות browser/headers ו־Production session smoke לפני `DONE`.
 
 #### ADM-003 — Build one typed API client and query-state layer
 
@@ -1464,3 +1464,9 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - `App.tsx` הומר ל־composition root של 3 שורות; ה־legacy migration feature, ‏login gate, navigation ו־generic primitives קיבלו ownership וקבצים מפורשים ללא duplication.
 - כל 46 בדיקות הסטודיו, full validation ושני builds עברו; browser local אישר את login shell ללא console errors. `ADM-001` עברה ל־`VERIFYING` עד push/CI/deploy ו־Production smoke.
 - commit `811323d` עבר CI `29729384252` ו־deploy `29729384250`; Production browser אישר את login shell ללא console errors, ושני ה־roots וה־health החזירו `200`. `ADM-001` נסגרה כ־`DONE` ו־`ADM-002` החלה.
+
+### 2026-07-20 — ADM-002 server session UX
+
+- הוסרו Google Sheets/Drive OAuth scopes, ‏Picker, access-token lifecycle ו־browser storage; Google נשאר ID credential חד־פעמי בלבד.
+- נוסף auth client typed ו־server-session hook ל־restore/expiry/logout, ו־CSP צומצם ל־Google Identity. Wrangler local browser אישר refresh ו־logout עם revoke ב־D1.
+- ‏42/42 בדיקות סטודיו ו־full validation עברו; `ADM-002` עברה ל־`VERIFYING` עד push/CI/deploy ו־Production verification.

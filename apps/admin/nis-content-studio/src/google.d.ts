@@ -1,50 +1,30 @@
-interface GoogleTokenResponse {
-  access_token?: string;
-  expires_in?: number | string;
-  error?: string;
+interface GoogleCredentialResponse {
+  readonly credential?: string;
 }
 
-interface GoogleTokenClient {
-  requestAccessToken: (options?: { prompt?: 'consent' | '' }) => void;
+interface GoogleIdConfiguration {
+  readonly auto_select?: boolean;
+  readonly callback: (response: GoogleCredentialResponse) => void;
+  readonly cancel_on_tap_outside?: boolean;
+  readonly client_id: string;
 }
 
-interface GoogleAccountsOauth2 {
-  initTokenClient: (config: {
-    client_id: string;
-    scope: string;
-    callback: (response: GoogleTokenResponse) => void;
-  }) => GoogleTokenClient;
-}
-
-interface GooglePickerBuilder {
-  addView: (view: unknown) => GooglePickerBuilder;
-  enableFeature: (feature: unknown) => GooglePickerBuilder;
-  setAppId: (appId: string) => GooglePickerBuilder;
-  setCallback: (callback: (data: { action: string; docs?: Array<{ id: string; name: string }> }) => void) => GooglePickerBuilder;
-  setDeveloperKey: (key: string) => GooglePickerBuilder;
-  setOAuthToken: (token: string) => GooglePickerBuilder;
-  build: () => { setVisible: (visible: boolean) => void };
-}
-
-interface GoogleDocsView {
-  setIncludeFolders: (value: boolean) => GoogleDocsView;
-  setMimeTypes: (value: string) => GoogleDocsView;
-  setSelectFolderEnabled: (value: boolean) => GoogleDocsView;
+interface GoogleButtonConfiguration {
+  readonly shape?: 'rectangular' | 'pill';
+  readonly size?: 'large' | 'medium' | 'small';
+  readonly text?: 'signin_with' | 'signup_with' | 'continue_with' | 'signin';
+  readonly theme?: 'outline' | 'filled_blue' | 'filled_black';
+  readonly type?: 'standard' | 'icon';
 }
 
 interface Window {
   google?: {
     accounts?: {
-      oauth2?: GoogleAccountsOauth2;
+      id?: {
+        disableAutoSelect: () => void;
+        initialize: (configuration: GoogleIdConfiguration) => void;
+        renderButton: (parent: HTMLElement, configuration: GoogleButtonConfiguration) => void;
+      };
     };
-    picker?: {
-      Action: { PICKED: string };
-      DocsView: new () => GoogleDocsView;
-      Feature: { MULTISELECT_ENABLED: string };
-      PickerBuilder: new () => GooglePickerBuilder;
-    };
-  };
-  gapi?: {
-    load: (library: string, callback: () => void) => void;
   };
 }

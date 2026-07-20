@@ -1,17 +1,21 @@
 import { cleanup, render, screen } from '@testing-library/react';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { App } from './App';
 import { formatValidationIssue } from './validationHelpers';
 import '@testing-library/jest-dom/vitest';
 
 describe('Content Studio', () => {
+  beforeEach(() => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(null, { status: 401 })));
+  });
+
   afterEach(() => cleanup());
 
   it('shows only the private login gate before authentication', () => {
     render(<App />);
 
     expect(screen.getByRole('heading', { name: 'פאנל ניהול Nis' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'כניסה עם Google' })).toBeInTheDocument();
+    expect(screen.getByLabelText('כניסה עם Google')).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /גלריה/ })).not.toBeInTheDocument();
     expect(screen.queryByText('תמונות וגלריה')).not.toBeInTheDocument();
     expect(screen.queryByDisplayValue('מיני לחמניות אישיות')).not.toBeInTheDocument();
@@ -21,7 +25,7 @@ describe('Content Studio', () => {
     render(<App />);
 
     expect(screen.getByText(/כניסה למורשים בלבד/)).toBeInTheDocument();
-    expect(screen.getByText(/מערכת הניהול החדשה במבנה של שוהם/)).toBeInTheDocument();
+    expect(screen.getByText(/Google מאמת זהות בלבד/)).toBeInTheDocument();
   });
 
   it('does not expose the old studio surface before login', () => {
