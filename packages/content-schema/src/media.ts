@@ -15,7 +15,7 @@ export interface HeroMediaContent {
   }[];
 }
 
-export const heroImageSizes = '(max-width: 720px) calc(100vw - 32px), (max-width: 1280px) 45vw, 560px';
+export const heroImageSizes = '(max-width: 720px) calc(100vw - 2rem), (max-width: 1280px) 45vw, 560px';
 
 export const getPrimaryHeroMediaId = (content: HeroMediaContent) => {
   const heroMedia = content.sections.find(
