@@ -914,16 +914,16 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### MIG-005 — Cut over the public build and prove rollback
 
-- **Status:** `IN_PROGRESS`
+- **Status:** `DONE`
 - **Dependencies:** `MIG-004`, `CF-009`.
 - **Definition:** להעביר CI מ־Google sync ל־D1/R2 sync, לפרוס ולבדוק גם publish חדש וגם rollback revision.
 - **Acceptance criteria:** אותו published revision מגיע ל־generated snapshot ול־production; media סטטית תקינה; rollback מחזיר תוכן קודם; Sheets/Drive נשארים read-only בתקופת הביטחון.
 - **Verification:** two-cycle E2E: publish → live verify → rollback → live verify, כולל SHA/revision/run IDs.
-- **Evidence:** pending.
+- **Evidence:** repo variable ‏`PUBLIC_CONTENT_SOURCE=cloudflare` הוגדר, ו־isolated local sync מול Production הוריד 9 media referenced, אימת checksum/bytes והפיק מסמך schema v2 עם 16 media ושישה sections. cutover run `29753303132` בנה בהצלחה רק דרך `cloudflare:build:site:d1`, דילג על legacy Google lane ופרס deployments ‏`d3ac476d`/`2744d12d`. מחזור E2E ראשון פרסם draft ‏`b5bd90fb` גרסה 3 דרך API מאומת עם idempotency; job ‏`5010889c` נשמר `dispatched` בניסיון 1, workflow `29753561045` צרך D1/R2 ופרס deployments ‏`73720f93`/`5f05b06d`; endpoint החי החזיר בדיוק revision זה, version 3 ו־updatedAt של הטיוטה. מחזור rollback יצר published revision ‏`d3896654` מתוכן המקור ‏`b6398b25` דרך job ‏`05c76da1` (`rollback`, ‏`dispatched`, attempt 1), workflow `29753803003` בנה שוב רק מ־D1/R2 ופרס deployments ‏`ae908615`/`1c66a62f`. endpoint החי חזר ל־updatedAt המקורי `2026-07-20T08:05:23.000Z` ול־Hero המקורי; Chrome Production אישר Version `legacy-20260720T080523Z`, בדיוק שישה sections לאחר lazy load, ‏12 תמונות/0 broken, ‏0 overflow ו־0 console warnings/errors. media נשארה 16, כל sessions הזמניים נוקו, ‏0 FK, ושני audit jobs נשמרו. Sheets/Drive והגיבויים נשארו read-only; ה־workflow הפעיל אינו משתמש יותר ב־service account.
 
 #### MIG-006 — Retire Google content infrastructure
 
-- **Status:** `BACKLOG`
+- **Status:** `IN_PROGRESS`
 - **Dependencies:** `MIG-005`, stability window and explicit approval.
 - **Definition:** להסיר Google Sheets/Drive/Picker/Apps Script/service-account paths, scopes, secrets וקוד תיעוד ישן לאחר אישור היציבות.
 - **Acceptance criteria:** אין runtime/build reference ל־Sheets/Drive; OAuth מבקש identity בלבד; secrets ישנים בוטלו; backup נשמר לפי retention; docs מצביעים רק על D1/R2.
@@ -1563,3 +1563,10 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - לפני כתיבה נשמר bookmark ‏`00000025-…7448740`. importer משותף ומוגן ב־confirmation העלה ואימת 16/16 R2 objects ויצר draft/published יחידים ב־D1 עם 0 jobs/FK.
 - owner smoke מאומת טען את כל הסטודיו מ־Production, ביצע edit/save/restore גרסה ‏1→3 וניקה session; endpoint הציבורי ומדיית R2 עברו. ‏138/138 בדיקות ו־full validation עברו.
 - commit `27df281`, ‏CI `29752899522`, deploy `29752898113` ו־deployments ‏`0468b11e`/`9b20f62d` אומתו. `MIG-004` נסגרה כ־`DONE` ו־`MIG-005` החלה; Google נשאר read-only ו־public workflow עדיין ב־legacy lane עד ה־two-cycle cutover הבא.
+
+### 2026-07-20 — MIG-005 public D1/R2 cutover and rollback proof
+
+- `PUBLIC_CONTENT_SOURCE=cloudflare` הופעל; run `29753303132` בנה רק מ־published D1/R2 ודילג במפורש על Google.
+- publish של `b5bd90fb` גרסה 3 הפעיל job ‏`5010889c` ו־run `29753561045`; endpoint החי הצביע לאותו revision/version לאחר deployment ‏`73720f93`.
+- rollback ל־`b6398b25` יצר published ‏`d3896654`, job ‏`05c76da1` ו־run `29753803003`; Production חזר לתוכן ול־updatedAt המקוריים. Chrome אישר שישה sections, ‏0 broken media/overflow/console errors.
+- sessions זמניים נוקו, D1 נשאר עם 16 media, שני audit jobs ו־0 FK. `MIG-005` נסגרה כ־`DONE`; לאחר initial cutover + publish + rollback + שלושה deploys ירוקים, stability gate אומת ו־`MIG-006` החלה תחת אישור הביצוע המלא של בעל הפרויקט.
