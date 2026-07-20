@@ -1,6 +1,5 @@
 import { type CSSProperties } from 'react';
 import { CheckCircle2 } from 'lucide-react';
-import type { GalleryCategory, GalleryImage } from './sitePreviewTypes';
 import { OptimizedImage } from './OptimizedImage';
 import { useSiteSectionPreviewData } from './SiteSectionPreviewData';
 import { SectionHeading, TextParagraphs } from './SectionShared';
@@ -125,79 +124,6 @@ export const SamplesSection = () => {
         ))}
       </div>
     </div>
-    </section>
-  );
-};
-
-export const RealMediaSection = () => {
-  const { foodMedia, sectionCopy, videoMedia } = useSiteSectionPreviewData();
-  return (
-    <section className="section real-media-section" aria-labelledby="real-media-title">
-    <div className="container real-media-grid">
-      <div className="reveal">
-        <p className="eyebrow">{sectionCopy.realMedia.eyebrow}</p>
-        <h2 id="real-media-title">{sectionCopy.realMedia.title}</h2>
-        <TextParagraphs text={sectionCopy.realMedia.text} />
-      </div>
-      <video className="reveal" controls muted playsInline preload="none" poster={foodMedia.hostingTableOverview.src}>
-        <source src={videoMedia.eventVideo} type="video/mp4" />
-      </video>
-    </div>
-    </section>
-  );
-};
-
-interface GallerySectionProps {
-  readonly activeCategory: GalleryCategory;
-  readonly images: readonly GalleryImage[];
-  readonly onFilterChange: (category: GalleryCategory) => void;
-  readonly onOpenImage: (index: number) => void;
-}
-
-export const GallerySection = ({
-  activeCategory,
-  images,
-  onFilterChange,
-  onOpenImage,
-}: GallerySectionProps) => {
-  const { galleryCategories, sectionCopy } = useSiteSectionPreviewData();
-  const visibleImages = activeCategory === 'all' ? images.slice(0, 6) : images;
-
-  return (
-    <section id="gallery" className="section" aria-labelledby="gallery-title">
-      <div className="container">
-        <SectionHeading eyebrow={sectionCopy.gallery.eyebrow} title={sectionCopy.gallery.title} id="gallery-title" className="section-heading gallery-heading reveal">
-          <TextParagraphs text={sectionCopy.gallery.text} />
-        </SectionHeading>
-        <div className="gallery-tabs reveal" aria-label="סינון גלריה לפי סוג">
-          {galleryCategories.map((category) => (
-            <button
-              className={category.id === activeCategory ? 'gallery-tab is-active' : 'gallery-tab'}
-              key={category.id}
-              type="button"
-              onClick={() => onFilterChange(category.id)}
-              aria-pressed={category.id === activeCategory}
-            >
-              {category.label}
-            </button>
-          ))}
-        </div>
-        <div className="gallery-grid" aria-live="polite">
-          {visibleImages.map((image, index) => (
-            <button
-              className={image.tall ? 'gallery-item tall reveal' : 'gallery-item reveal'}
-              key={image.title}
-              style={{ '--delay': `${(index % 6) * 55}ms` } as CSSProperties}
-              type="button"
-              onClick={() => onOpenImage(index)}
-              aria-label={`פתח תמונה: ${image.title}`}
-            >
-              <OptimizedImage image={image.image} alt={image.alt} loading="lazy" decoding="async" />
-              <span>{image.title}</span>
-            </button>
-          ))}
-        </div>
-      </div>
     </section>
   );
 };

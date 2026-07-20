@@ -235,12 +235,6 @@ export interface SiteMicrocopy {
   readonly navProcessLabel: string;
   readonly navFaqLabel: string;
   readonly navContactLabel: string;
-  readonly galleryAllLabel: string;
-  readonly galleryTablesLabel: string;
-  readonly galleryTraysLabel: string;
-  readonly gallerySaladsLabel: string;
-  readonly galleryCoffeeLabel: string;
-  readonly galleryFishLabel: string;
   readonly topbarWhatsappLabel: string;
   readonly footerTagline: string;
   readonly footerWhatsappLabel: string;
@@ -859,12 +853,6 @@ export const siteMicrocopy: SiteMicrocopy = {
   navProcessLabel: getGeneratedMicrocopy('nav-process-label', 'איך זה עובד'),
   navFaqLabel: getGeneratedMicrocopy('nav-faq-label', 'שאלות'),
   navContactLabel: getGeneratedMicrocopy('nav-contact-label', 'יצירת קשר'),
-  galleryAllLabel: getGeneratedMicrocopy('gallery-all-label', 'הכל'),
-  galleryTablesLabel: getGeneratedMicrocopy('gallery-tables-label', 'שולחנות'),
-  galleryTraysLabel: getGeneratedMicrocopy('gallery-trays-label', 'מגשים'),
-  gallerySaladsLabel: getGeneratedMicrocopy('gallery-salads-label', 'סלטים'),
-  galleryCoffeeLabel: getGeneratedMicrocopy('gallery-coffee-label', 'קפה'),
-  galleryFishLabel: getGeneratedMicrocopy('gallery-fish-label', 'דגים'),
   topbarWhatsappLabel: getGeneratedMicrocopy('topbar-whatsapp-label', 'וואטסאפ'),
   footerTagline: getGeneratedMicrocopy('footer-tagline', 'אוכל של בית, גימור של בוטיק.'),
   footerWhatsappLabel: getGeneratedMicrocopy('footer-whatsapp-label', 'וואטסאפ'),
@@ -905,15 +893,6 @@ export const navItems: readonly NavItem[] = [
   { label: siteMicrocopy.navGalleryLabel, href: '#gallery' },
   { label: siteMicrocopy.navProcessLabel, href: '#process' },
   { label: siteMicrocopy.navContactLabel, href: '#contact' },
-];
-
-export const galleryCategories: readonly Readonly<{ id: GalleryCategory; label: string }>[] = [
-  { id: 'all', label: siteMicrocopy.galleryAllLabel },
-  { id: 'tables', label: siteMicrocopy.galleryTablesLabel },
-  { id: 'trays', label: siteMicrocopy.galleryTraysLabel },
-  { id: 'salads', label: siteMicrocopy.gallerySaladsLabel },
-  { id: 'fish', label: siteMicrocopy.galleryFishLabel },
-  { id: 'coffee', label: siteMicrocopy.galleryCoffeeLabel },
 ];
 
 export const contactInterestOptions: readonly string[] = getGeneratedMicrocopyList('contact-interest-options', [

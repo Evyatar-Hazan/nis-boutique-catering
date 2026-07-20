@@ -1599,39 +1599,45 @@ details p {
   margin-block-start: 3px;
 }
 
-.real-media-section {
-  background:
-    linear-gradient(135deg, rgba(160, 74, 87, 0.16), transparent 44%),
-    var(--cream);
-}
-
-.real-media-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 0.86fr) minmax(280px, 0.72fr);
-  gap: clamp(28px, 5vw, 72px);
-  align-items: center;
-}
-
-.real-media-grid p {
-  margin: 18px 0 0;
-  color: var(--muted);
-  font-size: 1.08rem;
-  line-height: 1.9;
-}
-
-.real-media-grid video {
-  width: 100%;
-  max-height: 680px;
-  border: 1px solid rgba(255, 250, 242, 0.5);
-  border-radius: 8px;
-  background: var(--espresso);
-  object-fit: cover;
-  box-shadow: var(--shadow-deep);
-}
-
 .gallery-grid {
   columns: 3 270px;
   column-gap: 18px;
+}
+
+.gallery-media-layout {
+  display: grid;
+  grid-template-columns: minmax(240px, 0.72fr) minmax(0, 1.55fr);
+  gap: clamp(18px, 3vw, 36px);
+  align-items: start;
+}
+
+.gallery-video {
+  position: sticky;
+  top: 104px;
+  overflow: hidden;
+  margin: 0;
+  border: 1px solid rgba(255, 250, 242, 0.52);
+  border-radius: 10px;
+  color: var(--ivory);
+  background: var(--espresso);
+  box-shadow: var(--shadow-deep);
+}
+
+.gallery-video video {
+  display: block;
+  width: 100%;
+  max-height: min(68vh, 720px);
+  aspect-ratio: 9 / 16;
+  background: #110d10;
+  object-fit: cover;
+}
+
+.gallery-video figcaption {
+  border-block-start: 1px solid rgba(255, 250, 242, 0.14);
+  padding: 13px 15px;
+  color: rgba(255, 250, 242, 0.82);
+  font-size: 0.92rem;
+  font-weight: 850;
 }
 
 .gallery-tabs {
@@ -2245,7 +2251,7 @@ details p {
   .faq-grid,
   .contact-conversion-grid,
   .booking-basics-grid,
-  .real-media-grid,
+  .gallery-media-layout,
   .service-grid,
   .editorial-grid,
   .menu-grid,
@@ -2258,6 +2264,16 @@ details p {
   .boutique-layout,
   .boutique-grid {
     grid-template-columns: 1fr;
+  }
+
+  .gallery-video {
+    position: relative;
+    top: auto;
+  }
+
+  .gallery-video video {
+    aspect-ratio: 16 / 9;
+    max-height: 560px;
   }
 
   .trust-media {
@@ -2309,6 +2325,11 @@ details p {
   .container,
   .hero-layout {
     width: min(100% - 28px, 1180px);
+  }
+
+  .gallery-video video {
+    aspect-ratio: 4 / 3;
+    max-height: 420px;
   }
 
   .topbar {

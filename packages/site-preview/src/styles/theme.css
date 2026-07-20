@@ -994,11 +994,6 @@
   background: rgba(255, 255, 255, 0.82);
 }
 
-.real-media-section {
-  background:
-    linear-gradient(180deg, #fff9f5 0%, #f8efe6 100%);
-}
-
 @media (min-width: 981px) {
   .story-section,
   .booking-basics-section,
@@ -1103,12 +1098,6 @@
   .booking-faq details {
     padding: 12px 14px;
   }
-}
-
-.real-media-grid video {
-  border-radius: 10px;
-  border: 1px solid rgba(31, 23, 24, 0.08);
-  box-shadow: 0 34px 86px rgba(22, 14, 18, 0.12);
 }
 
 .gallery-tabs {

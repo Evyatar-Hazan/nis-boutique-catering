@@ -1,17 +1,11 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, type ReactNode } from 'react';
-import type {
-  GalleryCategory,
-  GalleryImage,
-  ImageAsset,
-} from './sitePreviewTypes';
+import type { GalleryImage, ImageAsset } from './sitePreviewTypes';
 import type { IconComponent } from './primitives/Cards';
 
 export interface SiteMicrocopy {
   readonly navExperiencesLabel: string; readonly navGalleryLabel: string; readonly navProcessLabel: string;
-  readonly navFaqLabel: string; readonly navContactLabel: string; readonly galleryAllLabel: string;
-  readonly galleryTablesLabel: string; readonly galleryTraysLabel: string; readonly gallerySaladsLabel: string;
-  readonly galleryCoffeeLabel: string; readonly galleryFishLabel: string; readonly topbarWhatsappLabel: string;
+  readonly navFaqLabel: string; readonly navContactLabel: string; readonly topbarWhatsappLabel: string;
   readonly footerTagline: string; readonly footerWhatsappLabel: string; readonly studioLoginLabel: string;
   readonly floatingWhatsappAria: string; readonly mobileActionsAria: string; readonly mobileWhatsappLabel: string;
   readonly mobilePhoneLabel: string; readonly heroPrimaryCta: string; readonly heroSecondaryCta: string;
@@ -35,7 +29,6 @@ export type SiteSectionPreviewData = {
   readonly editorialCards: readonly { readonly label: string; readonly title: string; readonly text: string; readonly icon: IconComponent; readonly image: ImageAsset }[];
   readonly faqs: readonly { readonly question: string; readonly answer: string }[];
   readonly foodMedia: Record<string, ImageAsset>;
-  readonly galleryCategories: readonly Readonly<{ id: GalleryCategory; label: string }>[];
   readonly galleryImages: readonly GalleryImage[];
   readonly heroBadges: readonly string[];
   readonly heroContent: { readonly eyebrow: string; readonly title: string; readonly kicker: string; readonly text: string };

@@ -732,7 +732,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### WEB-003 — Implement Gallery with integrated video
 
-- **Status:** `IN_PROGRESS`
+- **Status:** `VERIFYING`
 - **Dependencies:** `ARC-002`, `UI-002`, `CF-007`.
 - **Definition:** לאחד gallery ו־real media למשטח מדיה אחד, מהיר ונגיש.
 - **Acceptance criteria:**
@@ -741,7 +741,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
   - lightbox נגיש ל־keyboard ומחזיר focus.
   - image variants, lazy loading ו־dimensions עובדים לכל media item.
 - **Verification:** media check, keyboard/lightbox tests, network inspection, CLS measurement ו־broken asset scan.
-- **Evidence:** pending.
+- **Evidence:** `GallerySection` משותף יחיד מאחד את הסרטון ואת התמונות, גוזר את המסננים מתוך קטגוריות המדיה הזמינות ומציג 6 תמונות ראשוניות. מקור labels כפול הוסר משכבות ה־preview וה־frontend. לכל תמונה `srcset`, מידות ו־lazy loading; הסרטון משתמש ב־poster וב־`preload="metadata"`. ‏20/20 בדיקות `site-preview`, ‏14/14 בדיקות frontend ו־full `pnpm validate` עברו. בדפדפן Chrome מקומי אומתו 6 תמונות, סרטון יחיד, כל המסננים, lightbox עם Escape והחזרת focus, פריסה רספונסיבית ללא overflow, ‏0 console errors, ‏0 broken assets, media ב־200/206 ו־CLS ‏0.0058. ממתין ל־push, CI/deploy ואימות production.
 
 #### WEB-004 — Implement Process
 
@@ -1486,3 +1486,9 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - ‏8 בדיקות רכיב מכסות load→edit→validate→save→reload לכל חלק, invalid field ו־conflict; ‏54/54 בדיקות סטודיו ו־full validation עברו. Browser מקומי אישר שינוי Hero חי, save גרסה 1→2 ו־reload; local D1 נוקה לאחר הבדיקה. `ADM-004` עברה ל־`VERIFYING` עד push, CI/deploy ואימות Preview/Production.
 - commit `6eb0546` עבר CI `29732124343` ו־deploy `29732124329`; Preview deployment `c0212f95` אישר media/save/reload/logout ב־`200`, ולאחר restore נשאר עם טיוטה מקורית גרסה 1, ‏16 media ו־0 sessions/FK violations. Production deployment `5acccdab` אישר authenticated empty-draft/logout ונשאר נקי. `ADM-004` נסגרה כ־`DONE` ו־`ADM-005` החלה.
 - בבדיקת dependencies לפני מימוש `ADM-005` נמצא כי `WEB-003` עדיין פתוחה והיא dependency מפורשת. כדי שה־media picker ישתמש באותו gallery/media model ולא ייצור surface מקביל, `ADM-005` הוחזרה ל־`BACKLOG` ו־`WEB-003` עברה ל־`IN_PROGRESS`; לאחר סגירתה חוזרים מיד ל־`ADM-005`.
+
+### 2026-07-20 — WEB-003 integrated gallery implementation
+
+- הגלריה ו־real media אוחדו ל־`GallerySection` משותף אחד עם 6 תמונות ראשוניות, סרטון יחיד ומסננים הנגזרים מהמדיה הזמינה; הוסרו component, markup, labels ו־CSS כפולים.
+- נשמרה שרשרת המדיה הקיימת עם variants, מידות ו־lazy loading; נוספו video poster/metadata ופריסה responsive אחת ללא שכפול DOM.
+- ‏20/20 בדיקות `site-preview`, ‏14/14 בדיקות frontend ו־full validation עברו. Chrome מקומי אישר keyboard/focus, media ‏200/206, ‏0 broken assets/errors/overflow ו־CLS ‏0.0058. `WEB-003` עברה ל־`VERIFYING` עד push, CI/deploy ואימות production.

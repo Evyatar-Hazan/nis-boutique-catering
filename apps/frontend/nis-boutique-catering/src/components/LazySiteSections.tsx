@@ -3,7 +3,6 @@ import {
   type ContactInquiry,
   GallerySection,
   ProcessSection,
-  RealMediaSection,
   ServicesSection,
   TrustSection,
 } from '@monorepo/site-preview';
@@ -24,21 +23,15 @@ export default function LazySiteSections({
   onInquirySubmit,
   onOpenImage,
 }: LazySiteSectionsProps) {
-  const filteredGalleryImages =
-    activeGalleryCategory === 'all'
-      ? galleryImages
-      : galleryImages.filter((image) => image.category === activeGalleryCategory);
-
   return (
     <>
       <ServicesSection />
       <GallerySection
         activeCategory={activeGalleryCategory}
-        images={filteredGalleryImages}
+        images={galleryImages}
         onFilterChange={onFilterChange}
         onOpenImage={onOpenImage}
       />
-      <RealMediaSection />
       <ProcessSection />
       <TrustSection />
       <ContactSection

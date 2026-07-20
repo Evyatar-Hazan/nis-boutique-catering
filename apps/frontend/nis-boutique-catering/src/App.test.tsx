@@ -45,7 +45,7 @@ describe('Nis boutique catering app', () => {
   });
 
   it('filters the gallery by category', async () => {
-    render(<App />);
+    const { container } = render(<App />);
 
     const initialButtons = await screen.findAllByRole('button', { name: /פתח תמונה:/i });
     expect(initialButtons).toHaveLength(6);
@@ -55,6 +55,8 @@ describe('Nis boutique catering app', () => {
     const filteredButtons = await screen.findAllByRole('button', { name: /פתח תמונה:/i });
     expect(filteredButtons).toHaveLength(2);
     expect(screen.getByRole('button', { name: 'דגים' })).toHaveAttribute('aria-pressed', 'true');
+    expect(container.querySelectorAll('#gallery video')).toHaveLength(1);
+    expect(container.querySelector('.real-media-section')).not.toBeInTheDocument();
   });
 
   it('opens the lightbox and closes it on escape', async () => {

@@ -77,14 +77,6 @@ export const fallbackSiteSectionPreviewData: SiteSectionPreviewData = {
     dipsTrayClose: image('/media/food/events/dips-tray-close.webp', 1500, 2000, '(max-width: 720px) 100vw, 33vw'),
     miniSandwiches: image('/media/food/events/mini-burger-trays.webp', 899, 1599, '(max-width: 720px) 100vw, 33vw'),
   },
-  galleryCategories: [
-    { id: 'all', label: 'הכל' },
-    { id: 'tables', label: 'שולחנות' },
-    { id: 'trays', label: 'מגשים' },
-    { id: 'salads', label: 'סלטים' },
-    { id: 'fish', label: 'דגים' },
-    { id: 'coffee', label: 'קפה' },
-  ],
   galleryImages: [
     {
       title: 'שולחן אירוח',
@@ -157,12 +149,6 @@ export const fallbackSiteSectionPreviewData: SiteSectionPreviewData = {
     navProcessLabel: 'איך זה עובד',
     navFaqLabel: 'שאלות',
     navContactLabel: 'יצירת קשר',
-    galleryAllLabel: 'הכל',
-    galleryTablesLabel: 'שולחנות',
-    galleryTraysLabel: 'מגשים',
-    gallerySaladsLabel: 'סלטים',
-    galleryCoffeeLabel: 'קפה',
-    galleryFishLabel: 'דגים',
     topbarWhatsappLabel: 'וואטסאפ',
     footerTagline: 'אוכל של בית, גימור של בוטיק.',
     footerWhatsappLabel: 'וואטסאפ',
