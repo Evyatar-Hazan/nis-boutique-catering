@@ -13,15 +13,17 @@ It exists to answer four practical questions quickly:
 
 ## Current State Snapshot
 
-As of July 12, 2026:
+As of July 20, 2026:
 
 - the repo is a Turborepo with a public site, a private content studio, and shared packages
 - production deploys run through GitHub Actions into Cloudflare Pages
-- managed content source of truth is Google Sheets + Google Drive
-- production builds require remote content sync instead of silently publishing fallback content
+- D1 is the only structured-content source of truth and R2 stores managed media
+- Google is used for admin identity only; authorization is server-validated against D1
+- production builds fetch the published D1 revision and its R2 media through the Studio API
 - `robots.txt` ownership is enforced at the repo/workflow level instead of Cloudflare managed injection
 - both apps ship with repo-owned hardened response headers, including `Content-Security-Policy`, `Strict-Transport-Security`, and frame protections
-- as of July 16, 2026, the Studio includes equal-permission admin management backed by an `admins` Google Sheet tab, with `VITE_ALLOWED_EDITORS` retained as bootstrap lockout protection
+
+Older entries below intentionally retain references to retired systems as an audit trail.
 
 ## Timeline
 

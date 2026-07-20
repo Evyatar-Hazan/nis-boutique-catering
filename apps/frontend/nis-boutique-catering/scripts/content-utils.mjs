@@ -1,4 +1,3 @@
-import { createSign } from 'node:crypto';
 import { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, extname, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -151,55 +150,4 @@ export const optimizeCmsMedia = (
       run('sips', ['-s', 'format', 'avif', '-s', 'formatOptions', '50', '-Z', String(width), sourcePath, '--out', avifPath]);
     }
   }
-};
-
-const base64url = (input) => Buffer.from(input).toString('base64url');
-
-export const getServiceAccountAccessToken = async (
-  scope = 'https://www.googleapis.com/auth/spreadsheets.readonly https://www.googleapis.com/auth/drive.readonly',
-) => {
-  const raw = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
-  if (!raw) {
-    return '';
-  }
-
-  const serviceAccount = JSON.parse(raw);
-  const now = Math.floor(Date.now() / 1000);
-  const claim = {
-    iss: serviceAccount.client_email,
-    scope,
-    aud: 'https://oauth2.googleapis.com/token',
-    exp: now + 3600,
-    iat: now,
-  };
-  const unsigned = `${base64url(JSON.stringify({ alg: 'RS256', typ: 'JWT' }))}.${base64url(JSON.stringify(claim))}`;
-  const signature = createSign('RSA-SHA256').update(unsigned).sign(serviceAccount.private_key, 'base64url');
-  const response = await fetch('https://oauth2.googleapis.com/token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({
-      grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-      assertion: `${unsigned}.${signature}`,
-    }),
-  });
-
-  if (!response.ok) {
-    throw new Error('Could not authenticate Google service account');
-  }
-
-  const data = await response.json();
-  return data.access_token;
-};
-
-export const extensionForMimeType = (mimeType) => {
-  if (mimeType === 'image/png') {
-    return '.png';
-  }
-  if (mimeType === 'image/avif') {
-    return '.avif';
-  }
-  if (mimeType === 'image/jpeg') {
-    return '.jpg';
-  }
-  return extname(mimeType) || '.webp';
 };

@@ -38,18 +38,12 @@ const runValidateFlow = () => {
 const runDeployFlow = () => {
   runValidateFlow();
 
-  requireEnv([
-    'GOOGLE_SHEET_ID',
-    'GOOGLE_SERVICE_ACCOUNT_JSON',
-    'VITE_GOOGLE_CLIENT_ID',
-    'VITE_GOOGLE_API_KEY',
-    'VITE_GOOGLE_APPS_SCRIPT_PUBLISH_URL',
-  ]);
+  requireEnv(['CLOUDFLARE_CONTENT_API_ORIGIN', 'VITE_GOOGLE_CLIENT_ID']);
 
-  run('pnpm', ['cloudflare:build:site'], {
-    CONTENT_SYNC_REQUIRE_REMOTE: 'true',
+  run('pnpm', ['cloudflare:build:site']);
+  run('pnpm', ['cloudflare:build:admin'], {
+    VITE_GOOGLE_CLIENT_ID: process.env.VITE_GOOGLE_CLIENT_ID,
   });
-  run('pnpm', ['cloudflare:build:admin']);
 };
 
 if (mode === 'validate') {

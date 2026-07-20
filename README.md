@@ -55,7 +55,7 @@ pnpm build
 - Use the repo-pinned pnpm version with `corepack use pnpm@9.15.9`.
 - Treat `pnpm validate` as the single quality gate for both local verification and CI.
 - Run `pnpm parity:local` to mirror the CI validate job locally with the same runtime, frozen lockfile install, and workspace gate.
-- Run `pnpm parity:local:deploy` to mirror the deploy workflow build path locally. It fails fast if the same Google and Studio env values used in CI are missing.
+- Run `pnpm parity:local:deploy` to mirror the deploy workflow build path locally. It requires the Cloudflare content API origin and the Google Identity client ID used by the Studio.
 
 ## App
 

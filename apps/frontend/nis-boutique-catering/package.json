@@ -11,7 +11,6 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "content:check": "node scripts/check-content.mjs",
-    "content:seed": "node scripts/seed-content.mjs",
     "content:sync": "node scripts/sync-content.mjs",
     "content:sync:cloudflare": "tsx scripts/sync-cloudflare-content.ts",
     "migration:transform": "tsx scripts/migrate-legacy-backup.ts",

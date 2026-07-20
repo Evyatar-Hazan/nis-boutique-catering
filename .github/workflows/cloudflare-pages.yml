@@ -17,10 +17,6 @@ env:
   CLOUDFLARE_ZONE_ID: c2a593125ed4fe46262ef7c46d97e3e3
   PUBLIC_SITE_PROJECT: nis-boutique-catering
   ADMIN_STUDIO_PROJECT: nis-content-studio
-  GOOGLE_SHEET_ID: 101lO26iC3FzIJ7LdsGPCt1oJDR6RBHIkmeqcJ_Peyzk
-  VITE_GOOGLE_SHEET_ID: 101lO26iC3FzIJ7LdsGPCt1oJDR6RBHIkmeqcJ_Peyzk
-  VITE_GOOGLE_DRIVE_FOLDER_ID: 1HSTXq2aJkRj4CrPcNeNDx4EpAHQsUWDv
-  VITE_ALLOWED_EDITORS: evyatarhazan3.14@gmail.com
 
 jobs:
   deploy:
@@ -52,24 +48,14 @@ jobs:
         run: pnpm validate
 
       - name: Build public site from published D1 and R2
-        if: vars.PUBLIC_CONTENT_SOURCE == 'cloudflare'
-        run: pnpm cloudflare:build:site:d1
-        env:
-          CLOUDFLARE_CONTENT_API_ORIGIN: https://studio.nisboutiquecatering.com
-
-      - name: Build public site from legacy Google source
-        if: vars.PUBLIC_CONTENT_SOURCE != 'cloudflare'
         run: pnpm cloudflare:build:site
         env:
-          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
-          CONTENT_SYNC_REQUIRE_REMOTE: true
+          CLOUDFLARE_CONTENT_API_ORIGIN: https://studio.nisboutiquecatering.com
 
       - name: Build admin studio
         run: pnpm cloudflare:build:admin
         env:
           VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
-          VITE_GOOGLE_API_KEY: ${{ secrets.VITE_GOOGLE_API_KEY }}
-          VITE_GOOGLE_APPS_SCRIPT_PUBLISH_URL: ${{ secrets.VITE_GOOGLE_APPS_SCRIPT_PUBLISH_URL }}
 
       - name: Deploy public site to Cloudflare Pages
         run: |
