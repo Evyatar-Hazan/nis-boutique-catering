@@ -2530,6 +2530,11 @@ details p {
 
   .mobile-sticky-cta {
     display: grid;
+    inset-block-end: calc(12px + env(safe-area-inset-bottom));
+  }
+
+  .site-footer {
+    padding-block-end: calc(118px + env(safe-area-inset-bottom));
   }
 
   .lightbox {

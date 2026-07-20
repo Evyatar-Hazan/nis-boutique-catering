@@ -1,5 +1,9 @@
 import { useEffect } from 'react';
 
+export const shouldRevealEntry = (
+  entry: Pick<IntersectionObserverEntry, 'boundingClientRect' | 'isIntersecting'>,
+): boolean => entry.isIntersecting || entry.boundingClientRect.bottom <= 0;
+
 export const useRevealOnScroll = (): void => {
   useEffect(() => {
     const revealSelector = '.reveal';
@@ -13,7 +17,7 @@ export const useRevealOnScroll = (): void => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
+          if (shouldRevealEntry(entry)) {
             entry.target.classList.add('is-visible');
             observer.unobserve(entry.target);
           }
