@@ -46,6 +46,7 @@ export const StudioSessionShell = ({
     {draft.status === 'success' && <PublishPanel
       draft={draft.data.revision}
       hasUnsavedChanges={draftDirty}
+      key="publish-panel"
       onContentChanged={draft.reload}
       onUnauthorized={onUnauthorized}
     />}
