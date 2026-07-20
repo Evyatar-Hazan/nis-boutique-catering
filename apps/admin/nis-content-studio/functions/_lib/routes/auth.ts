@@ -10,6 +10,8 @@ import { verifyGoogleIdToken } from "../auth/googleIdentity";
 import { jsonApiResponse } from "../http/response";
 import type { ApiRoute } from "../http/types";
 import { parseJsonBody } from "../http/validation";
+import { ApiError } from "../http/errors";
+import { apiSecurityPolicies } from "../security/policy";
 
 const googleLoginSchema = z.object({
   credential: z.string().min(1).max(16_384),
@@ -23,9 +25,19 @@ const presentSession = (session: Awaited<ReturnType<typeof requireAdminSession>>
   expiresAt: session.expiresAt,
 });
 
+const requirePrincipal = (
+  principal: Parameters<typeof presentSession>[0] | null,
+): Parameters<typeof presentSession>[0] => {
+  if (!principal) {
+    throw new ApiError(500, "authorization_policy_error", "Authorization policy failed.");
+  }
+  return principal;
+};
+
 export const googleLoginRoute: ApiRoute<Env> = {
   method: "POST",
   path: "/api/auth/google",
+  security: apiSecurityPolicies.login,
   handler: async ({ env, request, requestId }) => {
     const { credential } = await parseJsonBody(request, googleLoginSchema);
     const identity = await verifyGoogleIdToken(
@@ -42,15 +54,20 @@ export const googleLoginRoute: ApiRoute<Env> = {
 export const sessionRoute: ApiRoute<Env> = {
   method: "GET",
   path: "/api/auth/session",
-  handler: async ({ env, request, requestId }) => {
-    const session = await requireAdminSession(request, env.DB);
-    return jsonApiResponse(presentSession(session), 200, requestId);
+  security: apiSecurityPolicies.adminRead,
+  handler: async ({ principal, requestId }) => {
+    return jsonApiResponse(
+      presentSession(requirePrincipal(principal)),
+      200,
+      requestId,
+    );
   },
 };
 
 export const logoutRoute: ApiRoute<Env> = {
   method: "POST",
   path: "/api/auth/logout",
+  security: apiSecurityPolicies.logout,
   handler: async ({ env, request, requestId }) => {
     await revokeAdminSession(request, env.DB);
     return jsonApiResponse({ status: "signed_out" }, 200, requestId, {

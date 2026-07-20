@@ -1,6 +1,6 @@
 import { ApiError, toApiError } from "./errors";
 import { apiErrorResponse, withApiHeaders } from "./response";
-import type { ApiRoute } from "./types";
+import type { ApiGuard, ApiRoute } from "./types";
 
 const createRequestId = (): string => crypto.randomUUID();
 
@@ -8,6 +8,7 @@ export const dispatchApiRequest = async <Environment>(
   request: Request,
   env: Environment,
   routes: readonly ApiRoute<Environment>[],
+  guard?: ApiGuard<Environment>,
 ): Promise<Response> => {
   const requestId = createRequestId();
 
@@ -30,14 +31,23 @@ export const dispatchApiRequest = async <Environment>(
       ]);
     }
 
-    const response = await route.handler({ env, request, requestId });
+    const guardContext = { env, request, requestId };
+    const principal = guard ? await guard(guardContext, route) : null;
+    const response = await route.handler({
+      ...guardContext,
+      principal,
+    });
     return withApiHeaders(response, requestId);
   } catch (error: unknown) {
     const apiError = toApiError(error);
-    const headers =
+    const methodHeaders =
       apiError.status === 405 && apiError.details?.[0]
         ? { Allow: apiError.details[0].message }
         : undefined;
+    const headers = new Headers(apiError.headers);
+    if (methodHeaders) {
+      headers.set("Allow", methodHeaders.Allow);
+    }
 
     return apiErrorResponse(apiError, requestId, headers);
   }

@@ -6,6 +6,7 @@ export interface ApiErrorDetail {
 export class ApiError extends Error {
   readonly code: string;
   readonly details: readonly ApiErrorDetail[] | undefined;
+  readonly headers: HeadersInit | undefined;
   readonly status: number;
 
   constructor(
@@ -13,12 +14,14 @@ export class ApiError extends Error {
     code: string,
     message: string,
     details?: readonly ApiErrorDetail[],
+    headers?: HeadersInit,
   ) {
     super(message);
     this.name = "ApiError";
     this.status = status;
     this.code = code;
     this.details = details;
+    this.headers = headers;
   }
 }
 

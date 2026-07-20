@@ -822,12 +822,12 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### CF-005 — Centralize authorization, CSRF and abuse controls
 
-- **Status:** `BACKLOG`
+- **Status:** `VERIFYING`
 - **Dependencies:** `CF-004`.
 - **Definition:** ליצור middleware יחיד לכל route ניהולי עם session lookup, origin/CSRF checks, limits ו־security response headers.
 - **Acceptance criteria:** אין authorization ב־React; כל mutation חסום ללא session ו־origin תקין; body/upload size מוגבלים; rate limit בסיסי ל־login/upload/publish.
 - **Verification:** negative integration matrix ל־401/403/413/415/429, header audit וחיפוש שמוכיח שאין email bearer או wildcard admin CORS.
-- **Evidence:** pending.
+- **Evidence:** router יחיד מפעיל `enforceAdminApiPolicy` לפני כל handler לפי policy typed של ה־route. השכבה מרכזת session lookup מול D1, Origin/CSRF same-origin, allowlist ל־content types, בדיקת `Content-Length` וגם streaming body limit, ו־rate limits ל־login/upload/publish. migration versioned ‏`0002_api_rate_limits.sql` שומר fixed-window counters לפי SHA-256 של scope+client identifier, בלי IP גלוי; תגובת `429` כוללת `Retry-After`. auth routes משתמשים באותם presets ואין authorization ב־React. ‏35/35 בדיקות סטודיו עברו, כולל matrix מלא של `401/403/413/415/429`; full `pnpm validate` עבר וחיפוש production code שלל email bearer, wildcard admin CORS ו־`VITE_ALLOWED_EDITORS`. local migration הוחל וחזרה שנייה הייתה no-op; Wrangler local אישר את כל הסטטוסים וה־headers. Preview D1 הוחל ונבדק עם שתי migrations והטבלה החדשה. Preview deployment `03751190` אישר שוב `401/403/413/415/429`, ‏`Retry-After`, request IDs/security headers וללא wildcard CORS; counter נשמר כמפתח hash באורך 64. נדרש עדיין push/CI, migration Production ואימות Production לפני `DONE`.
 
 #### CF-006 — Implement draft and revision APIs
 
@@ -1392,3 +1392,13 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - Preview deployment `7b61f2ba` אישר token מזויף `401` במקום fail-closed של config, ‏session חסר `401`, ‏logout `200` עם cookie מחיקה, ו־0 sessions ב־D1 לאחר הניסיונות השליליים.
 - commit `09d5e62` עבר CI `29720818114` ו־Cloudflare deploy `29720818107`; deployment `e0fd5f3b` הוא Production על commit זה.
 - לאחר propagation, Production אישר session חסר `401`, token מזויף `401`, logout `200` עם cookie מחיקה מוקשח, request IDs/security headers וללא session שנוצר ב־D1; health ושני ה־roots החזירו `200`. `CF-004` נסגרה כ־`DONE`.
+
+### 2026-07-20 — CF-005 centralized API security started
+
+- `CF-005` עברה ל־`IN_PROGRESS`; router יחיד מפעיל כעת policy typed לפני handler, ללא הרשאה ב־React או checks מפוזרים.
+- נוספו presets משותפים ל־admin read/mutation, ‏login, logout, upload ו־publish עם session, same-origin, content-type/body limits ו־rate limits לפי הצורך.
+- migration ‏`0002_api_rate_limits.sql` מוסיף counters ב־D1 לפי hash בלבד. local ו־Preview apply עברו, apply חוזר היה no-op, וב־Preview קיימות שתי migrations.
+- 35/35 בדיקות סטודיו עברו; Wrangler local אישר matrix ‏`401/403/413/415/429`, ‏`Retry-After`, request IDs/security headers וללא wildcard CORS.
+- full `pnpm validate` ו־audit לחיפוש bearer/CORS/allowlist client-side עברו.
+- Preview deployment `03751190` אישר `401/403/413/415`; עשר בקשות login שגויות נספרו וקריאה 11 מול כתובת ה־deployment הקבועה החזירה `429` עם `Retry-After`. המפתח ב־D1 הוא hash באורך 64 ולא IP גלוי.
+- `CF-005` עברה ל־`VERIFYING` עד push/CI, migration Production ואימות Production.
