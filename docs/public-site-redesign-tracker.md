@@ -952,16 +952,16 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### ADM-003 — Build one typed API client and query-state layer
 
-- **Status:** `VERIFYING`
+- **Status:** `DONE`
 - **Dependencies:** `CF-003`, `ADM-001`.
 - **Definition:** ליצור client יחיד ל־API עם credentials, schema parsing, error mapping, cancellation ו־retry מוגבל לקריאות idempotent.
 - **Acceptance criteria:** feature modules אינם קוראים `fetch` ישירות; DTOs מגיעים מהחוזה המשותף; conflict/auth/network errors מובחנים; אין retry אוטומטי ל־publish/upload mutation.
 - **Verification:** client unit tests, mocked failure matrix ו־`rg "fetch\("` שמאשר בעלות מרכזית.
-- **Evidence:** `src/api/client.ts` הוא owner יחיד של `fetch`: הוא מוסיף same-origin credentials, cancellation, schema parsing, error mapping נפרד ל־auth/conflict/network/rate-limit/server/validation ושני retries לכל היותר ל־GET idempotent בלבד; mutations אינן נשלחות מחדש. `studioApi.ts` מרכז DTO schemas ו־domain methods, ו־`useStudioQuery` מרכז loading/success/error, cancellation ו־session expiry. ה־auth וה־shell הועברו לאותה שכבה, וטעינת draft אמיתית מחליפה placeholder. חיפוש `fetch(` תחת source/functions מצא קריאת runtime יחידה ב־client; ‏46/46 בדיקות סטודיו, failure matrix, full `pnpm validate`, lint, type-check ושני builds עברו. המשימה ממתינה ל־push, CI/deploy ואימות Preview/Production לפני סגירה.
+- **Evidence:** `src/api/client.ts` הוא owner יחיד של `fetch`: הוא מוסיף same-origin credentials, cancellation, schema parsing, error mapping נפרד ל־auth/conflict/network/rate-limit/server/validation ושני retries לכל היותר ל־GET idempotent בלבד; mutations אינן נשלחות מחדש. `studioApi.ts` מרכז DTO schemas ו־domain methods, ו־`useStudioQuery` מרכז loading/success/error, cancellation ו־session expiry. ה־auth וה־shell הועברו לאותה שכבה, וטעינת draft אמיתית מחליפה placeholder. חיפוש `fetch(` תחת source/functions מצא קריאת runtime יחידה ב־client; ‏46/46 בדיקות סטודיו, failure matrix, full `pnpm validate`, lint, type-check ושני builds עברו. Commit `f4ae5b3`, ‏CI `29730800883` ו־deploy `29730800772` עברו; deployments ‏`563e2c65` Production ו־`15c79235` Preview מצביעים לאותו commit. Preview browser/session טען draft גרסה 1 דרך session/draft `200`, logout ביטל את ה־session וה־cleanup החזיר 0 sessions ו־0 FK violations. Production browser טען את login gate וה־Google button, bundle `index-BCVn9oaA.js` פעיל, שני ה־roots וה־health החזירו `200`, unauthenticated session החזיר `401`, ו־D1 נשאר עם 0 sessions/revisions/media ו־0 FK violations.
 
 #### ADM-004 — Implement six-section content editing and preview
 
-- **Status:** `BACKLOG`
+- **Status:** `IN_PROGRESS`
 - **Dependencies:** `ADM-003`, `ARC-002`, `CF-006`.
 - **Definition:** לבנות עורכים ברורים ל־Hero, Services, Gallery, Process, Trust ו־Contact על אותו `ContentSnapshot`.
 - **Acceptance criteria:** אין legacy sections; validation field-level; dirty/conflict states ברורים; preview משתמש ב־`packages/site-preview`/shared contracts ולא ב־markup מועתק.
@@ -1477,3 +1477,4 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - auth client הנפרד אוחד ל־transport typed יחיד עם same-origin credentials, ‏Zod parsing, cancellation, error taxonomy ו־retry מוגבל ל־GET בלבד; אין `fetch` ישיר ב־features או ב־hooks.
 - נוסף `studioApi` מרכזי ל־auth/content/media ו־query-state hook גנרי; session shell טוען draft מאומת דרך אותה שכבה ומטפל ב־401 דרך owner יחיד של ה־session.
 - ‏46/46 בדיקות סטודיו ו־full `pnpm validate` עברו, כולל failure matrix ל־retry, mutation conflict, network, cancellation ו־invalid response. `ADM-003` עברה ל־`VERIFYING` עד push, CI/deploy ואימות Preview/Production.
+- commit `f4ae5b3` עבר CI `29730800883` ו־deploy `29730800772`; Preview deployment `15c79235` טען דרך browser את draft גרסה 1, logout ביטל את ה־session וה־cleanup חזר ל־0 sessions/FK violations. Production deployment `563e2c65` אישר login gate, bundle חדש, roots/health `200` ו־D1 נקי. `ADM-003` נסגרה כ־`DONE` ו־`ADM-004` החלה.
