@@ -4,13 +4,24 @@ export const shouldRevealEntry = (
   entry: Pick<IntersectionObserverEntry, 'boundingClientRect' | 'isIntersecting'>,
 ): boolean => entry.isIntersecting || entry.boundingClientRect.bottom <= 0;
 
+export const markRevealVisible = (element: HTMLElement): void => {
+  element.dataset.revealVisible = 'true';
+  element.classList.add('is-visible');
+};
+
+export const restoreRevealVisibility = (element: HTMLElement): void => {
+  if (element.dataset.revealVisible === 'true' && !element.classList.contains('is-visible')) {
+    element.classList.add('is-visible');
+  }
+};
+
 export const useRevealOnScroll = (): void => {
   useEffect(() => {
     const revealSelector = '.reveal';
     const revealElements = () => Array.from(document.querySelectorAll<HTMLElement>(revealSelector));
 
     if (!('IntersectionObserver' in window)) {
-      revealElements().forEach((element) => element.classList.add('is-visible'));
+      revealElements().forEach(markRevealVisible);
       return undefined;
     }
 
@@ -18,7 +29,7 @@ export const useRevealOnScroll = (): void => {
       (entries) => {
         entries.forEach((entry) => {
           if (shouldRevealEntry(entry)) {
-            entry.target.classList.add('is-visible');
+            markRevealVisible(entry.target as HTMLElement);
             observer.unobserve(entry.target);
           }
         });
@@ -29,6 +40,7 @@ export const useRevealOnScroll = (): void => {
     const observePendingRevealElements = () => {
       revealElements().forEach((element) => {
         if (element.dataset.revealObserved === 'true') {
+          restoreRevealVisibility(element);
           return;
         }
 
@@ -44,6 +56,8 @@ export const useRevealOnScroll = (): void => {
     });
 
     mutationObserver.observe(document.body, {
+      attributeFilter: ['class'],
+      attributes: true,
       childList: true,
       subtree: true,
     });
