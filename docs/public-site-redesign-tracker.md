@@ -732,7 +732,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### WEB-003 — Implement Gallery with integrated video
 
-- **Status:** `VERIFYING`
+- **Status:** `DONE`
 - **Dependencies:** `ARC-002`, `UI-002`, `CF-007`.
 - **Definition:** לאחד gallery ו־real media למשטח מדיה אחד, מהיר ונגיש.
 - **Acceptance criteria:**
@@ -741,7 +741,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
   - lightbox נגיש ל־keyboard ומחזיר focus.
   - image variants, lazy loading ו־dimensions עובדים לכל media item.
 - **Verification:** media check, keyboard/lightbox tests, network inspection, CLS measurement ו־broken asset scan.
-- **Evidence:** `GallerySection` משותף יחיד מאחד את הסרטון ואת התמונות, גוזר את המסננים מתוך קטגוריות המדיה הזמינות ומציג 6 תמונות ראשוניות. מקור labels כפול הוסר משכבות ה־preview וה־frontend. לכל תמונה `srcset`, מידות ו־lazy loading; הסרטון משתמש ב־poster וב־`preload="metadata"`. ‏20/20 בדיקות `site-preview`, ‏14/14 בדיקות frontend ו־full `pnpm validate` עברו. בדפדפן Chrome מקומי אומתו 6 תמונות, סרטון יחיד, כל המסננים, lightbox עם Escape והחזרת focus, פריסה רספונסיבית ללא overflow, ‏0 console errors, ‏0 broken assets, media ב־200/206 ו־CLS ‏0.0058. ממתין ל־push, CI/deploy ואימות production.
+- **Evidence:** `GallerySection` משותף יחיד מאחד את הסרטון ואת התמונות, גוזר את המסננים מתוך קטגוריות המדיה הזמינות ומציג 6 תמונות ראשוניות. מקור labels כפול הוסר משכבות ה־preview וה־frontend. לכל תמונה `srcset`, מידות ו־lazy loading; הסרטון משתמש ב־poster וב־`preload="metadata"`. ‏20/20 בדיקות `site-preview`, ‏14/14 בדיקות frontend ו־full `pnpm validate` עברו. בדפדפן Chrome מקומי אומתו 6 תמונות, סרטון יחיד, כל המסננים, lightbox עם Escape והחזרת focus, פריסה רספונסיבית ללא overflow, ‏0 console errors, ‏0 broken assets, media ב־200/206 ו־CLS ‏0.0058. Commit `d64fc32`, ‏CI `29733285325` ו־deploy `29733285346` עברו. Production בדפדפן נקי אישר 6 תמונות, סרטון אחד, 6 מסננים נגזרים, ‏0 section ישן/overflow, image variants/dimensions/lazy loading, keyboard Escape והחזרת focus; כל script/image/media חזרו `200/206` ושני ה־roots וה־health החזירו `200`.
 
 #### WEB-004 — Implement Process
 
@@ -970,7 +970,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### ADM-005 — Implement R2 media library and safe editing
 
-- **Status:** `BACKLOG`
+- **Status:** `IN_PROGRESS`
 - **Dependencies:** `ADM-003`, `CF-007`, `WEB-003`.
 - **Definition:** לבנות library אחת ל־upload/select/alt/replace/archive/restore של תמונות ווידאו.
 - **Acceptance criteria:** progress/error/retry; preview מקומי בטוח; alt חובה לשימוש ציבורי; reference count מוצג לפני archive; אותו picker משמש Hero/Services/Gallery.
@@ -1492,3 +1492,4 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - הגלריה ו־real media אוחדו ל־`GallerySection` משותף אחד עם 6 תמונות ראשוניות, סרטון יחיד ומסננים הנגזרים מהמדיה הזמינה; הוסרו component, markup, labels ו־CSS כפולים.
 - נשמרה שרשרת המדיה הקיימת עם variants, מידות ו־lazy loading; נוספו video poster/metadata ופריסה responsive אחת ללא שכפול DOM.
 - ‏20/20 בדיקות `site-preview`, ‏14/14 בדיקות frontend ו־full validation עברו. Chrome מקומי אישר keyboard/focus, media ‏200/206, ‏0 broken assets/errors/overflow ו־CLS ‏0.0058. `WEB-003` עברה ל־`VERIFYING` עד push, CI/deploy ואימות production.
+- commit `d64fc32` עבר CI `29733285325` ו־deploy `29733285346`; Production בדפדפן נקי אישר את גלריית המדיה המלאה, keyboard/focus, כל ה־assets ב־`200/206` ושני המשטחים/health ב־`200`. `WEB-003` נסגרה כ־`DONE` ו־`ADM-005` החלה.
