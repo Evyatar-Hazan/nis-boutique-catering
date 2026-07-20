@@ -822,12 +822,12 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### CF-005 — Centralize authorization, CSRF and abuse controls
 
-- **Status:** `VERIFYING`
+- **Status:** `DONE`
 - **Dependencies:** `CF-004`.
 - **Definition:** ליצור middleware יחיד לכל route ניהולי עם session lookup, origin/CSRF checks, limits ו־security response headers.
 - **Acceptance criteria:** אין authorization ב־React; כל mutation חסום ללא session ו־origin תקין; body/upload size מוגבלים; rate limit בסיסי ל־login/upload/publish.
 - **Verification:** negative integration matrix ל־401/403/413/415/429, header audit וחיפוש שמוכיח שאין email bearer או wildcard admin CORS.
-- **Evidence:** router יחיד מפעיל `enforceAdminApiPolicy` לפני כל handler לפי policy typed של ה־route. השכבה מרכזת session lookup מול D1, Origin/CSRF same-origin, allowlist ל־content types, בדיקת `Content-Length` וגם streaming body limit, ו־rate limits ל־login/upload/publish. migration versioned ‏`0002_api_rate_limits.sql` שומר fixed-window counters לפי SHA-256 של scope+client identifier, בלי IP גלוי; תגובת `429` כוללת `Retry-After`. auth routes משתמשים באותם presets ואין authorization ב־React. ‏35/35 בדיקות סטודיו עברו, כולל matrix מלא של `401/403/413/415/429`; full `pnpm validate` עבר וחיפוש production code שלל email bearer, wildcard admin CORS ו־`VITE_ALLOWED_EDITORS`. local migration הוחל וחזרה שנייה הייתה no-op; Wrangler local אישר את כל הסטטוסים וה־headers. Preview D1 הוחל ונבדק עם שתי migrations והטבלה החדשה. Preview deployment `03751190` אישר שוב `401/403/413/415/429`, ‏`Retry-After`, request IDs/security headers וללא wildcard CORS; counter נשמר כמפתח hash באורך 64. נדרש עדיין push/CI, migration Production ואימות Production לפני `DONE`.
+- **Evidence:** router יחיד מפעיל `enforceAdminApiPolicy` לפני כל handler לפי policy typed של ה־route. השכבה מרכזת session lookup מול D1, Origin/CSRF same-origin, allowlist ל־content types, בדיקת `Content-Length` וגם streaming body limit, ו־rate limits ל־login/upload/publish. migration versioned ‏`0002_api_rate_limits.sql` שומר fixed-window counters לפי SHA-256 של scope+client identifier, בלי IP גלוי; תגובת `429` כוללת `Retry-After`. auth routes משתמשים באותם presets ואין authorization ב־React. ‏35/35 בדיקות סטודיו עברו, כולל matrix מלא של `401/403/413/415/429`; full `pnpm validate` עבר וחיפוש production code שלל email bearer, wildcard admin CORS ו־`VITE_ALLOWED_EDITORS`. local migration הוחל וחזרה שנייה הייתה no-op; Wrangler local אישר את כל הסטטוסים וה־headers. Preview D1 הוחל ונבדק עם שתי migrations והטבלה החדשה. Preview deployment `03751190` אישר שוב `401/403/413/415/429`, ‏`Retry-After`, request IDs/security headers וללא wildcard CORS; counter נשמר כמפתח hash באורך 64. Commit `3173e7b` עבר CI `29721372197` ו־deploy `29721372190` (Production deployment `c8332f56`). לפני migration Production נשמר bookmark `00000005-00000000-000050ae-f775ab4d77178760cc2f25e4f9e23027`; apply עבר, apply חוזר היה no-op, נמצאו שתי migrations ו־0 foreign-key violations. Production אישר `401/403/413/415`, counter hash יחיד לאחר login שגוי, request IDs/security headers, health ושני roots `200`; ‏`429` אומת ב־unit/local/Preview בלי לנעול בכוונה את כתובת המנהל ב־Production.
 
 #### CF-006 — Implement draft and revision APIs
 
@@ -1401,4 +1401,6 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - 35/35 בדיקות סטודיו עברו; Wrangler local אישר matrix ‏`401/403/413/415/429`, ‏`Retry-After`, request IDs/security headers וללא wildcard CORS.
 - full `pnpm validate` ו־audit לחיפוש bearer/CORS/allowlist client-side עברו.
 - Preview deployment `03751190` אישר `401/403/413/415`; עשר בקשות login שגויות נספרו וקריאה 11 מול כתובת ה־deployment הקבועה החזירה `429` עם `Retry-After`. המפתח ב־D1 הוא hash באורך 64 ולא IP גלוי.
-- `CF-005` עברה ל־`VERIFYING` עד push/CI, migration Production ואימות Production.
+- commit `3173e7b` עבר CI `29721372197` ו־Cloudflare deploy `29721372190`; Production deployment `c8332f56` מצביע ל־commit זה.
+- לפני migration Production נשמר Time Travel bookmark `00000005-00000000-000050ae-f775ab4d77178760cc2f25e4f9e23027`; apply עבר, apply חוזר היה no-op, נמצאו שתי migrations ו־0 foreign-key violations.
+- Production אישר `401/403/413/415`, ספירת login ב־D1 כמפתח hash באורך 64, request IDs/security headers ו־health/public/studio `200`. ‏`429` לא הופעל בכוונה על IP המנהל ב־Production לאחר שאומת במלואו ב־unit/local/Preview. `CF-005` נסגרה כ־`DONE`.
