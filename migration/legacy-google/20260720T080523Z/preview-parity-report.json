@@ -1,0 +1,13 @@
+{
+  "adminCount": 1,
+  "backupTimestamp": "20260720T080523Z",
+  "contentChecksum": "ded45021c11d53b33e4c6866b89a4e30e2c58a1b94ff0a1bf99fa73b375b42ce",
+  "draftId": "b5bd90fb-ded3-583c-ab50-8bfa17f2bd26",
+  "draftCount": 1,
+  "foreignKeyViolations": 0,
+  "mediaCount": 16,
+  "objectChecksumsVerified": 16,
+  "publishedId": "b6398b25-f48f-5eeb-a6a8-bbd4d83add2f",
+  "publishedCount": 1,
+  "publishJobs": 0
+}

@@ -896,12 +896,12 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### MIG-003 — Import and validate in preview
 
-- **Status:** `IN_PROGRESS`
+- **Status:** `VERIFYING`
 - **Dependencies:** `MIG-002`, `CF-006`, `CF-007`.
 - **Definition:** לייבא את כל התוכן והמדיה ל־D1/R2 preview ולהריץ parity מלאה בלי להשפיע על production.
 - **Acceptance criteria:** counts/IDs/hashes תואמים; כל media נפתחת; draft/published מוגדרים; אין orphan/duplicate object; admin bootstrap תקין.
 - **Verification:** automated parity report, R2 object HEAD/read sampling, preview studio login ו־preview public build.
-- **Evidence:** העבודה החלה מהתוצרים הקנוניים של `MIG-002`; הייבוא יבוצע רק מול D1/R2 Preview ולא ישנה את Production.
+- **Evidence:** נוסף importer מוגבל בקוד ל־Preview בלבד, עם flag כתיבה מפורש, preflight שחוסם rows זרים, source SHA/bytes לפני העלאה, verification בהורדה מלאה מ־R2 ו־D1 parity לאחר כתיבה. לפני import נשמר Time Travel bookmark ‏`0000000d-00000000-000050ae-8614f9eb76c612c2e43f1018390cf725`. שתי הרצות מלאות עברו idempotently והשאירו 16 media rows עם 16 IDs/object keys/hashes ייחודיים, draft יחיד ‏`b5bd90fb-ded3-583c-ab50-8bfa17f2bd26`, published יחיד ‏`b6398b25-f48f-5eeb-a6a8-bbd4d83add2f`, ‏0 jobs ו־0 FK violations. כל 16 objects הורדו מחדש ואומתו byte-for-byte; authenticated Preview API deployment `2c1d0682` החזיר `200` ל־session/draft/media/orphans ול־published, עם 0 missing ו־0 orphan objects, וה־sessions הזמניים נמחקו. שני ה־content JSON זהים למקור עם normalized SHA ‏`3e2ea58a…`. clean Preview public sync הוריד 9 referenced objects, יצר 57 files, עבר content/media checks ו־build. בדיקת browser אישרה שה־studio Preview נטען; ה־UI הישן עדיין משתמש ב־Google Sheets עד Phase 6, בעוד login/session של API החדש אומת ישירות. ‏46/46 בדיקות סטודיו ו־full `pnpm validate` עברו. Production נבדק בנפרד ונשאר עם 0 revisions/media/jobs/sessions ו־0 FK violations; המשימה ממתינה ל־push, CI/deploy ו־Production smoke לפני `DONE`.
 
 #### MIG-004 — Run the production freeze, delta import and cutover
 
@@ -1451,3 +1451,9 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - 16 media IDs ומקורות Drive מופו למפתחות R2 יציבים; 6 פריטי gallery, ‏100 sections ושני קובצי Drive הופרדו במפורש מהתוכן הפעיל.
 - שלוש בדיקות fixture, ‏schema validation, שתי הרצות byte-identical ו־full `pnpm validate` עברו. התוצרים הקנוניים וה־SHA-256 שלהם נשמרו תחת `migration/legacy-google/20260720T080523Z` לקראת import ל־Preview.
 - commit `4e066b6` עבר CI `29727541218` ו־deploy `29727541187`; Production smoke אישר `200` בשני ה־roots וב־health עם D1/R2 ready. `MIG-002` נסגרה כ־`DONE` ו־`MIG-003` החלה מול Preview בלבד.
+
+### 2026-07-20 — MIG-003 Preview import and parity
+
+- נוסף importer write-gated ל־Preview עם preflight, source verification, ‏D1 upsert, ‏R2 upload/download verification ודוח parity קנוני.
+- שתי הרצות מלאות השאירו draft/published יחידים ו־16 assets/objects ללא duplicate, missing, orphan או FK violation; כל session בדיקה נמחק.
+- deployment ‏`2c1d0682` אישר את מסלולי ה־API המאומתים והציבוריים, ו־clean Cloudflare sync/build עבר מול published Preview. Production נשאר ריק וללא שינוי. `MIG-003` עברה ל־`VERIFYING` עד push/CI/deploy ו־Production smoke.
