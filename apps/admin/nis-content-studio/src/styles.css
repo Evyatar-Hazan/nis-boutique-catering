@@ -100,6 +100,32 @@ a {
   backdrop-filter: blur(18px);
 }
 
+.connection-status {
+  position: sticky;
+  z-index: 20;
+  top: 12px;
+  display: flex;
+  width: min(1280px, 100%);
+  align-items: center;
+  gap: 10px;
+  margin-inline: auto;
+  border: 1px solid #d99f91;
+  border-radius: 14px;
+  padding: 12px 14px;
+  color: var(--danger);
+  background: #fff0ec;
+  box-shadow: 0 12px 34px rgba(80, 30, 20, 0.15);
+}
+
+.connection-status svg {
+  width: 22px;
+  flex: 0 0 auto;
+}
+
+.connection-status span {
+  display: grid;
+}
+
 .admin-header {
   display: flex;
   align-items: center;

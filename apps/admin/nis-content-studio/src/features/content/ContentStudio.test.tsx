@@ -63,6 +63,7 @@ describe('six-section content studio', () => {
     fireEvent.click(screen.getByRole('button', { name: 'שמור טיוטה' }));
     expect(await screen.findByText('יש שדות שדורשים תיקון לפני השמירה.')).toBeInTheDocument();
     expect(screen.getByRole('textbox', { name: /כותרת ראשית/ })).toHaveAttribute('aria-invalid', 'true');
+    await waitFor(() => expect(screen.getByRole('textbox', { name: /כותרת ראשית/ })).toHaveFocus());
     expect(fetchMock).not.toHaveBeenCalled();
   });
 

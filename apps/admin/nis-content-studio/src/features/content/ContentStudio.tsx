@@ -94,6 +94,11 @@ export const ContentStudio = ({
     return () => onDirtyChange(false);
   }, [dirty, onDirtyChange]);
 
+  useEffect(() => {
+    if (!attemptedSave || saveState.status !== 'error' || Object.keys(validationErrors).length === 0) return;
+    window.requestAnimationFrame(() => document.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus());
+  }, [attemptedSave, saveState.status, validationErrors]);
+
   const update = (field: EditorField, value: string | boolean) => {
     setContent((current) => updateEditorValue(current, field.path, value));
     setSaveState({ status: 'idle', message: 'יש שינויים שלא נשמרו.' });
@@ -189,7 +194,7 @@ export const ContentStudio = ({
       </div>
     </div>
 
-    <div className={`status-bar ${saveState.status === 'error' || saveState.status === 'conflict' ? 'is-error' : ''}`} role="status" aria-live="polite">
+    <div className={`status-bar ${saveState.status === 'error' || saveState.status === 'conflict' ? 'is-error' : ''}`} role={saveState.status === 'error' || saveState.status === 'conflict' ? 'alert' : 'status'} aria-live="polite">
       {saveState.status === 'error' || saveState.status === 'conflict' ? <AlertTriangle aria-hidden="true" /> : <Check aria-hidden="true" />}
       <span>{saveState.message}</span><small>גרסה {revision.version}</small>
     </div>

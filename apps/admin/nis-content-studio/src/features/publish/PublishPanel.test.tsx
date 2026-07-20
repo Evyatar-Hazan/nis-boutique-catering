@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import '@testing-library/jest-dom/vitest';
 
 import { createPublicSiteDocument } from '../../../functions/_lib/test/publicSiteDocument';
+import { StudioApiError } from '../../api/client';
 import { studioApi, type ContentRevisionDto, type PublishHistoryDto, type PublishJobDto } from '../../api/studioApi';
 import { PublishPanel } from './PublishPanel';
 
@@ -79,6 +80,26 @@ describe('publish and history UX', () => {
     expect(publish.mock.calls[0]?.[0]).toEqual({ draftId: '00000000-0000-4000-8000-000000000001', expectedVersion: 3 });
     expect(publish.mock.calls[0]?.[1]).toMatch(/^studio:publish:/u);
     await waitFor(() => expect(onContentChanged).toHaveBeenCalledTimes(1));
+  });
+
+  it('focuses confirmation, closes with Escape, and reuses the idempotency key after a network interruption', async () => {
+    const publish = vi.spyOn(studioApi, 'publishDraft')
+      .mockRejectedValueOnce(new StudioApiError({ code: 'network_error', kind: 'network', message: 'אין חיבור.', status: 0 }))
+      .mockResolvedValueOnce({ job: job('dispatched'), revision: revision('published', '01', 3) });
+    renderPanel();
+    const trigger = await screen.findByRole('button', { name: 'פרסם גרסה 3' });
+    fireEvent.click(trigger);
+    const confirm = screen.getByRole('button', { name: 'אשר פעולה' });
+    expect(confirm).toHaveFocus();
+    fireEvent.keyDown(confirm, { key: 'Escape' });
+    await waitFor(() => expect(trigger).toHaveFocus());
+
+    fireEvent.click(trigger);
+    fireEvent.click(screen.getByRole('button', { name: 'אשר פעולה' }));
+    expect(await screen.findByText('אין חיבור.')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'אשר פעולה' }));
+    await waitFor(() => expect(publish).toHaveBeenCalledTimes(2));
+    expect(publish.mock.calls[1]?.[1]).toBe(publish.mock.calls[0]?.[1]);
   });
 
   it('offers retry only for a failed dispatch', async () => {

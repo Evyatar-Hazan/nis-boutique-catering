@@ -7,6 +7,7 @@ import { useStudioQuery } from '../../hooks/useStudioQuery';
 import { AdminManagement } from '../admin/AdminManagement';
 import { ContentStudio } from '../content/ContentStudio';
 import { PublishPanel } from '../publish/PublishPanel';
+import { ConnectionStatus } from './ConnectionStatus';
 
 export const StudioSessionShell = ({
   session,
@@ -33,6 +34,7 @@ export const StudioSessionShell = ({
         <button type="button" className="ghost-button" onClick={onLogout}><LogOut aria-hidden="true" />התנתק</button>
       </div>
     </header>
+    <ConnectionStatus />
     {draft.status === 'loading' && <section className="empty-state" role="status"><LoaderCircle aria-hidden="true" />טוענים טיוטה מאובטחת...</section>}
     {draft.status === 'error' && <section className="empty-state config-warning" role="alert"><AlertTriangle aria-hidden="true" />{draft.error.message}<button className="ghost-button" type="button" onClick={draft.reload}>נסה שוב</button></section>}
     {draft.status === 'success' && !draft.data.revision && <section className="empty-state" role="status">אין כרגע טיוטה לעריכה. אפשר לפתוח טיוטה מהגרסה החיה באזור הפרסום.</section>}
