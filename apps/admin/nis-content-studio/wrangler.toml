@@ -5,6 +5,9 @@ pages_build_output_dir = "./dist"
 compatibility_date = "2026-07-20"
 compatibility_flags = ["nodejs_compat"]
 
+[vars]
+GOOGLE_CLIENT_ID = "1071746882514-thn0l2mpo0t3dgrcanfb14sjmr4gpof7.apps.googleusercontent.com"
+
 # Local development uses Wrangler's local persistence. The preview resources
 # define the binding shape without connecting local requests to remote data.
 [[d1_databases]]
@@ -30,6 +33,9 @@ migrations_table = "d1_migrations"
 binding = "MEDIA"
 bucket_name = "nis-media-preview"
 
+[env.preview.vars]
+GOOGLE_CLIENT_ID = "1071746882514-thn0l2mpo0t3dgrcanfb14sjmr4gpof7.apps.googleusercontent.com"
+
 [[env.production.d1_databases]]
 binding = "DB"
 database_name = "nis-content-production"
@@ -40,3 +46,6 @@ migrations_table = "d1_migrations"
 [[env.production.r2_buckets]]
 binding = "MEDIA"
 bucket_name = "nis-media-production"
+
+[env.production.vars]
+GOOGLE_CLIENT_ID = "1071746882514-thn0l2mpo0t3dgrcanfb14sjmr4gpof7.apps.googleusercontent.com"

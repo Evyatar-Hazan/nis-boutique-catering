@@ -51,7 +51,11 @@ if (typeof Element !== 'undefined' && !Element.prototype.scrollIntoView) {
 
 afterEach(() => {
   cleanup();
-  document.body.className = '';
-  window.localStorage.clear();
-  window.sessionStorage.clear();
+  if (typeof document !== 'undefined') {
+    document.body.className = '';
+  }
+  if (typeof window !== 'undefined') {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+  }
 });

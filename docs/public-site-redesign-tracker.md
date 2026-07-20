@@ -813,12 +813,12 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### CF-004 — Implement Google identity verification and server sessions
 
-- **Status:** `BACKLOG`
+- **Status:** `VERIFYING`
 - **Dependencies:** `CF-002`, `CF-003`.
 - **Definition:** לאמת Google ID token בשרת וליצור session cookie אקראי שה־hash שלו נשמר ב־D1.
 - **Acceptance criteria:** נבדקים signature/issuer/audience/expiry/email_verified; רק admin פעיל נכנס; cookie הוא HttpOnly/Secure/SameSite; logout, expiry והשבתת admin מבטלים גישה.
 - **Verification:** tests ל־token תקין/מזויף/פג/קהל שגוי, cookie attributes, revocation ושימוש חוזר ב־session מבוטל.
-- **Evidence:** pending.
+- **Evidence:** נוספו domain modules נפרדים לאימות Google ול־session, ו־routes ל־`POST /api/auth/google`, ‏`GET /api/auth/session` ו־`POST /api/auth/logout`. אימות ה־ID token משתמש ב־Google JWKS וב־RS256 ובודק issuer, audience, expiry, subject, email ו־`email_verified`; שגיאות אינן חושפות פרטי token. רק רשומת admin פעילה יכולה לקשור subject וליצור session. token אקראי של 256-bit מוחזר רק ב־cookie ‏`__Host-` עם `HttpOnly`, ‏`Secure`, ‏`SameSite=Strict`, ‏`Path=/` ו־8 שעות; ב־D1 נשמר SHA-256 בלבד. lookup בודק hash, expiry, revocation ו־admin פעיל; logout מבטל ב־D1 ומוחק cookie. ‏29/29 בדיקות סטודיו עברו, כולל JWT חתום/מזויף/פג/קהל שגוי/email לא מאומת, cookie flags, hash-only storage, admin מושבת, expiry, revoke ושימוש חוזר. Wrangler local אישר `401` ללא session/לטוקן מזויף ו־logout `200` עם cookie מחיקה ו־security headers. `GOOGLE_CLIENT_ID` הציבורי מוגדר במפורש ובאופן זהה ל־local/preview/production ב־Wrangler; Preview deployment `7b61f2ba` אישר token מזויף `401`, session חסר `401`, logout `200`, cookie מחיקה ו־0 sessions שנוצרו. נדרש עדיין push/CI/deploy ואימות Production לפני `DONE`.
 
 #### CF-005 — Centralize authorization, CSRF and abuse controls
 
@@ -1381,3 +1381,13 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - full `pnpm validate` עבר; Preview deployment `c4b57d3e` אישר שוב `200/404/405`, ‏error envelopes, ‏`Allow`, ‏request IDs/security headers, ללא wildcard CORS, ו־D1/R2 במצב ready.
 - commit `fb936b6` עבר CI `29720183240` ו־Cloudflare deploy `29720183269`.
 - Production אישר health `200` עם D1/R2 ready, ‏missing `404`, ‏method `405`, ‏Allow/request IDs/security headers וללא wildcard CORS; public/studio roots החזירו `200`. `CF-003` נסגרה כ־`DONE`.
+
+### 2026-07-20 — CF-004 server identity and session foundation
+
+- `CF-004` עברה ל־`IN_PROGRESS` לאחר סגירת תלויות D1/API; אימות והרשאה נשארים בצד השרת ולא ב־React.
+- נוספו אימות Google ID token חתום מול JWKS ו־RS256, קישור subject למנהל פעיל, token session אקראי של 256-bit עם SHA-256 בלבד ב־D1, ו־cookie מוקשח מסוג `__Host-`.
+- נוספו routes לכניסה, בדיקת session ויציאה; session lookup בודק expiry, revocation וסטטוס admin בכל בקשה.
+- 29/29 בדיקות סטודיו, type-check ולינט עברו. Wrangler local אישר `401` ללא session/לטוקן מזויף ו־logout idempotent עם cookie מחיקה, request ID ו־security headers.
+- בדיקת Preview ראשונה חשפה ש־Pages Functions לא ירשו את Client ID מה־build environment; ה־Client ID הציבורי הוגדר לכן במפורש בכל environments של Wrangler וה־binding types נוצרו מחדש.
+- Preview deployment `7b61f2ba` אישר token מזויף `401` במקום fail-closed של config, ‏session חסר `401`, ‏logout `200` עם cookie מחיקה, ו־0 sessions ב־D1 לאחר הניסיונות השליליים.
+- `CF-004` עברה ל־`VERIFYING` עד push/CI/deploy ואימות Production.
