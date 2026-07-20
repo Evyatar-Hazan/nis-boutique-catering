@@ -24,6 +24,7 @@ const renderStudio = (initialRevision = revision()) => render(<ContentStudio
   initialRevision={initialRevision}
   onDirtyChange={vi.fn()}
   onReload={vi.fn()}
+  onSaved={vi.fn()}
   onUnauthorized={vi.fn()}
 />);
 
@@ -34,12 +35,19 @@ afterEach(() => {
 
 describe('six-section content studio', () => {
   it.each(editableSectionIds)('loads, edits, validates, saves and restores %s', async (sectionId) => {
+    const onSaved = vi.fn();
     const fetchMock = vi.fn(async (_input: RequestInfo | URL, init?: RequestInit) => {
       const request = JSON.parse(String(init?.body)) as { content: ReturnType<typeof createPublicSiteDocument> };
       return Response.json({ revision: { ...revision(2), content: request.content } });
     });
     vi.stubGlobal('fetch', fetchMock);
-    const view = renderStudio();
+    const view = render(<ContentStudio
+      initialRevision={revision()}
+      onDirtyChange={vi.fn()}
+      onReload={vi.fn()}
+      onSaved={onSaved}
+      onUnauthorized={vi.fn()}
+    />);
     fireEvent.click(screen.getByRole('button', { name: sectionLabels[sectionId] }));
     const title = screen.getByLabelText('כותרת ראשית');
     fireEvent.change(title, { target: { value: `כותרת מעודכנת ${sectionId}` } });
@@ -47,6 +55,7 @@ describe('six-section content studio', () => {
     fireEvent.click(screen.getByRole('button', { name: 'שמור טיוטה' }));
     await screen.findByText('טיוטה גרסה 2 נשמרה.');
     expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(onSaved).toHaveBeenCalledTimes(1);
 
     const body = JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body)) as { content: ReturnType<typeof createPublicSiteDocument> };
     view.unmount();
@@ -72,7 +81,7 @@ describe('six-section content studio', () => {
       error: { code: 'revision_conflict', message: 'stale' },
     }, { status: 409 })));
     const onReload = vi.fn();
-    render(<ContentStudio initialRevision={revision()} onDirtyChange={vi.fn()} onReload={onReload} onUnauthorized={vi.fn()} />);
+    render(<ContentStudio initialRevision={revision()} onDirtyChange={vi.fn()} onReload={onReload} onSaved={vi.fn()} onUnauthorized={vi.fn()} />);
     fireEvent.change(screen.getByLabelText('כותרת ראשית'), { target: { value: 'שינוי מקומי' } });
     fireEvent.click(screen.getByRole('button', { name: 'שמור טיוטה' }));
     await screen.findByText(/הטיוטה השתנתה במקום אחר/);

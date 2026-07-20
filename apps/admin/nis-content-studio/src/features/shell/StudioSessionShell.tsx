@@ -43,6 +43,7 @@ export const StudioSessionShell = ({
       key={`${draft.data.revision.id}:${draft.data.revision.version}`}
       onDirtyChange={handleDirtyChange}
       onReload={draft.reload}
+      onSaved={draft.reload}
       onUnauthorized={onUnauthorized}
     />}
     {draft.status === 'success' && <PublishPanel

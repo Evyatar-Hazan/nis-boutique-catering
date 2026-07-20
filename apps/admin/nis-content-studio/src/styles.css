@@ -943,14 +943,14 @@ textarea:focus {
 }
 
 .primary-button {
-  border-color: var(--accent);
-  background: var(--accent);
+  border-color: var(--accent-dark);
+  background: var(--accent-dark);
   color: white;
 }
 
 .primary-button:hover,
 .primary-button:focus-visible {
-  background: var(--accent-dark);
+  background: #8f3514;
 }
 
 .danger-button {

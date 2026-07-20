@@ -62,11 +62,13 @@ export const ContentStudio = ({
   initialRevision,
   onReload,
   onDirtyChange,
+  onSaved,
   onUnauthorized,
 }: {
   readonly initialRevision: ContentRevisionDto;
   readonly onDirtyChange: (dirty: boolean) => void;
   readonly onReload: () => void;
+  readonly onSaved: () => void;
   readonly onUnauthorized: () => void;
 }) => {
   const [activeSection, setActiveSection] = useState<EditableSectionId>('hero');
@@ -169,6 +171,7 @@ export const ContentStudio = ({
       setContent(response.revision.content);
       setAttemptedSave(false);
       setSaveState({ status: 'saved', message: `טיוטה גרסה ${response.revision.version} נשמרה.` });
+      onSaved();
     } catch (error) {
       const apiError = error instanceof StudioApiError ? error : null;
       if (apiError?.kind === 'auth') onUnauthorized();
