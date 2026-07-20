@@ -1,11 +1,11 @@
 ---
 title: NIS Public Site Redesign Tracker
-status: completed
+status: in_progress
 owner: Evyatar Hazan
 created: 2026-07-20
 updated: 2026-07-21
 source_of_truth: true
-implementation_gate: closed
+implementation_gate: ready
 ---
 
 # NIS Public Site Redesign — Source of Truth and Execution Tracker
@@ -35,9 +35,9 @@ implementation_gate: closed
 
 ## שער מימוש גלובלי
 
-**סטטוס נוכחי: `COMPLETED`**
+**סטטוס נוכחי: `READY`**
 
-ה־release המקורי ומשימות התחזוקה `UI-005` ו־`UI-006` הושלמו ואומתו בפרודקשן. שער המימוש סגור; כל שינוי נוסף מחייב משימה חדשה, baseline ושער מפורש.
+ה־release המקורי ומשימת התחזוקה `UI-005` הושלמו ואומתו בפרודקשן. `UI-006` נפתחה מחדש לאחר שבדיקת תנועה מדויקת בפרודקשן הוכיחה שה־reveal הופך מ־520ms ל־0ms עם הוספת `is-visible`, ולכן לא נוצרה חוויית Scrollytelling מורגשת כפי שהוגדרה. שער המימוש פתוח לתיקון מלא וממוקד בלבד.
 
 תוכנית השרת/קליינט, בניית מסך האדמין מחדש והמעבר מ־Google Sheets/Drive ל־Cloudflare D1/R2 נוספו למסמך ב־2026-07-20. שער המימוש נפתח לאחר השלמת:
 
@@ -540,7 +540,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### GOV-001 — Bootstrap the canonical tracker
 
-- **Status:** `DONE`
+- **Status:** `IN_PROGRESS`
 - **Definition:** ליצור מסמך יחיד שמרכז scope, החלטות, משימות, תנאי קבלה, ראיות ו־change log.
 - **Acceptance criteria:**
   - הקובץ נמצא תחת `docs/`.
@@ -552,7 +552,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### GOV-002 — Capture the production and repository baseline
 
-- **Status:** `DONE`
+- **Status:** `VERIFYING`
 - **Dependencies:** `GOV-001`.
 - **Definition:** לתעד לפני שינוי את מבנה ה־DOM החי, screenshots, headings, navigation, CTA behavior, console/network, bundle sizes, Lighthouse ו־current content version.
 - **Acceptance criteria:**
@@ -1160,7 +1160,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
   - האתר נשאר זהה מבחינת צבעים, טיפוגרפיה, spacing, sizes, content ופעולות; אין CLS או horizontal overflow ב־desktop/tablet/mobile.
   - gate אוטומטי חוסם animation רציפה, layout-property animation, ‏`transition: all`, scroll hijacking או reduced-motion לא מלא.
 - **Verification:** unit tests ל־policy/config/fallback/stagger/once; ‏`pnpm motion:check`; ‏`pnpm validate`; דפדפן ב־375×812, ‏768×1024 ו־1440×1000; reduced-motion ו־JavaScript-disabled fallback; בדיקות navigation/gallery/lightbox/FAQ/form/keyboard; performance trace, CLS/overflow/console/network; לאחר push — CI/deploy ואימות production.
-- **Evidence (local + production, 2026-07-21):** אין ספריית motion בפרויקט ולא נוסף dependency. ‏`useScrollAnimation` הוא owner יחיד של IntersectionObserver ותומך ב־delay/duration/threshold/stagger/once; ‏`useRevealOnScroll` נשאר compatibility export ללא שינוי ב־`App`. נוספו fade/slide/scale/direction על nodes קיימים בלבד ושני view timelines feature-detected לווידאו הגלריה ולתמונת האמון; אין wrapper, שינוי hierarchy, content, props, state, business logic או scroll listener חדש. ‏`motion:check` חוסם continuous/layout/`transition: all`/scroll hijacking ודורש fallback מלא. ‏141/141 בדיקות, lint, type-check, builds, ‏`pnpm validate` ו־`parity:local` עברו. Chrome מקומי ב־375×812, ‏768×1024 ו־1440×1000 אישר 30/30 reveals לאחר walkthrough, שני scroll timelines פעילים, 0 overflow, ‏0 broken media ו־0 console errors; gallery filter ‏6→2, lightbox open/close, FAQ, validation/focus, anchors ו־keyboard behavior נשארו תקינים. fallback ללא class הראה 30/30 תכנים גלויים. Chrome מבודד עם `prefers-reduced-motion: reduce` הראה 30/30 גלויים מיד, scroll effects עם `animation:none`/`transform:none`, ‏0 active animations ו־0 overflow; הבדיקה חשפה ותיקנה specificity regression לפני פרסום. trace מקומי ב־375px תחת Fast 4G ו־CPU×4: LCP ‏689ms ו־CLS ‏0.01. bundle ציבורי: CSS ‏83.50KB/15.33KB gzip, main JS ‏346.85KB/102.24KB gzip ו־lazy ‏11.49KB/3.90KB gzip. commit `005b9fa` עבר CI `29784916016` ו־deploy `29784916068`. Production ב־375×812, ‏768×1024 ו־1440×1000 אישר את כל 30 ה־reveals לאחר walkthrough, שני scroll timelines, פעולות gallery/lightbox/form, ‏0 overflow ו־0 broken media; לא נמצאו console errors של האתר. reduced-motion אמיתי בפרודקשן אישר 30/30 גלויים, ‏0 active animations ו־media עם `animation:none`/`transform:none`. ה־public וה־Studio roots וה־health החזירו `200`; Studio login shell נטען וה־session הלא־מאומת נשאר `401` כמצופה. כל תנאי הקבלה הושלמו.
+- **Evidence (2026-07-21):** ניסיון ראשון ב־commit `005b9fa` עבר בדיקות ופריסה אך נפסל לאחר שבדיקת frame-level הוכיחה שה־reveal duration נעלם במצב `is-visible`; הוא נשמר לצורך audit בלבד ואינו הוכחת השלמה. במימוש המחודש ה־transition הועבר לבעלות `.scroll-motion-ready .reveal` ולכן נשאר פעיל בשני המצבים; DevTools מדד opacity ‏0→0.69→1 ו־translateY ‏42px→13px→0 לאורך 680ms עם שני `CSSTransition` פעילים. נוספו עשרה scroll-linked animations תחת feature detection ובאמצעות named view timelines בבעלות sections: Hero depth/exit, שירותי media depth, gallery sticky journey + alternating image depth, process rail + sequential markers ו־trust image journey. Contact ויתר התוכן משתמשים ב־reveal/stagger מובחנים; אין wrapper, שינוי hierarchy, content, props, state, business logic או dependency חדש. `motion:check` חוסם מעתה transition שקיים רק ב־hidden state ודורש named timeline, animation range ו־reduced path. ‏141/141 בדיקות, lint, type-check, builds, ‏`pnpm validate`, ‏`parity:local` ו־`git diff --check` עברו. Chrome ב־375×812, ‏768×1024 ו־1440×1000 מדד 30/30 reveals, עד 21 transitions פעילות בזמן walkthrough, כל עשרת ה־scene names, ‏0 overflow, ‏0 broken media ו־0 console errors. gallery ‏6→2, lightbox open/Escape-close, FAQ open וטופס עם 3 errors/focus לשם נשארו תקינים. קו התהליך התקדם בפועל scale ‏0→0.48→0.92→1; Hero, services, gallery ו־trust שינו transform/progress בין נקודות גלילה. fallback ללא root motion class הציג 30/30 עם 0 animations. Chrome אמיתי עם `prefers-reduced-motion: reduce` הציג 30/30, ‏0 transitions, ‏0 scene animations ו־0 transforms. trace ב־375px תחת Fast 4G ו־CPU×4: LCP ‏741ms ו־CLS ‏0.00. bundle ציבורי: CSS ‏89.53KB/16.15KB gzip, main JS ‏346.93KB/102.26KB gzip ו־lazy ‏11.88KB/3.97KB gzip. המשימה ב־`VERIFYING` עד CI/deploy ואימות Production frame-level.
 
 ## Open decisions before implementation
 
@@ -1218,9 +1218,21 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 | Phase 7 — Quality | Done | 5 | 5 |
 | Phase 8 — Release | Done | 4 | 4 |
 | Phase 9 — Theme maintainability | Done | 1 | 1 |
-| Phase 10 — Scroll storytelling | Done | 1 | 1 |
+| Phase 10 — Scroll storytelling | In progress | 0 | 1 |
 
 ## Change Log
+
+### 2026-07-21 — UI-006 reimplementation ready for production verification
+
+- תוקן שורש הכשל: transition נשאר פעיל במצב היעד ונמדד frame-by-frame. anonymous timelines שקפאו סביב 50% הוחלפו ב־named section timelines ונמדדו במספר נקודות גלילה.
+- נוספה כוריאוגרפיה נפרדת לששת חלקי האתר ללא שינוי hierarchy או לוגיקה: Hero depth, service card/media staging, sticky gallery journey, process progress rail, trust depth ו־contact split entrance.
+- ‏141/141 בדיקות וכל שערי `validate`/`parity:local` עברו; שלושה breakpoints, reduced-motion, no-JS, interactions ו־trace עברו. `UI-006` הועברה ל־`VERIFYING` לקראת push ו־Production.
+
+### 2026-07-21 — UI-006 reopened after production motion audit
+
+- בדיקת DevTools מדויקת הוכיחה שה־transition הוגדר רק ב־`.reveal:not(.is-visible)`; ברגע הוספת `is-visible` ה־computed duration הפך מ־`0.52s` ל־`0s`, ללא `CSSTransition` פעיל. בדיקות הסגירה הקודמות אימתו visibility אך לא מדדו תנועה בפועל.
+- שני view timelines עבדו, אך בטווח של 24px ו־scale ‏1.02→1.04 בלבד ולכן לא יצרו חוויית גלילה מובחנת. לא הייתה כוריאוגרפיה נרטיבית נפרדת לששת חלקי האתר.
+- `UI-006` נפתחה מחדש כ־`IN_PROGRESS`. תנאי הסגירה המחודש מחייב מדידת transitions פעילות, scroll-linked progress במספר רגעי מפתח, כוריאוגרפיה מובחנת לכל section, reduced-motion/no-JS, שלושה breakpoints, interactions, performance, CI/deploy ואימות Production.
 
 ### 2026-07-21 — UI-006 scroll storytelling completed
 

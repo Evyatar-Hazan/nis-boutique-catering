@@ -62,9 +62,9 @@ export const ContactSection = ({ contactWhatsapp, email, onInquirySubmit }: Cont
   };
 
   return (
-    <Section id="contact" className="contact-section" labelledBy="contact-title" tone="dark">
+    <Section id="contact" className="contact-section scroll-scene scroll-scene--contact" labelledBy="contact-title" tone="dark">
       <div className="container">
-        <div className="contact-conversion-heading reveal">
+        <div className="contact-conversion-heading reveal" data-reveal-duration="680" data-reveal-variant="focus">
           <p className="eyebrow">{publicContactDefaults.eyebrow}</p>
           <h2 id="contact-title">{publicContactDefaults.title}</h2>
           <p>{publicContactDefaults.description}</p>
@@ -84,12 +84,12 @@ export const ContactSection = ({ contactWhatsapp, email, onInquirySubmit }: Cont
           </div>
         </div>
 
-        <div className="contact-conversion-grid" data-reveal-stagger="80">
-          <div className="contact-faq reveal" data-reveal-direction="inline-start" data-reveal-duration="480" aria-label="שאלות נפוצות">
+        <div className="contact-conversion-grid" data-reveal-stagger="90">
+          <div className="contact-faq reveal" data-reveal-direction="inline-start" data-reveal-duration="720" aria-label="שאלות נפוצות">
             <Accordion items={publicContactDefaults.faqs} />
           </div>
 
-          <form className="contact-form reveal" data-reveal-direction="inline-end" data-reveal-duration="480" noValidate onSubmit={handleSubmit}>
+          <form className="contact-form reveal" data-reveal-direction="inline-end" data-reveal-duration="720" noValidate onSubmit={handleSubmit}>
             <FormField label={`${siteMicrocopy.formNameLabel} (חובה)`} error={errors.name}>
               <input name="name" autoComplete="name" />
             </FormField>

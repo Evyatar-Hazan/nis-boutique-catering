@@ -41,7 +41,7 @@ export const ServicesSection = () => {
   const publicServices = getPublicServices(services);
 
   return (
-    <Section id="experiences" className="services-section" labelledBy="experiences-title" tone="soft">
+    <Section id="experiences" className="services-section scroll-scene scroll-scene--services" labelledBy="experiences-title" tone="soft">
       <div className="container">
         <SectionHeading
           eyebrow={publicServicesDefaults.eyebrow}
@@ -52,7 +52,7 @@ export const ServicesSection = () => {
         </SectionHeading>
 
         {publicServices.length === 3 ? (
-          <div className="services-grid" data-reveal-stagger="55">
+          <div className="services-grid" data-reveal-stagger="70">
             {publicServices.map((service) => (
               <ServiceCard
                 key={service.id}

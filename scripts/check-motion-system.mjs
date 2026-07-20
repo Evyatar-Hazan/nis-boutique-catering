@@ -40,6 +40,7 @@ for (const { relativePath, source } of styles) {
 }
 
 const baseStyles = styles.find(({ relativePath }) => relativePath.endsWith('base.css'))?.source ?? '';
+const motionStylesBeforeReducedPreference = baseStyles.split('@media (prefers-reduced-motion: reduce)')[0] ?? baseStyles;
 const scrollHook = await readFile(path.join(repositoryRoot, scrollHookPath), 'utf8');
 const requiredStateSelectors = [
   ".button:active",
@@ -59,17 +60,28 @@ for (const selector of requiredStateSelectors) {
 }
 
 const reducedMotionBlock = baseStyles.match(/@media \(prefers-reduced-motion: reduce\)\s*\{([\s\S]*)\}\s*$/)?.[1] ?? '';
+if (!/\.scroll-motion-ready \.reveal\s*\{[^}]*transition:\s*[^}]*opacity[^}]*transform/s.test(baseStyles)) {
+  failures.push('base.css: reveal transition must remain active in both hidden and visible states');
+}
+if (/\.scroll-motion-ready \.reveal:not\(\.is-visible\)\s*\{[^}]*transition:/s.test(motionStylesBeforeReducedPreference)) {
+  failures.push('base.css: reveal transition cannot exist only on the hidden state');
+}
 if (!/\.scroll-motion-ready \.reveal:not\(\.is-visible\)\s*\{[^}]*opacity:\s*1;[^}]*transform:\s*none;[^}]*transition:\s*none;/s.test(reducedMotionBlock)) {
   failures.push('base.css: reduced-motion must reveal all deferred content immediately');
 }
 if (!/animation-duration:\s*0\.01ms\s*!important/.test(reducedMotionBlock)) {
   failures.push('base.css: reduced-motion must neutralize remaining entrance animations');
 }
-if (!/@supports \(animation-timeline: view\(\)\)/.test(baseStyles) || !/animation-timeline:\s*view\(block\)/.test(baseStyles)) {
+if (!/@supports \(animation-timeline: view\(\)\)/.test(baseStyles) || !/view-timeline-name:\s*--[a-z-]+/.test(baseStyles) || !/animation-range:/.test(baseStyles)) {
   failures.push('base.css: scroll-driven media motion must be feature-detected with a view timeline');
 }
-if (!/\.scroll-driven-media > img,[\s\S]*animation:\s*none;[\s\S]*transform:\s*none;/s.test(reducedMotionBlock)) {
-  failures.push('base.css: reduced-motion must neutralize scroll-driven media transforms');
+for (const selector of ['.scroll-scene__hero-copy', '.gallery-video > video', '.process-list::after', '.trust-media > img']) {
+  if (!reducedMotionBlock.includes(selector)) {
+    failures.push(`base.css: reduced-motion must neutralize scroll scene ${selector}`);
+  }
+}
+if (!/animation:\s*none(?:\s*!important)?;[\s\S]*transform:\s*none(?:\s*!important)?;/s.test(reducedMotionBlock)) {
+  failures.push('base.css: reduced-motion must neutralize scroll-driven transforms');
 }
 if (/addEventListener\(\s*['"]scroll['"]/.test(scrollHook)) {
   failures.push(`${scrollHookPath}: scroll-triggered reveals must not add a scroll listener`);

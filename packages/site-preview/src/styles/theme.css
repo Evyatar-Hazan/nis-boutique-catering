@@ -183,6 +183,20 @@
   min-width: 0;
 }
 
+.scroll-motion-ready .services-section .media-card:nth-child(1):not(.is-visible) {
+  --reveal-rotate: 1.8deg;
+  --reveal-x: 28px;
+}
+
+.scroll-motion-ready .services-section .media-card:nth-child(2):not(.is-visible) {
+  --reveal-y: 68px;
+}
+
+.scroll-motion-ready .services-section .media-card:nth-child(3):not(.is-visible) {
+  --reveal-rotate: -1.8deg;
+  --reveal-x: -28px;
+}
+
 .services-section .media-card > .optimized-picture,
 .services-section .media-card > img {
   display: block;

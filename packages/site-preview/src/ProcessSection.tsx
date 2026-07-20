@@ -23,7 +23,7 @@ export const ProcessSection = () => {
   const processSteps = getPublicProcessSteps(sourceSteps);
 
   return (
-    <Section id="process" className="process-section" labelledBy="process-title" tone="soft">
+    <Section id="process" className="process-section scroll-scene scroll-scene--process" labelledBy="process-title" tone="soft">
       <div className="container">
         <SectionHeading
           eyebrow={publicProcessDefaults.eyebrow}
@@ -34,11 +34,11 @@ export const ProcessSection = () => {
         </SectionHeading>
         {processSteps.length === 4 ? (
           <>
-            <ol className="process-list" data-reveal-stagger="55">
+            <ol className="process-list" data-reveal-stagger="70">
               {processSteps.map((step) => {
                 const Icon = step.icon;
                 return (
-                  <li className="process-step reveal" data-reveal-duration="460" data-reveal-threshold="0.1" key={step.id}>
+                  <li className="process-step reveal" data-reveal-duration="620" data-reveal-threshold="0.1" data-reveal-variant="step" key={step.id}>
                     <span className="step-number" aria-hidden="true">{step.order}</span>
                     <Icon aria-hidden="true" className="card-icon" />
                     <h3>{step.title}</h3>
@@ -47,7 +47,7 @@ export const ProcessSection = () => {
                 );
               })}
             </ol>
-            <aside className="process-notes reveal" data-reveal-duration="420" data-reveal-variant="fade" aria-label="מידע שימושי להזמנה">
+            <aside className="process-notes reveal" data-reveal-duration="560" data-reveal-variant="fade" aria-label="מידע שימושי להזמנה">
               {publicProcessDefaults.operationalNotes.map((note) => (
                 <div className="process-note" key={note.id}>
                   <h3>{note.title}</h3>

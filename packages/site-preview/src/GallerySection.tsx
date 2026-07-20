@@ -40,7 +40,7 @@ export const GallerySection = ({
   const visibleImages = activeCategory === 'all' ? filteredImages.slice(0, 6) : filteredImages;
 
   return (
-    <section id="gallery" className="section gallery-media-section" aria-labelledby="gallery-title">
+    <section id="gallery" className="section gallery-media-section scroll-scene scroll-scene--gallery" aria-labelledby="gallery-title">
       <div className="container">
         <SectionHeading eyebrow={sectionCopy.gallery.eyebrow} title={sectionCopy.gallery.title} id="gallery-title" className="section-heading gallery-heading reveal">
           <TextParagraphs text={sectionCopy.gallery.text} />
@@ -59,20 +59,20 @@ export const GallerySection = ({
           ))}
         </div>
         <div className="gallery-media-layout">
-          <figure className="gallery-video reveal scroll-driven-media" data-reveal-duration="520" data-reveal-threshold="0.08" data-reveal-variant="scale">
+          <figure className="gallery-video reveal scroll-driven-media" data-reveal-duration="760" data-reveal-threshold="0.08" data-reveal-variant="focus">
             <video controls muted playsInline preload="metadata" poster={foodMedia.hostingTableOverview.src} aria-label="וידאו מהאירוח">
               <source src={videoMedia.eventVideo} type="video/mp4" />
             </video>
             <figcaption>רגע אמיתי מההכנה ומהאירוח של Nis</figcaption>
           </figure>
-          <div className="gallery-grid" data-reveal-stagger="45" aria-live="polite">
+          <div className="gallery-grid" data-reveal-stagger="55" aria-live="polite">
             {visibleImages.map((image, index) => (
               <button
                 className={image.tall ? 'gallery-item tall reveal' : 'gallery-item reveal'}
                 key={image.title}
-                data-reveal-duration="460"
+                data-reveal-duration="620"
                 data-reveal-threshold="0.08"
-                data-reveal-variant="scale"
+                data-reveal-variant="gallery"
                 type="button"
                 onClick={() => onOpenImage(index)}
                 aria-label={`פתח תמונה: ${image.title}`}

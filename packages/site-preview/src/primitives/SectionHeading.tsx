@@ -12,7 +12,7 @@ export const SectionHeading = ({ children, className, eyebrow, id, title }: Sect
   <div
     className={className ?? 'section-heading reveal'}
     data-reveal-direction="up"
-    data-reveal-duration="520"
+    data-reveal-duration="680"
     data-reveal-threshold="0.18"
     data-reveal-variant="slide"
   >

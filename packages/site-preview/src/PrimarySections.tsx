@@ -7,9 +7,9 @@ export const HeroSection = ({ heroWhatsapp }: { readonly heroWhatsapp: string })
   const { heroBadges, heroContent, heroMedia, siteMicrocopy } = useSiteSectionPreviewData();
 
   return (
-    <section id="top" className="hero hero--public" aria-labelledby="hero-title">
+    <section id="top" className="hero hero--public scroll-scene scroll-scene--hero" aria-labelledby="hero-title">
       <div className="hero-layout">
-        <div className="hero-content reveal is-visible">
+        <div className="hero-content reveal is-visible scroll-scene__hero-copy">
           <p className="eyebrow">{heroContent.eyebrow}</p>
           <h1 id="hero-title">{heroContent.title}</h1>
           <p className="hero-text">{heroContent.text}</p>
@@ -33,7 +33,7 @@ export const HeroSection = ({ heroWhatsapp }: { readonly heroWhatsapp: string })
           </ul>
         </div>
 
-        <div className="hero-visual reveal is-visible">
+        <div className="hero-visual reveal is-visible scroll-scene__hero-media">
           <OptimizedImage
             className="hero-main-image"
             image={heroMedia.primary}

@@ -23,7 +23,7 @@ export const TrustSection = () => {
   const trustPoints = getPublicTrustPoints(sourcePoints);
 
   return (
-    <Section className="trust-section" labelledBy="trust-title">
+    <Section className="trust-section scroll-scene scroll-scene--trust" labelledBy="trust-title">
       <div className="container trust-layout">
         <div className="trust-copy">
           <SectionHeading
@@ -35,10 +35,16 @@ export const TrustSection = () => {
           </SectionHeading>
           {trustPoints.length === 3 ? (
             <div className="trust-points" data-reveal-stagger="50">
-              {trustPoints.map((point) => {
+              {trustPoints.map((point, index) => {
                 const Icon = point.icon;
                 return (
-                  <article className="trust-point reveal" data-reveal-duration="440" data-reveal-threshold="0.1" key={point.id}>
+                  <article
+                    className="trust-point reveal"
+                    data-reveal-direction={index % 2 === 0 ? 'inline-start' : 'inline-end'}
+                    data-reveal-duration="620"
+                    data-reveal-threshold="0.1"
+                    key={point.id}
+                  >
                     <Icon aria-hidden="true" className="card-icon" />
                     <div>
                       <h3>{point.title}</h3>
@@ -54,6 +60,8 @@ export const TrustSection = () => {
         </div>
         <OptimizedImage
           className="trust-media reveal scroll-driven-media"
+          data-reveal-duration="760"
+          data-reveal-variant="focus"
           image={foodMedia.hostingTableOverview}
           alt="שולחן אירוח של Nis עם מנות ומגשים מוכנים להגשה"
           loading="lazy"
