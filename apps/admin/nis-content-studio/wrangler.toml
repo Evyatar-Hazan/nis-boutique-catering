@@ -7,6 +7,9 @@ compatibility_flags = ["nodejs_compat"]
 
 [vars]
 GOOGLE_CLIENT_ID = "1071746882514-thn0l2mpo0t3dgrcanfb14sjmr4gpof7.apps.googleusercontent.com"
+GITHUB_REPOSITORY_OWNER = "Evyatar-Hazan"
+GITHUB_REPOSITORY_NAME = "nis-boutique-catering"
+GITHUB_WORKFLOW_FILE = "cloudflare-pages.yml"
 
 # Local development uses Wrangler's local persistence. The preview resources
 # define the binding shape without connecting local requests to remote data.
@@ -35,6 +38,9 @@ bucket_name = "nis-media-preview"
 
 [env.preview.vars]
 GOOGLE_CLIENT_ID = "1071746882514-thn0l2mpo0t3dgrcanfb14sjmr4gpof7.apps.googleusercontent.com"
+GITHUB_REPOSITORY_OWNER = "Evyatar-Hazan"
+GITHUB_REPOSITORY_NAME = "nis-boutique-catering"
+GITHUB_WORKFLOW_FILE = "cloudflare-pages.yml"
 
 [[env.production.d1_databases]]
 binding = "DB"
@@ -49,3 +55,6 @@ bucket_name = "nis-media-production"
 
 [env.production.vars]
 GOOGLE_CLIENT_ID = "1071746882514-thn0l2mpo0t3dgrcanfb14sjmr4gpof7.apps.googleusercontent.com"
+GITHUB_REPOSITORY_OWNER = "Evyatar-Hazan"
+GITHUB_REPOSITORY_NAME = "nis-boutique-catering"
+GITHUB_WORKFLOW_FILE = "cloudflare-pages.yml"

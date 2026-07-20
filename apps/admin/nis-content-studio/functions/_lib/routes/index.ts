@@ -9,6 +9,12 @@ import {
   updateMediaRoute,
   uploadMediaRoute,
 } from "./media";
+import {
+  publishDraftRoute,
+  publishHistoryRoute,
+  retryPublishRoute,
+  rollbackPublishRoute,
+} from "./publish";
 
 export const apiRoutes: readonly ApiRoute<Env>[] = [
   healthRoute,
@@ -22,4 +28,8 @@ export const apiRoutes: readonly ApiRoute<Env>[] = [
   uploadMediaRoute,
   updateMediaRoute,
   archiveMediaRoute,
+  publishDraftRoute,
+  retryPublishRoute,
+  rollbackPublishRoute,
+  publishHistoryRoute,
 ];

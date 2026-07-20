@@ -11,6 +11,7 @@ interface RevisionRow {
   readonly created_at: number;
   readonly created_by: string;
   readonly id: string;
+  readonly published_at: number | null;
   readonly schema_version: number;
   readonly status: "draft" | "published" | "archived";
   readonly updated_at: number;
@@ -23,6 +24,7 @@ export interface ContentRevision {
   readonly createdAt: number;
   readonly createdBy: string;
   readonly id: string;
+  readonly publishedAt: number | null;
   readonly schemaVersion: typeof publicSiteSchemaVersion;
   readonly status: RevisionRow["status"];
   readonly updatedAt: number;
@@ -64,6 +66,7 @@ const parseRevision = (row: RevisionRow): ContentRevision => {
     createdAt: row.created_at,
     createdBy: row.created_by,
     id: row.id,
+    publishedAt: row.published_at ?? null,
     schemaVersion: publicSiteSchemaVersion,
     status: row.status,
     updatedAt: row.updated_at,
@@ -77,7 +80,7 @@ export const readDraftRevision = async (
 ): Promise<ContentRevision | null> => {
   const row = await database
     .prepare(
-      `SELECT id, status, schema_version, content_json, version,
+      `SELECT id, status, schema_version, content_json, version, published_at,
               created_by, updated_by, created_at, updated_at
        FROM content_revisions
        WHERE status = 'draft'`,
@@ -110,7 +113,7 @@ export const saveDraftRevision = async (
          WHERE NOT EXISTS (
            SELECT 1 FROM content_revisions WHERE status = 'draft'
          )
-         RETURNING id, status, schema_version, content_json, version,
+         RETURNING id, status, schema_version, content_json, version, published_at,
                    created_by, updated_by, created_at, updated_at`,
       )
       .bind(
@@ -131,7 +134,7 @@ export const saveDraftRevision = async (
              updated_by = ?3,
              updated_at = ?4
          WHERE status = 'draft' AND version = ?5
-         RETURNING id, status, schema_version, content_json, version,
+         RETURNING id, status, schema_version, content_json, version, published_at,
                    created_by, updated_by, created_at, updated_at`,
       )
       .bind(
@@ -153,4 +156,34 @@ export const saveDraftRevision = async (
   }
 
   return parseRevision(row);
+};
+
+export const readRevisionById = async (
+  database: D1Database,
+  revisionId: string,
+): Promise<ContentRevision | null> => {
+  const row = await database
+    .prepare(
+      `SELECT id, status, schema_version, content_json, version, published_at,
+              created_by, updated_by, created_at, updated_at
+       FROM content_revisions
+       WHERE id = ?1`,
+    )
+    .bind(revisionId)
+    .first<RevisionRow>();
+  return row ? parseRevision(row) : null;
+};
+
+export const listContentRevisions = async (
+  database: D1Database,
+): Promise<readonly ContentRevision[]> => {
+  const result = await database
+    .prepare(
+      `SELECT id, status, schema_version, content_json, version, published_at,
+              created_by, updated_by, created_at, updated_at
+       FROM content_revisions
+       ORDER BY created_at DESC, id DESC`,
+    )
+    .all<RevisionRow>();
+  return result.results.map(parseRevision);
 };

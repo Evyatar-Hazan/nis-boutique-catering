@@ -849,12 +849,12 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### CF-008 — Implement atomic publish, rollback and workflow dispatch
 
-- **Status:** `BACKLOG`
+- **Status:** `VERIFYING`
 - **Dependencies:** `CF-006`, `CF-007`.
 - **Definition:** לפרסם revision תקין, לארכב את הקודם, ליצור `publish_job` ולהפעיל GitHub Actions מהשרת.
 - **Acceptance criteria:** publish idempotent; רק revision תקין עם media קיימת מתפרסם; secret אינו נשלח ללקוח; כשל dispatch מתועד וניתן retry; rollback מפרסם revision קודם.
 - **Verification:** publish/duplicate publish/dispatch failure/retry/rollback integration tests ובדיקת audit rows.
-- **Evidence:** pending.
+- **Evidence:** נוסף publish domain שרתי עם `POST /api/publish`, ‏`/retry`, ‏`/rollback` ו־`GET /api/publish/history`. Publish מאמת מחדש schema, version, metadata של כל media ואת קיום/גודל כל object ב־R2 לפני batch אטומי שמארכב published קודם, מפרסם draft ויוצר audit job עם idempotency key unique. Rollback יוצר revision published חדש מתוכן archived ושומר `source_revision_id`, בלי לשכתב היסטוריה. Dispatch ל־GitHub משתמש רק ב־secret שרת מוצפן, מסמן `deploying→dispatched/failed`, שומר error code נקי וניתן retry; double-submit מחזיר אותו job ללא attempt נוסף. migration ‏`0004_publish_job_audit.sql` הוחל מקומית וב־Preview וחזרה no-op, עם 4 migrations ו־0 FK violations. ‏44/44 בדיקות סטודיו ו־full `pnpm validate` עברו. Local ו־Preview deployment `3927f9fb` אישרו publish, duplicate idempotent, dispatch failure, retry, publish שני, rollback ו־audit statuses; בדיקת local object חסר החזירה `409`. כל rows/objects/sessions הזמניים נמחקו ו־Preview orphan scan חזר ריק. dispatch אמיתי ידני הפעיל workflow run `29723670205`, וה־GitHub token נשמר כ־`GITHUB_DISPATCH_TOKEN` מוצפן ב־Pages Production בלבד. נדרש עדיין push/CI/deploy, migration Production ואימות Production של המשטח השלילי/הגדרות לפני `DONE`.
 
 #### CF-009 — Replace Google build sync with published D1/R2 sync
 
@@ -1425,3 +1425,10 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - כל test object/row/session/draft נמחקו במדויק מ־local ומ־Preview; Preview חזר ל־0 media/content rows. `CF-007` עברה ל־`VERIFYING` עד push/CI/deploy ואימות Production של המשטח השלילי/read-only.
 - commit `986829e` עבר CI `29722739332` ו־Cloudflare deploy `29722739333`; Production deployment `b578a7c7` מצביע ל־commit זה.
 - Production אישר `401` ל־media/orphan reads ללא session, ‏`403` ל־mutation ללא Origin, ‏0 media/content rows ו־health/public/studio `200`. `CF-007` נסגרה כ־`DONE`.
+
+### 2026-07-20 — CF-008 atomic publish and rollback
+
+- `CF-008` עברה ל־`IN_PROGRESS`; נוספו publish/rollback/history domains נפרדים, idempotency ואימות מחודש של revision ומדיית R2.
+- migration ‏`0004_publish_job_audit.sql` מוסיף operation ו־source revision ל־audit; local ו־Preview apply וחזרה no-op עברו עם 0 FK violations.
+- ‏44/44 בדיקות סטודיו ו־full validation עברו. Local ו־Preview `3927f9fb` אישרו publish, duplicate, dispatch failure/retry, publish נוסף, rollback ו־audit; missing R2 object נחסם ב־`409`.
+- כל נתוני הבדיקה נמחקו במדויק ו־Preview orphan scan חזר ריק. dispatch אמיתי יצר workflow run `29723670205`, וסוד GitHub נשמר מוצפן ב־Pages Production בלבד. `CF-008` עברה ל־`VERIFYING` עד push/CI/deploy ו־Production migration/negative checks.
