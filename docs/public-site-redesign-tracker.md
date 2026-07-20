@@ -878,12 +878,12 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### MIG-001 — Create immutable Sheets/Drive backup and manifest
 
-- **Status:** `BACKLOG`
+- **Status:** `IN_PROGRESS`
 - **Dependencies:** `ARC-004`, `GOV-004`.
 - **Definition:** לייצא את כל Sheets, רשימת Drive, generated snapshot וקובצי המדיה לפני mutation.
 - **Acceptance criteria:** לכל file/row יש stable ID/hash; backup timestamped ו־read-only; credentials אינם בארכיון; הוראות restore מתועדות.
 - **Verification:** schema validation, hash verification, counts מול המקור ושחזור sandbox מדגמי.
-- **Evidence:** pending.
+- **Evidence:** העבודה החלה לאחר סגירת `CF-010`. הגיבוי יופק ב־CI באמצעות service account read-only, יורד כ־artifact, יאומת לוקאלית ויישמר ב־repo תחת timestamp קבוע ללא credentials.
 
 #### MIG-002 — Build a deterministic migration transformer
 

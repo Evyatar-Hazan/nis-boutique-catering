@@ -12,6 +12,7 @@
     "doctor:runtime": "node scripts/check-runtime.mjs",
     "architecture:boundaries": "node scripts/check-architecture-boundaries.mjs",
     "migration:plan:audit": "node scripts/audit-legacy-migration-plan.mjs",
+    "migration:backup:verify": "node scripts/verify-legacy-google-backup.mjs",
     "tracker:check": "node scripts/check-redesign-tracker.mjs",
     "design:tokens:check": "node scripts/check-design-tokens.mjs",
     "motion:check": "node scripts/check-motion-system.mjs",
