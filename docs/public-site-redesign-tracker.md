@@ -878,21 +878,21 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### MIG-001 — Create immutable Sheets/Drive backup and manifest
 
-- **Status:** `IN_PROGRESS`
+- **Status:** `DONE`
 - **Dependencies:** `ARC-004`, `GOV-004`.
 - **Definition:** לייצא את כל Sheets, רשימת Drive, generated snapshot וקובצי המדיה לפני mutation.
 - **Acceptance criteria:** לכל file/row יש stable ID/hash; backup timestamped ו־read-only; credentials אינם בארכיון; הוראות restore מתועדות.
 - **Verification:** schema validation, hash verification, counts מול המקור ושחזור sandbox מדגמי.
-- **Evidence:** העבודה החלה לאחר סגירת `CF-010`. הגיבוי יופק ב־CI באמצעות service account read-only, יורד כ־artifact, יאומת לוקאלית ויישמר ב־repo תחת timestamp קבוע ללא credentials.
+- **Evidence:** נוסף pipeline read-only שמסנכרן snapshot מדויק, מייצא את כל 5 ה־Sheets כולל properties ו־163 rows, מוריד 18 קובצי Drive מהתיקייה ומה־references, ושומר generated snapshot. לכל row יש stable ID ו־SHA-256 ולכל קובץ יש Drive ID, metadata, size, checksum ו־SHA-256; manifest עליון חותם את כל 22 קובצי הגיבוי. אין credentials בארכיון, וכל native Google file לא־ממופה חוסם את ה־run. Workflow `29726643009` יצר artifact ‏`8454529512` בגודל 5,717,784 bytes; הוא הורד ל־`backups/legacy-google/20260720T080523Z` (5.6MB), אומת מחדש לוקאלית, עבר schema/count/hash checks ו־sandbox restore, והוגדר read-only לפני commit. הוראות restore מדורגות נמצאות ב־README וה־artifact נשמר כעותק משני ל־90 יום. Commits `6440376` ו־`5a88cb5`; CI `29726754122` ו־deploy `29726754139` עברו, Production deployment `5f1fa1c0` מצביע ל־backup commit, ושני ה־roots וה־health החזירו `200`.
 
 #### MIG-002 — Build a deterministic migration transformer
 
-- **Status:** `BACKLOG`
+- **Status:** `IN_PROGRESS`
 - **Dependencies:** `MIG-001`, `CF-002`, `ARC-002`.
 - **Definition:** להמיר export קיים ל־D1 revisions ול־R2 manifest באמצעות קוד חד־פעמי repeatable שאינו משכפל את schema.
 - **Acceptance criteria:** אותו input מפיק אותו output; IDs נשמרים; `driveFileId` ממופה ל־media ID/object key; retired sections archived; כל warning חוסם/מתועד במפורש.
 - **Verification:** fixture tests, dry run כפול, output diff ו־`contentSnapshotSchema` validation.
-- **Evidence:** pending.
+- **Evidence:** העבודה החלה מהגיבוי המאומת `20260720T080523Z`; ה־transformer ישתמש ישירות ב־`contentSnapshotSchema` וב־Drive manifest, ללא schema מקביל.
 
 #### MIG-003 — Import and validate in preview
 
