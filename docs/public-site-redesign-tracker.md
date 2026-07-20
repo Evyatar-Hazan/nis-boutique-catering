@@ -791,7 +791,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - **Definition:** ליצור D1 ו־R2 נפרדים ל־preview/production ולתעד bindings ב־Wrangler config של הסטודיו.
 - **Acceptance criteria:** bindings מסוג `DB` ו־`MEDIA` קיימים בכל environment; IDs אינם hardcoded בקוד; bucket פרטי כברירת מחדל; local dev משתמש במשאבים מקומיים.
 - **Verification:** `wrangler pages dev`, binding smoke test, Cloudflare dashboard/API inventory והשוואת preview מול production.
-- **Evidence:** נוצרו D1 נפרדים באזור EEUR: `nis-content-preview` (`80b4a9b2-4f3b-42a7-af3f-1e4d629c0c7d`) ו־`nis-content-production` (`fd74127a-fea6-4517-8c54-f467a8fc6437`); `wrangler d1 list --json` מאמת inventory. יצירת R2 חסומה ברמת החשבון עם Cloudflare API code `10042`: יש להפעיל R2 דרך Dashboard ולהשלים subscription/checkout. לפי תיעוד Cloudflare הרשמי קיימת מכסה חודשית חינמית, אך חריגה ממנה מחויבת; נדרש אישור אנושי מפורש לפני הפעלת subscription. המשימה נשארת `IN_PROGRESS`; טרם נוספו bindings ולא בוצע deploy חלקי שעלול לשבור production.
+- **Evidence:** נוצרו D1 נפרדים באזור EEUR: `nis-content-preview` (`80b4a9b2-4f3b-42a7-af3f-1e4d629c0c7d`) ו־`nis-content-production` (`fd74127a-fea6-4517-8c54-f467a8fc6437`); `wrangler d1 list --json` מאמת inventory. לאחר אישור אנושי מפורש ב־2026-07-20 נפתח checkout להפעלת R2. Cloudflare מציג חיוב נוכחי של `$0/month` עם מכסה חודשית חינמית וחיוב על חריגה, אך דורש כתובת חיוב ושני אישורי תנאים לפני `Activate R2`; המסך הושאר פתוח להשלמה אנושית בלי להזין או לחשוף פרטים אישיים. המשימה נשארת `IN_PROGRESS`; טרם נוצרו buckets, לא נוספו bindings ולא בוצע deploy חלקי שעלול לשבור production.
 
 #### CF-002 — Add versioned D1 migrations and seed strategy
 
@@ -1329,3 +1329,9 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - חשבון Cloudflare אומת ב־Wrangler עם הרשאות D1/Pages, ונוצרו `nis-content-preview` ו־`nis-content-production` כמשאבים נפרדים באזור EEUR.
 - בדיקת R2 נעצרה עם API code `10042`: R2 טרם הופעל בחשבון ודורש subscription/checkout דרך ה־Dashboard.
 - לא נוסף config חלקי ולא בוצע deploy של bindings חסרים. `CF-001` נשאר `IN_PROGRESS` עד אישור אנושי להפעלת R2, יצירת שני buckets, חיבור `DB`/`MEDIA` ואימות local/preview/production.
+
+### 2026-07-20 — CF-001 R2 checkout authorized
+
+- התקבל אישור אנושי מפורש להפעיל R2 וה־Dashboard התקדם למסך `Activate R2` עם אמצעי התשלום הקיים.
+- Cloudflare מציג `$0/month` כבסיס ומחייב כתובת חיוב, אישור תנאי השירות ואישור חיוב רק במקרה של חריגה מהמכסה החינמית.
+- המסך הושאר פתוח להשלמת כתובת החיוב והאישורים על ידי בעל החשבון; לא הוזנו פרטים אישיים ולא הופעל R2 עדיין.
