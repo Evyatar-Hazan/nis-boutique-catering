@@ -795,12 +795,12 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### CF-002 — Add versioned D1 migrations and seed strategy
 
-- **Status:** `BACKLOG`
+- **Status:** `VERIFYING`
 - **Dependencies:** `CF-001`, `ARC-002`.
 - **Definition:** להוסיף migrations ל־`admins`, ‏`admin_sessions`, ‏`content_revisions`, ‏`media_assets` ו־`publish_jobs`, בלי runtime `CREATE TABLE`.
 - **Acceptance criteria:** migrations idempotent לפי מנגנון Wrangler; indexes על email/session/status; foreign keys ו־constraints קריטיים; bootstrap admin מגיע מ־seed מאובטח ולא מ־UI ציבורי.
 - **Verification:** apply על DB מקומי ריק, apply חוזר ללא drift, schema inspection, migration rollback rehearsal על backup.
-- **Evidence:** pending.
+- **Evidence:** נוסף migration versioned בשם `0001_initial_content_platform.sql` ל־`admins`, ‏`admin_sessions`, ‏`content_revisions`, ‏`media_assets` ו־`publish_jobs`, עם STRICT tables, ‏foreign keys, status/check constraints, optimistic revision version, JSON validation, unique published revision ואינדקסים ל־email/session/status. `wrangler.toml` מגדיר `migrations_dir`/`d1_migrations` בכל environment ואין runtime schema creation. כלי `seed-bootstrap-admin.mjs` מקבל email/name רק מ־environment, דורש confirmation מפורש ל־production ומבצע upsert server-side; אין bootstrap UI. migration הוחל על DB מקומי ריק, apply חוזר החזיר `No migrations to apply`, ‏schema/foreign-key inspection עבר, ו־backup/restore rehearsal החזיר את מצב pre-migration בלי טבלאות היעד. seed מקומי כפול השאיר admin פעיל יחיד. Preview remote הוחל ונזרע, עם migration אחד, admin פעיל אחד ו־0 foreign-key violations. נדרש עדיין full validation, push/CI/deploy, bookmark לפני production, apply/seed/inspection ב־production ואימות חוזר לפני `DONE`.
 
 #### CF-003 — Build the typed Pages Functions API foundation
 
@@ -1348,3 +1348,16 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - commit `75ae97c` עבר CI `29719259191` ו־Cloudflare deploy `29719259237` בהצלחה.
 - `https://studio.nisboutiquecatering.com/api/health` החזיר `200` עם `database: ready`, ‏`media: ready`, ‏`status: ok`; גם ה־studio root והאתר הציבורי החזירו `200`.
 - Pages config שהורד מחדש לאחר הפריסה אישר `DB`/`MEDIA` של Preview מול `nis-content-preview`/`nis-media-preview` ושל Production מול `nis-content-production`/`nis-media-production`; `CF-001` נסגרה כ־`DONE`.
+
+### 2026-07-20 — CF-002 migrations started
+
+- `CF-002` עברה ל־`IN_PROGRESS` לאחר ש־`CF-001` וכל תלויותיה נסגרו.
+- נקודת הפתיחה: שני מאגרי D1 ריקים; אין migrations או runtime schema creation קיימים. היעד הוא migration versioned יחיד ל־schema הראשוני ו־bootstrap admin דרך כלי server-side בלבד.
+
+### 2026-07-20 — CF-002 local and preview verification
+
+- נוסף migration ראשוני versioned עם חמש הטבלאות המאושרות, constraints, foreign keys ואינדקסים; אין `CREATE TABLE` ב־runtime.
+- local apply על state ריק עבר ב־16 statements, apply חוזר לא מצא migrations; schema inspection ו־`PRAGMA foreign_key_check` עברו.
+- בוצע rollback rehearsal מ־SQLite backup מקומי: לאחר migration טבלת `admins` הייתה קיימת, ושחזור ה־backup החזיר את marker הישן ללא טבלת `admins`.
+- כלי bootstrap server-side נבדק פעמיים והשאיר admin פעיל יחיד. אותו migration וה־seed הוחלו על Preview remote; נמצאו migration אחד, admin פעיל אחד ו־0 הפרות foreign key.
+- `CF-002` עברה ל־`VERIFYING` עד validation, deploy והחלה מבוקרת על Production עם Time Travel bookmark.

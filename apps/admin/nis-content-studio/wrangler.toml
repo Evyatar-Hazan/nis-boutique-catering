@@ -11,6 +11,9 @@ compatibility_flags = ["nodejs_compat"]
 binding = "DB"
 database_name = "nis-content-preview"
 database_id = "80b4a9b2-4f3b-42a7-af3f-1e4d629c0c7d"
+preview_database_id = "DB"
+migrations_dir = "migrations"
+migrations_table = "d1_migrations"
 
 [[r2_buckets]]
 binding = "MEDIA"
@@ -20,6 +23,8 @@ bucket_name = "nis-media-preview"
 binding = "DB"
 database_name = "nis-content-preview"
 database_id = "80b4a9b2-4f3b-42a7-af3f-1e4d629c0c7d"
+migrations_dir = "migrations"
+migrations_table = "d1_migrations"
 
 [[env.preview.r2_buckets]]
 binding = "MEDIA"
@@ -29,6 +34,8 @@ bucket_name = "nis-media-preview"
 binding = "DB"
 database_name = "nis-content-production"
 database_id = "fd74127a-fea6-4517-8c54-f467a8fc6437"
+migrations_dir = "migrations"
+migrations_table = "d1_migrations"
 
 [[env.production.r2_buckets]]
 binding = "MEDIA"
