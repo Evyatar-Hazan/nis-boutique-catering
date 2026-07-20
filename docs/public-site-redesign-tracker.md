@@ -934,21 +934,21 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### ADM-001 — Split the admin monolith into owned modules
 
-- **Status:** `VERIFYING`
+- **Status:** `DONE`
 - **Dependencies:** `ARC-003`, `CF-003`.
 - **Definition:** לפרק את `App.tsx` ל־shell, routes/tabs ו־feature modules בלי ליצור wrappers או UI כפולים.
 - **Acceptance criteria:** `App.tsx` הוא composition root; כל feature בקובץ/תיקייה ייעודיים; primitives משותפים reused; imports לפי public boundaries.
 - **Verification:** component ownership review, dependency graph, type-check ו־duplication search.
-- **Evidence:** `App.tsx` ירד מ־1,016 שורות ל־composition root של 3 שורות בלבד. מימוש ה־legacy כולו הועבר ל־feature boundary מבודד תחת `features/legacy`, וה־login gate, ניווט ה־tabs וה־primitives הגנריים פוצלו לקבצים ייעודיים; אין wrapper או component כפול. עורכי Google הישנים נשארו יחד רק בתוך migration feature יחיד כדי שיוחלפו בשלמות ב־ADM-002–ADM-007 בלי להריץ שתי מערכות או ליצור UI זמני. imports נשארו בכיוון App→feature→shared local modules, חיפוש declarations אישר owner יחיד לכל primitive/navigation/login. ‏46/46 בדיקות סטודיו, type-check, lint, full `pnpm validate` ושני builds עברו. browser מקומי ב־`127.0.0.1:5173` אישר login shell זהה וללא console errors; המשימה ממתינה ל־push, CI/deploy ו־Production smoke לפני `DONE`.
+- **Evidence:** `App.tsx` ירד מ־1,016 שורות ל־composition root של 3 שורות בלבד. מימוש ה־legacy כולו הועבר ל־feature boundary מבודד תחת `features/legacy`, וה־login gate, ניווט ה־tabs וה־primitives הגנריים פוצלו לקבצים ייעודיים; אין wrapper או component כפול. עורכי Google הישנים נשארו יחד רק בתוך migration feature יחיד כדי שיוחלפו בשלמות ב־ADM-002–ADM-007 בלי להריץ שתי מערכות או ליצור UI זמני. imports נשארו בכיוון App→feature→shared local modules, חיפוש declarations אישר owner יחיד לכל primitive/navigation/login. ‏46/46 בדיקות סטודיו, type-check, lint, full `pnpm validate` ושני builds עברו. browser מקומי ו־Production אישרו login shell זהה וללא console errors. Commit `811323d`, ‏CI `29729384252` ו־deploy `29729384250` עברו; deployments ‏`c1dd7b82`/`5a63196c` נפרסו ושני ה־roots וה־health החזירו `200`.
 
 #### ADM-002 — Replace Google OAuth data access with session UX
 
-- **Status:** `BACKLOG`
+- **Status:** `IN_PROGRESS`
 - **Dependencies:** `CF-004`, `ADM-001`.
 - **Definition:** להשתמש ב־Google רק לכניסה, להחליף access-token lifecycle ב־`/api/auth/*` cookie session ולהוסיף logout/session-expired UX.
 - **Acceptance criteria:** אין Sheets/Drive scopes; אין token ב־storage/state מעבר לרגע exchange; refresh משחזר session; 401 מחזיר למסך כניסה בלי אובדן טיוטה מקומית לא צפוי.
 - **Verification:** browser login/refresh/logout/expiry/revocation tests ו־storage/network inspection.
-- **Evidence:** pending.
+- **Evidence:** העבודה החלה לאחר בידוד ה־legacy feature; היעד הוא למחוק את access-token/Sheets session lifecycle מה־React ולהשתמש רק ב־Google ID credential exchange וב־`__Host-` server session.
 
 #### ADM-003 — Build one typed API client and query-state layer
 
@@ -1463,3 +1463,4 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 - `App.tsx` הומר ל־composition root של 3 שורות; ה־legacy migration feature, ‏login gate, navigation ו־generic primitives קיבלו ownership וקבצים מפורשים ללא duplication.
 - כל 46 בדיקות הסטודיו, full validation ושני builds עברו; browser local אישר את login shell ללא console errors. `ADM-001` עברה ל־`VERIFYING` עד push/CI/deploy ו־Production smoke.
+- commit `811323d` עבר CI `29729384252` ו־deploy `29729384250`; Production browser אישר את login shell ללא console errors, ושני ה־roots וה־health החזירו `200`. `ADM-001` נסגרה כ־`DONE` ו־`ADM-002` החלה.
