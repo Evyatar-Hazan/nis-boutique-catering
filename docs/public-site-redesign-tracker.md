@@ -1008,7 +1008,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### QA-001 — Expand automated coverage
 
-- **Status:** `IN_PROGRESS`
+- **Status:** `DONE`
 - **Dependencies:** `WEB-001`–`WEB-006`, `CF-001`–`CF-010`, `ADM-001`–`ADM-008`, `MIG-003`.
 - **Definition:** לכסות contracts, rendering, interactions, forms, media ו־content migration בבדיקות אוטומטיות.
 - **Acceptance criteria:**
@@ -1017,11 +1017,11 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
   - regression tests שמוכיחים שה־legacy sections אינם חוזרים.
   - אין snapshots רחבים שמסתירים שגיאות משמעותיות.
 - **Verification:** `npx pnpm@9.15.9 test` וסקירת coverage לפי risk, לא רק אחוז כולל.
-- **Evidence:** pending.
+- **Evidence:** נוספו בדיקות ממוקדות ל־business transformations בסיכון הגבוה: התאמת `PublicSiteDocument` לחוזה הציבורי תוך סינון media לא פעילה/לא נצרכת, מיפוי `dishes` ל־`salads`, בניית מודל העריכה לששת החלקים בלבד, עדכון nested immutable, ניקוי video אופציונלי, סינון media בארכיון וקידוד WhatsApp בעברית ובתווים שמורים. fixture כפול של מסמך ציבורי הועבר ל־`@monorepo/content-schema/test-fixtures` כ־test-only export יחיד. הכיסוי הקיים נסקר לפי risk ואומת עבור schema invariants, migration determinism, auth/session/security, D1 revisions, publish dispatch, rendering, navigation, gallery/lightbox, media library, form/CTA, save/publish/rollback ו־legacy-section regression. ‏`npx pnpm@9.15.9 test` עבר עם 133/133 בדיקות ב־35 קבצים: schema ‏20, preview ‏20, public ‏18 ו־studio ‏75. אין `toMatchSnapshot`/`toMatchInlineSnapshot` תחת `apps` או `packages`. ‏`npx pnpm@9.15.9 validate`, ‏lint, type-check וכל builds עברו; bundle sizes נשארו ללא שינוי. commit `7849089`; ‏CI `29739268107` ו־deploy `29739268106` עברו. Cloudflare deployments ‏`39eb7375`/`2d547fcb` והדומיינים החיים החזירו `200`, ‏health החזיר `200`, publish history ללא session החזיר `401`, ו־Production D1 נשאר עם 0 revisions/media/jobs/sessions/FK violations.
 
 #### QA-002 — Verify accessibility
 
-- **Status:** `BACKLOG`
+- **Status:** `IN_PROGRESS`
 - **Dependencies:** `QA-001`.
 - **Definition:** לבצע audit מלא ל־keyboard, focus, semantics, contrast, screen reader ו־reduced motion.
 - **Acceptance criteria:**
@@ -1520,3 +1520,10 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - הושלמו offline recovery, beforeunload warning, focus לשגיאת validation, confirmation focus/Escape, busy/idempotency resilience ותיקון ניגודיות. בדיקת Preview גילתה ותיקנה גם stale draft בין save לפרסום, עם callback/query refresh ובדיקת רגרסיה.
 - ‏72/72 בדיקות סטודיו ו־full validation עברו. Chrome אימת דסקטופ ו־375×812 ללא overflow, warning/recovery אחרי offline, ו־owner flow מלא login→edit→upload→save→publish→history→rollback. Lighthouse בדסקטופ ובמובייל: Accessibility ‏100 ו־Best Practices ‏100.
 - Preview שוחזר ל־bookmark `00000015-00000000-000050ae-e0b75d8e6ac03f37b5ca57fffac8f458`, objects זמניים נמחקו, ונשארו 2 revisions, ‏16 media ו־0 jobs/sessions/FK/orphans. Commits `bd1e274`/`d6e4261`, ‏CI `29738508380`, deploy `29738508448` ו־Production deployments ‏`37321658`/`e2463839` אומתו; Production D1 נשאר נקי. `ADM-008` נסגרה כ־`DONE` ו־`QA-001` החלה.
+
+### 2026-07-20 — QA-001 risk-based automated coverage
+
+- נוספו בדיקות business transformation ל־public adapter, מודל עריכת ששת החלקים וקישורי WhatsApp; fixture כפול אוחד ל־test-only export משותף בלי להרחיב את API הייצור הראשי.
+- סקירת הסיכונים מיפתה את הכיסוי הקיים ל־contracts, migration, auth/security, revisions/publish, rendering, interactions, forms ומדיה; legacy sections חסומים הן בחוזה והן בבדיקות regression מפורשות.
+- ‏133/133 בדיקות ב־35 קבצים ו־full validation עברו, ללא snapshot assertions רחבים וללא שינוי ב־bundle sizes.
+- commit `7849089`, ‏CI `29739268107`, deploy `29739268106` ו־Cloudflare deployments ‏`39eb7375`/`2d547fcb` אומתו. ה־roots וה־health החיים החזירו `200`, endpoint מאומת נשאר `401`, ו־Production D1 נשאר ריק ותקין. `QA-001` נסגרה כ־`DONE` ו־`QA-002` החלה.
