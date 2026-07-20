@@ -1,0 +1,1588 @@
+{
+  "version": "studio-2026-06-24-18-43-53",
+  "updatedAt": "2026-07-20T08:05:06.473Z",
+  "settings": {
+    "phoneDisplay": "050-3502615",
+    "phoneHref": "tel:+972503502615",
+    "email": "nisboutiquecatering@gmail.com",
+    "whatsappBase": "https://wa.me/972503502615",
+    "siteVersion": "studio-2026-06-24-18-43-53",
+    "seoTitle": "Nis Boutique Catering",
+    "seoDescription": "קייטרינג בוטיק ביתי לשבתות ואירועים קטנים"
+  },
+  "media": [
+    {
+      "id": "hosting-table-overview",
+      "src": "/media/cms/hosting-table-overview.webp",
+      "width": 721,
+      "height": 1280,
+      "sizes": "(max-width: 720px) 100vw, 50vw",
+      "responsive": true,
+      "driveFileId": "1pJnclQAJ7ganns3d09GK7kg5XhEkQB6Y",
+      "usageNotes": "Hero and gallery"
+    },
+    {
+      "id": "event-buffet-salad-rolls",
+      "title": "בופה אירוח חגיגי 1",
+      "src": "/media/cms/event-buffet-salad-rolls.webp",
+      "width": 1200,
+      "height": 1600,
+      "sizes": "(max-width: 720px) 100vw, 33vw",
+      "responsive": true,
+      "driveFileId": "1YCW8Z2bvSSP9vxjSqggkpqEZU54Z9PYu"
+    },
+    {
+      "id": "salmon-skewers-lemon",
+      "src": "/media/cms/salmon-skewers-lemon.webp",
+      "width": 1500,
+      "height": 2000,
+      "sizes": "(max-width: 720px) 100vw, 45vw",
+      "responsive": true,
+      "driveFileId": "1VwsqHkpk76Z2RY4IyEz2bE5bgxGrwh79"
+    },
+    {
+      "id": "vegetable-focaccia",
+      "src": "/media/cms/vegetable-focaccia.webp",
+      "width": 2000,
+      "height": 1500,
+      "sizes": "(max-width: 720px) 100vw, 33vw",
+      "responsive": true,
+      "driveFileId": "18D2PkwEuJpGZ70E24_-8iHA3NPDIF-RM"
+    },
+    {
+      "id": "mini-burger-trays",
+      "src": "/media/cms/mini-burger-trays.webp",
+      "width": 899,
+      "height": 1599,
+      "sizes": "(max-width: 720px) 100vw, 33vw",
+      "responsive": true,
+      "driveFileId": "1LiazvL0p3NrTzPfKINGs6KtngHeNh31y"
+    },
+    {
+      "id": "caprese-salad-bowl",
+      "src": "/media/cms/caprese-salad-bowl.webp",
+      "width": 1500,
+      "height": 2000,
+      "sizes": "(max-width: 720px) 100vw, 33vw",
+      "responsive": true,
+      "driveFileId": "1QpZ5dqQ-MNVjuK4Sc884ltm36sqtVUB6"
+    },
+    {
+      "id": "roasted-vegetables",
+      "src": "/media/cms/roasted-vegetables.webp",
+      "width": 1500,
+      "height": 2000,
+      "sizes": "(max-width: 720px) 100vw, 33vw",
+      "responsive": true,
+      "driveFileId": "1it9JQjY3RUKDalHx-xlD-Yz_L5S8FqOO"
+    },
+    {
+      "id": "dips-tray-close",
+      "src": "/media/cms/dips-tray-close.webp",
+      "width": 1500,
+      "height": 2000,
+      "sizes": "(max-width: 720px) 100vw, 33vw",
+      "responsive": true,
+      "driveFileId": "1xAvS_eql-dvMFhAWNJNXduSEiCS3WqNw"
+    },
+    {
+      "id": "mezze-tray-close",
+      "src": "/media/cms/mezze-tray-close.webp",
+      "width": 1500,
+      "height": 2000,
+      "sizes": "(max-width: 720px) 100vw, 33vw",
+      "responsive": true,
+      "driveFileId": "1pMA3OFUkpHM9D6T1KGB9ESYUAie0MZO0"
+    },
+    {
+      "id": "purple-cabbage-salad",
+      "src": "/media/cms/purple-cabbage-salad.webp",
+      "width": 1500,
+      "height": 2000,
+      "sizes": "(max-width: 720px) 100vw, 33vw",
+      "responsive": true,
+      "driveFileId": "1C0JCtCgsMQyq55oiBulWTXdgoDDT9N_R"
+    },
+    {
+      "id": "roasted-zucchini-salad",
+      "src": "/media/cms/roasted-zucchini-salad.webp",
+      "width": 1500,
+      "height": 2000,
+      "sizes": "(max-width: 720px) 100vw, 33vw",
+      "responsive": true,
+      "driveFileId": "1lj-dqxSU6mkkIiHZxSK9Bo5r0P5ObW_y"
+    },
+    {
+      "id": "salmon-skewers-close",
+      "src": "/media/cms/salmon-skewers-close.webp",
+      "width": 1500,
+      "height": 2000,
+      "sizes": "(max-width: 720px) 100vw, 33vw",
+      "responsive": true,
+      "driveFileId": "1NfreFo7UUtQr9QEUdHr7jyijUPzhu6Bg"
+    },
+    {
+      "id": "coffee-station",
+      "src": "/media/cms/coffee-station.webp",
+      "width": 2000,
+      "height": 1500,
+      "sizes": "(max-width: 720px) 100vw, 33vw",
+      "responsive": true,
+      "driveFileId": "1yRQ0Rc6yTqGc29AOgmZGnH5gpavUb84l"
+    },
+    {
+      "id": "coffee-service-close",
+      "src": "/media/cms/coffee-service-close.webp",
+      "width": 1500,
+      "height": 2000,
+      "sizes": "(max-width: 720px) 100vw, 33vw",
+      "responsive": true,
+      "driveFileId": "11rCC3htpCRo-hbvPrCrNeXlR7H0S1QVx"
+    },
+    {
+      "id": "table-setting-blue-gold",
+      "src": "/media/cms/table-setting-blue-gold.webp",
+      "width": 1500,
+      "height": 2000,
+      "sizes": "(max-width: 720px) 100vw, 33vw",
+      "responsive": true,
+      "driveFileId": "1PHwL1_-Gcwtqliu7ELWQxXqJnWRh6GgV"
+    },
+    {
+      "id": "chatgpt-image-jun-22-2026-10-26-00-pm-png",
+      "title": "לוגו",
+      "src": "/media/cms/chatgpt-image-jun-22-2026-10-26-00-pm-png.webp",
+      "width": 1774,
+      "height": 887,
+      "sizes": "(max-width: 720px) 100vw, 33vw",
+      "responsive": true,
+      "driveFileId": "1eFVvAkIc__vHZE6BqZxRgTBfKjY22sY7",
+      "usageNotes": "תמונה שהועלתה מהסטודיו"
+    }
+  ],
+  "gallery": [
+    {
+      "id": "hosting-table-overview",
+      "title": "שולחן אירוח מוכן",
+      "alt": "שולחן אירוח מסודר עם מגשי ירקות, סלטים, כריכונים וכלי הגשה",
+      "category": "tables",
+      "order": 2,
+      "active": true,
+      "tall": true,
+      "mediaId": "hosting-table-overview"
+    },
+    {
+      "id": "event-buffet-salad-rolls",
+      "title": "בופה אירוח חגיגי",
+      "alt": "שולחן בופה עם סלטים אישיים, רולים, מאפים ומנות אירוח מוגשות על סטנדים",
+      "category": "tables",
+      "order": 1,
+      "active": true,
+      "tall": true,
+      "mediaId": "event-buffet-salad-rolls"
+    },
+    {
+      "id": "salmon-skewers-lemon",
+      "title": "שיפודי סלמון בלימון",
+      "alt": "מגש שיפודי סלמון עם פרוסות לימון על מצע ירוק",
+      "category": "fish",
+      "order": 3,
+      "active": true,
+      "tall": true,
+      "mediaId": "salmon-skewers-lemon"
+    },
+    {
+      "id": "vegetable-focaccia",
+      "title": "פוקצ׳ה ירקות צבעונית",
+      "alt": "פוקצ׳ה חתוכה עם ירקות קלויים וגבינה",
+      "category": "trays",
+      "order": 4,
+      "active": true,
+      "tall": false,
+      "mediaId": "vegetable-focaccia"
+    },
+    {
+      "id": "mini-burger-trays",
+      "title": "מיני לחמניות אישיות",
+      "alt": "מגשים שחורים עם מיני לחמניות אישיות, שומשום, ירקות וסיכות במבוק",
+      "category": "trays",
+      "order": 5,
+      "active": true,
+      "tall": true,
+      "mediaId": "mini-burger-trays"
+    },
+    {
+      "id": "caprese-salad-bowl",
+      "title": "סלט קפרזה אישי",
+      "alt": "קערת סלט עם עגבניות שרי, מוצרלה, רוטב ירוק ושקית בוטנים",
+      "category": "salads",
+      "order": 6,
+      "active": true,
+      "tall": true,
+      "mediaId": "caprese-salad-bowl"
+    },
+    {
+      "id": "roasted-vegetables",
+      "title": "ירקות קלויים צבעוניים",
+      "alt": "מגש ירקות קלויים עם פלפלים, ברוקולי, פטריות, בצל וחצילים",
+      "category": "trays",
+      "order": 7,
+      "active": true,
+      "tall": true,
+      "mediaId": "roasted-vegetables"
+    },
+    {
+      "id": "dips-tray-close",
+      "title": "מטבלים למרכז השולחן",
+      "alt": "מגש מטבלים עם זיתים, סלט טונה, מטבל לבן ומטבל כתום",
+      "category": "trays",
+      "order": 8,
+      "active": true,
+      "tall": false,
+      "mediaId": "dips-tray-close"
+    },
+    {
+      "id": "mezze-tray-close",
+      "title": "מגש גבינות ומטבלים",
+      "alt": "מגש מחולק עם זיתים, קוביות גבינה, מטבל עגבניות וחמאה",
+      "category": "trays",
+      "order": 9,
+      "active": true,
+      "tall": true,
+      "mediaId": "mezze-tray-close"
+    },
+    {
+      "id": "purple-cabbage-salad",
+      "title": "סלט כרוב סגול",
+      "alt": "קערת סלט כרוב סגול עם בצל ירוק, רוטב ושקית אגוזים",
+      "category": "salads",
+      "order": 10,
+      "active": true,
+      "tall": true,
+      "mediaId": "purple-cabbage-salad"
+    },
+    {
+      "id": "roasted-zucchini-salad",
+      "title": "סלט זוקיני ופטריות",
+      "alt": "קערת סלט עם זוקיני קלוי, פטריות, גבינה ורוטב",
+      "category": "salads",
+      "order": 11,
+      "active": true,
+      "tall": true,
+      "mediaId": "roasted-zucchini-salad"
+    },
+    {
+      "id": "salmon-skewers-close",
+      "title": "שיפודי סלמון מקרוב",
+      "alt": "תקריב של שיפודי סלמון עם עשבי תיבול ולימון",
+      "category": "fish",
+      "order": 12,
+      "active": true,
+      "tall": true,
+      "mediaId": "salmon-skewers-close"
+    },
+    {
+      "id": "coffee-station",
+      "title": "עמדת קפה ותה",
+      "alt": "עמדת קפה עם מיחם, חלב, כוסות, סכו\"ם וסוכר",
+      "category": "coffee",
+      "order": 14,
+      "active": true,
+      "tall": false,
+      "mediaId": "coffee-station"
+    },
+    {
+      "id": "coffee-service-close",
+      "title": "ערכת קפה מוקפדת",
+      "alt": "קופסת תיונים, סוכר וסכו\"ם לצד מיחם לשירות קפה",
+      "category": "coffee",
+      "order": 13,
+      "active": true,
+      "tall": true,
+      "mediaId": "coffee-service-close"
+    },
+    {
+      "id": "table-setting-blue-gold",
+      "title": "שולחן ערוך באירוע",
+      "alt": "שולחן ערוך עם מפה זהובה, צלחות כחולות ומפיות תכלת",
+      "category": "tables",
+      "order": 15,
+      "active": true,
+      "tall": true,
+      "mediaId": "table-setting-blue-gold"
+    }
+  ],
+  "services": [
+    {
+      "id": "shabbat",
+      "title": "ניס בטעם של שבת",
+      "subtitle": "להכניס את השבת ברוגע, להתענג על הטעם.",
+      "description": "תפריט שבת עשיר שמגיע מוכן, מסודר וברור להגשה, עם טעם ביתי וגימור בוטיקי שמוריד עומס לפני שבת.",
+      "bestFor": "משפחות, זוגות ומארחים שרוצים שבת רגועה בלי לוותר על שולחן עשיר.",
+      "promise": "מגיע מוכן, מסודר וברור להגשה, עם התאמה לכמות הסועדים ולאופי השבת.",
+      "details": [
+        "סלטים",
+        "דגים",
+        "עיקריות",
+        "תוספות",
+        "חלות",
+        "קינוחים",
+        "מנות בהתאמה אישית"
+      ],
+      "cta": "להזמנת תפריט שבת",
+      "mediaId": "salmon-skewers-lemon",
+      "icon": "ChefHat",
+      "active": true,
+      "order": 1
+    },
+    {
+      "id": "events",
+      "title": "ניס בכיס",
+      "subtitle": "אירוח קטן, רושם גדול.",
+      "description": "מגשי אירוח ופינגר פוד לאירועים קטנים, הרמות כוסית, ישיבות ואירוח משפחתי שרוצה להיראות מוקפד מהרגע הראשון.",
+      "bestFor": "מפגשים משפחתיים, אירועים קטנים, הרמות כוסית ואירוח עסקי מוקפד.",
+      "promise": "מגשים שנפתחים יפה, נראים חגיגיים על השולחן ונוחים לאכילה בעמידה או סביב שולחן.",
+      "details": [
+        "אירועים קטנים",
+        "בראנצ׳ים",
+        "מפגשים משפחתיים",
+        "אירוח עסקי",
+        "שולחנות חגיגיים"
+      ],
+      "cta": "דברו איתנו על מגשי אירוח",
+      "mediaId": "hosting-table-overview",
+      "icon": "Utensils",
+      "active": true,
+      "order": 2
+    },
+    {
+      "id": "travel",
+      "title": "Travel Nis",
+      "subtitle": "פינוק בוטיק שלוקחים איתכם.",
+      "description": "מארזי דרך ופיקניק מוקפדים, ארוזים יפה ונוח, עם אוכל טרי ומפנק לטיולים, נסיעות וימי כיף.",
+      "bestFor": "נסיעות משפחתיות, ימי כיף, פיקניקים, טיולים ורגעים שמתחילים כבר בדרך.",
+      "promise": "אוכל ארוז חכם, יפה ונוח לנשיאה, כדי שהדרך עצמה תרגיש כמו חלק מהחוויה.",
+      "details": [
+        "פיקניק זוגי",
+        "טיול משפחתי",
+        "יום הולדת בטבע",
+        "נסיעות ארוכות",
+        "ימי חופש"
+      ],
+      "cta": "להזמנת מארז דרך",
+      "mediaId": "mini-burger-trays",
+      "icon": "Package",
+      "active": true,
+      "order": 3
+    }
+  ],
+  "sections": [
+    {
+      "id": "hero",
+      "group": "hero",
+      "title": "קייטרינג בוטיק ביתי\nלשבתות ואירועים קטנים",
+      "text": "רואים את הסגנון, בוחרים את סוג ההזמנה, ומשאירים פנייה מסודרת. Nis כבר תהפוך את זה לתפריט, מגשים או מארז שמתאימים לאירוח שלכם.",
+      "items": [
+        "מהרובע היהודי לביתר עילית",
+        "שבתות, מגשי אירוח ו־Travel Nis, עם אוכל מוקפד, נראות יפה ושיחה קצרה שסוגרת כיוון."
+      ],
+      "active": true,
+      "order": 1
+    },
+    {
+      "id": "faq-order-lead-time",
+      "group": "faq",
+      "title": "כמה זמן מראש צריך להזמין?",
+      "text": "מומלץ לפנות כמה שיותר מוקדם, במיוחד לפני שבתות, חגים ואירועים עם מספר סועדים גדול.",
+      "items": [],
+      "active": true,
+      "order": 2
+    },
+    {
+      "id": "faq-delivery",
+      "group": "faq",
+      "title": "האם יש משלוחים?",
+      "text": "העסק פועל מביתר עילית. משלוח או איסוף בסביבה נבדקים מול הלקוח לפי מיקום, תאריך וסוג הזמנה.",
+      "items": [],
+      "active": true,
+      "order": 3
+    },
+    {
+      "id": "faq-custom-menu",
+      "group": "faq",
+      "title": "האם אפשר להרכיב תפריט אישי?",
+      "text": "כן. כל הזמנה נבנית אחרי שיחה קצרה כדי להתאים את התפריט לאירוח, לסועדים ולסגנון המבוקש.",
+      "items": [],
+      "active": true,
+      "order": 4
+    },
+    {
+      "id": "faq-preferences",
+      "group": "faq",
+      "title": "האם אפשר להתחשב ברגישויות או בהעדפות?",
+      "text": "כן. מעלים רגישויות, אלרגיות או העדפות בתחילת השיחה, ובודקים יחד מה אפשר להתאים בפועל.",
+      "items": [],
+      "active": true,
+      "order": 5
+    },
+    {
+      "id": "faq-business-events",
+      "group": "faq",
+      "title": "האם אפשר להזמין לאירועים עסקיים?",
+      "text": "כן. Nis בכיס מתאימה גם להרמות כוסית, ישיבות, אירוח עסקי ושולחנות קטנים ומוקפדים.",
+      "items": [],
+      "active": true,
+      "order": 6
+    },
+    {
+      "id": "faq-minimum-order",
+      "group": "faq",
+      "title": "האם יש מינימום הזמנה?",
+      "text": "מינימום הזמנה ייקבע בשיחה לפי סוג השירות, התאריך והיקף האירוח.",
+      "items": [],
+      "active": true,
+      "order": 7
+    },
+    {
+      "id": "copy-intro-band",
+      "group": "site-copy",
+      "title": "אוכל ביתי מוקפד, בהגשה של בוטיק, לאירוח קטן שמרגיש גדול.",
+      "text": "במקום לנסות להיות הכול, Nis בנויה סביב שלוש חוויות ברורות: שבתות, אירועים קטנים ומארזים לדרך. החוט שמחבר ביניהן הוא אותו חוט: אוכל שמרגיש חם וביתי, נראות נקייה ומכובדת, ושירות אישי שלא משאיר אתכם לבד עם הפרטים.",
+      "items": [
+        "רעיון אחד ברור"
+      ],
+      "active": true,
+      "order": 1
+    },
+    {
+      "id": "copy-manifesto",
+      "group": "site-copy",
+      "title": "לא עוד מגש.\nחוויית אירוח שנראית\nכמו מחשבה.",
+      "text": "כש־Nis נראית נכון, זה מרגיש מיד אחרת: יותר שקט למארח, יותר כבוד לשולחן, ויותר תחושה שמישהו החזיק את כל הפרטים יחד. ההגשה, הביסים והפרטים הקטנים עובדים יחד כדי ליצור חוויה ביתית שמרגישה מדויקת ומוכנה לאורחים.",
+      "items": [
+        "השפה של Nis"
+      ],
+      "active": true,
+      "order": 2
+    },
+    {
+      "id": "copy-editorial",
+      "group": "site-copy",
+      "title": "שלוש קטגוריות ברורות. שפה אחת של אירוח.",
+      "items": [
+        "מה מזמינים אצלנו"
+      ],
+      "active": false,
+      "order": 3,
+      "deletedAt": "2026-06-21T00:00:00.000Z"
+    },
+    {
+      "id": "copy-audience",
+      "group": "site-copy",
+      "title": "כשרוצים לארח יפה, טעים ומכובד בלי לסחוב הכול לבד.",
+      "text": "Nis מתאימה למי שרוצה לזהות את עצמו מהר: שבת רגועה יותר, אירוע קטן שנראה נכון, או מארז יפה שלוקחים לדרך או שולחים הלאה.",
+      "items": [
+        "למי זה מתאים"
+      ],
+      "active": true,
+      "order": 4
+    },
+    {
+      "id": "copy-experience-lab",
+      "group": "site-copy",
+      "title": "מהרגע שבוחרים כיוון, האירוח מתחיל לקבל צורה.",
+      "text": "בוחרים את סוג האירוח ומבינים מהר איך זה יכול להיראות אצלכם: מה נפתח על השולחן, מה מתאים לאופי האירוע, ואיך ממשיכים לשיחה קצרה. שלוש הקטגוריות והכיוונים לדוגמה כבר משולבים כאן כדי שיהיה קל להתחיל מאותו מקום.",
+      "items": [
+        "בחרו את החוויה"
+      ],
+      "active": true,
+      "order": 5
+    },
+    {
+      "id": "copy-signature",
+      "group": "site-copy",
+      "title": "בוטיק זו לא מילה. זו הדרך שבה כל פרט מרגיש נכון יותר.",
+      "items": [
+        "למה זה בוטיק"
+      ],
+      "active": false,
+      "order": 6,
+      "deletedAt": "2026-06-21T00:00:00.000Z"
+    },
+    {
+      "id": "copy-boutique",
+      "group": "site-copy",
+      "title": "הפרטים הקטנים שעוזרים להחליט מהר יותר.",
+      "text": "התאמה אישית, נראות מוכנה לשולחן, יחס אנושי וטעם שמרגיש ביתי אבל חגיגי. אלה הפרטים שעוזרים לאירוח להרגיש רגוע ומדויק יותר.",
+      "items": [
+        "למה זה מרגיש בוטיק"
+      ],
+      "active": false,
+      "order": 7,
+      "deletedAt": "2026-06-21T00:00:00.000Z"
+    },
+    {
+      "id": "copy-services",
+      "group": "site-copy",
+      "title": "שלוש אפשרויות ברורות. בוחרים כיוון וממשיכים לפנייה.",
+      "text": "שבת, אירוח קטן או דרך: שלושת השירותים מקבלים משקל שווה, וכל אחד מהם נבנה לפי כמות, תאריך והתחושה שרוצים ליצור.",
+      "items": [
+        "מה אפשר להזמין"
+      ],
+      "active": false,
+      "order": 8,
+      "deletedAt": "2026-06-21T00:00:00.000Z"
+    },
+    {
+      "id": "copy-process",
+      "group": "site-copy",
+      "title": "ארבעה צעדים קצרים מהרעיון ועד אוכל שמוכן להגשה.",
+      "items": [
+        "איך זה עובד"
+      ],
+      "active": true,
+      "order": 9
+    },
+    {
+      "id": "copy-story",
+      "group": "site-copy",
+      "title": "Nis נולדה מתוך אהבה לאירוח יפה, אוכל ביתי מדויק ותשומת לב לפרטים הקטנים.",
+      "text": "מאחורי Nis עומדת יהודית ניסטנפובר, עם אהבה עמוקה לאירוח, לאוכל מוקפד ולרגעים הקטנים שהופכים ארוחה לחוויה.",
+      "items": [
+        "הסיפור של המותג",
+        "אחרי שנים של חיים ברובע היהודי, בין סמטאות אבן, בתים מלאי ריח של שבת ושולחנות שנפתחים לאנשים שאוהבים, יהודית מביאה למטבח של Nis חיבור בין ביתיות, אסתטיקה ושירות אישי.",
+        "כל הזמנה נבנית מתוך תשומת לב לפרטים הקטנים: חומרי גלם טריים, טעמים מדויקים, אריזה אסתטית ותחושה שמישהו חשב עליכם באמת."
+      ],
+      "active": true,
+      "order": 10
+    },
+    {
+      "id": "copy-samples",
+      "group": "site-copy",
+      "title": "כיוונים טעימים שקל להתחיל מהם שיחה.",
+      "text": "אפשר להתחיל מכיוון כללי ולהתאים אותו לשבת, לאירוח קטן או למארז לדרך. בשיחה קצרה מדייקים יחד כמויות, תאריך וסגנון הגשה.",
+      "items": [
+        "כיוונים שאפשר להתחיל מהם"
+      ],
+      "active": false,
+      "order": 11,
+      "deletedAt": "2026-06-21T00:00:00.000Z"
+    },
+    {
+      "id": "copy-coordination",
+      "group": "site-copy",
+      "title": "הפרטים שעוזרים להתקדם בביטחון.",
+      "items": [
+        "תיאום וזמינות"
+      ],
+      "active": true,
+      "order": 12
+    },
+    {
+      "id": "copy-real-media",
+      "group": "site-copy",
+      "title": "ככה נראית תשומת לב לפני שהאירוח בכלל פוגש את האורחים.",
+      "text": "מנות אישיות, אריזה נקייה, מדבקת Nis ופרטים קטנים שמסדרים את החוויה עוד לפני הביס הראשון. התמונות והווידאו כאן הם מהכנות אמיתיות של Nis.",
+      "items": [
+        "וידאו אמיתי"
+      ],
+      "active": true,
+      "order": 13
+    },
+    {
+      "id": "copy-gallery",
+      "group": "site-copy",
+      "title": "קודם רואים. אחר כך הרבה יותר קל לפנות.",
+      "text": "שולחנות, מגשים, סלטים, קפה ופרטים קטנים שמראים את הסגנון לפני שמתחילים לדבר על תפריט.",
+      "items": [
+        "גלריה"
+      ],
+      "active": true,
+      "order": 14
+    },
+    {
+      "id": "copy-booking-basics",
+      "group": "site-copy",
+      "title": "כל מה שצריך לדעת כדי לשלוח פנייה בלי להתלבט.",
+      "text": "מספיק לדעת מה סוג האירוח, בערך כמה סועדים ומה התאריך הרצוי. משם אפשר לדייק יחד את התפריט, ההגשה ואופן הקבלה.",
+      "items": [
+        "לפני שפונים"
+      ],
+      "active": false,
+      "order": 16,
+      "deletedAt": "2026-06-21T00:00:00.000Z"
+    },
+    {
+      "id": "copy-seo",
+      "group": "site-copy",
+      "title": "קייטרינג בוטיק מביתר עילית לשבת, אירוח קטן ומארזים לדרך.",
+      "text": "Nis נותנת מענה למי שמחפש קייטרינג בוטיק בביתר עילית והסביבה: תפריט שבת מוכן, מגשי אירוח לאירועים קטנים, פינגר פוד, בראנץ׳ משפחתי ומארזי פיקניק או דרך. כל פנייה מתחילה בשיחה קצרה כדי להבין את סוג האירוח, כמות הסועדים, התאריך והתחושה שרוצים ליצור.",
+      "items": [
+        "מה אפשר להזמין"
+      ],
+      "active": false,
+      "order": 17,
+      "deletedAt": "2026-06-21T00:00:00.000Z"
+    },
+    {
+      "id": "copy-trust",
+      "group": "site-copy",
+      "title": "פחות סימני שאלה, יותר תחושה שיש עם מי לדבר.",
+      "items": [
+        "מה מרגיע לפני שסוגרים"
+      ],
+      "active": false,
+      "order": 18,
+      "deletedAt": "2026-06-21T00:00:00.000Z"
+    },
+    {
+      "id": "copy-faq",
+      "group": "site-copy",
+      "title": "התשובות שמקלות על הפנייה הראשונה.",
+      "text": "לפני השאלות עצמן, חשוב לדעת שהאירוח מגיע מסודר, מתואם אישית ועם מענה אנושי שמכוון לסוג האירוע, לכמות הסועדים ולהעדפות שלכם.",
+      "items": [
+        "שאלות נפוצות"
+      ],
+      "active": true,
+      "order": 19
+    },
+    {
+      "id": "copy-contact",
+      "group": "site-copy",
+      "title": "אהבתם את הסגנון? שלחו פנייה מסודרת לוואטסאפ.",
+      "text": "הטופס נשאר קצר ומעשי: סוג הזמנה, תאריך, כמות והערה. אחרי השליחה נפתחת הודעת וואטסאפ מוכנה, כדי שיהיה קל להמשיך לשיחה אישית.",
+      "items": [
+        "יצירת קשר",
+        "שיחה קצרה, התאמה אישית, ואז סיכום ברור של תאריך, כמות וסגנון אירוח."
+      ],
+      "active": true,
+      "order": 20
+    },
+    {
+      "id": "microcopy-nav-experiences-label",
+      "group": "site-microcopy",
+      "title": "קישור בתפריט: מה מזמינים",
+      "text": "מה מזמינים",
+      "items": [],
+      "active": true,
+      "order": -11
+    },
+    {
+      "id": "microcopy-nav-gallery-label",
+      "group": "site-microcopy",
+      "title": "קישור בתפריט: גלריה",
+      "text": "גלריה",
+      "items": [],
+      "active": true,
+      "order": -10
+    },
+    {
+      "id": "microcopy-nav-process-label",
+      "group": "site-microcopy",
+      "title": "קישור בתפריט: איך זה עובד",
+      "text": "איך זה עובד",
+      "items": [],
+      "active": true,
+      "order": -9
+    },
+    {
+      "id": "microcopy-nav-samples-label",
+      "group": "site-microcopy",
+      "title": "קישור בתפריט: דוגמאות",
+      "text": "דוגמאות",
+      "items": [],
+      "active": false,
+      "order": -8,
+      "deletedAt": "2026-06-21T00:00:00.000Z"
+    },
+    {
+      "id": "microcopy-nav-faq-label",
+      "group": "site-microcopy",
+      "title": "קישור בתפריט: שאלות",
+      "text": "שאלות",
+      "items": [],
+      "active": true,
+      "order": -7
+    },
+    {
+      "id": "microcopy-nav-contact-label",
+      "group": "site-microcopy",
+      "title": "קישור בתפריט: יצירת קשר",
+      "text": "יצירת קשר",
+      "items": [],
+      "active": true,
+      "order": -6
+    },
+    {
+      "id": "microcopy-gallery-all-label",
+      "group": "site-microcopy",
+      "title": "מסנן גלריה: הכל",
+      "text": "הכל",
+      "items": [],
+      "active": true,
+      "order": -5
+    },
+    {
+      "id": "microcopy-gallery-tables-label",
+      "group": "site-microcopy",
+      "title": "מסנן גלריה: שולחנות",
+      "text": "שולחנות",
+      "items": [],
+      "active": true,
+      "order": -4
+    },
+    {
+      "id": "microcopy-gallery-trays-label",
+      "group": "site-microcopy",
+      "title": "מסנן גלריה: מגשים",
+      "text": "מגשים",
+      "items": [],
+      "active": true,
+      "order": -3
+    },
+    {
+      "id": "microcopy-gallery-salads-label",
+      "group": "site-microcopy",
+      "title": "מסנן גלריה: סלטים",
+      "text": "סלטים",
+      "items": [],
+      "active": true,
+      "order": -2
+    },
+    {
+      "id": "microcopy-gallery-fish-label",
+      "group": "site-microcopy",
+      "title": "מסנן גלריה: דגים",
+      "text": "דגים",
+      "items": [],
+      "active": true,
+      "order": -1
+    },
+    {
+      "id": "microcopy-gallery-coffee-label",
+      "group": "site-microcopy",
+      "title": "מסנן גלריה: קפה",
+      "text": "קפה",
+      "items": [],
+      "active": true,
+      "order": 0
+    },
+    {
+      "id": "microcopy-topbar-whatsapp-label",
+      "group": "site-microcopy",
+      "title": "כפתור וואטסאפ בתפריט העליון",
+      "text": "וואטסאפ",
+      "items": [],
+      "active": true,
+      "order": 1
+    },
+    {
+      "id": "microcopy-footer-tagline",
+      "group": "site-microcopy",
+      "title": "משפט קצר בפוטר",
+      "text": "אוכל של בית, גימור של בוטיק.",
+      "items": [],
+      "active": true,
+      "order": 2
+    },
+    {
+      "id": "microcopy-footer-whatsapp-label",
+      "group": "site-microcopy",
+      "title": "קישור וואטסאפ בפוטר",
+      "text": "וואטסאפ",
+      "items": [],
+      "active": true,
+      "order": 3
+    },
+    {
+      "id": "microcopy-studio-login-label",
+      "group": "site-microcopy",
+      "title": "קישור כניסה לסטודיו בפוטר",
+      "text": "כניסת ניהול",
+      "items": [],
+      "active": true,
+      "order": 4
+    },
+    {
+      "id": "microcopy-floating-whatsapp-aria",
+      "group": "site-microcopy",
+      "title": "תיאור נגישות לכפתור וואטסאפ צף",
+      "text": "דברו איתנו בוואטסאפ",
+      "items": [],
+      "active": true,
+      "order": 5
+    },
+    {
+      "id": "microcopy-mobile-actions-aria",
+      "group": "site-microcopy",
+      "title": "תיאור נגישות לפעולות מובייל",
+      "text": "פעולות מהירות ליצירת קשר",
+      "items": [],
+      "active": true,
+      "order": 6
+    },
+    {
+      "id": "microcopy-mobile-whatsapp-label",
+      "group": "site-microcopy",
+      "title": "כפתור וואטסאפ במובייל",
+      "text": "וואטסאפ",
+      "items": [],
+      "active": true,
+      "order": 7
+    },
+    {
+      "id": "microcopy-mobile-phone-label",
+      "group": "site-microcopy",
+      "title": "כפתור טלפון במובייל",
+      "text": "טלפון",
+      "items": [],
+      "active": true,
+      "order": 8
+    },
+    {
+      "id": "microcopy-hero-primary-cta",
+      "group": "site-microcopy",
+      "title": "כפתור ראשי במסך הפתיחה",
+      "text": "דברו איתנו בוואטסאפ",
+      "items": [],
+      "active": true,
+      "order": 9
+    },
+    {
+      "id": "microcopy-hero-secondary-cta",
+      "group": "site-microcopy",
+      "title": "כפתור משני במסך הפתיחה",
+      "text": "ראו איך זה נראה",
+      "items": [],
+      "active": true,
+      "order": 10
+    },
+    {
+      "id": "microcopy-hero-microcopy",
+      "group": "site-microcopy",
+      "title": "משפט קטן מתחת לכפתורי Hero",
+      "text": "אפשר גם למלא את הטופס בסוף האתר ולשלוח פנייה מסודרת לוואטסאפ.",
+      "items": [],
+      "active": true,
+      "order": 11
+    },
+    {
+      "id": "microcopy-hero-showcase-title",
+      "group": "site-microcopy",
+      "title": "כותרת קטנה בתמונת Hero",
+      "text": "שבתות, אירוח קטן ומארזים",
+      "items": [],
+      "active": true,
+      "order": 12
+    },
+    {
+      "id": "microcopy-hero-showcase-text",
+      "group": "site-microcopy",
+      "title": "טקסט קטן בתמונת Hero",
+      "text": "אותה שפה של טעם, נראות ושקט למארח.",
+      "items": [],
+      "active": true,
+      "order": 13
+    },
+    {
+      "id": "microcopy-hero-video-chip",
+      "group": "site-microcopy",
+      "title": "כפתור וידאו במסך הפתיחה",
+      "text": "רגעים אמיתיים מהאירוח",
+      "items": [],
+      "active": true,
+      "order": 14
+    },
+    {
+      "id": "microcopy-experience-cta",
+      "group": "site-microcopy",
+      "title": "קישור בתוך בחירת חוויה",
+      "text": "לפתוח שיחה על החוויה הזו",
+      "items": [],
+      "active": true,
+      "order": 15
+    },
+    {
+      "id": "microcopy-contact-primary-cta",
+      "group": "site-microcopy",
+      "title": "כפתור וואטסאפ באזור יצירת קשר",
+      "text": "קבלו הצעה מותאמת בוואטסאפ",
+      "items": [],
+      "active": true,
+      "order": 16
+    },
+    {
+      "id": "microcopy-contact-phone-cta",
+      "group": "site-microcopy",
+      "title": "כפתור טלפון באזור יצירת קשר",
+      "text": "התקשרו עכשיו",
+      "items": [],
+      "active": true,
+      "order": 17
+    },
+    {
+      "id": "microcopy-contact-location",
+      "group": "site-microcopy",
+      "title": "מיקום שמוצג באזור יצירת קשר",
+      "text": "ביתר עילית",
+      "items": [],
+      "active": true,
+      "order": 18
+    },
+    {
+      "id": "microcopy-contact-promise-heading",
+      "group": "site-microcopy",
+      "title": "כותרת הבטחה באזור יצירת קשר",
+      "text": "מה קורה אחרי הפנייה?",
+      "items": [],
+      "active": true,
+      "order": 19
+    },
+    {
+      "id": "microcopy-form-name-label",
+      "group": "site-microcopy",
+      "title": "תווית שדה שם",
+      "text": "שם מלא",
+      "items": [],
+      "active": true,
+      "order": 20
+    },
+    {
+      "id": "microcopy-form-phone-label",
+      "group": "site-microcopy",
+      "title": "תווית שדה טלפון",
+      "text": "טלפון",
+      "items": [],
+      "active": true,
+      "order": 21
+    },
+    {
+      "id": "microcopy-form-email-label",
+      "group": "site-microcopy",
+      "title": "תווית שדה מייל",
+      "text": "מייל",
+      "items": [],
+      "active": true,
+      "order": 22
+    },
+    {
+      "id": "microcopy-form-interest-label",
+      "group": "site-microcopy",
+      "title": "תווית שדה סוג הזמנה",
+      "text": "במה אתם מתעניינים?",
+      "items": [],
+      "active": true,
+      "order": 23
+    },
+    {
+      "id": "microcopy-form-date-label",
+      "group": "site-microcopy",
+      "title": "תווית שדה תאריך",
+      "text": "תאריך רצוי",
+      "items": [],
+      "active": true,
+      "order": 24
+    },
+    {
+      "id": "microcopy-form-guests-label",
+      "group": "site-microcopy",
+      "title": "תווית שדה מספר סועדים",
+      "text": "מספר סועדים",
+      "items": [],
+      "active": true,
+      "order": 25
+    },
+    {
+      "id": "microcopy-form-delivery-label",
+      "group": "site-microcopy",
+      "title": "תווית שדה אופן קבלה",
+      "text": "אופן קבלה מועדף",
+      "items": [],
+      "active": true,
+      "order": 26
+    },
+    {
+      "id": "microcopy-form-message-label",
+      "group": "site-microcopy",
+      "title": "תווית שדה הודעה",
+      "text": "הודעה קצרה",
+      "items": [],
+      "active": true,
+      "order": 27
+    },
+    {
+      "id": "microcopy-form-submit-label",
+      "group": "site-microcopy",
+      "title": "כפתור שליחת הטופס",
+      "text": "שלחו פנייה בוואטסאפ",
+      "items": [],
+      "active": true,
+      "order": 28
+    },
+    {
+      "id": "microcopy-whatsapp-topbar-message",
+      "group": "site-microcopy",
+      "title": "הודעת וואטסאפ מהתפריט העליון",
+      "text": "שלום Nis, אשמח ליצור קשר.",
+      "items": [],
+      "active": true,
+      "order": 29
+    },
+    {
+      "id": "microcopy-whatsapp-hero-topic",
+      "group": "site-microcopy",
+      "title": "נושא הודעת וואטסאפ מה-Hero",
+      "text": "קייטרינג בוטיק לאירוח",
+      "items": [],
+      "active": true,
+      "order": 30
+    },
+    {
+      "id": "microcopy-whatsapp-contact-message",
+      "group": "site-microcopy",
+      "title": "הודעת וואטסאפ מאזור יצירת קשר",
+      "text": "שלום Nis, אשמח ליצור קשר לגבי הזמנה.",
+      "items": [],
+      "active": true,
+      "order": 31
+    },
+    {
+      "id": "microcopy-whatsapp-footer-message",
+      "group": "site-microcopy",
+      "title": "הודעת וואטסאפ מהפוטר",
+      "text": "שלום Nis, אשמח לקבל פרטים.",
+      "items": [],
+      "active": true,
+      "order": 32
+    },
+    {
+      "id": "microcopy-whatsapp-floating-message",
+      "group": "site-microcopy",
+      "title": "הודעת וואטסאפ מהכפתור הצף",
+      "text": "שלום Nis, אשמח לקבל פרטים דרך האתר.",
+      "items": [],
+      "active": true,
+      "order": 33
+    },
+    {
+      "id": "microcopy-contact-interest-options",
+      "group": "site-microcopy",
+      "title": "אפשרויות שדה סוג הזמנה",
+      "items": [
+        "ניס בטעם של שבת",
+        "ניס בכיס - מגשי אירוח",
+        "Travel Nis",
+        "אירוע קטן",
+        "אחר"
+      ],
+      "active": true,
+      "order": 34
+    },
+    {
+      "id": "microcopy-contact-delivery-options",
+      "group": "site-microcopy",
+      "title": "אפשרויות שדה אופן קבלה",
+      "items": [
+        "נדבר ונבדוק יחד",
+        "איסוף מביתר עילית",
+        "משלוח בתיאום"
+      ],
+      "active": true,
+      "order": 35
+    },
+    {
+      "id": "seo-topics",
+      "group": "seo-topics",
+      "title": "תגיות תחומי שירות לאזור SEO",
+      "items": [
+        "קייטרינג בוטיק בביתר עילית",
+        "תפריט שבת מוכן ומסודר",
+        "מגשי אירוח לאירועים קטנים",
+        "פינגר פוד והרמות כוסית",
+        "מארזי פיקניק ומארזי דרך",
+        "אירוח משפחתי בהתאמה אישית"
+      ],
+      "active": false,
+      "order": 1,
+      "deletedAt": "2026-06-21T00:00:00.000Z"
+    },
+    {
+      "id": "editorial-shabbat",
+      "group": "editorial",
+      "title": "אוכל ביתי מוקפד לשבת שנכנסת ברוגע",
+      "text": "תפריטי שבת עשירים, מסודרים ויפים להגשה, כדי שהבית ירגיש מלא בלי שכל העומס יישב עליכם.",
+      "items": [
+        "שבתות",
+        "ChefHat"
+      ],
+      "active": false,
+      "order": 1,
+      "deletedAt": "2026-06-21T00:00:00.000Z"
+    },
+    {
+      "id": "editorial-events",
+      "group": "editorial",
+      "title": "שולחן שנפתח יפה ומייצר רושם כבר בדקה הראשונה",
+      "text": "מגשי אירוח, פינגר פוד ושולחנות קטנים עם הגשה אסתטית שמתאימה למשפחה, מפגש או אירוח עסקי.",
+      "items": [
+        "אירועים קטנים",
+        "Sparkles"
+      ],
+      "active": false,
+      "order": 2,
+      "deletedAt": "2026-06-21T00:00:00.000Z"
+    },
+    {
+      "id": "editorial-travel",
+      "group": "editorial",
+      "title": "Travel Nis לפינוקים שלוקחים אתכם הלאה",
+      "text": "מארזים נוחים, חכמים ויפים לנסיעות, טיולים וימי כיף, כך שהחוויה מתחילה כבר בדרך.",
+      "items": [
+        "מארזים ודרך",
+        "Gift"
+      ],
+      "active": false,
+      "order": 3,
+      "deletedAt": "2026-06-21T00:00:00.000Z"
+    },
+    {
+      "id": "manifesto-table",
+      "group": "manifesto",
+      "title": "שולחן שנראה מסודר עוד לפני שנוגעים בו",
+      "text": "ההגשה, הצבעים והקצב של השולחן הם חלק מהחוויה, לא רק הרקע של האוכל.",
+      "items": [
+        "1"
+      ],
+      "active": true,
+      "order": 1
+    },
+    {
+      "id": "manifesto-home",
+      "group": "manifesto",
+      "title": "אוכל שמרגיש ביתי, אבל לא יומיומי",
+      "text": "הטעם נשאר חם ומוכר, אבל ההופעה, האריזה והדיוק נותנים תחושת occasion.",
+      "items": [
+        "2"
+      ],
+      "active": true,
+      "order": 2
+    },
+    {
+      "id": "manifesto-custom",
+      "group": "manifesto",
+      "title": "התאמה אישית במקום פס ייצור",
+      "text": "החוויה נבנית סביב האירוח שלכם, לא סביב קטלוג אחיד שצריך להסתדר איתו.",
+      "items": [
+        "3"
+      ],
+      "active": true,
+      "order": 3
+    },
+    {
+      "id": "audience-shabbat",
+      "group": "audience",
+      "title": "למשפחות שמארחות שבת",
+      "text": "למי שרוצה שולחן מכובד, מלא ויפה בלי לעמוד שעות במטבח ובלי להיכנס ללחץ לפני שבת.",
+      "items": [
+        "Users"
+      ],
+      "active": true,
+      "order": 1
+    },
+    {
+      "id": "audience-events",
+      "group": "audience",
+      "title": "לאירועים קטנים ומוקפדים",
+      "text": "לזוגות, משפחות ומארחים שמתכננים שמחה קטנה, ברית, שבע ברכות או מפגש משפחתי עם נראות טובה ושקט תפעולי.",
+      "items": [
+        "HeartHandshake"
+      ],
+      "active": true,
+      "order": 2
+    },
+    {
+      "id": "audience-travel",
+      "group": "audience",
+      "title": "למארזים, דרך ומתנה",
+      "text": "למי שרוצה לשלוח או לקחת משהו יפה, טעים ומכובד לדרך, לשבת, לאורחים או ליום מיוחד.",
+      "items": [
+        "Gift"
+      ],
+      "active": true,
+      "order": 3
+    },
+    {
+      "id": "boutique-custom",
+      "group": "boutique",
+      "title": "התאמה בשיחה קצרה",
+      "text": "סוג האירוח, מספר הסועדים והתאריך הופכים מהר לכיוון ברור שאפשר להתקדם איתו.",
+      "items": [
+        "ClipboardList"
+      ],
+      "active": false,
+      "order": 1,
+      "deletedAt": "2026-06-21T00:00:00.000Z"
+    },
+    {
+      "id": "boutique-ready",
+      "group": "boutique",
+      "title": "נראות שמוכנה לשולחן",
+      "text": "מגשים, מארזים וסידור שמרגישים יפים כבר בפתיחה, בלי עבודה מיותרת מצד המארח.",
+      "items": [
+        "Sparkles"
+      ],
+      "active": false,
+      "order": 2,
+      "deletedAt": "2026-06-21T00:00:00.000Z"
+    },
+    {
+      "id": "boutique-personal",
+      "group": "boutique",
+      "title": "יחס אישי ולא תעשייתי",
+      "text": "אין מסלול גנרי. יש תיאום, הקשבה ותשומת לב לפרטים שחשובים לאירוח שלכם.",
+      "items": [
+        "HeartHandshake"
+      ],
+      "active": false,
+      "order": 3,
+      "deletedAt": "2026-06-21T00:00:00.000Z"
+    },
+    {
+      "id": "boutique-home",
+      "group": "boutique",
+      "title": "טעם ביתי בגימור בוטיק",
+      "text": "החיבור בין אוכל חם ומוכר לבין אריזה, צבעים וסידור שמרגישים חגיגיים יותר.",
+      "items": [
+        "Package"
+      ],
+      "active": false,
+      "order": 4,
+      "deletedAt": "2026-06-21T00:00:00.000Z"
+    },
+    {
+      "id": "process-whatsapp",
+      "group": "process",
+      "title": "שולחים הודעה בוואטסאפ",
+      "text": "אפשר ללחוץ על וואטסאפ או לשלוח את הטופס המסודר בתחתית האתר.",
+      "items": [
+        "MessageCircle"
+      ],
+      "active": true,
+      "order": 1
+    },
+    {
+      "id": "process-details",
+      "group": "process",
+      "title": "מחדדים סוג אירוח וכמות",
+      "text": "בוחרים שבת, מגשי אירוח או Travel Nis, ומוסיפים תאריך, כמות וכיוון כללי.",
+      "items": [
+        "CalendarDays"
+      ],
+      "active": true,
+      "order": 2
+    },
+    {
+      "id": "process-offer",
+      "group": "process",
+      "title": "מקבלים הצעה או תפריט מותאם",
+      "text": "מקבלים כיוון שמתאים לאירוח, למספר הסועדים ולרמת ההגשה הרצויה.",
+      "items": [
+        "ClipboardList"
+      ],
+      "active": true,
+      "order": 3
+    },
+    {
+      "id": "process-ready",
+      "group": "process",
+      "title": "סוגרים פרטים ומקבלים מוכן להגשה",
+      "text": "מסכמים תאריך, אופן קבלה והתאמות, ואז מקבלים אוכל מסודר ונוח להגשה.",
+      "items": [
+        "CheckCircle2"
+      ],
+      "active": true,
+      "order": 4
+    },
+    {
+      "id": "signature-table",
+      "group": "signature",
+      "title": "שולחן שנפתח יפה",
+      "text": "מגשים, צבעים וכלי הגשה שמרגישים מוכנים לאורחים כבר מהרגע הראשון.",
+      "items": [],
+      "active": false,
+      "order": 1,
+      "deletedAt": "2026-06-21T00:00:00.000Z"
+    },
+    {
+      "id": "signature-bites",
+      "group": "signature",
+      "title": "ביסים קטנים, רושם גדול",
+      "text": "פינגר פוד, כריכונים ומנות אישיות שנוחים להגשה, לצילום ולאכילה.",
+      "items": [],
+      "active": false,
+      "order": 2,
+      "deletedAt": "2026-06-21T00:00:00.000Z"
+    },
+    {
+      "id": "signature-details",
+      "group": "signature",
+      "title": "פרטים שמרגישים בוטיק",
+      "text": "קפה, עריכה, אריזה ותיאום קטן שמסדרים את כל החוויה סביבכם.",
+      "items": [],
+      "active": false,
+      "order": 3,
+      "deletedAt": "2026-06-21T00:00:00.000Z"
+    },
+    {
+      "id": "story-rova",
+      "group": "story",
+      "title": "מהרובע היהודי",
+      "text": "שנים של סמטאות אבן, בתים פתוחים וריח של שבת בנו אצל יהודית שפה של אירוח שיש בו נשמה, סדר וחום.",
+      "items": [],
+      "active": true,
+      "order": 1
+    },
+    {
+      "id": "story-kitchen",
+      "group": "story",
+      "title": "אל המטבח של Nis",
+      "text": "הזיכרון הזה הופך למטבח מוקפד: חומרי גלם טריים, טעמים מדויקים, אריזה יפה ותחושה שמישהו חשב עליכם באמת.",
+      "items": [],
+      "active": true,
+      "order": 2
+    },
+    {
+      "id": "story-table",
+      "group": "story",
+      "title": "עד השולחן שלכם",
+      "text": "המטרה פשוטה: שתוכלו לארח ברוגע, לפתוח את המארז או המגש, ולהרגיש שהאוכל כבר מספר את הסיפור הנכון.",
+      "items": [],
+      "active": true,
+      "order": 3
+    },
+    {
+      "id": "samples-shabbat",
+      "group": "samples",
+      "title": "תפריט שבת לדוגמה",
+      "text": "כיוון לשולחן שבת שמרגיש מלא, מכובד ונוח להגשה.",
+      "items": [
+        "מבחר סלטים לשולחן",
+        "דגים לשבת",
+        "עיקריות חמות",
+        "תוספות וסירים משפחתיים",
+        "חלות וקינוחים"
+      ],
+      "active": false,
+      "order": 1,
+      "deletedAt": "2026-06-21T00:00:00.000Z"
+    },
+    {
+      "id": "samples-trays",
+      "group": "samples",
+      "title": "מגשי אירוח ופינגר פוד",
+      "text": "פתרון לאירוח קטן שרוצה להרגיש מוקפד ולא גנרי.",
+      "items": [
+        "מגש מלוח מעוצב",
+        "מיני קישים ומאפים אישיים",
+        "כריכונים וביסים קטנים",
+        "בראנץ׳ בוטיק למשפחה",
+        "קינוחים אישיים"
+      ],
+      "active": false,
+      "order": 2,
+      "deletedAt": "2026-06-21T00:00:00.000Z"
+    },
+    {
+      "id": "samples-travel",
+      "group": "samples",
+      "title": "Travel Nis לדרך",
+      "text": "מארזים יפים ונוחים לרגעים מיוחדים שמתחילים כבר ביציאה מהבית.",
+      "items": [
+        "ערכת פיקניק זוגית",
+        "ערכת דרך משפחתית",
+        "מארז נסיעה מפנק לילדים",
+        "מארז יום כיף",
+        "פתרון מותאם לטיול או יציאה"
+      ],
+      "active": false,
+      "order": 3,
+      "deletedAt": "2026-06-21T00:00:00.000Z"
+    },
+    {
+      "id": "coordination-area",
+      "group": "coordination",
+      "title": "אזור פעילות",
+      "text": "ביתר עילית כבסיס פעילות. איסוף ומשלוחים בסביבה מתואמים לפי תאריך, מיקום ואופי ההזמנה.",
+      "items": [
+        "MapPin"
+      ],
+      "active": true,
+      "order": 1
+    },
+    {
+      "id": "coordination-time",
+      "group": "coordination",
+      "title": "זמן פנייה מומלץ",
+      "text": "לשבתות, חגים ואירועים כדאי לפנות כמה שיותר מוקדם כדי להשאיר מקום להתאמה אישית.",
+      "items": [
+        "CalendarDays"
+      ],
+      "active": true,
+      "order": 2
+    },
+    {
+      "id": "coordination-price",
+      "group": "coordination",
+      "title": "הצעת מחיר",
+      "text": "מקבלים הצעה מותאמת אחרי שמבינים את סוג האירוח, הכמות, התאריך ורמת ההגשה הרצויה.",
+      "items": [
+        "Users"
+      ],
+      "active": true,
+      "order": 3
+    },
+    {
+      "id": "coordination-confirm",
+      "group": "coordination",
+      "title": "אישור תפריט",
+      "text": "אחרי שיחה קצרה מסכמים כיוון, התאמות, תאריך ואופן קבלה לפני סגירת ההזמנה.",
+      "items": [
+        "ClipboardList"
+      ],
+      "active": true,
+      "order": 4
+    },
+    {
+      "id": "trust-ready",
+      "group": "trust",
+      "title": "אסתטיקה שמגיעה מוכנה",
+      "text": "המנות נארזות ומסודרות כך שהשולחן נראה מוקפד בלי עבודה מיותרת מצדכם.",
+      "items": [
+        "Sparkles"
+      ],
+      "active": false,
+      "order": 1,
+      "deletedAt": "2026-06-21T00:00:00.000Z"
+    },
+    {
+      "id": "trust-personal",
+      "group": "trust",
+      "title": "התאמה לפני סגירה",
+      "text": "לפני שמתקדמים עוברים יחד על סוג האירוח, מספר הסועדים והעדפות חשובות.",
+      "items": [
+        "ClipboardList"
+      ],
+      "active": false,
+      "order": 2,
+      "deletedAt": "2026-06-21T00:00:00.000Z"
+    },
+    {
+      "id": "trust-human",
+      "group": "trust",
+      "title": "שיחה אישית, לא תפריט גנרי",
+      "text": "כל פנייה מקבלת מענה לפי התאריך, המיקום והחוויה שאתם רוצים ליצור.",
+      "items": [
+        "HeartHandshake"
+      ],
+      "active": false,
+      "order": 3,
+      "deletedAt": "2026-06-21T00:00:00.000Z"
+    },
+    {
+      "id": "faq-timing",
+      "group": "faq",
+      "title": "כמה זמן מראש צריך להזמין?",
+      "text": "מומלץ לפנות כמה שיותר מוקדם, במיוחד לפני שבתות, חגים ואירועים עם מספר סועדים גדול.",
+      "items": [],
+      "active": true,
+      "order": 1
+    },
+    {
+      "id": "hero-badges",
+      "group": "hero-badges",
+      "title": "תגיות אמון במסך הפתיחה",
+      "items": [
+        "שבתות",
+        "מגשי אירוח",
+        "Travel Nis",
+        "מומלץ לפנות מוקדם"
+      ],
+      "active": true,
+      "order": 1
+    },
+    {
+      "id": "hero-stat-shabbat",
+      "group": "hero-stats",
+      "title": "שבתות",
+      "text": "אוכל ביתי מוקפד, מוכן להגשה",
+      "items": [],
+      "active": true,
+      "order": 1
+    },
+    {
+      "id": "hero-stat-events",
+      "group": "hero-stats",
+      "title": "אירוח קטן",
+      "text": "מגשים ושולחנות שנראים כמו בוטיק",
+      "items": [],
+      "active": true,
+      "order": 2
+    },
+    {
+      "id": "hero-stat-travel",
+      "group": "hero-stats",
+      "title": "Travel Nis",
+      "text": "מארזים חכמים לדרך ולרגעים מיוחדים",
+      "items": [],
+      "active": true,
+      "order": 3
+    },
+    {
+      "id": "hero-note-ready",
+      "group": "hero-notes",
+      "title": "אירוח מוכן להגשה",
+      "text": "כל מגש מגיע מסודר כך שהשולחן נראה נכון כבר מהרגע הראשון.",
+      "items": [],
+      "active": true,
+      "order": 1
+    },
+    {
+      "id": "hero-note-custom",
+      "group": "hero-notes",
+      "title": "שיחה קצרה, התאמה אישית",
+      "text": "מספר סועדים, סוג האירוח והאווירה שאתם רוצים יוצרים יחד את הכיוון.",
+      "items": [],
+      "active": true,
+      "order": 2
+    },
+    {
+      "id": "hero-marquee",
+      "group": "hero-marquee",
+      "title": "טקסט רץ במסך הפתיחה",
+      "items": [
+        "שולחן שנפתח יפה",
+        "אוכל ביתי מוקפד",
+        "מגשי אירוח אלגנטיים",
+        "Travel Nis",
+        "ביתר עילית",
+        "אריזה שנראית כמו מותג"
+      ],
+      "active": true,
+      "order": 1
+    },
+    {
+      "id": "hero-media",
+      "group": "hero-media",
+      "title": "תמונות מסך פתיחה",
+      "text": "התמונות שמרכיבות את הרקע והקומפוזיציה במסך הפתיחה.",
+      "items": [
+        "vegetable-focaccia",
+        "vegetable-focaccia",
+        "mini-burger-trays",
+        "event-buffet-salad-rolls"
+      ],
+      "active": true,
+      "order": 1
+    }
+  ]
+}
