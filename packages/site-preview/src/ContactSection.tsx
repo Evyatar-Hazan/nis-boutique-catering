@@ -84,12 +84,12 @@ export const ContactSection = ({ contactWhatsapp, email, onInquirySubmit }: Cont
           </div>
         </div>
 
-        <div className="contact-conversion-grid">
-          <div className="contact-faq reveal" aria-label="שאלות נפוצות">
+        <div className="contact-conversion-grid" data-reveal-stagger="80">
+          <div className="contact-faq reveal" data-reveal-direction="inline-start" data-reveal-duration="480" aria-label="שאלות נפוצות">
             <Accordion items={publicContactDefaults.faqs} />
           </div>
 
-          <form className="contact-form reveal" noValidate onSubmit={handleSubmit}>
+          <form className="contact-form reveal" data-reveal-direction="inline-end" data-reveal-duration="480" noValidate onSubmit={handleSubmit}>
             <FormField label={`${siteMicrocopy.formNameLabel} (חובה)`} error={errors.name}>
               <input name="name" autoComplete="name" />
             </FormField>

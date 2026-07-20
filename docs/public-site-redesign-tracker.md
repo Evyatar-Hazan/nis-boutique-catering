@@ -1,11 +1,11 @@
 ---
 title: NIS Public Site Redesign Tracker
-status: completed
+status: in_progress
 owner: Evyatar Hazan
 created: 2026-07-20
 updated: 2026-07-21
 source_of_truth: true
-implementation_gate: closed
+implementation_gate: ready
 ---
 
 # NIS Public Site Redesign — Source of Truth and Execution Tracker
@@ -35,9 +35,9 @@ implementation_gate: closed
 
 ## שער מימוש גלובלי
 
-**סטטוס נוכחי: `COMPLETED`**
+**סטטוס נוכחי: `READY`**
 
-ה־release המקורי ומשימת התחזוקה `UI-005` הושלמו ואומתו בפרודקשן. שכבת הצבעים מרוכזת כעת בחוזה semantic יחיד, והפלטה החיה לא שונתה.
+ה־release המקורי ומשימת התחזוקה `UI-005` הושלמו ואומתו בפרודקשן. ב־2026-07-21 נפתח שער תחזוקה ממוקד עבור `UI-006`: הוספת Scrollytelling עדין באמצעות Scroll-Triggered ו־Scroll-Driven Animations, ללא שינוי מבנה, תוכן, לוגיקה או עיצוב.
 
 תוכנית השרת/קליינט, בניית מסך האדמין מחדש והמעבר מ־Google Sheets/Drive ל־Cloudflare D1/R2 נוספו למסמך ב־2026-07-20. שער המימוש נפתח לאחר השלמת:
 
@@ -1145,6 +1145,23 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - **Verification:** audit אוטומטי של literals ו־token references; `pnpm design:tokens:check`; ‏`pnpm validate`; השוואת computed styles ב־375px וב־1440px מול production וצילומי מסך חזותיים; component/build validation ל־Studio preview; Lighthouse contrast; לאחר push — CI/deploy ואימות production של שני המשטחים ללא overflow, broken media או console errors.
 - **Evidence (2026-07-20–21):** tracker נקרא מחדש; audit baseline מצא 351 מופעי צבע ישירים ב־`base.css`/`theme.css` (178/173), ‏50 ערכי RGB בסיסיים ו־19 ערכי hex. כל 351 המופעים הועברו ל־`tokens.css`, שנבנה כעת משכבת palette primitives, ערוצי RGB לשקיפויות וחוזה semantic פעיל; audit חוזר מצא 0 raw colors בשני קובצי ה־styles וב־CSS הכניסה הציבורי. ‏`design:tokens:check` אוכף גם הגדרה וגם צריכה של semantic roles ונשאר חלק מ־`validate`. שינוי ב־CSS המשותף נוסף ל־`turbo.json` כ־global dependency לאחר ש־audit גילה cache hit שגוי; הרצה רגילה שלאחר התיקון בנתה מחדש את שני היישומים. ‏`pnpm validate` עבר עם 138/138 בדיקות, lint, type-check, architecture/security/content/media וכל builds. בדפדפן ב־375×812 וב־1440×1000 הושוו 16 selectors ותשעה מאפייני computed color/gradient/shadow מול production: כל הערכים זהים, מלבד serialization שקול של `0%/100%` בגרדיאנט ה־Hero; אין overflow, media שבורה או console errors. Lighthouse מקומי החזיר Accessibility ‏100, contrast pass, ‏CLS 0 ו־Performance ‏77. ה־public CSS עלה מ־69.47KB/13.83KB gzip ל־82.30KB/14.98KB gzip; תוספת gzip ‏1.15KB התקבלה עבור חוזה palette מרכזי. commit `b3b493e` עבר CI `29760391196` ו־deploy `29760391044`. האתר החי מגיש asset שמכיל את חוזה `--theme-*`; בדיקות production ב־1440px וב־375×812 אישרו את כל חלקי המסלול, 0 overflow, ‏0 broken media ו־0 console warnings/errors. ה־Studio החי הציג את login shell ללא overflow או media שבורה; `401` של `/api/auth/session` ללא session הוא מצב האבטחה הצפוי. המשימה נסגרה `DONE` ללא שינוי בפלטה הפעילה.
 
+### Phase 10 — Scroll storytelling
+
+#### UI-006 — Add progressive scroll motion without structural drift
+
+- **Status:** `VERIFYING`
+- **Dependencies:** `UI-004`, `QA-002`, `QA-003`, `QA-004`, `REL-004`.
+- **Definition:** להרחיב את מנגנון ה־reveal הקיים ל־API גנרי ומודולרי עבור Scroll-Triggered Animations ולהוסיף Scroll-Driven media motion עדין ב־progressive enhancement, בלי לשנות hierarchy, תוכן, business logic, navigation, forms, component names, props או public APIs קיימים.
+- **Acceptance criteria:**
+  - `useScrollAnimation` גנרי תומך ב־variant/direction, ‏delay, ‏duration, ‏threshold, ‏stagger ו־once; `useRevealOnScroll` נשאר תואם ואינו נשבר.
+  - נעשה שימוש ב־IntersectionObserver יחיד וב־CSS compositor properties בלבד; אין scroll hijacking, lock, smooth-scroll override, listener כבד או dependency חדש.
+  - Scroll-Driven Animations מופעלות רק תחת feature detection ומתמקדות במספר קטן של אזורי media; fallback ללא JS/ללא תמיכה מציג את כל התוכן והמבנה ללא שינוי.
+  - `prefers-reduced-motion: reduce` מציג הכול מיד ומבטל transform, transition ו־scroll timeline motion; screen readers, keyboard focus וסדר ה־DOM אינם משתנים.
+  - האתר נשאר זהה מבחינת צבעים, טיפוגרפיה, spacing, sizes, content ופעולות; אין CLS או horizontal overflow ב־desktop/tablet/mobile.
+  - gate אוטומטי חוסם animation רציפה, layout-property animation, ‏`transition: all`, scroll hijacking או reduced-motion לא מלא.
+- **Verification:** unit tests ל־policy/config/fallback/stagger/once; ‏`pnpm motion:check`; ‏`pnpm validate`; דפדפן ב־375×812, ‏768×1024 ו־1440×1000; reduced-motion ו־JavaScript-disabled fallback; בדיקות navigation/gallery/lightbox/FAQ/form/keyboard; performance trace, CLS/overflow/console/network; לאחר push — CI/deploy ואימות production.
+- **Evidence (local, 2026-07-21):** אין ספריית motion בפרויקט ולא נוסף dependency. ‏`useScrollAnimation` הוא owner יחיד של IntersectionObserver ותומך ב־delay/duration/threshold/stagger/once; ‏`useRevealOnScroll` נשאר compatibility export ללא שינוי ב־`App`. נוספו fade/slide/scale/direction על nodes קיימים בלבד ושני view timelines feature-detected לווידאו הגלריה ולתמונת האמון; אין wrapper, שינוי hierarchy, content, props, state, business logic או scroll listener חדש. ‏`motion:check` חוסם continuous/layout/`transition: all`/scroll hijacking ודורש fallback מלא. ‏141/141 בדיקות, lint, type-check, builds, ‏`pnpm validate` ו־`parity:local` עברו. Chrome ב־375×812, ‏768×1024 ו־1440×1000 אישר 30/30 reveals לאחר walkthrough, שני scroll timelines פעילים, 0 overflow, ‏0 broken media ו־0 console errors; gallery filter ‏6→2, lightbox open/close, FAQ, validation/focus, anchors ו־keyboard behavior נשארו תקינים. fallback ללא class הראה 30/30 תכנים גלויים. Chrome מבודד עם `prefers-reduced-motion: reduce` הראה 30/30 גלויים מיד, שני scroll effects עם `animation:none`/`transform:none`, ‏0 active animations ו־0 overflow; הבדיקה חשפה ותיקנה specificity regression לפני פרסום. trace מקומי ב־375px תחת Fast 4G ו־CPU×4: LCP ‏689ms ו־CLS ‏0.01. bundle ציבורי: CSS ‏83.50KB/15.33KB gzip, main JS ‏346.85KB/102.24KB gzip ו־lazy ‏11.49KB/3.90KB gzip—תוספת כוללת קטנה ללא dependency או layout regression. המשימה ב־`VERIFYING` עד CI/deploy ואימות Production.
+
 ## Open decisions before implementation
 
 | ID | Decision | Status | Blocks |
@@ -1201,8 +1218,16 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 | Phase 7 — Quality | Done | 5 | 5 |
 | Phase 8 — Release | Done | 4 | 4 |
 | Phase 9 — Theme maintainability | Done | 1 | 1 |
+| Phase 10 — Scroll storytelling | In progress | 0 | 1 |
 
 ## Change Log
+
+### 2026-07-21 — UI-006 scroll storytelling started
+
+- dependency audit אישר שאין Framer Motion, Motion, GSAP או AOS; נבחרה הרחבה מקומית של IntersectionObserver + CSS Scroll-Driven progressive enhancement ללא dependency חדש.
+- תוכנית השינוי מגינה על hierarchy, תוכן, APIs ולוגיקה קיימים ומשתמשת רק ב־data attributes/classes על nodes קיימים.
+- `UI-006` הועברה ל־`IN_PROGRESS`; תנאי הסגירה כוללים reduced-motion, fallback ללא JS, שלושה breakpoints, interaction regression, performance, CI/deploy ו־Production.
+- המימוש המקומי הושלם עם hook גנרי, Scroll-Driven progressive enhancement ו־motion gate מורחב; ‏141/141 בדיקות ושלושת ה־breakpoints עברו. reduced-motion אמיתי חשף ותיקן specificity regression, והמשימה הועברה ל־`VERIFYING`.
 
 ### 2026-07-21 — UI-005 semantic palette refactor completed
 

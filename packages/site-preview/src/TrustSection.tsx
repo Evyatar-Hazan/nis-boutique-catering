@@ -34,11 +34,11 @@ export const TrustSection = () => {
             <p>{publicTrustDefaults.description}</p>
           </SectionHeading>
           {trustPoints.length === 3 ? (
-            <div className="trust-points">
+            <div className="trust-points" data-reveal-stagger="50">
               {trustPoints.map((point) => {
                 const Icon = point.icon;
                 return (
-                  <article className="trust-point reveal" key={point.id}>
+                  <article className="trust-point reveal" data-reveal-duration="440" data-reveal-threshold="0.1" key={point.id}>
                     <Icon aria-hidden="true" className="card-icon" />
                     <div>
                       <h3>{point.title}</h3>
@@ -53,7 +53,7 @@ export const TrustSection = () => {
           )}
         </div>
         <OptimizedImage
-          className="trust-media reveal"
+          className="trust-media reveal scroll-driven-media"
           image={foodMedia.hostingTableOverview}
           alt="שולחן אירוח של Nis עם מנות ומגשים מוכנים להגשה"
           loading="lazy"

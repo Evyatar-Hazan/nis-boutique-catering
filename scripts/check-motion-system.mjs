@@ -7,6 +7,7 @@ const stylePaths = [
   'packages/site-preview/src/styles/base.css',
   'packages/site-preview/src/styles/theme.css',
 ];
+const scrollHookPath = 'apps/frontend/nis-boutique-catering/src/hooks/useScrollAnimation.ts';
 
 const styles = await Promise.all(
   stylePaths.map(async (relativePath) => ({
@@ -23,18 +24,23 @@ for (const { relativePath, source } of styles) {
     failures.push(`${relativePath}: continuous animation is not allowed`);
   }
 
+  if (/transition\s*:\s*all\b/.test(source)) {
+    failures.push(`${relativePath}: transition: all is not allowed`);
+  }
+
   for (const match of source.matchAll(/transition\s*:\s*([^;]+);/gs)) {
     const declaration = match[1];
     if (layoutProperties.test(declaration)) {
       failures.push(`${relativePath}: transition animates a layout property: ${declaration.trim()}`);
     }
-    if (!/var\(--duration-(?:fast|base|slow)\)/.test(declaration)) {
+    if (declaration.trim() !== 'none' && !/var\(--(?:duration-(?:fast|base|slow)|reveal-duration)\)/.test(declaration)) {
       failures.push(`${relativePath}: transition duration must use a motion token: ${declaration.trim()}`);
     }
   }
 }
 
 const baseStyles = styles.find(({ relativePath }) => relativePath.endsWith('base.css'))?.source ?? '';
+const scrollHook = await readFile(path.join(repositoryRoot, scrollHookPath), 'utf8');
 const requiredStateSelectors = [
   ".button:active",
   ".button:disabled",
@@ -53,11 +59,23 @@ for (const selector of requiredStateSelectors) {
 }
 
 const reducedMotionBlock = baseStyles.match(/@media \(prefers-reduced-motion: reduce\)\s*\{([\s\S]*)\}\s*$/)?.[1] ?? '';
-if (!/\.reveal\s*\{[^}]*opacity:\s*1;[^}]*transform:\s*none;/s.test(reducedMotionBlock)) {
+if (!/\.scroll-motion-ready \.reveal:not\(\.is-visible\)\s*\{[^}]*opacity:\s*1;[^}]*transform:\s*none;[^}]*transition:\s*none;/s.test(reducedMotionBlock)) {
   failures.push('base.css: reduced-motion must reveal all deferred content immediately');
 }
 if (!/animation-duration:\s*0\.01ms\s*!important/.test(reducedMotionBlock)) {
   failures.push('base.css: reduced-motion must neutralize remaining entrance animations');
+}
+if (!/@supports \(animation-timeline: view\(\)\)/.test(baseStyles) || !/animation-timeline:\s*view\(block\)/.test(baseStyles)) {
+  failures.push('base.css: scroll-driven media motion must be feature-detected with a view timeline');
+}
+if (!/\.scroll-driven-media > img,[\s\S]*animation:\s*none;[\s\S]*transform:\s*none;/s.test(reducedMotionBlock)) {
+  failures.push('base.css: reduced-motion must neutralize scroll-driven media transforms');
+}
+if (/addEventListener\(\s*['"]scroll['"]/.test(scrollHook)) {
+  failures.push(`${scrollHookPath}: scroll-triggered reveals must not add a scroll listener`);
+}
+if (/scrollTo\(|scrollBy\(|scrollIntoView\(|document\.body\.style\.overflow/.test(scrollHook)) {
+  failures.push(`${scrollHookPath}: scroll hijacking or scroll locking is not allowed`);
 }
 
 if (failures.length > 0) {

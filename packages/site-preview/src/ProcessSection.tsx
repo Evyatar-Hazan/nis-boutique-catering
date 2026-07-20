@@ -34,11 +34,11 @@ export const ProcessSection = () => {
         </SectionHeading>
         {processSteps.length === 4 ? (
           <>
-            <ol className="process-list">
+            <ol className="process-list" data-reveal-stagger="55">
               {processSteps.map((step) => {
                 const Icon = step.icon;
                 return (
-                  <li className="process-step reveal" key={step.id}>
+                  <li className="process-step reveal" data-reveal-duration="460" data-reveal-threshold="0.1" key={step.id}>
                     <span className="step-number" aria-hidden="true">{step.order}</span>
                     <Icon aria-hidden="true" className="card-icon" />
                     <h3>{step.title}</h3>
@@ -47,7 +47,7 @@ export const ProcessSection = () => {
                 );
               })}
             </ol>
-            <aside className="process-notes" aria-label="מידע שימושי להזמנה">
+            <aside className="process-notes reveal" data-reveal-duration="420" data-reveal-variant="fade" aria-label="מידע שימושי להזמנה">
               {publicProcessDefaults.operationalNotes.map((note) => (
                 <div className="process-note" key={note.id}>
                   <h3>{note.title}</h3>

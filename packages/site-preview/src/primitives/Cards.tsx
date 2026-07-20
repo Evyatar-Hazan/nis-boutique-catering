@@ -28,7 +28,12 @@ export interface MediaCardProps {
 }
 
 export const MediaCard = ({ alt, children, image, title }: MediaCardProps) => (
-  <article className="media-card">
+  <article
+    className="media-card reveal"
+    data-reveal-duration="480"
+    data-reveal-threshold="0.1"
+    data-reveal-variant="scale"
+  >
     <OptimizedImage alt={alt} image={image} loading="lazy" decoding="async" />
     <div className="media-card__copy"><h3>{title}</h3>{children}</div>
   </article>

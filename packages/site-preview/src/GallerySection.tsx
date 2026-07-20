@@ -1,4 +1,3 @@
-import { type CSSProperties } from 'react';
 import type { GalleryCategory, GalleryImage } from './sitePreviewTypes';
 import { OptimizedImage } from './OptimizedImage';
 import { useSiteSectionPreviewData } from './SiteSectionPreviewData';
@@ -46,7 +45,7 @@ export const GallerySection = ({
         <SectionHeading eyebrow={sectionCopy.gallery.eyebrow} title={sectionCopy.gallery.title} id="gallery-title" className="section-heading gallery-heading reveal">
           <TextParagraphs text={sectionCopy.gallery.text} />
         </SectionHeading>
-        <div className="gallery-tabs reveal" aria-label="סינון גלריה לפי סוג">
+        <div className="gallery-tabs reveal" data-reveal-duration="360" data-reveal-variant="fade" aria-label="סינון גלריה לפי סוג">
           {filters.map((category) => (
             <button
               className={category.id === activeCategory ? 'gallery-tab is-active' : 'gallery-tab'}
@@ -60,18 +59,20 @@ export const GallerySection = ({
           ))}
         </div>
         <div className="gallery-media-layout">
-          <figure className="gallery-video reveal">
+          <figure className="gallery-video reveal scroll-driven-media" data-reveal-duration="520" data-reveal-threshold="0.08" data-reveal-variant="scale">
             <video controls muted playsInline preload="metadata" poster={foodMedia.hostingTableOverview.src} aria-label="וידאו מהאירוח">
               <source src={videoMedia.eventVideo} type="video/mp4" />
             </video>
             <figcaption>רגע אמיתי מההכנה ומהאירוח של Nis</figcaption>
           </figure>
-          <div className="gallery-grid" aria-live="polite">
+          <div className="gallery-grid" data-reveal-stagger="45" aria-live="polite">
             {visibleImages.map((image, index) => (
               <button
                 className={image.tall ? 'gallery-item tall reveal' : 'gallery-item reveal'}
                 key={image.title}
-                style={{ '--delay': `${(index % 6) * 55}ms` } as CSSProperties}
+                data-reveal-duration="460"
+                data-reveal-threshold="0.08"
+                data-reveal-variant="scale"
                 type="button"
                 onClick={() => onOpenImage(index)}
                 aria-label={`פתח תמונה: ${image.title}`}

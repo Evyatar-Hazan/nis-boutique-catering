@@ -52,7 +52,7 @@ export const ServicesSection = () => {
         </SectionHeading>
 
         {publicServices.length === 3 ? (
-          <div className="services-grid">
+          <div className="services-grid" data-reveal-stagger="55">
             {publicServices.map((service) => (
               <ServiceCard
                 key={service.id}

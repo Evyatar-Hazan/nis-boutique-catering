@@ -83,16 +83,76 @@
 
 .reveal {
   --delay: 0ms;
+  --reveal-duration: var(--duration-slow);
+  --reveal-scale: 1;
+  --reveal-x: 0px;
+  --reveal-y: 24px;
+  opacity: 1;
+  transform: none;
+}
+
+.scroll-motion-ready .reveal:not(.is-visible) {
   opacity: 0;
-  transform: translateY(28px);
+  transform: translate3d(var(--reveal-x), var(--reveal-y), 0) scale(var(--reveal-scale));
   transition:
-    opacity var(--duration-slow) var(--ease) var(--delay),
-    transform var(--duration-slow) var(--ease) var(--delay);
+    opacity var(--reveal-duration) var(--ease) var(--delay),
+    transform var(--reveal-duration) var(--ease) var(--delay);
 }
 
 .reveal.is-visible {
   opacity: 1;
-  transform: translateY(0);
+  transform: none;
+}
+
+.reveal[data-reveal-variant='fade'] {
+  --reveal-x: 0px;
+  --reveal-y: 0px;
+}
+
+.reveal[data-reveal-variant='scale'] {
+  --reveal-scale: 0.965;
+  --reveal-y: 12px;
+}
+
+.trust-media.reveal {
+  --reveal-duration: 540ms;
+  --reveal-scale: 0.965;
+  --reveal-y: 12px;
+}
+
+.reveal[data-reveal-direction='down'] {
+  --reveal-y: -20px;
+}
+
+.reveal[data-reveal-direction='inline-start'] {
+  --reveal-x: 20px;
+  --reveal-y: 0px;
+}
+
+.reveal[data-reveal-direction='inline-end'] {
+  --reveal-x: -20px;
+  --reveal-y: 0px;
+}
+
+@keyframes scroll-media-drift {
+  from {
+    transform: translate3d(0, 12px, 0) scale(1.02);
+  }
+
+  to {
+    transform: translate3d(0, -12px, 0) scale(1.04);
+  }
+}
+
+@supports (animation-timeline: view()) {
+  .scroll-driven-media > img,
+  .scroll-driven-media > video {
+    animation-name: scroll-media-drift;
+    animation-fill-mode: both;
+    animation-timing-function: linear;
+    animation-timeline: view(block);
+    animation-range: entry 0% exit 100%;
+  }
 }
 
 .topbar {
@@ -2694,9 +2754,18 @@ details p {
     animation: none;
   }
 
-  .reveal {
+  .scroll-driven-media > img,
+  .scroll-driven-media > video {
+    animation: none;
+    transform: none;
+  }
+
+  .reveal,
+  .scroll-motion-ready .reveal,
+  .scroll-motion-ready .reveal:not(.is-visible) {
     opacity: 1;
     transform: none;
+    transition: none;
   }
 
   *,
