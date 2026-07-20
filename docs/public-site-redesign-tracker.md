@@ -923,12 +923,12 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### MIG-006 — Retire Google content infrastructure
 
-- **Status:** `IN_PROGRESS`
+- **Status:** `DONE`
 - **Dependencies:** `MIG-005`, stability window and explicit approval.
 - **Definition:** להסיר Google Sheets/Drive/Picker/Apps Script/service-account paths, scopes, secrets וקוד תיעוד ישן לאחר אישור היציבות.
 - **Acceptance criteria:** אין runtime/build reference ל־Sheets/Drive; OAuth מבקש identity בלבד; secrets ישנים בוטלו; backup נשמר לפי retention; docs מצביעים רק על D1/R2.
 - **Verification:** `rg` audit, clean install/build/test, secret inventory, OAuth consent review ו־production publish נוסף.
-- **Evidence:** pending.
+- **Evidence:** לאחר חלון יציבות שכלל cutover, publish ו־rollback ועוד שלוש פריסות ירוקות, הוסר מסלול התוכן הישן בשלמותו: workflows של backup/seed, Apps Script proxy, service-account sync/backup/seed, משתני Sheets/Drive והסתעפות build נמחקו. `cloudflare:build:site` צורך כעת תמיד את published API של D1/R2; Google נשאר רק כ־Identity client. ‏`rg` ממוקד החזיר 0 runtime/build references ל־Sheets/Drive/Picker/Apps Script/service account מחוץ ל־backup/migration/history השמורים. types של Wrangler נוצרו מחדש ומכילים רק `GOOGLE_CLIENT_ID`/`VITE_GOOGLE_CLIENT_ID`; מסך OAuth החי מציג בדיוק `scope=openid email profile`. שלושת סודות GitHub הישנים (`GOOGLE_SERVICE_ACCOUNT_JSON`, ‏`VITE_GOOGLE_API_KEY`, ‏`VITE_GOOGLE_APPS_SCRIPT_PUBLISH_URL`) והמשתנה הזמני `PUBLIC_CONTENT_SOURCE` בוטלו; inventory סופי מכיל רק Cloudflare tokens ו־identity Client ID. הגיבוי הבלתי משתנה נשאר תחת `backups/legacy-google/20260720T080523Z`. תיעוד ה־Studio וה־content flow נכתב מחדש ל־D1/R2 בלבד. התקנה קפואה, ‏138/138 בדיקות, lint, type-check, builds, full `pnpm validate` ו־`parity:local:deploy` מול Production עברו. commit `252e024`; ‏CI `29754942258` ו־deploy `29754942311` עברו, עם deployments ‏`b6c9e567`/`60a7019f`. מחזור publish נוסף יצר revision ‏`083a07ec`, job ‏`451d29d2` במצב dispatched/attempt 1 ו־workflow `29755363705`; ה־API וה־build החי מצביעים לאותו revision, deployments ‏`a46bab8c`/`2c32ce8f`, ‏health/roots/published החזירו `200`, session הבדיקה נמחק במדויק ו־0 FK violations נשמרו.
 
 ### Phase 6 — Admin rebuild on the server/client contract
 
@@ -1075,7 +1075,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### REL-001 — Run the full local gate
 
-- **Status:** `BACKLOG`
+- **Status:** `DONE`
 - **Dependencies:** `QA-001`–`QA-005`.
 - **Definition:** להריץ את כל בדיקות הריפו בסביבת runtime תואמת CI.
 - **Acceptance criteria:**
@@ -1084,11 +1084,11 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
   - `npx pnpm@9.15.9 parity:local` עובר.
   - `npx pnpm@9.15.9 audit --prod` ללא finding לא מטופל.
 - **Verification:** פלטי הפקודות וקודי יציאה מתועדים.
-- **Evidence:** pending.
+- **Evidence:** שער release מלא הורץ לאחר סגירת migration: ‏`doctor:runtime` עבר עם pnpm ‏9.15.9; ‏`validate` עבר עם 138/138 בדיקות, lint, type-check, content/media/security/architecture checks וכל builds; ‏`parity:local` ביצע שוב התקנה קפואה ואת אותו gate; ‏`pnpm audit --prod` החזיר `No known vulnerabilities found`. כל הפקודות הסתיימו בקוד יציאה 0.
 
 #### REL-002 — Deploy through the approved workflow
 
-- **Status:** `BACKLOG`
+- **Status:** `IN_PROGRESS`
 - **Dependencies:** `REL-001`, explicit user approval to publish.
 - **Definition:** לבצע commit/push/deploy רק לאחר אישור מפורש, דרך GitHub Actions ו־Cloudflare Pages הקיימים.
 - **Acceptance criteria:**
@@ -1176,6 +1176,12 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 | Phase 8 — Release | Blocked | 0 | 4 |
 
 ## Change Log
+
+### 2026-07-20 — MIG-006 legacy content infrastructure retired
+
+- כל נתיבי runtime/build של מקור התוכן הישן הוסרו; D1/R2 הם מקור האמת היחיד ו־Google נשאר להזדהות בלבד.
+- סודות התוכן הישנים וה־feature flag הזמני בוטלו ב־GitHub, בעוד גיבוי ההגירה נשמר לפי מדיניות retention.
+- CI/deploy ומחזור publish נוסף בפרודקשן עברו על commit `252e024`; `REL-001` התחילה עם שער release מקומי מלא.
 
 ### 2026-07-20 — Tracker bootstrap
 
