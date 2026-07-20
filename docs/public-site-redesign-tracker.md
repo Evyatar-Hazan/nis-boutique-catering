@@ -943,21 +943,21 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### ADM-002 — Replace Google OAuth data access with session UX
 
-- **Status:** `VERIFYING`
+- **Status:** `DONE`
 - **Dependencies:** `CF-004`, `ADM-001`.
 - **Definition:** להשתמש ב־Google רק לכניסה, להחליף access-token lifecycle ב־`/api/auth/*` cookie session ולהוסיף logout/session-expired UX.
 - **Acceptance criteria:** אין Sheets/Drive scopes; אין token ב־storage/state מעבר לרגע exchange; refresh משחזר session; 401 מחזיר למסך כניסה בלי אובדן טיוטה מקומית לא צפוי.
 - **Verification:** browser login/refresh/logout/expiry/revocation tests ו־storage/network inspection.
-- **Evidence:** שכבת Google data הישנה נמחקה בשלמותה: אין OAuth scopes ל־Sheets/Drive, ‏Picker, access token, browser storage, editor allowlist או Google API/Sheet/Drive/Apps Script env בחבילת האדמין. Google Identity Services מחזיר ID credential חד־פעמי בלבד ל־`POST /api/auth/google`; client typed יחיד משתמש ב־same-origin credentials, ‏`GET /api/auth/session` משחזר cookie session אחרי refresh ו־`POST /api/auth/logout` מבטל אותה בשרת. `401` מעביר לכניסה דרך `expireSession` עם הודעה ששינויים מקומיים אינם נמחקים. CSP צומצם ל־Google Identity בלבד וה־header contract עודכן. בדיקות client/hook מכסות 401, credential exchange, restore ללא storage, expiry ו־logout; ‏42/42 בדיקות סטודיו ו־full `pnpm validate` עברו. Wrangler local + browser ב־`localhost:8788` אישרו login gate, session restore אחרי reload, authenticated shell ו־logout; session הבדיקה נשאר עם 0 active rows לאחר logout. audit ממוקד מצא 0 runtime references ל־Sheets/Drive scopes/Picker/access token. המשימה ממתינה ל־push, CI/deploy, בדיקות browser/headers ו־Production session smoke לפני `DONE`.
+- **Evidence:** שכבת Google data הישנה נמחקה בשלמותה: אין OAuth scopes ל־Sheets/Drive, ‏Picker, access token, browser storage, editor allowlist או Google API/Sheet/Drive/Apps Script env בחבילת האדמין. Google Identity Services מחזיר ID credential חד־פעמי בלבד ל־`POST /api/auth/google`; client typed יחיד משתמש ב־same-origin credentials, ‏`GET /api/auth/session` משחזר cookie session אחרי refresh ו־`POST /api/auth/logout` מבטל אותה בשרת. `401` מעביר לכניסה דרך `expireSession` עם הודעה ששינויים מקומיים אינם נמחקים. CSP צומצם ל־Google Identity בלבד וה־header contract עודכן. בדיקות client/hook מכסות 401, credential exchange, restore ללא storage, expiry ו־logout; ‏42/42 בדיקות סטודיו ו־full `pnpm validate` עברו. Wrangler local + browser ב־`localhost:8788` אישרו login gate, session restore אחרי reload, authenticated shell ו־logout; session הבדיקה נשאר עם 0 active rows לאחר logout. audit ממוקד מצא 0 runtime references ל־Sheets/Drive scopes/Picker/access token. Commit `ea58359`, ‏CI `29730112539` ו־deploy `29730112487` עברו; deployments ‏`e0a1bac0`/`819bdb65` נפרסו. Production browser טען את Google Identity button תחת CSP מצומצם ללא CSP violations; authenticated session ו־logout החזירו `200`, ה־row בוטל ואז נמחק, ו־Production חזר ל־0 sessions ו־0 FK violations. שני ה־roots וה־health החזירו `200`.
 
 #### ADM-003 — Build one typed API client and query-state layer
 
-- **Status:** `BACKLOG`
+- **Status:** `IN_PROGRESS`
 - **Dependencies:** `CF-003`, `ADM-001`.
 - **Definition:** ליצור client יחיד ל־API עם credentials, schema parsing, error mapping, cancellation ו־retry מוגבל לקריאות idempotent.
 - **Acceptance criteria:** feature modules אינם קוראים `fetch` ישירות; DTOs מגיעים מהחוזה המשותף; conflict/auth/network errors מובחנים; אין retry אוטומטי ל־publish/upload mutation.
 - **Verification:** client unit tests, mocked failure matrix ו־`rg "fetch\("` שמאשר בעלות מרכזית.
-- **Evidence:** pending.
+- **Evidence:** העבודה החלה לאחר סגירת server-session UX; auth client הקיים יאוחד לתשתית request אחת שתשרת את כל domains בלי `fetch` בתוך features.
 
 #### ADM-004 — Implement six-section content editing and preview
 
@@ -1470,3 +1470,4 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - הוסרו Google Sheets/Drive OAuth scopes, ‏Picker, access-token lifecycle ו־browser storage; Google נשאר ID credential חד־פעמי בלבד.
 - נוסף auth client typed ו־server-session hook ל־restore/expiry/logout, ו־CSP צומצם ל־Google Identity. Wrangler local browser אישר refresh ו־logout עם revoke ב־D1.
 - ‏42/42 בדיקות סטודיו ו־full validation עברו; `ADM-002` עברה ל־`VERIFYING` עד push/CI/deploy ו־Production verification.
+- commit `ea58359` עבר CI `29730112539` ו־deploy `29730112487`; Production אישר Google Identity תחת CSP המצומצם ו־session→logout→revoke אמיתי, ולאחר cleanup נשאר עם 0 sessions ו־0 FK violations. `ADM-002` נסגרה כ־`DONE` ו־`ADM-003` החלה.
