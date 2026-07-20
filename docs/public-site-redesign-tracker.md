@@ -1034,7 +1034,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### QA-003 — Verify responsive visual quality
 
-- **Status:** `IN_PROGRESS`
+- **Status:** `DONE`
 - **Dependencies:** `WEB-001`–`WEB-006`.
 - **Definition:** לבצע visual QA מלא ב־375, 768, 1024 ו־1440 פיקסלים, כולל portrait/landscape רלוונטי.
 - **Acceptance criteria:**
@@ -1043,11 +1043,11 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
   - spacing והיררכיית טקסט עקביים.
   - sticky/fixed elements אינם מסתירים תוכן.
 - **Verification:** screenshots + DOM measurements + manual browser walkthrough.
-- **Evidence:** pending.
+- **Evidence:** Chrome local ו־Production נבדקו ב־375×812, ‏812×375, ‏768×1024, ‏1024×768 ו־1440×1000 עם viewport screenshots, full-page walkthrough ו־DOM measurements. בכל המידות: 0 horizontal overflow, ‏0 interactive elements מחוץ ל־viewport, ‏0 text clipping, ‏0 broken images, ‏0 media distortion ושישה sections בלבד. הבדיקה חשפה ותיקנה מצב שבו קפיצה מהירה בגלילה יכלה לדלג על `reveal` ולהשאיר אזורים שקופים; policy משותף חושף כעת גם element שכבר עבר מעל ה־viewport ונוספה בדיקת regression. ב־375px נמצא ותוקן גם overlap של ה־mobile sticky CTA עם קישורי הפוטר באמצעות mobile footer clearance ו־safe-area; ב־Production נמדדו 44px בין הקישור האחרון לסרגל בקצה הגלילה. spacing, hierarchy, cards, gallery/video, process, trust, form/footer ו־sticky/fixed elements נסקרו חזותית portrait/landscape. ‏135/135 בדיקות ו־full `pnpm validate` עברו. commit `870f412`; ‏CI `29741056702` ו־deploy `29741056760` עברו. Cloudflare deployments ‏`385b0df2`/`0d9e5b85`, bundle החי `index-Ggs8Bo4A.js`/`index-DzrhVpCg.css`, כל ה־roots/health `200`, ו־Production D1 עם 0 revisions/media/jobs/sessions/FK violations אומתו.
 
 #### QA-004 — Verify performance and media budgets
 
-- **Status:** `BACKLOG`
+- **Status:** `IN_PROGRESS`
 - **Dependencies:** `QA-003`, `CF-007`, `CF-009`.
 - **Definition:** למדוד ולהשוות לבסיס את LCP, CLS, TBT/INP, JS/CSS size ומדיה.
 - **Acceptance criteria:**
@@ -1534,3 +1534,10 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - keyboard walkthrough חשף ותיקן focus ל־skip link, כניסה/יציאה מתפריט המובייל והחרגת backdrop לא־טאבי ממנגנון ה־Dialog המשותף. נוספו בדיקות regression; ‏134/134 בדיקות ו־full validation עברו.
 - screen-reader/a11y-tree smoke אישר landmarks, היררכיית כותרות, ששת labels של sections, שמות controls, alt text, IDs ייחודיים ו־reduced-motion stylesheet חי.
 - commit `ff52894`, ‏CI `29740055874`, deploy `29740055815` ו־Cloudflare deployments ‏`2052d66f`/`e2f21af4` אומתו. Production החזיר `200` ונשאר עם D1 נקי. `QA-002` נסגרה כ־`DONE` ו־`QA-003` החלה.
+
+### 2026-07-20 — QA-003 responsive visual verification
+
+- חמישה viewports נבדקו מקומית וב־Production: ‏375×812, ‏812×375, ‏768×1024, ‏1024×768 ו־1440×1000. screenshots ו־DOM measurements אישרו 0 overflow/clipping/broken media/distortion וחזות עקבית לכל ששת האזורים.
+- צילום מהיר חשף ותיקן reveal elements שיכלו להישאר שקופים אחרי קפיצה בגלילה; policy משותף ובדיקת regression מכסים כעת גם elements שנדלקו מעל ה־viewport.
+- ב־375px נוסף clearance עם safe-area לפוטר לאחר שה־sticky CTA הסתיר את הקישור האחרון; בפרודקשן נשארו 44px גלויים בין הקישור לסרגל בקצה הגלילה.
+- ‏135/135 בדיקות ו־full validation עברו. commit `870f412`, ‏CI `29741056702`, deploy `29741056760`, deployments ‏`385b0df2`/`0d9e5b85` ו־bundle החי אומתו; Production נשאר `200` ו־D1 נקי. `QA-003` נסגרה כ־`DONE` ו־`QA-004` החלה.
