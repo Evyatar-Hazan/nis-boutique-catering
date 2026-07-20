@@ -905,16 +905,16 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### MIG-004 — Run the production freeze, delta import and cutover
 
-- **Status:** `IN_PROGRESS`
+- **Status:** `DONE`
 - **Dependencies:** `MIG-003`, `ADM-008`, explicit cutover approval.
 - **Definition:** לבצע חלון הקפאת כתיבה, delta export/import, parity ואז להעביר את הסטודיו ל־API החדש.
 - **Acceptance criteria:** זמן freeze מתועד; אין delta חסר; owner flow עובר לפני פתיחת כתיבה; feature/config rollback יכול להחזיר את הסטודיו הישן במהלך החלון.
 - **Verification:** signed cutover checklist, before/after hashes, authenticated owner smoke ו־audit log.
-- **Evidence:** pending.
+- **Evidence:** חלון ההקפאה החל ב־`2026-07-20T13:13:44Z`; מסך הסטודיו כבר לא החזיק Google write scopes ולכן לא נשאר נתיב כתיבה ל־Sheets/Drive. workflow גיבוי טרי `29745345594` יצר artifact ‏`8462164511` (`20260720T131439Z`) עם 5 Sheets/163 rows/18 Drive files. לאחר הסרת `updatedAt` הצפוי, snapshot ה־delta זהה למקור ההגירה עם אותם counts — 0 delta חסר. לפני mutation נשמר D1 bookmark ‏`00000025-00000000-000050ae-fac51a19b128051481b1cb1ec7448740`; Production היה 1 admin פעיל, ‏0 revisions/media/jobs/sessions/FK, ושלושת ה־health roots החזירו `200`. importer משותף ל־Preview/Production קיבל production target עם confirmation gate מפורש, העלה 16 objects ל־R2 רק אחרי source checksum, הוריד ואימת מחדש 16/16, ויצר draft ‏`b5bd90fb` ו־published ‏`b6398b25` עם checksum ‏`ded45021…`. parity: ‏1 draft, ‏1 published, ‏16 media/keys/checksums, ‏0 jobs/FK. owner smoke מאומת ב־Chrome טען את ששת החלקים, 16 media, preview/history/admin; שינוי Hero הפיך נשמר גרסה ‏1→2→3 והוחזר לתוכן המקורי (הבדל יחיד מול published הוא `updatedAt` audit). session/cookie הזמניים נמחקו וחזרו ל־0; anonymous חזר `401`. endpoint published החזיר schema v2/ETag ומדיית R2 מדגמית החזירה `200`, ‏453,816 bytes ו־checksum ETag. signed checklist ו־rollback המדויק ל־D1/R2/Pages נשמרו תחת migration. ‏138/138 בדיקות ו־full `pnpm validate` עברו. commit `27df281`; ‏CI `29752899522`, deploy `29752898113` ו־Cloudflare deployments ‏`0468b11e`/`9b20f62d` עברו; roots/health/published נשארו `200`, Production נשאר 1/1/16 ו־0 jobs/sessions/FK.
 
 #### MIG-005 — Cut over the public build and prove rollback
 
-- **Status:** `BACKLOG`
+- **Status:** `IN_PROGRESS`
 - **Dependencies:** `MIG-004`, `CF-009`.
 - **Definition:** להעביר CI מ־Google sync ל־D1/R2 sync, לפרוס ולבדוק גם publish חדש וגם rollback revision.
 - **Acceptance criteria:** אותו published revision מגיע ל־generated snapshot ול־production; media סטטית תקינה; rollback מחזיר תוכן קודם; Sheets/Drive נשארים read-only בתקופת הביטחון.
@@ -1556,3 +1556,10 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - הוסרו unsafe assertions ו־deep test wrapper; snapshot generated מקבל כעת טיפוס מפורש ונתוני fallback עומדים בחוזה במקום להסתיר פערים באמצעות cast.
 - שלוש משפחות duplication אמיתיות אוחדו ל־helpers ממוקדים. ‏`jscpd` חזר עם 0 clones על 117 קובצי authored, ‏`madge` עם 0 cycles על 136 קבצים, ו־`rg` עם 0 `any`/unsafe assertions/directives בקוד הייצור.
 - ‏137/137 בדיקות ו־full validation עברו. commit `be59cea`, ‏CI `29745014493`, deploy `29745014576`, deployments ‏`d183721a`/`6a9f12d5` ו־Production browser אומתו. `QA-005` נסגרה כ־`DONE`; המשימה הפתוחה הראשונה לפי סדר התלויות, `MIG-004`, החלה.
+
+### 2026-07-20 — MIG-004 Production freeze and content cutover
+
+- גיבוי delta טרי (`29745345594`/`8462164511`) הוכיח שאין שינוי תוכן או מדיה מאז מקור ההגירה; זמן freeze, hashes ו־counts נשמרו ב־signed checklist.
+- לפני כתיבה נשמר bookmark ‏`00000025-…7448740`. importer משותף ומוגן ב־confirmation העלה ואימת 16/16 R2 objects ויצר draft/published יחידים ב־D1 עם 0 jobs/FK.
+- owner smoke מאומת טען את כל הסטודיו מ־Production, ביצע edit/save/restore גרסה ‏1→3 וניקה session; endpoint הציבורי ומדיית R2 עברו. ‏138/138 בדיקות ו־full validation עברו.
+- commit `27df281`, ‏CI `29752899522`, deploy `29752898113` ו־deployments ‏`0468b11e`/`9b20f62d` אומתו. `MIG-004` נסגרה כ־`DONE` ו־`MIG-005` החלה; Google נשאר read-only ו־public workflow עדיין ב־legacy lane עד ה־two-cycle cutover הבא.
