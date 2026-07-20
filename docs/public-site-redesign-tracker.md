@@ -840,12 +840,12 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### CF-007 — Implement R2 media lifecycle APIs
 
-- **Status:** `BACKLOG`
+- **Status:** `VERIFYING`
 - **Dependencies:** `CF-001`, `CF-005`, `ARC-002`.
 - **Definition:** לממש upload/list/update-metadata/soft-delete/restore למדיה, עם streaming ל־R2 ומטא־דאטה ב־D1.
 - **Acceptance criteria:** allowlist של MIME וגודל; object keys server-generated; hash מונע כפילות מקרית; אין Base64; מחיקה פיזית חסומה כשיש reference פעיל.
 - **Verification:** upload אמיתי ל־R2 preview, קובץ לא תקין/גדול, duplicate hash, referenced delete ו־orphan scan.
-- **Evidence:** pending.
+- **Evidence:** נוסף domain media יחיד עם `GET/POST/PATCH/DELETE /api/media` ו־`GET /api/media/orphans`. upload מקבל raw body בלבד ומעביר את `ReadableStream` ישירות ל־R2; Content-Length חובה ומוגבל ל־12MB, MIME מוגבל לפורמטים שבחוזה, object key נוצר בשרת, dimensions/alt/checksum נבדקים ו־R2 מאמת SHA-256 בזמן הכתיבה. אין Base64. D1 שומר metadata בלבד, checksum unique מונע כפילות, וכשל metadata מוחק רק את object החדש כדי למנוע orphan. archive הוא soft-delete בלבד; physical delete אינו חשוף ב־API, ו־draft/published references נבדקים מחדש מול schema וחוסמים archive ב־`409`. אותם routes מטפלים ב־list, metadata, restore ו־orphan scan בלי implementations כפולים. ‏41/41 בדיקות סטודיו ו־full `pnpm validate` עברו. Wrangler local ו־Preview deployment `974ccb84` אישרו upload אמיתי של WebP ‏101,570 bytes, duplicate `409`, MIME ‏`415`, oversize ‏`413`, list, metadata update, archive/restore, referenced delete `409` ו־orphan scan ריק. נתוני D1/R2/session/draft הזמניים נמחקו במדויק אחרי שתי הבדיקות; Preview חזר ל־0 media ו־0 content rows. נדרש עדיין push/CI/deploy ואימות Production read-only/negative לפני `DONE`.
 
 #### CF-008 — Implement atomic publish, rollback and workflow dispatch
 
@@ -1415,3 +1415,11 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - commit `3064caf` עבר CI `29722058410` ו־Cloudflare deploy `29722058384`; Production deployment `e283b557` מצביע ל־commit זה.
 - לפני migration Production נשמר Time Travel bookmark `00000007-00000000-000050ae-2add70c7ecf88430169746d6327a8c50`; apply וחזרה no-op עברו, עם שלוש migrations ו־0 FK violations.
 - Production אישר `401` לקריאה/כתיבה לא מאומתת, `403` ל־Origin חסר, request IDs/security headers ו־0 content rows; לא נוצרה טיוטה לפני שלב ההגירה. health ושני ה־roots החזירו `200`. `CF-006` נסגרה כ־`DONE`.
+
+### 2026-07-20 — CF-007 R2 media lifecycle
+
+- `CF-007` עברה ל־`IN_PROGRESS`; נוסף media domain יחיד ל־upload/list/metadata/archive/restore/orphan scan, וכל route משתמש ב־security presets הקיימים.
+- upload הוא raw stream ישירות ל־R2 עם Content-Length, ‏12MB limit, MIME allowlist, server key ו־R2 SHA-256 validation; D1 מקבל metadata בלבד ואין Base64.
+- archive הוא soft-delete וחסום ב־`409` כאשר draft/published תקין מפנה ל־media ID; physical delete אינו חשוף ב־API. restore ועדכון alt אטומיים ב־D1.
+- 41/41 בדיקות סטודיו ו־full validation עברו. Local ו־Preview `974ccb84` אישרו upload אמיתי, duplicate, invalid type, oversize, list, update, archive/restore, referenced delete ו־orphan scan ריק.
+- כל test object/row/session/draft נמחקו במדויק מ־local ומ־Preview; Preview חזר ל־0 media/content rows. `CF-007` עברה ל־`VERIFYING` עד push/CI/deploy ואימות Production של המשטח השלילי/read-only.

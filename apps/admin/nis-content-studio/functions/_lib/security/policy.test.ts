@@ -130,6 +130,27 @@ describe("enforceAdminApiPolicy", () => {
     } satisfies Partial<ApiError>);
   });
 
+  it("requires Content-Length before accepting a streaming upload", async () => {
+    const request = new Request("https://studio.example/api/test", {
+      headers: {
+        "Content-Type": "image/webp",
+        Origin: "https://studio.example",
+      },
+      method: "POST",
+      body: "image-bytes",
+    });
+
+    await expect(
+      enforceAdminApiPolicy(
+        context(request, database),
+        testRoute(apiSecurityPolicies.upload),
+      ),
+    ).rejects.toMatchObject({
+      code: "length_required",
+      status: 411,
+    } satisfies Partial<ApiError>);
+  });
+
   it("returns 429 with Retry-After when the login window is exhausted", async () => {
     const request = new Request("https://studio.example/api/test", {
       headers: {

@@ -35,10 +35,18 @@ export const apiSecurityPolicies = {
     sameOrigin: true,
   },
   upload: {
-    allowedContentTypes: ["multipart/form-data"],
+    allowedContentTypes: [
+      "image/avif",
+      "image/jpeg",
+      "image/png",
+      "image/webp",
+      "video/mp4",
+      "video/webm",
+    ],
     authenticated: true,
     maxBodyBytes: 12 * 1024 * 1024,
     rateLimit: { limit: 30, scope: "upload", windowSeconds: 60 * 60 },
+    requireContentLength: true,
     sameOrigin: true,
   },
 } as const satisfies Record<string, ApiSecurityPolicy>;
@@ -68,13 +76,19 @@ const enforceContentType = (
 const enforceBodySize = async (
   request: Request,
   maxBodyBytes: number,
+  requireContentLength: boolean,
 ): Promise<void> => {
   const contentLength = request.headers.get("Content-Length");
   if (contentLength && /^\d+$/u.test(contentLength)) {
-    if (Number(contentLength) > maxBodyBytes) {
+    const bodyBytes = Number(contentLength);
+    if (bodyBytes === 0 || bodyBytes > maxBodyBytes) {
       throw new ApiError(413, "payload_too_large", "Request body is too large.");
     }
     return;
+  }
+
+  if (requireContentLength) {
+    throw new ApiError(411, "length_required", "Content-Length is required.");
   }
 
   const reader = request.clone().body?.getReader();
@@ -115,7 +129,11 @@ export const enforceAdminApiPolicy: ApiGuard<Env> = async (
     enforceContentType(context.request, policy.allowedContentTypes);
   }
   if (policy.maxBodyBytes !== undefined) {
-    await enforceBodySize(context.request, policy.maxBodyBytes);
+    await enforceBodySize(
+      context.request,
+      policy.maxBodyBytes,
+      policy.requireContentLength ?? false,
+    );
   }
   if (policy.rateLimit) {
     await enforceRateLimit(context.request, context.env.DB, policy.rateLimit);

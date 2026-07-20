@@ -19,6 +19,7 @@ export interface ApiSecurityPolicy {
   readonly authenticated?: boolean;
   readonly maxBodyBytes?: number;
   readonly rateLimit?: ApiRateLimitPolicy;
+  readonly requireContentLength?: boolean;
   readonly sameOrigin?: boolean;
 }
 
