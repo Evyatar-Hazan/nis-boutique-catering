@@ -997,18 +997,18 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### ADM-008 — Complete admin accessibility, resilience and E2E gate
 
-- **Status:** `IN_PROGRESS`
+- **Status:** `DONE`
 - **Dependencies:** `ADM-002`–`ADM-007`.
 - **Definition:** להשלים responsive, keyboard, focus, error recovery ו־owner E2E לפני cutover.
 - **Acceptance criteria:** כל פעולה קריטית עובדת ב־375px ובדסקטופ; אין אובדן שינוי ללא warning; focus/errors נגישים; reload/network interruption ניתנים להתאוששות; owner flow מלא עובר ב־preview.
 - **Verification:** axe + keyboard + mobile screenshots + network-offline tests + login→edit→upload→save→publish→history→rollback E2E.
-- **Evidence:** pending.
+- **Evidence:** נוספו banner נגיש למצב offline, שמירת שינויים מקומיים אחרי כשל רשת, warning ב־`beforeunload`, העברת focus לשדה validation הראשון, `role=alert` לשגיאות, ניהול focus מלא ל־confirmations עם Escape/restore, busy guard סינכרוני ו־idempotency key שנשמר גם אחרי network failure. בדיקת Preview חשפה ותיקנה פער אינטגרציה שבו `PublishPanel` החזיק draft ישן אחרי save; `ContentStudio` מעדכן כעת את query הקנוני מיד אחרי שמירה ובדיקת רגרסיה מאמתת זאת. ניגודיות הכפתור הראשי תוקנה לאחר Lighthouse. ‏72/72 בדיקות סטודיו ו־full `pnpm validate` עברו. Chrome מקומי ו־Preview deployments ‏`1203638b`/`ef62069b` אימתו login/session, edit, העלאת PNG ל־R2, החלפת hero, beforeunload ללא אובדן, save שנכשל offline ואז מצליח אחרי חזרת הרשת, publish/history עם `publish_dispatch_unconfigured`, rollback, keyboard focus/Escape, desktop ו־375×812 ללא overflow. Lighthouse snapshot בדסקטופ ובמובייל החזיר Accessibility ‏100 ו־Best Practices ‏100. כל mutations נוקו: Preview שוחזר ל־bookmark `00000015-00000000-000050ae-e0b75d8e6ac03f37b5ca57fffac8f458`, שני objects זמניים נמחקו מ־R2, והמצב אומת עם revisions ‏`b5bd90fb`/`b6398b25`, ‏16 media, ‏0 jobs/sessions/FK/missing/orphans. Commits `bd1e274`/`d6e4261`; CI `29738508380` ו־deploy `29738508448` עברו. Production deployments ‏`37321658`/`e2463839` עלו; roots/health החזירו `200`, history ללא session נשאר `401`, ה־CSS החי כולל את תיקון הניגודיות ו־Production D1 נשאר עם 0 revisions/media/jobs/sessions/FK.
 
 ### Phase 7 — Quality, regression and non-functional validation
 
 #### QA-001 — Expand automated coverage
 
-- **Status:** `BACKLOG`
+- **Status:** `IN_PROGRESS`
 - **Dependencies:** `WEB-001`–`WEB-006`, `CF-001`–`CF-010`, `ADM-001`–`ADM-008`, `MIG-003`.
 - **Definition:** לכסות contracts, rendering, interactions, forms, media ו־content migration בבדיקות אוטומטיות.
 - **Acceptance criteria:**
@@ -1514,3 +1514,9 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - ‏70/70 בדיקות סטודיו ו־full validation עברו. Wrangler local אישר empty state מאומת; Preview `c0708653` אישר publish failure, retry attempt ‏1→2, rollback ויצירת draft מול D1/R2 אמיתיים.
 - Preview שוחזר במדויק דרך bookmark `00000013-00000000-000050ae-1dc470640bd16ec10565779e3c03b15a` וחזר ל־2 revisions, ‏16 media, ‏0 jobs/sessions/FK.
 - commits `41a0acf`/`d0d9d73`, ‏CI `29736709319` ו־deploy `29736709296` עברו; Production deployments ‏`96aae2c8`/`49395ef5` עלו, bundle/401/roots/health אומתו ו־Production D1 נשאר נקי. `ADM-007` נסגרה כ־`DONE` ו־`ADM-008` החלה.
+
+### 2026-07-20 — ADM-008 accessibility, resilience and owner E2E
+
+- הושלמו offline recovery, beforeunload warning, focus לשגיאת validation, confirmation focus/Escape, busy/idempotency resilience ותיקון ניגודיות. בדיקת Preview גילתה ותיקנה גם stale draft בין save לפרסום, עם callback/query refresh ובדיקת רגרסיה.
+- ‏72/72 בדיקות סטודיו ו־full validation עברו. Chrome אימת דסקטופ ו־375×812 ללא overflow, warning/recovery אחרי offline, ו־owner flow מלא login→edit→upload→save→publish→history→rollback. Lighthouse בדסקטופ ובמובייל: Accessibility ‏100 ו־Best Practices ‏100.
+- Preview שוחזר ל־bookmark `00000015-00000000-000050ae-e0b75d8e6ac03f37b5ca57fffac8f458`, objects זמניים נמחקו, ונשארו 2 revisions, ‏16 media ו־0 jobs/sessions/FK/orphans. Commits `bd1e274`/`d6e4261`, ‏CI `29738508380`, deploy `29738508448` ו־Production deployments ‏`37321658`/`e2463839` אומתו; Production D1 נשאר נקי. `ADM-008` נסגרה כ־`DONE` ו־`QA-001` החלה.
