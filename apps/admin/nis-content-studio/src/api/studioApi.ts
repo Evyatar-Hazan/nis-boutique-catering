@@ -42,15 +42,38 @@ const adminSchema = z.object({
 }).strict();
 const adminsResponseSchema = z.object({ admins: z.array(adminSchema) }).strict();
 const adminItemResponseSchema = z.object({ admin: adminSchema }).strict();
+const publishJobSchema = z.object({
+  attemptCount: z.number().int().nonnegative(),
+  completedAt: z.number().int().nullable(),
+  createdAt: z.number().int(),
+  errorMessage: z.string().nullable(),
+  githubRunId: z.string().nullable(),
+  id: z.string().uuid(),
+  idempotencyKey: z.string().min(8),
+  operation: z.enum(['publish', 'rollback']),
+  requestedBy: z.string().min(1),
+  revisionId: z.string().uuid(),
+  sourceRevisionId: z.string().uuid().nullable(),
+  status: z.enum(['queued', 'dispatched', 'deploying', 'succeeded', 'failed']),
+  updatedAt: z.number().int(),
+}).strict();
+const publishResultSchema = z.object({ job: publishJobSchema, revision: revisionSchema }).strict();
+const publishHistorySchema = z.object({ jobs: z.array(publishJobSchema), revisions: z.array(revisionSchema) }).strict();
 
 export type ContentRevisionDto = z.infer<typeof revisionSchema>;
 export type MediaAssetDto = z.infer<typeof mediaAssetSchema>;
 export type AdminDto = z.infer<typeof adminSchema>;
+export type PublishHistoryDto = z.infer<typeof publishHistorySchema>;
+export type PublishJobDto = z.infer<typeof publishJobSchema>;
 export type StudioServerSession = z.infer<typeof sessionSchema>;
 
 const jsonBody = (body: unknown) => ({
   body: JSON.stringify(body),
   headers: { 'Content-Type': 'application/json' },
+});
+const idempotentJsonBody = (body: unknown, idempotencyKey: string) => ({
+  ...jsonBody(body),
+  headers: { 'Content-Type': 'application/json', 'Idempotency-Key': idempotencyKey },
 });
 
 const sha256Hex = async (file: File): Promise<string> => {
@@ -75,6 +98,7 @@ export const studioApi = {
   }),
   listMedia: (signal?: AbortSignal) => studioApiRequest({ path: '/api/media', schema: mediaResponseSchema, signal }),
   listAdmins: (signal?: AbortSignal) => studioApiRequest({ path: '/api/admins', schema: adminsResponseSchema, signal }),
+  listPublishHistory: (signal?: AbortSignal) => studioApiRequest({ path: '/api/publish/history', schema: publishHistorySchema, signal }),
   mediaFileUrl: (id: string) => `/api/media/file?id=${encodeURIComponent(id)}`,
   logout: (signal?: AbortSignal) => studioApiRequest({
     method: 'POST', path: '/api/auth/logout', schema: z.object({ status: z.literal('signed_out') }).strict(), signal,
@@ -88,11 +112,20 @@ export const studioApi = {
       throw error;
     }
   },
+  publishDraft: (input: { readonly draftId: string; readonly expectedVersion: number }, idempotencyKey: string, signal?: AbortSignal) => studioApiRequest({
+    ...idempotentJsonBody(input, idempotencyKey), method: 'POST', path: '/api/publish', schema: publishResultSchema, signal,
+  }),
   saveDraft: (input: {
     readonly content: z.infer<typeof publicSiteDocumentSchema>;
     readonly expectedVersion: number | null;
   }, signal?: AbortSignal) => studioApiRequest({
     ...jsonBody(input), method: 'PUT', path: '/api/content/draft', schema: draftResponseSchema, signal,
+  }),
+  retryPublish: (jobId: string, signal?: AbortSignal) => studioApiRequest({
+    ...jsonBody({ jobId }), method: 'POST', path: '/api/publish/retry', schema: z.object({ job: publishJobSchema }).strict(), signal,
+  }),
+  rollbackPublish: (sourceRevisionId: string, idempotencyKey: string, signal?: AbortSignal) => studioApiRequest({
+    ...idempotentJsonBody({ sourceRevisionId }, idempotencyKey), method: 'POST', path: '/api/publish/rollback', schema: publishResultSchema, signal,
   }),
   updateMedia: (input: { readonly altText?: string; readonly archived?: boolean; readonly id: string }, signal?: AbortSignal) => studioApiRequest({
     ...jsonBody(input), method: 'PATCH', path: '/api/media', schema: mediaItemResponseSchema, signal,

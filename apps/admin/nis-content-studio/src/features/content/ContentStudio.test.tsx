@@ -22,6 +22,7 @@ const revision = (version = 1): ContentRevisionDto => ({
 
 const renderStudio = (initialRevision = revision()) => render(<ContentStudio
   initialRevision={initialRevision}
+  onDirtyChange={vi.fn()}
   onReload={vi.fn()}
   onUnauthorized={vi.fn()}
 />);
@@ -70,7 +71,7 @@ describe('six-section content studio', () => {
       error: { code: 'revision_conflict', message: 'stale' },
     }, { status: 409 })));
     const onReload = vi.fn();
-    render(<ContentStudio initialRevision={revision()} onReload={onReload} onUnauthorized={vi.fn()} />);
+    render(<ContentStudio initialRevision={revision()} onDirtyChange={vi.fn()} onReload={onReload} onUnauthorized={vi.fn()} />);
     fireEvent.change(screen.getByLabelText('כותרת ראשית'), { target: { value: 'שינוי מקומי' } });
     fireEvent.click(screen.getByRole('button', { name: 'שמור טיוטה' }));
     await screen.findByText(/הטיוטה השתנתה במקום אחר/);

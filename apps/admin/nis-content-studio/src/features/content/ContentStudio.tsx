@@ -61,9 +61,11 @@ const FieldControl = ({
 export const ContentStudio = ({
   initialRevision,
   onReload,
+  onDirtyChange,
   onUnauthorized,
 }: {
   readonly initialRevision: ContentRevisionDto;
+  readonly onDirtyChange: (dirty: boolean) => void;
   readonly onReload: () => void;
   readonly onUnauthorized: () => void;
 }) => {
@@ -86,6 +88,11 @@ export const ContentStudio = ({
     window.addEventListener('beforeunload', warn);
     return () => window.removeEventListener('beforeunload', warn);
   }, [dirty]);
+
+  useEffect(() => {
+    onDirtyChange(dirty);
+    return () => onDirtyChange(false);
+  }, [dirty, onDirtyChange]);
 
   const update = (field: EditorField, value: string | boolean) => {
     setContent((current) => updateEditorValue(current, field.path, value));
