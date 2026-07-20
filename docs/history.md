@@ -27,6 +27,14 @@ Older entries below intentionally retain references to retired systems as an aud
 
 ## Timeline
 
+### July 20, 2026: Cloudflare CMS migration and redesign completed
+
+- the public site was reduced to six verified sections and the Studio was rebuilt around a typed same-origin API
+- D1 became the only structured-content source of truth and R2 became the managed-media source of truth
+- publish, rollback, migration parity, accessibility, responsive behavior, performance, security and production E2E gates passed
+- legacy content workflows and repository secrets were retired; Google remains identity-only
+- final release tracking closed with all 51 tasks complete
+
 ### July 16, 2026: Studio Admin Management
 
 The Studio added a Shoham-style admin management surface without replacing the stable Nis content pipeline.

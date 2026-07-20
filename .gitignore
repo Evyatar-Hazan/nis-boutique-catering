@@ -40,6 +40,12 @@ pnpm-debug.log*
 # Testing
 coverage/
 .nyc_output/
+.playwright-cli/
+
+# Generated production content-sync artifacts
+apps/frontend/nis-boutique-catering/public/media/cms/
+apps/frontend/nis-boutique-catering/src/generated/publicSiteDocument.generated.json
+apps/frontend/nis-boutique-catering/src/generated/publicSiteDocument.generated.ts
 
 # OS
 *.log

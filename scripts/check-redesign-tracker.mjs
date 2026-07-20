@@ -7,6 +7,8 @@ const taskMatches = [...tracker.matchAll(/^#### ((?:GOV|ARC|UI|WEB|CF|MIG|ADM|QA
 const taskIds = taskMatches.map((match) => match[1]);
 const uniqueTaskIds = new Set(taskIds);
 const decisionRows = [...tracker.matchAll(/^\| DEC-\d{3} \|.+\| (Open|Decided) \|/gm)];
+const taskStatuses = [...tracker.matchAll(/^- \*\*Status:\*\* `([A-Z_]+)`$/gm)].map((match) => match[1]);
+const isCompleted = tracker.includes('status: completed');
 const errors = [];
 
 if (taskIds.length !== 51) errors.push(`expected 51 tasks, found ${taskIds.length}`);
@@ -17,8 +19,15 @@ for (const label of ['Definition', 'Acceptance criteria', 'Verification', 'Evide
   if (count !== taskIds.length) errors.push(`expected ${taskIds.length} ${label} blocks, found ${count}`);
 }
 
-if (!tracker.includes('implementation_gate: ready')) errors.push('implementation gate is not ready');
-if (!tracker.includes('**סטטוס נוכחי: `READY`**')) errors.push('visible implementation gate is not READY');
+if (taskStatuses.length !== taskIds.length) errors.push(`expected ${taskIds.length} task statuses, found ${taskStatuses.length}`);
+if (isCompleted) {
+  if (taskStatuses.some((status) => status !== 'DONE')) errors.push('completed tracker has unfinished tasks');
+  if (!tracker.includes('implementation_gate: closed')) errors.push('completed tracker gate is not closed');
+  if (!tracker.includes('**סטטוס נוכחי: `COMPLETED`**')) errors.push('visible implementation gate is not COMPLETED');
+} else {
+  if (!tracker.includes('implementation_gate: ready')) errors.push('implementation gate is not ready');
+  if (!tracker.includes('**סטטוס נוכחי: `READY`**')) errors.push('visible implementation gate is not READY');
+}
 if (decisionRows.some((match) => match[1] === 'Open')) errors.push('open implementation decisions remain');
 
 const taskReferences = [...tracker.matchAll(/`((?:GOV|ARC|UI|WEB|CF|MIG|ADM|QA|REL)-\d{3})`/g)].map((match) => match[1]);
@@ -29,5 +38,5 @@ if (errors.length > 0) {
   for (const error of errors) console.error(`Tracker error: ${error}`);
   process.exitCode = 1;
 } else {
-  console.log(`Tracker check passed: ${taskIds.length} unique tasks, ${decisionRows.length} decided implementation decisions, gate READY.`);
+  console.log(`Tracker check passed: ${taskIds.length} unique tasks, ${decisionRows.length} decided implementation decisions, gate ${isCompleted ? 'COMPLETED' : 'READY'}.`);
 }

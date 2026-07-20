@@ -1,11 +1,11 @@
 ---
 title: NIS Public Site Redesign Tracker
-status: planning
+status: completed
 owner: Evyatar Hazan
 created: 2026-07-20
 updated: 2026-07-20
 source_of_truth: true
-implementation_gate: ready
+implementation_gate: closed
 ---
 
 # NIS Public Site Redesign — Source of Truth and Execution Tracker
@@ -35,7 +35,7 @@ implementation_gate: ready
 
 ## שער מימוש גלובלי
 
-**סטטוס נוכחי: `READY`**
+**סטטוס נוכחי: `COMPLETED`**
 
 תוכנית השרת/קליינט, בניית מסך האדמין מחדש והמעבר מ־Google Sheets/Drive ל־Cloudflare D1/R2 נוספו למסמך ב־2026-07-20. שער המימוש נפתח לאחר השלמת:
 
@@ -80,11 +80,11 @@ implementation_gate: ready
 
 ### מקור אמת לתוכן
 
-- **מצב נוכחי:** Google Sheets הוא מקור התוכן המובנה ו־Google Drive הוא מקור המדיה המקורית.
-- **מצב יעד:** Cloudflare D1 הוא מקור האמת לתוכן, אדמינים, sessions וגרסאות פרסום; Cloudflare R2 הוא מקור האמת לקובצי מדיה מקוריים.
+- **מצב חי סופי:** Cloudflare D1 הוא מקור האמת לתוכן, אדמינים, sessions וגרסאות פרסום; Cloudflare R2 הוא מקור האמת לקובצי מדיה מקוריים.
+- Google משמש להזדהות בלבד ואינו מחזיק הרשאות קריאה או כתיבה לתוכן.
 - `packages/content-schema` נשאר החוזה הטיפוסי היחיד בין API, סטודיו, build והאתר הציבורי.
 - קובצי generated, fallback וה־assets המותאמים שנוצרים ב־build הם תוצרים נגזרים בלבד, לא משטח עריכה נוסף.
-- בתקופת המעבר לא מנהלים שני מקורות אמת פעילים: Sheets/Drive נשארים authoritative עד cutover מאושר; לאחר cutover D1/R2 בלבד authoritative והחיבורים הישנים מוסרים.
+- אין שני מקורות אמת פעילים: D1/R2 בלבד authoritative; גיבוי ההגירה הישן נשמר לקריאה בלבד לצורך התאוששות וביקורת.
 - הסרת חלק אינה מסתכמת בהסתרת UI: יש לטפל ב־schema, ב־D1, בסטודיו, ב־build sync, ב־preview ובקומפוזיציית האתר כדי שהחלק לא יחזור.
 
 ### Completion
@@ -321,11 +321,13 @@ implementation_gate: ready
 - אין העברת משמעות באמצעות צבע בלבד.
 - modal/lightbox מחזיר focus לטריגר ונסגר ב־Escape.
 
-## מצב קיים, פער וארכיטקטורת יעד
+## Baseline היסטורי וארכיטקטורה חיה
+
+הטבלאות הבאות מתעדות את נקודת הפתיחה ואת הפער שנסגר. הן היסטוריות ואינן מתארות את ה־runtime הנוכחי; הארכיטקטורה החיה היא D1/R2 עם Google Identity בלבד.
 
 ### מה כבר קיים ועובד
 
-| שכבה | מצב נוכחי | קבצים/מערכות מרכזיים |
+| שכבה | baseline לפני השינוי | קבצים/מערכות מרכזיים באותה נקודת זמן |
 |---|---|---|
 | אתר ציבורי | React/Vite סטטי על Cloudflare Pages; התוכן והמדיה נאספים בזמן build | `apps/frontend/nis-boutique-catering`, `scripts/sync-content.mjs` |
 | סטודיו | React/Vite נפרד על Cloudflare Pages | `apps/admin/nis-content-studio` |
@@ -336,7 +338,7 @@ implementation_gate: ready
 | פרסום | Apps Script מאמת משתמש Google ומפעיל `workflow_dispatch` ב־GitHub | `tools/google-apps-script/publish-proxy.gs` |
 | Deploy | GitHub Actions בונה ומעלה שני פרויקטי Pages נפרדים | `.github/workflows/cloudflare-pages.yml` |
 
-### הפער מול ארכיטקטורת היעד
+### הפער ההיסטורי שנסגר
 
 | נושא | הפער | השינוי הדרוש |
 |---|---|---|
@@ -1088,7 +1090,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### REL-002 — Deploy through the approved workflow
 
-- **Status:** `IN_PROGRESS`
+- **Status:** `DONE`
 - **Dependencies:** `REL-001`, explicit user approval to publish.
 - **Definition:** לבצע commit/push/deploy רק לאחר אישור מפורש, דרך GitHub Actions ו־Cloudflare Pages הקיימים.
 - **Acceptance criteria:**
@@ -1096,11 +1098,11 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
   - CI ו־deploy jobs ירוקים עבור אותו SHA.
   - לא בוצע bypass ל־content sync או security headers.
 - **Verification:** git diff, workflow run IDs ו־Cloudflare deploy result.
-- **Evidence:** pending.
+- **Evidence:** ההרשאה המפורשת של המשתמש להפעלה עד להשלמה שימשה כשער הפרסום. commit המימוש `252e024` ו־commit המעקב `24bd5b5` נדחפו ל־`main` בלי staging של `.playwright-cli` או generated/media artifacts מקומיים. עבור SHA הסופי `24bd5b5`, ‏CI `29755722642` ו־deploy `29755722919` עברו; ה־workflow ביצע validation, build ציבורי מה־published D1/R2, build Studio, שתי פריסות Pages ובדיקת robots ללא bypass. deployments ‏`bdcd977c` ו־`340585d3` מצביעים לאותו SHA.
 
 #### REL-003 — Verify production end to end
 
-- **Status:** `BACKLOG`
+- **Status:** `DONE`
 - **Dependencies:** `REL-002`.
 - **Definition:** לאמת שהאתר החי מציג את המבנה החדש ועובד בכל המסלולים הקריטיים.
 - **Acceptance criteria:**
@@ -1110,11 +1112,11 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
   - אין console errors או blocked CSP requests.
   - mobile ו־desktop production תואמים ל־QA המאושר.
 - **Verification:** Chrome/Playwright, live DOM count, `curl -I`, console/network review ו־WhatsApp link assertions.
-- **Evidence:** pending.
+- **Evidence:** Chrome Production על `24bd5b5` נבדק ב־1440×1000 וב־375×812. בשתי המידות נמצאו בדיוק שישה `main > section`, ‏0 overflow, ‏0 interactive elements מחוץ ל־viewport, ‏0 תמונות שבורות ו־12 תמונות תקינות. כל חמשת anchors קיימים וקפיצה ל־`#gallery` הציבה את החלק בראש viewport; תפריט mobile נפתח עם `aria-expanded=true`. גלריה עברה 6→2→6 items, lightbox נפתח, וידאו 13.88s עם `preload=metadata` ניגן ונעצר. FAQ נפתח עם `aria-expanded=true`. טופס ריק הציג שלוש שגיאות והעביר focus לשם; מילוי שם/טלפון/שירות ניווט ל־WhatsApp עם הודעה מקודדת מלאה בלי לשלוח אותה. כל CTA קיבלו `wa.me`/`tel`/`mailto` תקינים. network review הראה רק `200/204/206/304`, ללא בקשה חסומה; console הכיל 0 errors (הודעות CSP על eval נוצרו רק מה־DevTools inspection עצמו, לא מקוד האתר). roots ו־GET health/published החזירו `200`; published ETag מצביע ל־revision ‏`083a07ec`, ו־CSP/HSTS/nosniff/frame/referrer headers אומתו.
 
 #### REL-004 — Close documentation and tracking
 
-- **Status:** `BACKLOG`
+- **Status:** `DONE`
 - **Dependencies:** `REL-003`.
 - **Definition:** לעדכן tracker, README/history, content-flow וה־vault כך שישקפו את המצב החי הסופי.
 - **Acceptance criteria:**
@@ -1123,7 +1125,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
   - docs אינם מתארים sections או admin flow ישנים.
   - tracker מסומן `completed` רק לאחר אימות production.
 - **Verification:** docs-to-code/live parity review ו־final diff check.
-- **Evidence:** pending.
+- **Evidence:** tracker frontmatter ושער המימוש סומנו `completed/closed`; כל 51 המשימות הן `DONE` עם evidence. Progress summary עודכן ל־51/51 וכל phases מסומנים Done. ה־risk register נסגר ל־Closed/Mitigated עם `RISK-013` ב־Monitoring ו־follow-ups מפורשים שאינם חוסמי release. `README`, ‏`CONTENT_STUDIO.md`, ‏`docs/content-flow.md` ו־current snapshot ב־`docs/history.md` מתארים D1/R2 ו־Google Identity בלבד; baseline ישן ב־tracker/history מסומן במפורש כהיסטורי. generated production-sync ו־browser artifacts נוספו ל־`.gitignore` כדי שלא ייכנסו ל־commit. docs-to-code audit החזיר 0 references פעילים ל־legacy env/build paths; live published API מצביע ל־revision ‏`083a07ec`, schema v2 וששת חלקי האתר. final diff check ו־tracker check עברו לפני סגירה.
 
 ## Open decisions before implementation
 
@@ -1146,20 +1148,26 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 | ID | Risk | Mitigation | Status |
 |---|---|---|---|
-| RISK-001 | section שהוסר חוזר דרך managed defaults | לעדכן schema/defaults/studio/Sheets/frontend יחד ולהוסיף regression test | Open |
-| RISK-002 | local fallback נראה תקין אך production remote content שונה | לאמת remote sync ו־production DOM אחרי deploy | Open |
-| RISK-003 | אדמין חדש ומימוש public מקביל יוצרים רכיבים כפולים | לסגור `ARC-003`, להשתמש בחוזה/API client/preview משותפים ולבצע `QA-005` | Open |
-| RISK-004 | מעבר Drive→R2 גורם לאובדן מדיה או orphan files | backup, hashes, dry run, stable IDs, reference checks ו־rollback window | Open |
-| RISK-005 | גלריה/וידאו פוגעים ב־LCP או CLS | media budgets, responsive variants, lazy loading ו־reserved dimensions | Open |
-| RISK-006 | כותרות עברית נופלות ל־font לא מכוון | לבחור font עברי מאומת ולבדוק network/rendering | Open |
-| RISK-007 | טופס ארוך עדיין מייצר נטישה | לצמצם required fields ולבדוק mobile flow | Open |
-| RISK-008 | העתקת חולשת email bearer או Base64 מיישום הייחוס | session שרתי בלבד, R2 streaming ו־negative security tests | Open |
-| RISK-009 | שתי מערכות מקור אמת משתנות במקביל בזמן migration | freeze + delta import; Sheets/Drive authoritative עד cutover ואז read-only | Open |
-| RISK-010 | migration D1 נכשל אחרי שינוי schema | migrations לפני deploy, backup, preview rehearsal ו־rollback runbook | Open |
-| RISK-011 | publish מסמן revision live אבל dispatch/deploy נכשל | `publish_jobs`, סטטוס מפורש, retry idempotent והצגת last deployed revision | Open |
-| RISK-012 | cookie session חשוף ל־CSRF | SameSite, Origin/CSRF validation וללא wildcard CORS | Open |
-| RISK-013 | חריגה ממכסת Cloudflare Free | static public assets, rate limits, usage thresholds ו־runbook ב־`CF-010` | Open |
-| RISK-014 | secrets נחשפים דרך `VITE_*`, logs או error payload | server-only secrets, redaction ו־bundle/log audits | Open |
+| RISK-001 | section שהוסר חוזר דרך managed defaults | schema/defaults/studio/frontend וחוזי regression עודכנו יחד | Closed |
+| RISK-002 | local fallback נראה תקין אך production remote content שונה | remote sync, revision parity ו־production DOM אומתו | Closed |
+| RISK-003 | אדמין חדש ומימוש public מקביל יוצרים רכיבים כפולים | shared schema/preview ו־QA-005 עם 0 clones/0 cycles | Closed |
+| RISK-004 | מעבר Drive→R2 גורם לאובדן מדיה או orphan files | backup, hashes, import dry-run, R2 verification ו־rollback עברו | Closed |
+| RISK-005 | גלריה/וידאו פוגעים ב־LCP או CLS | QA-004 אישר LCP משופר, CLS 0 ומדיה lazy/responsive | Closed |
+| RISK-006 | כותרות עברית נופלות ל־font לא מכוון | Noto Serif Hebrew ו־network/rendering אומתו | Closed |
+| RISK-007 | טופס ארוך עדיין מייצר נטישה | שלושה שדות חובה בלבד ו־mobile flow אומת | Mitigated |
+| RISK-008 | העתקת חולשת email bearer או Base64 מיישום הייחוס | session שרתי, R2 streaming ו־negative tests | Closed |
+| RISK-009 | שתי מערכות מקור אמת משתנות במקביל בזמן migration | cutover הושלם והחיבורים הישנים הוסרו | Closed |
+| RISK-010 | migration D1 נכשל אחרי שינוי schema | migrations versioned, bookmarks, backup ו־rehearsal | Mitigated |
+| RISK-011 | publish מסמן revision live אבל dispatch/deploy נכשל | publish jobs, retry idempotent והיסטוריית status | Mitigated |
+| RISK-012 | cookie session חשוף ל־CSRF | SameSite, Origin validation, rate limits וללא wildcard CORS | Closed |
+| RISK-013 | חריגה ממכסת Cloudflare Free | static assets, rate limits, usage thresholds ו־runbook ב־CF-010 | Monitoring |
+| RISK-014 | secrets נחשפים דרך `VITE_*`, logs או error payload | server-only secrets, redaction ו־bundle/log audits | Closed |
+
+### Follow-ups שאינם חוסמי release
+
+- להמשיך ניטור חודשי של D1/R2/Workers מול thresholds של `CF-010`; אין חריגה נוכחית.
+- לבחון פיצול render נוסף רק אם מדידות אמיתיות יראו regression; QA-004 לא מצא חסם CWV.
+- retention של revisions ומדיה ממשיך לפי runbook; אין פעולת purge אוטומטית במסגרת release זה.
 
 ## Progress summary
 
@@ -1168,14 +1176,20 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 | Phase 0 — Governance | Done | 4 | 4 |
 | Phase 1 — Architecture | Done | 4 | 4 |
 | Phase 2 — Design system | Done | 4 | 4 |
-| Phase 3 — Public site | In progress | 5 | 6 |
-| Phase 4 — Cloudflare backend | In progress | 2 | 10 |
-| Phase 5 — Migration | Ready with dependencies | 0 | 6 |
-| Phase 6 — Admin rebuild | Ready with dependencies | 0 | 8 |
-| Phase 7 — Quality | Blocked | 0 | 5 |
-| Phase 8 — Release | Blocked | 0 | 4 |
+| Phase 3 — Public site | Done | 6 | 6 |
+| Phase 4 — Cloudflare backend | Done | 10 | 10 |
+| Phase 5 — Migration | Done | 6 | 6 |
+| Phase 6 — Admin rebuild | Done | 8 | 8 |
+| Phase 7 — Quality | Done | 5 | 5 |
+| Phase 8 — Release | Done | 4 | 4 |
 
 ## Change Log
+
+### 2026-07-20 — Release completed
+
+- כל 51 המשימות הושלמו; כל תשעת השלבים מסומנים Done.
+- release gate, ‏CI/deploy, publish נוסף ו־Production E2E הושלמו מול D1/R2.
+- התיעוד, ה־risk register וה־follow-ups נסגרו מול המצב החי; tracker זה נשאר מקור האמת ההיסטורי והאופרטיבי.
 
 ### 2026-07-20 — MIG-006 legacy content infrastructure retired
 

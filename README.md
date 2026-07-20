@@ -2,6 +2,8 @@
 
 Monorepo dedicated to the Nis boutique catering website.
 
+Production is fully migrated to Cloudflare: D1 owns structured content and revisions, R2 owns managed media, and Google is used only for Studio identity.
+
 ## Structure
 
 ```text
