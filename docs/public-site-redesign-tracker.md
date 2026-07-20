@@ -1021,7 +1021,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### QA-002 — Verify accessibility
 
-- **Status:** `IN_PROGRESS`
+- **Status:** `DONE`
 - **Dependencies:** `QA-001`.
 - **Definition:** לבצע audit מלא ל־keyboard, focus, semantics, contrast, screen reader ו־reduced motion.
 - **Acceptance criteria:**
@@ -1030,11 +1030,11 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
   - focus order תואם לסדר החזותי.
   - gallery dialog ו־mobile menu מנהלים focus נכון.
 - **Verification:** axe/Playwright, keyboard walkthrough, contrast checker ו־screen reader smoke test.
-- **Evidence:** pending.
+- **Evidence:** Lighthouse/axe navigation audit מקומי וב־Production החזיר Accessibility ‏100 בדסקטופ ובמובייל, כולל `color-contrast` ‏1 וללא violation קריטי/רציני. keyboard walkthrough מלא חשף ותיקן שלושה פערים: skip link מעביר כעת focus ל־`main`; פתיחת תפריט המובייל מעבירה focus לקישור הראשון ו־Escape/בחירה מחזירים אותו לכפתור; ה־Dialog הגנרי מתעלם מאלמנטים עם `tabIndex=-1`, ולכן lightbox נפתח על כפתור הסגירה הגלוי, לוכד Tab/Shift+Tab, נסגר ב־Escape ומחזיר focus לתמונה. נוספו בדיקות regression משותפות, וכל 134 הבדיקות ו־full `pnpm validate` עברו. screen-reader/a11y-tree smoke ב־Chrome אימת `lang=he`, ‏`dir=rtl`, landmark יחיד מכל סוג, H1 יחיד, שישה sections עם `aria-labelledby` תקין, 0 controls ללא שם, 0 images ללא alt ו־0 duplicate IDs. ‏`prefers-reduced-motion: reduce` החי מבטל animation, חושף reveal ומקצר transitions. commit `ff52894`; ‏CI `29740055874` ו־deploy `29740055815` עברו. Cloudflare deployments ‏`2052d66f`/`e2f21af4` והדומיינים החיים החזירו `200`; Production D1 נשאר עם 0 revisions/media/jobs/sessions/FK violations. אזהרת preload ו־CSP eval שמופיעה רק בזמן Lighthouse אינן a11y violations ונשמרות לבדיקת QA-004.
 
 #### QA-003 — Verify responsive visual quality
 
-- **Status:** `BACKLOG`
+- **Status:** `IN_PROGRESS`
 - **Dependencies:** `WEB-001`–`WEB-006`.
 - **Definition:** לבצע visual QA מלא ב־375, 768, 1024 ו־1440 פיקסלים, כולל portrait/landscape רלוונטי.
 - **Acceptance criteria:**
@@ -1527,3 +1527,10 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - סקירת הסיכונים מיפתה את הכיסוי הקיים ל־contracts, migration, auth/security, revisions/publish, rendering, interactions, forms ומדיה; legacy sections חסומים הן בחוזה והן בבדיקות regression מפורשות.
 - ‏133/133 בדיקות ב־35 קבצים ו־full validation עברו, ללא snapshot assertions רחבים וללא שינוי ב־bundle sizes.
 - commit `7849089`, ‏CI `29739268107`, deploy `29739268106` ו־Cloudflare deployments ‏`39eb7375`/`2d547fcb` אומתו. ה־roots וה־health החיים החזירו `200`, endpoint מאומת נשאר `401`, ו־Production D1 נשאר ריק ותקין. `QA-001` נסגרה כ־`DONE` ו־`QA-002` החלה.
+
+### 2026-07-20 — QA-002 accessibility verification
+
+- Lighthouse/axe מקומי וב־Production החזיר Accessibility ‏100 בדסקטופ ובמובייל; contrast עבר וללא violations קריטיים או רציניים.
+- keyboard walkthrough חשף ותיקן focus ל־skip link, כניסה/יציאה מתפריט המובייל והחרגת backdrop לא־טאבי ממנגנון ה־Dialog המשותף. נוספו בדיקות regression; ‏134/134 בדיקות ו־full validation עברו.
+- screen-reader/a11y-tree smoke אישר landmarks, היררכיית כותרות, ששת labels של sections, שמות controls, alt text, IDs ייחודיים ו־reduced-motion stylesheet חי.
+- commit `ff52894`, ‏CI `29740055874`, deploy `29740055815` ו־Cloudflare deployments ‏`2052d66f`/`e2f21af4` אומתו. Production החזיר `200` ונשאר עם D1 נקי. `QA-002` נסגרה כ־`DONE` ו־`QA-003` החלה.
