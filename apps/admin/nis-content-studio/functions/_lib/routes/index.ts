@@ -5,6 +5,7 @@ import { healthRoute } from "./health";
 import {
   archiveMediaRoute,
   listMediaRoute,
+  readMediaFileRoute,
   scanMediaOrphansRoute,
   updateMediaRoute,
   uploadMediaRoute,
@@ -30,6 +31,7 @@ export const apiRoutes: readonly ApiRoute<Env>[] = [
   readDraftRoute,
   saveDraftRoute,
   listMediaRoute,
+  readMediaFileRoute,
   scanMediaOrphansRoute,
   uploadMediaRoute,
   updateMediaRoute,

@@ -37,6 +37,10 @@ export interface MediaAsset {
   readonly width: number | null;
 }
 
+export interface MediaLibraryAsset extends MediaAsset {
+  readonly references: readonly string[];
+}
+
 const mediaColumns = `id, object_key, original_file_name, mime_type, size_bytes,
   width, height, sha256_hex, alt_text, created_by, deleted_at, created_at, updated_at`;
 
@@ -107,6 +111,17 @@ export const findMediaByHash = async (
   return row ? presentMedia(row) : null;
 };
 
+export const findMediaById = async (
+  database: D1Database,
+  id: string,
+): Promise<MediaAsset | null> => {
+  const row = await database
+    .prepare(`SELECT ${mediaColumns} FROM media_assets WHERE id = ?1`)
+    .bind(id)
+    .first<MediaRow>();
+  return row ? presentMedia(row) : null;
+};
+
 export const insertMediaAsset = async (
   database: D1Database,
   input: {
@@ -151,10 +166,9 @@ export const insertMediaAsset = async (
   return presentMedia(row);
 };
 
-const readActiveReferenceLabels = async (
+const readActiveReferenceMap = async (
   database: D1Database,
-  mediaId: string,
-): Promise<readonly string[]> => {
+): Promise<ReadonlyMap<string, readonly string[]>> => {
   const revisions = await database
     .prepare(
       `SELECT id, status, content_json
@@ -162,7 +176,7 @@ const readActiveReferenceLabels = async (
        WHERE status IN ('draft', 'published')`,
     )
     .all<{ readonly content_json: string; readonly id: string; readonly status: string }>();
-  const references: string[] = [];
+  const references = new Map<string, string[]>();
 
   for (const revision of revisions.results) {
     let content: unknown;
@@ -176,13 +190,27 @@ const readActiveReferenceLabels = async (
       throw new ApiError(500, "content_integrity_error", "Stored content failed schema validation.");
     }
 
-    const referencedIds = new Set(getPublicMediaReferenceIds(parsed.data));
-    if (referencedIds.has(mediaId)) {
-      references.push(`${revision.status}:${revision.id}`);
+    for (const mediaId of getPublicMediaReferenceIds(parsed.data)) {
+      const labels = references.get(mediaId) ?? [];
+      labels.push(`${revision.status}:${revision.id}`);
+      references.set(mediaId, labels);
     }
   }
 
   return references;
+};
+
+export const listMediaLibraryAssets = async (
+  database: D1Database,
+): Promise<readonly MediaLibraryAsset[]> => {
+  const [assets, references] = await Promise.all([
+    listMediaAssets(database),
+    readActiveReferenceMap(database),
+  ]);
+  return assets.map((asset) => ({
+    ...asset,
+    references: references.get(asset.id) ?? [],
+  }));
 };
 
 export const updateMediaAsset = async (
@@ -195,7 +223,7 @@ export const updateMediaAsset = async (
   nowSeconds = Math.floor(Date.now() / 1000),
 ): Promise<MediaAsset> => {
   if (input.archive === true) {
-    const references = await readActiveReferenceLabels(database, input.id);
+    const references = (await readActiveReferenceMap(database)).get(input.id) ?? [];
     if (references.length > 0) {
       throw new ApiError(
         409,

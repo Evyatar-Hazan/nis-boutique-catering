@@ -17,6 +17,19 @@ const requireHeader = (request: Request, name: string): string => {
   return value;
 };
 
+const decodeMetadataHeader = (value: string): string => {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    throw new ApiError(400, "invalid_media_metadata", "Encoded media metadata is invalid.");
+  }
+};
+
+const requireMetadata = (request: Request, name: string): string => {
+  const encoded = request.headers.get(`${name}-URI`)?.trim();
+  return encoded ? decodeMetadataHeader(encoded) : requireHeader(request, name);
+};
+
 const parseDimension = (request: Request, name: string): number => {
   const value = requireHeader(request, name);
   if (!positiveIntegerPattern.test(value)) {
@@ -44,8 +57,8 @@ export const uploadMediaAsset = async (
   }
 
   const mimeType = requireHeader(request, "Content-Type").toLowerCase();
-  const originalFileName = requireHeader(request, "X-File-Name");
-  const altText = requireHeader(request, "X-Alt-Text");
+  const originalFileName = requireMetadata(request, "X-File-Name");
+  const altText = requireMetadata(request, "X-Alt-Text");
   const sha256Hex = requireHeader(request, "X-Content-SHA256").toLowerCase();
   if (!sha256Pattern.test(sha256Hex)) {
     throw new ApiError(400, "invalid_media_metadata", "X-Content-SHA256 must be lowercase hex.");

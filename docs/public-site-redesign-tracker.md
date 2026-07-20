@@ -970,12 +970,12 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### ADM-005 — Implement R2 media library and safe editing
 
-- **Status:** `IN_PROGRESS`
+- **Status:** `VERIFYING`
 - **Dependencies:** `ADM-003`, `CF-007`, `WEB-003`.
 - **Definition:** לבנות library אחת ל־upload/select/alt/replace/archive/restore של תמונות ווידאו.
 - **Acceptance criteria:** progress/error/retry; preview מקומי בטוח; alt חובה לשימוש ציבורי; reference count מוצג לפני archive; אותו picker משמש Hero/Services/Gallery.
 - **Verification:** real preview uploads, invalid files, reuse same media, referenced delete, keyboard flow ו־mobile flow.
-- **Evidence:** pending.
+- **Evidence:** נוסף `MediaLibrary` יחיד שמשרת את Hero, ‏Services, ‏Gallery ואת מסך הניהול הכללי; הוא משתמש ב־typed API הקיים ל־list/upload/update/archive/restore וב־Dialog המשותף ל־focus trap, ‏Escape והחזרת focus. upload שולח raw body ב־XHR מרוכז עם SHA-256, dimensions, progress, שגיאה ו־retry, ללא Base64; alt נדרש לפני שימוש ציבורי ווידאו דורש poster. נוסף endpoint מאומת לקריאת קובצי טיוטה ישירות מ־R2, ולכן preview חי אינו תלוי בגרסה שפורסמה. רשימת המדיה מציגה שימושים בטיוטה ובגרסאות שרת, וחוסמת archive מקומית ובשרת לפני מחיקה רכה; IDs הותאמו גם לנכסי migration קריאים ולא רק UUID. ‏59/59 בדיקות סטודיו ו־full `pnpm validate` עברו. Wrangler local + Chrome אישרו upload PNG אמיתי 492,063 bytes ל־R2 עם progress 100%, preview, בחירה/החלפה, save ‏v1→v2→reload, reuse כפול `409`, alt edit, archive→restore, picker משותף ב־Hero/Services, mobile ‏500px ללא overflow, media/file ‏200 ו־orphan scan ריק. לאחר הבדיקה נמחקו שני objects וכל rows/sessions/revisions הזמניים; D1 חזר ל־0/0/0 ו־0 FK violations. ממתין ל־push, CI/deploy ואימות Preview/Production.
 
 #### ADM-006 — Implement admin management and session revocation
 
@@ -1493,3 +1493,9 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - נשמרה שרשרת המדיה הקיימת עם variants, מידות ו־lazy loading; נוספו video poster/metadata ופריסה responsive אחת ללא שכפול DOM.
 - ‏20/20 בדיקות `site-preview`, ‏14/14 בדיקות frontend ו־full validation עברו. Chrome מקומי אישר keyboard/focus, media ‏200/206, ‏0 broken assets/errors/overflow ו־CLS ‏0.0058. `WEB-003` עברה ל־`VERIFYING` עד push, CI/deploy ואימות production.
 - commit `d64fc32` עבר CI `29733285325` ו־deploy `29733285346`; Production בדפדפן נקי אישר את גלריית המדיה המלאה, keyboard/focus, כל ה־assets ב־`200/206` ושני המשטחים/health ב־`200`. `WEB-003` נסגרה כ־`DONE` ו־`ADM-005` החלה.
+
+### 2026-07-20 — ADM-005 R2 media library
+
+- נוסף picker/library יחיד ל־Hero, ‏Services ו־Gallery עם upload progress/retry, תצוגת R2 מאומתת, alt/poster, reference counts, replace, archive ו־restore; אין Base64 או picker מקביל.
+- endpoint מאומת חדש מציג media של טיוטה ישירות מ־R2, ו־D1 reference guard נשאר הסמכות הסופית. נתמכים גם IDs הקריאים של migration וגם UUID של העלאות חדשות.
+- ‏59/59 בדיקות סטודיו ו־full validation עברו. בדיקת Wrangler/Chrome מקומית השלימה upload→preview→replace→save→reload, duplicate ‏409, alt edit, archive/restore, mobile/keyboard ו־orphan scan ריק; כל נתוני הבדיקה נוקו. `ADM-005` עברה ל־`VERIFYING` עד push, CI/deploy ואימות Preview/Production.

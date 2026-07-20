@@ -53,6 +53,27 @@ const responseError = async (response: Response) => {
   });
 };
 
+const xhrResponseError = (request: XMLHttpRequest) => {
+  const payload: unknown = request.response;
+  let code = 'request_failed';
+  let message = 'בקשת השרת נכשלה.';
+  if (payload && typeof payload === 'object' && 'error' in payload) {
+    const error = payload.error;
+    if (error && typeof error === 'object') {
+      if ('code' in error && typeof error.code === 'string') code = error.code;
+      if ('message' in error && typeof error.message === 'string') message = error.message;
+    }
+  }
+  const retryAfter = Number(request.getResponseHeader('Retry-After'));
+  return new StudioApiError({
+    code,
+    kind: errorKind(request.status),
+    message,
+    retryAfterSeconds: Number.isFinite(retryAfter) ? retryAfter : null,
+    status: request.status,
+  });
+};
+
 const retryableStatus = new Set([408, 425, 429, 500, 502, 503, 504]);
 const abortableDelay = (milliseconds: number, signal?: AbortSignal) => new Promise<void>((resolve, reject) => {
   const timeout = window.setTimeout(resolve, milliseconds);
@@ -110,3 +131,38 @@ export const studioApiRequest = async <Schema extends z.ZodType>(input: {
     await abortableDelay((input.retryDelayMs ?? 150) * attempt, input.signal);
   }
 };
+
+export const studioApiUpload = <Schema extends z.ZodType>(input: {
+  readonly body: Blob;
+  readonly headers: Readonly<Record<string, string>>;
+  readonly onProgress?: (percentage: number) => void;
+  readonly path: string;
+  readonly schema: Schema;
+}): Promise<z.infer<Schema>> => new Promise((resolve, reject) => {
+  const request = new XMLHttpRequest();
+  request.open('POST', input.path);
+  request.responseType = 'json';
+  request.withCredentials = true;
+  request.setRequestHeader('Accept', 'application/json');
+  for (const [name, value] of Object.entries(input.headers)) request.setRequestHeader(name, value);
+  request.upload.addEventListener('progress', (event) => {
+    if (event.lengthComputable) input.onProgress?.(Math.round((event.loaded / event.total) * 100));
+  });
+  request.addEventListener('error', () => reject(new StudioApiError({
+    code: 'network_error', kind: 'network', message: 'אין כרגע חיבור לשרת.', status: 0,
+  })));
+  request.addEventListener('load', () => {
+    if (request.status < 200 || request.status >= 300) {
+      reject(xhrResponseError(request));
+      return;
+    }
+    try {
+      resolve(input.schema.parse(request.response));
+    } catch (error) {
+      reject(error instanceof z.ZodError
+        ? new StudioApiError({ code: 'invalid_response', kind: 'server', message: 'השרת החזיר מידע במבנה לא תקין.', status: 502 })
+        : error);
+    }
+  });
+  request.send(input.body);
+});

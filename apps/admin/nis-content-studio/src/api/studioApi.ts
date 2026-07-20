@@ -1,7 +1,7 @@
 import { publicSiteDocumentSchema } from '@monorepo/content-schema';
 import { z } from 'zod';
 
-import { StudioApiError, studioApiRequest } from './client';
+import { StudioApiError, studioApiRequest, studioApiUpload } from './client';
 
 const sessionSchema = z.object({
   admin: z.object({ displayName: z.string().min(1), email: z.string().email() }).strict(),
@@ -26,8 +26,10 @@ const mediaAssetSchema = z.object({
   id: z.string().min(1), mimeType: z.string().min(1), objectKey: z.string().min(1),
   originalFileName: z.string().min(1), sha256Hex: z.string().regex(/^[a-f0-9]{64}$/u),
   sizeBytes: z.number().int().positive(), updatedAt: z.number().int(), width: z.number().int().positive().nullable(),
+  references: z.array(z.string().min(1)).default([]),
 }).strict();
 const mediaResponseSchema = z.object({ media: z.array(mediaAssetSchema) }).strict();
+const mediaItemResponseSchema = z.object({ media: mediaAssetSchema }).strict();
 
 export type ContentRevisionDto = z.infer<typeof revisionSchema>;
 export type MediaAssetDto = z.infer<typeof mediaAssetSchema>;
@@ -38,11 +40,25 @@ const jsonBody = (body: unknown) => ({
   headers: { 'Content-Type': 'application/json' },
 });
 
+const sha256Hex = async (file: File): Promise<string> => {
+  const digest = await crypto.subtle.digest('SHA-256', await file.arrayBuffer());
+  return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, '0')).join('');
+};
+
+const imageDimensions = async (file: File): Promise<{ readonly height: number; readonly width: number } | null> => {
+  if (!file.type.startsWith('image/')) return null;
+  const bitmap = await createImageBitmap(file);
+  const dimensions = { height: bitmap.height, width: bitmap.width };
+  bitmap.close();
+  return dimensions;
+};
+
 export const studioApi = {
   exchangeGoogleCredential: (credential: string, signal?: AbortSignal) => studioApiRequest({
     ...jsonBody({ credential }), method: 'POST', path: '/api/auth/google', schema: sessionSchema, signal,
   }),
   listMedia: (signal?: AbortSignal) => studioApiRequest({ path: '/api/media', schema: mediaResponseSchema, signal }),
+  mediaFileUrl: (id: string) => `/api/media/file?id=${encodeURIComponent(id)}`,
   logout: (signal?: AbortSignal) => studioApiRequest({
     method: 'POST', path: '/api/auth/logout', schema: z.object({ status: z.literal('signed_out') }).strict(), signal,
   }),
@@ -61,4 +77,30 @@ export const studioApi = {
   }, signal?: AbortSignal) => studioApiRequest({
     ...jsonBody(input), method: 'PUT', path: '/api/content/draft', schema: draftResponseSchema, signal,
   }),
+  updateMedia: (input: { readonly altText?: string; readonly archived?: boolean; readonly id: string }, signal?: AbortSignal) => studioApiRequest({
+    ...jsonBody(input), method: 'PATCH', path: '/api/media', schema: mediaItemResponseSchema, signal,
+  }),
+  uploadMedia: async (input: {
+    readonly altText: string;
+    readonly file: File;
+    readonly onProgress?: (percentage: number) => void;
+  }) => {
+    const [checksum, dimensions] = await Promise.all([sha256Hex(input.file), imageDimensions(input.file)]);
+    return studioApiUpload({
+      body: input.file,
+      headers: {
+        'Content-Type': input.file.type,
+        'X-Alt-Text-URI': encodeURIComponent(input.altText.trim()),
+        'X-Content-SHA256': checksum,
+        'X-File-Name-URI': encodeURIComponent(input.file.name),
+        ...(dimensions ? {
+          'X-Media-Height': String(dimensions.height),
+          'X-Media-Width': String(dimensions.width),
+        } : {}),
+      },
+      onProgress: input.onProgress,
+      path: '/api/media',
+      schema: mediaItemResponseSchema,
+    });
+  },
 } as const;
