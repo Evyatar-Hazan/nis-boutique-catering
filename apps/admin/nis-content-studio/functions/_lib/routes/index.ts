@@ -1,5 +1,6 @@
 import type { ApiRoute } from "../http/types";
 import { googleLoginRoute, logoutRoute, sessionRoute } from "./auth";
+import { readDraftRoute, saveDraftRoute } from "./content";
 import { healthRoute } from "./health";
 
 export const apiRoutes: readonly ApiRoute<Env>[] = [
@@ -7,4 +8,6 @@ export const apiRoutes: readonly ApiRoute<Env>[] = [
   googleLoginRoute,
   sessionRoute,
   logoutRoute,
+  readDraftRoute,
+  saveDraftRoute,
 ];

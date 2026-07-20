@@ -15,7 +15,7 @@ export const apiSecurityPolicies = {
   adminMutation: {
     allowedContentTypes: jsonContentTypes,
     authenticated: true,
-    maxBodyBytes: 64 * 1024,
+    maxBodyBytes: 1024 * 1024,
     sameOrigin: true,
   },
   login: {

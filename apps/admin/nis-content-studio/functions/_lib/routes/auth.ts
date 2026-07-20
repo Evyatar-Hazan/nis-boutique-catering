@@ -7,10 +7,10 @@ import {
   revokeAdminSession,
 } from "../auth/session";
 import { verifyGoogleIdToken } from "../auth/googleIdentity";
+import { requireApiPrincipal } from "../http/principal";
 import { jsonApiResponse } from "../http/response";
 import type { ApiRoute } from "../http/types";
 import { parseJsonBody } from "../http/validation";
-import { ApiError } from "../http/errors";
 import { apiSecurityPolicies } from "../security/policy";
 
 const googleLoginSchema = z.object({
@@ -24,15 +24,6 @@ const presentSession = (session: Awaited<ReturnType<typeof requireAdminSession>>
   },
   expiresAt: session.expiresAt,
 });
-
-const requirePrincipal = (
-  principal: Parameters<typeof presentSession>[0] | null,
-): Parameters<typeof presentSession>[0] => {
-  if (!principal) {
-    throw new ApiError(500, "authorization_policy_error", "Authorization policy failed.");
-  }
-  return principal;
-};
 
 export const googleLoginRoute: ApiRoute<Env> = {
   method: "POST",
@@ -57,7 +48,7 @@ export const sessionRoute: ApiRoute<Env> = {
   security: apiSecurityPolicies.adminRead,
   handler: async ({ principal, requestId }) => {
     return jsonApiResponse(
-      presentSession(requirePrincipal(principal)),
+      presentSession(requireApiPrincipal(principal)),
       200,
       requestId,
     );

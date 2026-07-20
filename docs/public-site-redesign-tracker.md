@@ -831,12 +831,12 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### CF-006 — Implement draft and revision APIs
 
-- **Status:** `BACKLOG`
+- **Status:** `VERIFYING`
 - **Dependencies:** `CF-002`, `CF-003`, `CF-005`.
 - **Definition:** לממש read/save של `ContentSnapshot` כ־revision אטומי עם optimistic concurrency.
 - **Acceptance criteria:** כל read/write עובר schema; conflict מחזיר `409`; draft אינו משנה published; נשמר created-by/audit; אין partial content update שמייצר snapshot לא תקין.
 - **Verification:** repository tests, concurrent-save test, invalid schema test ו־save→reload parity מלא.
-- **Evidence:** pending.
+- **Evidence:** נוספו repository ו־routes נפרדים ל־`GET/PUT /api/content/draft`, המבוססים רק על `publicSiteDocumentSchema` v2 ועל ה־principal שה־security middleware אימת. כל read עושה JSON+schema validation מחדש וכל write שומר snapshot שלם בפקודת D1 אטומית; יצירה עם `expectedVersion: null` מותרת רק כשאין draft, ועדכון מגדיל `version` רק כשהגרסה הצפויה תואמת, אחרת `409`. migration ‏`0003_draft_revision_audit.sql` מוסיף `updated_by`, backfill, אינדקס audit ו־unique draft; published rows אינם משתנים במסלול save. ‏40/40 בדיקות סטודיו עברו, כולל repository save→reload parity, concurrent stale save, invalid/corrupt schema, audit ו־published immutability; full `pnpm validate` עבר. local migration וחזרה no-op עברו; Wrangler local אישר authenticated read, ‏`401/403/400` ו־headers. Preview D1 מכיל שלוש migrations ו־0 FK violations. Preview deployment `94a0b917` שמר snapshot v2 אמיתי, טען אותו byte-equivalent דרך ה־API, עדכן version ‏1→2, החזיר `409` לשמירה stale ו־`400` למסמך חסר; audit IDs נשמרו. נתוני הבדיקה הזמניים נמחקו במדויק לאחר האימות. נדרש עדיין push/CI, migration Production ואימות Production לפני `DONE`.
 
 #### CF-007 — Implement R2 media lifecycle APIs
 
@@ -1404,3 +1404,11 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - commit `3173e7b` עבר CI `29721372197` ו־Cloudflare deploy `29721372190`; Production deployment `c8332f56` מצביע ל־commit זה.
 - לפני migration Production נשמר Time Travel bookmark `00000005-00000000-000050ae-f775ab4d77178760cc2f25e4f9e23027`; apply עבר, apply חוזר היה no-op, נמצאו שתי migrations ו־0 foreign-key violations.
 - Production אישר `401/403/413/415`, ספירת login ב־D1 כמפתח hash באורך 64, request IDs/security headers ו־health/public/studio `200`. ‏`429` לא הופעל בכוונה על IP המנהל ב־Production לאחר שאומת במלואו ב־unit/local/Preview. `CF-005` נסגרה כ־`DONE`.
+
+### 2026-07-20 — CF-006 draft revision API
+
+- `CF-006` עברה ל־`IN_PROGRESS` לאחר סגירת security middleware; ה־API משתמש בחוזה v2 היחיד מ־`content-schema` ולא ב־legacy schema.
+- נוספו repository ו־routes לקריאת ושמירת draft מלא, עם optimistic version, ‏created/updated audit, schema validation בכל read/write ו־`409` לשמירה stale.
+- migration ‏`0003_draft_revision_audit.sql` מוסיף `updated_by`, backfill, audit index ו־unique draft. local ו־Preview apply עברו, apply חוזר היה no-op ו־0 FK violations.
+- 40/40 בדיקות סטודיו עברו. Wrangler local אישר authenticated read ו־`401/403/400`; Preview deployment `94a0b917` אישר save→reload, update ‏1→2, ‏`409` concurrent ו־`400` invalid מול D1 אמיתי.
+- רשומת ה־draft וה־session הזמניות שנוצרו ב־Preview נמחקו במדויק לאחר הבדיקה; published לא השתנה. full `pnpm validate` עבר. `CF-006` עברה ל־`VERIFYING` עד push/CI, migration Production ואימות Production.
