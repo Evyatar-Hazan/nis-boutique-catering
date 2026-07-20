@@ -44,6 +44,9 @@ const videoOptions = (document: PublicSiteDocument): readonly EditorOption[] => 
     .map((asset) => ({ label: asset.title, value: asset.id })),
 ];
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null;
+
 export const buildEditorGroups = (
   document: PublicSiteDocument,
   sectionId: EditableSectionId,
@@ -129,8 +132,8 @@ export const buildEditorGroups = (
 export const readEditorValue = (document: PublicSiteDocument, path: string): string | boolean => {
   let value: unknown = document;
   for (const segment of path.split('.')) {
-    if (typeof value !== 'object' || value === null) return '';
-    value = (value as Record<string, unknown>)[segment];
+    if (!isRecord(value)) return '';
+    value = value[segment];
   }
   return typeof value === 'boolean' ? value : typeof value === 'string' ? value : '';
 };
@@ -142,10 +145,22 @@ export const updateEditorValue = (
 ): PublicSiteDocument => {
   const next = structuredClone(document);
   const segments = path.split('.');
-  let cursor: Record<string, unknown> = next as unknown as Record<string, unknown>;
-  segments.slice(0, -1).forEach((segment) => {
-    cursor = cursor[segment] as Record<string, unknown>;
-  });
-  cursor[segments.at(-1)!] = value || (path.endsWith('videoMediaId') ? undefined : value);
+  const fieldName = segments.pop();
+  if (!fieldName) {
+    throw new Error('Editor field path cannot be empty.');
+  }
+
+  let cursor: unknown = next;
+  for (const segment of segments) {
+    if (!isRecord(cursor)) {
+      throw new Error(`Editor field path is invalid: ${path}`);
+    }
+    cursor = cursor[segment];
+  }
+  if (!isRecord(cursor)) {
+    throw new Error(`Editor field path is invalid: ${path}`);
+  }
+
+  cursor[fieldName] = value || (path.endsWith('videoMediaId') ? undefined : value);
   return next;
 };

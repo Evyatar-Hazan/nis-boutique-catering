@@ -131,6 +131,37 @@ const jobInsertSql = `INSERT INTO publish_jobs
    operation, status, created_at, updated_at)
   VALUES (?1, ?2, ?3, ?4, ?5, ?6, 'queued', ?7, ?7)`;
 
+const readIdempotentPublishResult = async (
+  database: D1Database,
+  idempotencyKey: string,
+  integrityMessage: string,
+): Promise<PublishResult | null> => {
+  const job = await readPublishJobByIdempotencyKey(database, idempotencyKey);
+  if (!job) return null;
+
+  const revision = await readRevisionById(database, job.revisionId);
+  if (!revision) {
+    throw new ApiError(500, "publish_integrity_error", integrityMessage);
+  }
+  return { job, revision };
+};
+
+const readRequiredPublishResult = async (
+  database: D1Database,
+  jobId: string,
+  revisionId: string,
+  integrityMessage: string,
+): Promise<PublishResult> => {
+  const [job, revision] = await Promise.all([
+    readPublishJobById(database, jobId),
+    readRevisionById(database, revisionId),
+  ]);
+  if (!job || !revision) {
+    throw new ApiError(500, "publish_integrity_error", integrityMessage);
+  }
+  return { job, revision };
+};
+
 export const publishDraftAtomically = async (
   database: D1Database,
   input: {
@@ -140,14 +171,12 @@ export const publishDraftAtomically = async (
   },
   nowSeconds = Math.floor(Date.now() / 1000),
 ): Promise<PublishResult> => {
-  const existing = await readPublishJobByIdempotencyKey(database, input.idempotencyKey);
-  if (existing) {
-    const revision = await readRevisionById(database, existing.revisionId);
-    if (!revision) {
-      throw new ApiError(500, "publish_integrity_error", "Publish job revision is missing.");
-    }
-    return { job: existing, revision };
-  }
+  const existing = await readIdempotentPublishResult(
+    database,
+    input.idempotencyKey,
+    "Publish job revision is missing.",
+  );
+  if (existing) return existing;
 
   const jobId = crypto.randomUUID();
   try {
@@ -191,24 +220,21 @@ export const publishDraftAtomically = async (
       throw new ApiError(409, "revision_conflict", "Draft changed before it was published.");
     }
   } catch (error: unknown) {
-    const concurrent = await readPublishJobByIdempotencyKey(database, input.idempotencyKey);
-    if (concurrent) {
-      const revision = await readRevisionById(database, concurrent.revisionId);
-      if (revision) {
-        return { job: concurrent, revision };
-      }
-    }
+    const concurrent = await readIdempotentPublishResult(
+      database,
+      input.idempotencyKey,
+      "Concurrent publish job revision is missing.",
+    );
+    if (concurrent) return concurrent;
     throw error;
   }
 
-  const [job, revision] = await Promise.all([
-    readPublishJobById(database, jobId),
-    readRevisionById(database, input.draft.id),
-  ]);
-  if (!job || !revision) {
-    throw new ApiError(500, "publish_integrity_error", "Published audit data is incomplete.");
-  }
-  return { job, revision };
+  return readRequiredPublishResult(
+    database,
+    jobId,
+    input.draft.id,
+    "Published audit data is incomplete.",
+  );
 };
 
 export const rollbackRevisionAtomically = async (
@@ -220,14 +246,12 @@ export const rollbackRevisionAtomically = async (
   },
   nowSeconds = Math.floor(Date.now() / 1000),
 ): Promise<PublishResult> => {
-  const existing = await readPublishJobByIdempotencyKey(database, input.idempotencyKey);
-  if (existing) {
-    const revision = await readRevisionById(database, existing.revisionId);
-    if (!revision) {
-      throw new ApiError(500, "publish_integrity_error", "Rollback job revision is missing.");
-    }
-    return { job: existing, revision };
-  }
+  const existing = await readIdempotentPublishResult(
+    database,
+    input.idempotencyKey,
+    "Rollback job revision is missing.",
+  );
+  if (existing) return existing;
 
   const revisionId = crypto.randomUUID();
   const jobId = crypto.randomUUID();
@@ -262,24 +286,21 @@ export const rollbackRevisionAtomically = async (
       ),
     ]);
   } catch (error: unknown) {
-    const concurrent = await readPublishJobByIdempotencyKey(database, input.idempotencyKey);
-    if (concurrent) {
-      const revision = await readRevisionById(database, concurrent.revisionId);
-      if (revision) {
-        return { job: concurrent, revision };
-      }
-    }
+    const concurrent = await readIdempotentPublishResult(
+      database,
+      input.idempotencyKey,
+      "Concurrent rollback job revision is missing.",
+    );
+    if (concurrent) return concurrent;
     throw error;
   }
 
-  const [job, revision] = await Promise.all([
-    readPublishJobById(database, jobId),
-    readRevisionById(database, revisionId),
-  ]);
-  if (!job || !revision) {
-    throw new ApiError(500, "publish_integrity_error", "Rollback audit data is incomplete.");
-  }
-  return { job, revision };
+  return readRequiredPublishResult(
+    database,
+    jobId,
+    revisionId,
+    "Rollback audit data is incomplete.",
+  );
 };
 
 export const markDispatchAttempt = async (

@@ -2,7 +2,7 @@ import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/re
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import '@testing-library/jest-dom/vitest';
 
-import { createPublicSiteDocument } from '../../../functions/_lib/test/publicSiteDocument';
+import { createPublicSiteDocument } from '@monorepo/content-schema/test-fixtures';
 import { StudioApiError } from '../../api/client';
 import { studioApi, type MediaAssetDto } from '../../api/studioApi';
 import { MediaLibrary } from './MediaLibrary';

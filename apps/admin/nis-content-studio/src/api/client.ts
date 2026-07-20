@@ -32,8 +32,7 @@ const errorKind = (status: number): StudioApiErrorKind => {
   return 'validation';
 };
 
-const responseError = async (response: Response) => {
-  const payload: unknown = await response.json().catch(() => null);
+const readErrorPayload = (payload: unknown): { readonly code: string; readonly message: string } => {
   let code = 'request_failed';
   let message = 'בקשת השרת נכשלה.';
   if (payload && typeof payload === 'object' && 'error' in payload) {
@@ -43,6 +42,12 @@ const responseError = async (response: Response) => {
       if ('message' in error && typeof error.message === 'string') message = error.message;
     }
   }
+  return { code, message };
+};
+
+const responseError = async (response: Response) => {
+  const payload: unknown = await response.json().catch(() => null);
+  const { code, message } = readErrorPayload(payload);
   const retryAfter = Number(response.headers.get('Retry-After'));
   return new StudioApiError({
     code,
@@ -55,15 +60,7 @@ const responseError = async (response: Response) => {
 
 const xhrResponseError = (request: XMLHttpRequest) => {
   const payload: unknown = request.response;
-  let code = 'request_failed';
-  let message = 'בקשת השרת נכשלה.';
-  if (payload && typeof payload === 'object' && 'error' in payload) {
-    const error = payload.error;
-    if (error && typeof error === 'object') {
-      if ('code' in error && typeof error.code === 'string') code = error.code;
-      if ('message' in error && typeof error.message === 'string') message = error.message;
-    }
-  }
+  const { code, message } = readErrorPayload(payload);
   const retryAfter = Number(request.getResponseHeader('Retry-After'));
   return new StudioApiError({
     code,

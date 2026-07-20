@@ -1,4 +1,6 @@
-export const contentSnapshot = {
+import type { ContentSnapshot } from '@monorepo/content-schema';
+
+export const contentSnapshot: ContentSnapshot = {
   "version": "fallback-1",
   "updatedAt": "2026-06-17T00:00:00.000Z",
   "settings": {
@@ -319,7 +321,9 @@ export const contentSnapshot = {
       ],
       "cta": "להזמנת תפריט שבת",
       "mediaId": "salmon-skewers-lemon",
-      "icon": "ChefHat"
+      "icon": "ChefHat",
+      "active": true,
+      "order": 1
     },
     {
       "id": "events",
@@ -337,7 +341,9 @@ export const contentSnapshot = {
       ],
       "cta": "דברו איתנו על מגשי אירוח",
       "mediaId": "hosting-table-overview",
-      "icon": "Utensils"
+      "icon": "Utensils",
+      "active": true,
+      "order": 2
     },
     {
       "id": "travel",
@@ -355,7 +361,9 @@ export const contentSnapshot = {
       ],
       "cta": "להזמנת מארז דרך",
       "mediaId": "mini-burger-trays",
-      "icon": "Package"
+      "icon": "Package",
+      "active": true,
+      "order": 3
     }
   ],
   "sections": [
@@ -368,7 +376,8 @@ export const contentSnapshot = {
         "מהרובע היהודי לביתר עילית",
         "שבתות, מגשי אירוח ו־Travel Nis, עם אוכל מוקפד, נראות יפה ושיחה קצרה שסוגרת כיוון."
       ],
-      "active": true
+      "active": true,
+      "order": 0
     },
     {
       "id": "faq-order-lead-time",
@@ -376,7 +385,8 @@ export const contentSnapshot = {
       "title": "כמה זמן מראש צריך להזמין?",
       "text": "מומלץ לפנות כמה שיותר מוקדם, במיוחד לפני שבתות, חגים ואירועים עם מספר סועדים גדול.",
       "items": [],
-      "active": true
+      "active": true,
+      "order": 1
     },
     {
       "id": "faq-delivery",
@@ -384,7 +394,8 @@ export const contentSnapshot = {
       "title": "האם יש משלוחים?",
       "text": "העסק פועל מביתר עילית. משלוח או איסוף בסביבה נבדקים מול הלקוח לפי מיקום, תאריך וסוג הזמנה.",
       "items": [],
-      "active": true
+      "active": true,
+      "order": 2
     },
     {
       "id": "faq-custom-menu",
@@ -392,7 +403,8 @@ export const contentSnapshot = {
       "title": "האם אפשר להרכיב תפריט אישי?",
       "text": "כן. כל הזמנה נבנית אחרי שיחה קצרה כדי להתאים את התפריט לאירוח, לסועדים ולסגנון המבוקש.",
       "items": [],
-      "active": true
+      "active": true,
+      "order": 3
     },
     {
       "id": "faq-preferences",
@@ -400,7 +412,8 @@ export const contentSnapshot = {
       "title": "האם אפשר להתחשב ברגישויות או בהעדפות?",
       "text": "כן. מעלים רגישויות, אלרגיות או העדפות בתחילת השיחה, ובודקים יחד מה אפשר להתאים בפועל.",
       "items": [],
-      "active": true
+      "active": true,
+      "order": 4
     },
     {
       "id": "faq-business-events",
@@ -408,7 +421,8 @@ export const contentSnapshot = {
       "title": "האם אפשר להזמין לאירועים עסקיים?",
       "text": "כן. Nis בכיס מתאימה גם להרמות כוסית, ישיבות, אירוח עסקי ושולחנות קטנים ומוקפדים.",
       "items": [],
-      "active": true
+      "active": true,
+      "order": 5
     },
     {
       "id": "faq-minimum-order",
@@ -416,7 +430,8 @@ export const contentSnapshot = {
       "title": "האם יש מינימום הזמנה?",
       "text": "מינימום הזמנה ייקבע בשיחה לפי סוג השירות, התאריך והיקף האירוח.",
       "items": [],
-      "active": true
+      "active": true,
+      "order": 6
     },
     {
       "id": "editorial-shabbat",
@@ -802,4 +817,4 @@ export const contentSnapshot = {
       "order": 1
     }
   ]
-} as const;
+};

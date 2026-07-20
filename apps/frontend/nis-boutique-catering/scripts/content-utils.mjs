@@ -20,7 +20,10 @@ export const writeGeneratedSnapshot = (snapshot, targetAppRoot = appRoot) => {
   mkdirSync(dirname(targetJsonPath), { recursive: true });
   const serialized = `${JSON.stringify(snapshot, null, 2)}\n`;
   writeFileSync(targetJsonPath, serialized);
-  writeFileSync(targetTsPath, `export const contentSnapshot = ${JSON.stringify(snapshot, null, 2)} as const;\n`);
+  writeFileSync(
+    targetTsPath,
+    `import type { ContentSnapshot } from '@monorepo/content-schema';\n\nexport const contentSnapshot: ContentSnapshot = ${JSON.stringify(snapshot, null, 2)};\n`,
+  );
 };
 
 export const validateContentShape = (snapshot) => {

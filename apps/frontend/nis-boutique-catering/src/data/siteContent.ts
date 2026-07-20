@@ -28,7 +28,7 @@ import {
 } from '@monorepo/content-schema';
 import { contentSnapshot as generatedContentSnapshot } from '../generated/siteContent.generated';
 
-const contentSnapshot = generatedContentSnapshot as unknown as ContentSnapshot;
+const contentSnapshot: ContentSnapshot = generatedContentSnapshot;
 
 const generatedSettings = contentSnapshot.settings;
 

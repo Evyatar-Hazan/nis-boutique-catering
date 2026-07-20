@@ -14,6 +14,7 @@ import {
 } from "../publish/service";
 import { apiSecurityPolicies } from "../security/policy";
 import { writeOperationalEvent } from "../observability/logging";
+import type { PublishJob } from "../publish/types";
 
 const publishSchema = z.object({
   draftId: z.string().uuid(),
@@ -36,6 +37,18 @@ const requireIdempotencyKey = (request: Request): string => {
   return value;
 };
 
+const recordPublishJob = (job: PublishJob, requestId: string): void => {
+  writeOperationalEvent({
+    attemptCount: job.attemptCount,
+    event: "publish_job",
+    jobId: job.id,
+    operation: job.operation,
+    requestId,
+    revisionId: job.revisionId,
+    status: job.status,
+  });
+};
+
 export const publishDraftRoute: ApiRoute<Env> = {
   method: "POST",
   path: "/api/publish",
@@ -48,15 +61,7 @@ export const publishDraftRoute: ApiRoute<Env> = {
       expectedVersion: input.expectedVersion,
       idempotencyKey: requireIdempotencyKey(request),
     });
-    writeOperationalEvent({
-      attemptCount: result.job.attemptCount,
-      event: "publish_job",
-      jobId: result.job.id,
-      operation: result.job.operation,
-      requestId,
-      revisionId: result.revision.id,
-      status: result.job.status,
-    });
+    recordPublishJob(result.job, requestId);
     return jsonApiResponse(result, 200, requestId);
   },
 };
@@ -68,15 +73,7 @@ export const retryPublishRoute: ApiRoute<Env> = {
   handler: async ({ env, request, requestId }) => {
     const { jobId } = await parseJsonBody(request, retrySchema);
     const job = await retryPublishDispatch(env, jobId);
-    writeOperationalEvent({
-      attemptCount: job.attemptCount,
-      event: "publish_job",
-      jobId: job.id,
-      operation: job.operation,
-      requestId,
-      revisionId: job.revisionId,
-      status: job.status,
-    });
+    recordPublishJob(job, requestId);
     return jsonApiResponse(
       { job },
       200,
@@ -96,15 +93,7 @@ export const rollbackPublishRoute: ApiRoute<Env> = {
       idempotencyKey: requireIdempotencyKey(request),
       sourceRevisionId: input.sourceRevisionId,
     });
-    writeOperationalEvent({
-      attemptCount: result.job.attemptCount,
-      event: "publish_job",
-      jobId: result.job.id,
-      operation: result.job.operation,
-      requestId,
-      revisionId: result.revision.id,
-      status: result.job.status,
-    });
+    recordPublishJob(result.job, requestId);
     return jsonApiResponse(result, 200, requestId);
   },
 };

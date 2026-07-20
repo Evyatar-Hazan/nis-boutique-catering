@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { ApiError } from "../http/errors";
-import { createPublicSiteDocument } from "../test/publicSiteDocument";
+import { createPublicSiteDocument } from "@monorepo/content-schema/test-fixtures";
 import { readDraftRevision, saveDraftRevision } from "./revisions";
 
 interface StoredRow {

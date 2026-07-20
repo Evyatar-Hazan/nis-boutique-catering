@@ -133,7 +133,7 @@ try {
   writeFileSync(exactJsonPath, `${JSON.stringify(content, null, 2)}\n`);
   writeFileSync(
     exactTsPath,
-    `export const publicSiteDocument = ${JSON.stringify(content, null, 2)} as const;\n`,
+    `import type { PublicSiteDocument } from '@monorepo/content-schema';\n\nexport const publicSiteDocument: PublicSiteDocument = ${JSON.stringify(content, null, 2)};\n`,
   );
   writeGeneratedSnapshot(adaptPublicSiteDocument(content), outputAppRoot);
   console.log(`Synced published revision with ${referencedIds.length} referenced media objects from Cloudflare.`);

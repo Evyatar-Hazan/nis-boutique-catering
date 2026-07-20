@@ -1,7 +1,7 @@
 import type { PublicSiteDocument } from '@monorepo/content-schema';
 import { describe, expect, it } from 'vitest';
 
-import { createPublicSiteDocument } from '../../../functions/_lib/test/publicSiteDocument';
+import { createPublicSiteDocument } from '@monorepo/content-schema/test-fixtures';
 import {
   buildEditorGroups,
   editableSectionIds,
@@ -56,6 +56,17 @@ describe('content editor model', () => {
     expect(document.sections.services.items[0].title).not.toBe('שם חדש');
     expect(cleared.sections.gallery.videoMediaId).toBeUndefined();
     expect(document.sections.gallery.videoMediaId).toBe(video.id);
+  });
+
+  it('rejects an invalid editor path instead of mutating an unknown shape', () => {
+    const document = createPublicSiteDocument();
+
+    expect(() => updateEditorValue(document, 'sections.missing.title', 'שם חדש')).toThrow(
+      'Editor field path is invalid: sections.missing.title',
+    );
+    expect(() => updateEditorValue(document, '', 'שם חדש')).toThrow(
+      'Editor field path cannot be empty.',
+    );
   });
 
   it('excludes archived media while keeping active image and video choices', () => {
