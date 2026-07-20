@@ -1047,7 +1047,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### QA-004 — Verify performance and media budgets
 
-- **Status:** `IN_PROGRESS`
+- **Status:** `DONE`
 - **Dependencies:** `QA-003`, `CF-007`, `CF-009`.
 - **Definition:** למדוד ולהשוות לבסיס את LCP, CLS, TBT/INP, JS/CSS size ומדיה.
 - **Acceptance criteria:**
@@ -1056,11 +1056,11 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
   - hero media מותאם ואינו טוען וידאו כבד ללא צורך.
   - lazy loading אינו מציג אזורים ריקים או שובר גלריה.
 - **Verification:** Lighthouse runs עקביים, bundle output, network waterfall ו־media check.
-- **Evidence:** pending.
+- **Evidence:** בוצעו trace-ים קרים עקביים ב־Chrome DevTools על Production ב־375×812, ‏Slow 4G ו־CPU×4. מול baseline של LCP ‏9.32s / CLS ‏0 / TBT ‏0, שלוש ריצות ה־build הסופי-שקול החזירו LCP ‏2.792s, ‏2.843s ו־3.814s (median ‏2.843s), והריצה הקרה על commit הסופי החזירה LCP ‏2.783s, ‏CLS ‏0.00 ו־TTFB ‏51ms. שתי long tasks של 192/143ms נותנות upper-bound של כ־235ms ל־TBT תחת throttle; בתרחיש אינטראקציה אמיתי של פתיחה/סגירת mobile menu וסינון גלריה Chrome מדד INP ‏65ms ו־CLS ‏0.00. זו החלטה מתועדת לקבל את העלייה המוגבלת ב־load-task לעומת baseline: responsiveness נשאר בטווח good, בעוד LCP השתפר בכ־70%; המשך פיצול render נשמר כאופטימיזציה עתידית ולא כחסם release. build מקומי: JS ‏345.57KB + lazy ‏10.58KB (gzip ‏101.81KB + ‏3.76KB), CSS ‏69.47KB (gzip ‏13.83KB). Production עם snapshot מרוחק: JS ‏364.98KB + lazy ‏10.58KB ו־CSS ‏69.47KB; העלייה מול baseline ‏339.60KB + ‏10.89KB / ‏60.27KB מתועדת ונובעת מתוכן remote מלא וממערכת העיצוב החדשה, ללא regression בפועל ב־CWV. הוסר preload סטטי כפול ושגוי; build-time plugin בוחר כעת את אותה תמונת Hero שה־UI בוחר גם בחוזה legacy וגם ב־v2, יוצר preload יחיד של `vegetable-focaccia`, ומדרגות CMS ‏720/960/1200 יחד עם `sizes` משותף גורמות למובייל להוריד 720px. Hero טוען תמונה eager/high בלבד וללא וידאו; וידאו הגלריה נשאר lazy section עם `preload=metadata` ו־206/abort לאחר metadata. ‏media check עבר ל־19 assets. walkthrough לאחר scroll+filter אימת שישה sections, ‏6→2→6 תמונות, 0 broken images, ‏0 invisible reveal, ‏0 overflow ו־0 console warnings/errors; תיקון regression שומר reveal state גם אחרי React rerender. ניסיון cache immutable ל־assets בוטל לאחר שזוהה deployment-race שבו SPA fallback יכול להישמר תחת URL של module; ה־bundle הסופי `index-DnfAUi1O.js` מוחזר `application/javascript` עם `must-revalidate`. ‏136/136 בדיקות ו־full `pnpm validate` עברו. commits ‏`0894e46`, ‏`c0c60a3`, ‏`38be1df`, ‏`7091a9e`, ‏`79f013d`, ‏`d2506e5`; ‏CI `29743975718` ו־deploy `29743975782` עברו; Cloudflare deployments ‏`378d269a`/`047355ba`, שני ה־roots ו־studio health החזירו `200`.
 
 #### QA-005 — Perform duplication and architecture audit
 
-- **Status:** `BACKLOG`
+- **Status:** `IN_PROGRESS`
 - **Dependencies:** `QA-001`–`QA-004`.
 - **Definition:** לבצע ביקורת סופית שמוכיחה שהמימוש לא יצר duplication, monolith חדש או boundary violation.
 - **Acceptance criteria:**
@@ -1212,6 +1212,15 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - production console נקי משגיאות; נותרה אזהרת preload אחת שתיכנס להשוואת הביצועים.
 - commit `3e02bf9` עבר CI run `29704351376` ו־Cloudflare deploy run `29704351375`; בדיקת post-deploy אישרה HTTP 200, ‏12 sections, גרסת תוכן זהה ו־0 שגיאות console.
 - `GOV-002` נסגר כ־`DONE`; המשימה הבאה היא `ARC-001`.
+
+### 2026-07-20 — QA-004 performance and media closure
+
+- preload ה־Hero נגזר בזמן build מאותו content contract של ה־UI ותומך גם ב־legacy וגם ב־Cloudflare v2; preload כפול/שגוי הוסר.
+- נוספו וריאנט CMS של 960px ו־Hero `sizes` משותף, כך שמובייל טוען בפועל את וריאנט 720px.
+- cold Production median LCP ירד מ־9.32s ל־2.843s, ‏CLS נשאר 0.00 ו־INP באינטראקציות mobile/gallery נמדד 65ms.
+- תועדו החלטת bundle/TBT, בדיקות media/network, וביטול cache immutable לאחר זיהוי deployment fallback race.
+- reveal state נשמר כעת גם לאחר rerender; Production walkthrough הסתיים עם 0 אזורים שקופים, 0 תמונות שבורות ו־0 שגיאות console.
+- `QA-004` נסגר כ־`DONE`; המשימה הבאה היא `QA-005`.
 
 ### 2026-07-20 — ARC-001 ownership and duplication audit
 
