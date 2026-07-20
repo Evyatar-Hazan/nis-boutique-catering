@@ -40,6 +40,28 @@ const deterministicUuid = (value: string) => {
 const parseJson = (value: string): unknown => JSON.parse(value) as unknown;
 const sqlText = (value: string) => `'${value.replaceAll("'", "''")}'`;
 
+type ImportTarget = 'preview' | 'production';
+
+const targetConfiguration = {
+  preview: {
+    bucket: 'nis-media-preview',
+    databaseArguments: ['nis-content-preview', '--remote'],
+    label: 'Preview',
+    reportName: 'preview-parity-report.json',
+  },
+  production: {
+    bucket: 'nis-media-production',
+    databaseArguments: ['nis-content-production', '--remote', '--env', 'production'],
+    label: 'Production',
+    reportName: 'production-parity-report.json',
+  },
+} as const satisfies Record<ImportTarget, {
+  readonly bucket: string;
+  readonly databaseArguments: readonly string[];
+  readonly label: string;
+  readonly reportName: string;
+}>;
+
 export const buildPreviewImportPlan = async (repoRoot: string) => {
   const migrationRoot = join(repoRoot, 'migration/legacy-google/20260720T080523Z');
   const backupRoot = join(repoRoot, 'backups/legacy-google/20260720T080523Z');
@@ -88,9 +110,10 @@ const runWrangler = (studioRoot: string, args: readonly string[], encoding: 'buf
     stdio: ['ignore', 'pipe', 'pipe'],
   });
 
-const runD1Json = (studioRoot: string, command: string) => {
+const runD1Json = (studioRoot: string, target: ImportTarget, command: string) => {
+  const configuration = targetConfiguration[target];
   const output = runWrangler(studioRoot, [
-    'd1', 'execute', 'nis-content-preview', '--remote', '--json', '--command', command,
+    'd1', 'execute', ...configuration.databaseArguments, '--json', '--command', command,
   ], 'utf8');
   return z.array(z.object({ results: z.array(z.record(z.string(), z.unknown())), success: z.boolean() }).passthrough())
     .parse(parseJson(String(output)));
@@ -133,25 +156,28 @@ const buildSql = (
   return `PRAGMA foreign_keys = ON;\n${rows.join('\n')}\n`;
 };
 
-export const importLegacyPreview = async (repoRoot: string) => {
+export const importLegacyContent = async (repoRoot: string, target: ImportTarget) => {
   const studioRoot = join(repoRoot, 'apps/admin/nis-content-studio');
   const plan = await buildPreviewImportPlan(repoRoot);
+  const configuration = targetConfiguration[target];
   const activeAdmins = runD1Json(
     studioRoot,
+    target,
     "SELECT id FROM admins WHERE is_active=1 ORDER BY id;",
   )[0]?.results ?? [];
   if (activeAdmins.length !== 1 || typeof activeAdmins[0]?.id !== 'string') {
-    throw new Error(`Preview import requires exactly one active bootstrap admin; found ${activeAdmins.length}.`);
+    throw new Error(`${configuration.label} import requires exactly one active bootstrap admin; found ${activeAdmins.length}.`);
   }
   const adminId = activeAdmins[0].id;
   const existing = runD1Json(
     studioRoot,
+    target,
     "SELECT 'revision' AS kind,id FROM content_revisions UNION ALL SELECT 'media' AS kind,id FROM media_assets ORDER BY kind,id;",
   )[0]?.results ?? [];
   const expectedIds = new Set([plan.draftId, plan.publishedId, ...plan.objects.map(({ mediaId }) => mediaId)]);
   const unexpected = existing.filter(({ id }) => typeof id !== 'string' || !expectedIds.has(id));
   if (unexpected.length > 0) {
-    throw new Error(`Preview contains ${unexpected.length} rows outside this migration; refusing to overwrite.`);
+    throw new Error(`${configuration.label} contains ${unexpected.length} rows outside this migration; refusing to overwrite.`);
   }
 
   for (const object of plan.objects) {
@@ -160,23 +186,23 @@ export const importLegacyPreview = async (repoRoot: string) => {
       throw new Error(`Backup file integrity failed for ${object.mediaId}.`);
     }
     runWrangler(studioRoot, [
-      'r2', 'object', 'put', `nis-media-preview/${object.objectKey}`, '--remote',
+      'r2', 'object', 'put', `${configuration.bucket}/${object.objectKey}`, '--remote',
       '--file', object.sourcePath, '--content-type', object.mimeType, '--force',
     ]);
   }
 
-  const tempRoot = await mkdtemp(join(tmpdir(), 'nis-preview-import-'));
+  const tempRoot = await mkdtemp(join(tmpdir(), `nis-${target}-import-`));
   try {
     const sqlPath = join(tempRoot, 'import.sql');
     await writeFile(sqlPath, buildSql(plan, adminId));
     runWrangler(studioRoot, [
-      'd1', 'execute', 'nis-content-preview', '--remote', '--yes', '--file', sqlPath,
+      'd1', 'execute', ...configuration.databaseArguments, '--yes', '--file', sqlPath,
     ]);
 
     for (const object of plan.objects) {
       const downloaded = runWrangler(
         studioRoot,
-        ['r2', 'object', 'get', `nis-media-preview/${object.objectKey}`, '--remote', '--pipe'],
+        ['r2', 'object', 'get', `${configuration.bucket}/${object.objectKey}`, '--remote', '--pipe'],
         'buffer',
       );
       if (!Buffer.isBuffer(downloaded) || downloaded.length !== object.sizeBytes || hash(downloaded) !== object.checksum) {
@@ -187,7 +213,7 @@ export const importLegacyPreview = async (repoRoot: string) => {
     await rm(tempRoot, { force: true, recursive: true });
   }
 
-  const parity = runD1Json(studioRoot, `SELECT
+  const parity = runD1Json(studioRoot, target, `SELECT
     (SELECT COUNT(*) FROM media_assets) AS media_count,
     (SELECT COUNT(*) FROM content_revisions WHERE status='draft') AS draft_count,
     (SELECT COUNT(*) FROM content_revisions WHERE status='published') AS published_count,
@@ -197,7 +223,7 @@ export const importLegacyPreview = async (repoRoot: string) => {
   const counts = parity[0]?.results[0];
   if (counts?.media_count !== plan.objects.length || counts.draft_count !== 1 || counts.published_count !== 1
       || counts.publish_jobs !== 0 || parity[1]?.results.length !== 0) {
-    throw new Error('Preview parity verification failed.');
+    throw new Error(`${configuration.label} parity verification failed.`);
   }
 
   return {
@@ -215,12 +241,32 @@ export const importLegacyPreview = async (repoRoot: string) => {
   };
 };
 
-if (process.argv.includes('--apply-preview')) {
+export const importLegacyPreview = (repoRoot: string) => importLegacyContent(repoRoot, 'preview');
+export const importLegacyProduction = (repoRoot: string) => importLegacyContent(repoRoot, 'production');
+
+export const assertImportConfirmation = (target: ImportTarget, confirmation: string | undefined): void => {
+  if (target === 'production' && confirmation !== 'IMPORT_LEGACY_TO_PRODUCTION') {
+    throw new Error('Production import requires NIS_PRODUCTION_CUTOVER_CONFIRM=IMPORT_LEGACY_TO_PRODUCTION.');
+  }
+};
+
+const targetArgument = process.argv.includes('--apply-preview')
+  ? 'preview'
+  : process.argv.includes('--apply-production')
+    ? 'production'
+    : null;
+
+if (targetArgument) {
+  assertImportConfirmation(targetArgument, process.env.NIS_PRODUCTION_CUTOVER_CONFIRM);
   const repoRoot = resolve(import.meta.dirname, '../../../..');
-  const report = await importLegacyPreview(repoRoot);
-  const reportPath = resolve(repoRoot, 'migration/legacy-google/20260720T080523Z/preview-parity-report.json');
+  const report = await importLegacyContent(repoRoot, targetArgument);
+  const reportPath = resolve(
+    repoRoot,
+    'migration/legacy-google/20260720T080523Z',
+    targetConfiguration[targetArgument].reportName,
+  );
   await writeFile(reportPath, `${JSON.stringify(report, null, 2)}\n`);
   console.log(JSON.stringify({ report: basename(reportPath), ...report }));
 } else if (process.argv[1]?.endsWith('import-legacy-preview.ts')) {
-  throw new Error('Preview import is write-enabled only with --apply-preview.');
+  throw new Error('Import is write-enabled only with --apply-preview or --apply-production.');
 }

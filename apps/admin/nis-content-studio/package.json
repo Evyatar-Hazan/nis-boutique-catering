@@ -16,6 +16,7 @@
     "db:migrate:production": "wrangler d1 migrations apply nis-content-production --remote --env production",
     "db:seed:bootstrap": "node scripts/seed-bootstrap-admin.mjs",
     "migration:import:preview": "tsx scripts/import-legacy-preview.ts --apply-preview",
+    "migration:import:production": "tsx scripts/import-legacy-preview.ts --apply-production",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "test": "vitest run",
