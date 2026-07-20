@@ -786,12 +786,12 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### CF-001 — Provision preview and production D1/R2 resources
 
-- **Status:** `VERIFYING`
+- **Status:** `DONE`
 - **Dependencies:** `GOV-004`.
 - **Definition:** ליצור D1 ו־R2 נפרדים ל־preview/production ולתעד bindings ב־Wrangler config של הסטודיו.
 - **Acceptance criteria:** bindings מסוג `DB` ו־`MEDIA` קיימים בכל environment; IDs אינם hardcoded בקוד; bucket פרטי כברירת מחדל; local dev משתמש במשאבים מקומיים.
 - **Verification:** `wrangler pages dev`, binding smoke test, Cloudflare dashboard/API inventory והשוואת preview מול production.
-- **Evidence:** נוצרו D1 נפרדים באזור EEUR: `nis-content-preview` (`80b4a9b2-4f3b-42a7-af3f-1e4d629c0c7d`) ו־`nis-content-production` (`fd74127a-fea6-4517-8c54-f467a8fc6437`). לאחר השלמת checkout נוצרו buckets פרטיים `nis-media-preview` ו־`nis-media-production`; inventory אומת ב־Wrangler. `wrangler.toml` מגדיר `DB`/`MEDIA` מקומיים על משאבי preview, וחוזר על כל ה־bindings הלא־מורשים בירושה תחת `env.preview` ו־`env.production` עם משאבים נפרדים. `wrangler types` יצר `worker-configuration.d.ts`; `/api/health` בודק D1/R2 בלי לחשוף IDs או secrets. `wrangler pages dev` הציג את שני ה־bindings במצב local והחזיר `200` עם `database/media: ready`; deployment preview `c1094efc` וה־alias `codex-cf001-preview.nis-content-studio.pages.dev` החזירו אותה תוצאה ו־root `200`. נדרש עדיין push, CI/deploy production ואימות ה־bindings ב־production לפני `DONE`.
+- **Evidence:** נוצרו D1 נפרדים באזור EEUR: `nis-content-preview` (`80b4a9b2-4f3b-42a7-af3f-1e4d629c0c7d`) ו־`nis-content-production` (`fd74127a-fea6-4517-8c54-f467a8fc6437`). לאחר השלמת checkout נוצרו buckets פרטיים `nis-media-preview` ו־`nis-media-production`; inventory אומת ב־Wrangler. `wrangler.toml` מגדיר `DB`/`MEDIA` מקומיים על משאבי preview, וחוזר על כל ה־bindings הלא־מורשים בירושה תחת `env.preview` ו־`env.production` עם משאבים נפרדים. `wrangler types` יצר `worker-configuration.d.ts`; `/api/health` בודק D1/R2 בלי לחשוף IDs או secrets. `wrangler pages dev` הציג את שני ה־bindings במצב local והחזיר `200` עם `database/media: ready`; deployment preview `c1094efc` החזיר אותה תוצאה. `pnpm validate` עבר; commit `75ae97c` עבר CI `29719259191` ו־deploy `29719259237`. Production `/api/health` החזיר `200` עם שני המשאבים `ready`, האתר והסטודיו החזירו `200`, ו־`pages download config` לאחר הפריסה אישר ש־Preview מחובר ל־preview D1/R2 ו־Production ל־production D1/R2.
 
 #### CF-002 — Add versioned D1 migrations and seed strategy
 
@@ -1169,7 +1169,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 | Phase 1 — Architecture | Done | 4 | 4 |
 | Phase 2 — Design system | Done | 4 | 4 |
 | Phase 3 — Public site | In progress | 5 | 6 |
-| Phase 4 — Cloudflare backend | In progress | 0 | 10 |
+| Phase 4 — Cloudflare backend | In progress | 1 | 10 |
 | Phase 5 — Migration | Ready with dependencies | 0 | 6 |
 | Phase 6 — Admin rebuild | Ready with dependencies | 0 | 8 |
 | Phase 7 — Quality | Blocked | 0 | 5 |
@@ -1342,3 +1342,9 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - נוסף `wrangler.toml` מבוסס על ה־Pages config שהורד מה־Dashboard, עם `DB`/`MEDIA` ל־local, ‏preview ו־production, ונוצרו binding types דרך Wrangler.
 - נוסף `/api/health` קטן וקבוע לצורך binding smoke ולבסיס משימת `CF-003`; הוא אינו חושף IDs או secrets.
 - local Pages dev וה־preview deployment `c1094efc` החזירו `200` עם `database: ready`, ‏`media: ready`, ‏`status: ok`; `CF-001` עברה ל־`VERIFYING` עד deploy ואימות production.
+
+### 2026-07-20 — CF-001 production verification
+
+- commit `75ae97c` עבר CI `29719259191` ו־Cloudflare deploy `29719259237` בהצלחה.
+- `https://studio.nisboutiquecatering.com/api/health` החזיר `200` עם `database: ready`, ‏`media: ready`, ‏`status: ok`; גם ה־studio root והאתר הציבורי החזירו `200`.
+- Pages config שהורד מחדש לאחר הפריסה אישר `DB`/`MEDIA` של Preview מול `nis-content-preview`/`nis-media-preview` ושל Production מול `nis-content-production`/`nis-media-production`; `CF-001` נסגרה כ־`DONE`.
