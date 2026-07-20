@@ -15,9 +15,15 @@ import {
   retryPublishRoute,
   rollbackPublishRoute,
 } from "./publish";
+import {
+  readPublishedContentRoute,
+  readPublishedMediaRoute,
+} from "./publicContent";
 
 export const apiRoutes: readonly ApiRoute<Env>[] = [
   healthRoute,
+  readPublishedContentRoute,
+  readPublishedMediaRoute,
   googleLoginRoute,
   sessionRoute,
   logoutRoute,

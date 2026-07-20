@@ -1,4 +1,7 @@
-import { publicSiteDocumentSchema } from "@monorepo/content-schema";
+import {
+  getPublicMediaReferenceIds,
+  publicSiteDocumentSchema,
+} from "@monorepo/content-schema";
 
 import { ApiError } from "../http/errors";
 
@@ -173,19 +176,7 @@ const readActiveReferenceLabels = async (
       throw new ApiError(500, "content_integrity_error", "Stored content failed schema validation.");
     }
 
-    const document = parsed.data;
-    const referencedIds = new Set([
-      document.sections.hero.mediaId,
-      document.sections.trust.mediaId,
-      ...document.sections.services.items.map((item) => item.mediaId),
-      ...document.sections.gallery.items.map((item) => item.mediaId),
-      ...(document.sections.gallery.videoMediaId
-        ? [document.sections.gallery.videoMediaId]
-        : []),
-      ...document.media
-        .filter((asset) => asset.kind === "video")
-        .map((asset) => asset.posterMediaId),
-    ]);
+    const referencedIds = new Set(getPublicMediaReferenceIds(parsed.data));
     if (referencedIds.has(mediaId)) {
       references.push(`${revision.status}:${revision.id}`);
     }

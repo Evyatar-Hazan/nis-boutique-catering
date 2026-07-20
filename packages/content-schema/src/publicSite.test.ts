@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  getPublicMediaReferenceIds,
   publicHeroDefaults,
   publicContactDefaults,
   publicProcessDefaults,
@@ -142,6 +143,12 @@ describe('public site v2 content contract', () => {
   it('accepts the exact six-section document', () => {
     const result = publicSiteDocumentSchema.parse(validDocument);
     expect(Object.keys(result.sections)).toEqual(['hero', 'services', 'gallery', 'process', 'trust', 'contact']);
+  });
+
+  it('derives one unique referenced-media list for storage and build consumers', () => {
+    const references = getPublicMediaReferenceIds(validDocument);
+    expect(new Set(references)).toEqual(new Set(media.map((asset) => asset.id)));
+    expect(references).toHaveLength(media.length);
   });
 
   it('rejects legacy or extra sections', () => {

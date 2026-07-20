@@ -33,6 +33,7 @@
     "build": "turbo run build",
     "cloudflare:build:admin": "pnpm --filter @monorepo/nis-content-studio build",
     "cloudflare:build:site": "pnpm content:sync && pnpm --filter @monorepo/nis-boutique-catering build",
+    "cloudflare:build:site:d1": "pnpm --filter @monorepo/nis-boutique-catering content:sync:cloudflare && pnpm --filter @monorepo/nis-boutique-catering build",
     "lint": "turbo run lint",
     "content:check": "pnpm --filter @monorepo/nis-boutique-catering content:check",
     "content:seed": "pnpm --filter @monorepo/nis-boutique-catering content:seed",

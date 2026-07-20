@@ -13,11 +13,13 @@ export const cmsSourceRoot = resolve(cmsMediaRoot, '_source');
 
 export const readJson = (path) => JSON.parse(readFileSync(path, 'utf8'));
 
-export const writeGeneratedSnapshot = (snapshot) => {
-  mkdirSync(dirname(generatedJsonPath), { recursive: true });
+export const writeGeneratedSnapshot = (snapshot, targetAppRoot = appRoot) => {
+  const targetJsonPath = resolve(targetAppRoot, 'src/generated/siteContent.generated.json');
+  const targetTsPath = resolve(targetAppRoot, 'src/generated/siteContent.generated.ts');
+  mkdirSync(dirname(targetJsonPath), { recursive: true });
   const serialized = `${JSON.stringify(snapshot, null, 2)}\n`;
-  writeFileSync(generatedJsonPath, serialized);
-  writeFileSync(generatedTsPath, `export const contentSnapshot = ${JSON.stringify(snapshot, null, 2)} as const;\n`);
+  writeFileSync(targetJsonPath, serialized);
+  writeFileSync(targetTsPath, `export const contentSnapshot = ${JSON.stringify(snapshot, null, 2)} as const;\n`);
 };
 
 export const validateContentShape = (snapshot) => {
@@ -77,11 +79,12 @@ export const validateContentShape = (snapshot) => {
   return errors;
 };
 
-export const pathFromPublicSrc = (src) => resolve(publicRoot, src.replace(/^\//, ''));
+export const pathFromPublicSrc = (src, targetPublicRoot = publicRoot) => resolve(targetPublicRoot, src.replace(/^\//, ''));
 
 export const getResponsiveWidths = (width) => [...new Set([720, 1200].filter((item) => item < width).concat(width))];
 
-export const getVariantPath = (src, width, format) => pathFromPublicSrc(src).replace(/\.[^.]+$/, `-${width}w.${format}`);
+export const getVariantPath = (src, width, format, targetPublicRoot = publicRoot) =>
+  pathFromPublicSrc(src, targetPublicRoot).replace(/\.[^.]+$/, `-${width}w.${format}`);
 
 export const commandExists = (command) => spawnSync('which', [command], { stdio: 'ignore' }).status === 0;
 
@@ -95,13 +98,13 @@ const run = (command, args) => {
   }
 };
 
-export const clearCmsMedia = () => {
-  rmSync(cmsMediaRoot, { force: true, recursive: true });
-  mkdirSync(cmsSourceRoot, { recursive: true });
+export const clearCmsMedia = (targetCmsMediaRoot = cmsMediaRoot) => {
+  rmSync(targetCmsMediaRoot, { force: true, recursive: true });
+  mkdirSync(resolve(targetCmsMediaRoot, '_source'), { recursive: true });
 };
 
-const ensurePrimaryWebp = (sourcePath, media) => {
-  const targetPath = pathFromPublicSrc(media.src);
+const ensurePrimaryWebp = (sourcePath, media, targetPublicRoot) => {
+  const targetPath = pathFromPublicSrc(media.src, targetPublicRoot);
   mkdirSync(dirname(targetPath), { recursive: true });
 
   if (media.src.endsWith('.webp') && commandExists('cwebp')) {
@@ -117,7 +120,11 @@ const ensurePrimaryWebp = (sourcePath, media) => {
   throw new Error(`Cannot create primary CMS image ${media.src}. Install cwebp or use a matching source format.`);
 };
 
-export const optimizeCmsMedia = (media, sourcePath = pathFromPublicSrc(media.src)) => {
+export const optimizeCmsMedia = (
+  media,
+  sourcePath = pathFromPublicSrc(media.src),
+  targetPublicRoot = publicRoot,
+) => {
   const hasCwebp = commandExists('cwebp');
   const hasSips = commandExists('sips');
 
@@ -125,19 +132,19 @@ export const optimizeCmsMedia = (media, sourcePath = pathFromPublicSrc(media.src
     return;
   }
 
-  if (sourcePath !== pathFromPublicSrc(media.src)) {
-    ensurePrimaryWebp(sourcePath, media);
+  if (sourcePath !== pathFromPublicSrc(media.src, targetPublicRoot)) {
+    ensurePrimaryWebp(sourcePath, media, targetPublicRoot);
   }
 
   for (const width of getResponsiveWidths(Number(media.width))) {
     if (hasCwebp && !(media.src.endsWith('.webp') && width === Number(media.width))) {
-      const webpPath = getVariantPath(media.src, width, 'webp');
+      const webpPath = getVariantPath(media.src, width, 'webp', targetPublicRoot);
       mkdirSync(dirname(webpPath), { recursive: true });
       run('cwebp', ['-quiet', '-q', '82', '-resize', String(width), '0', sourcePath, '-o', webpPath]);
     }
 
     if (hasSips) {
-      const avifPath = getVariantPath(media.src, width, 'avif');
+      const avifPath = getVariantPath(media.src, width, 'avif', targetPublicRoot);
       mkdirSync(dirname(avifPath), { recursive: true });
       run('sips', ['-s', 'format', 'avif', '-s', 'formatOptions', '50', '-Z', String(width), sourcePath, '--out', avifPath]);
     }

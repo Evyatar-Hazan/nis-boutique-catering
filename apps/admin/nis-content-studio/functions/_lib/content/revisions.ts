@@ -90,6 +90,20 @@ export const readDraftRevision = async (
   return row ? parseRevision(row) : null;
 };
 
+export const readPublishedRevision = async (
+  database: D1Database,
+): Promise<ContentRevision | null> => {
+  const row = await database
+    .prepare(
+      `SELECT id, status, schema_version, content_json, version, published_at,
+              created_by, updated_by, created_at, updated_at
+       FROM content_revisions
+       WHERE status = 'published'`,
+    )
+    .first<RevisionRow>();
+  return row ? parseRevision(row) : null;
+};
+
 export const saveDraftRevision = async (
   database: D1Database,
   input: {

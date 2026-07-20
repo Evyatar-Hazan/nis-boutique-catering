@@ -51,7 +51,14 @@ jobs:
       - name: Validate workspace
         run: pnpm validate
 
-      - name: Build public site
+      - name: Build public site from published D1 and R2
+        if: vars.PUBLIC_CONTENT_SOURCE == 'cloudflare'
+        run: pnpm cloudflare:build:site:d1
+        env:
+          CLOUDFLARE_CONTENT_API_ORIGIN: https://studio.nisboutiquecatering.com
+
+      - name: Build public site from legacy Google source
+        if: vars.PUBLIC_CONTENT_SOURCE != 'cloudflare'
         run: pnpm cloudflare:build:site
         env:
           GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}

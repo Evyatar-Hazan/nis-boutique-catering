@@ -1,7 +1,9 @@
 import type { ApiError } from "./errors";
 
 const applySecurityHeaders = (headers: Headers, requestId: string): void => {
-  headers.set("Cache-Control", "no-store");
+  if (!headers.has("Cache-Control")) {
+    headers.set("Cache-Control", "no-store");
+  }
   headers.set("Content-Security-Policy", "default-src 'none'");
   headers.set("X-Content-Type-Options", "nosniff");
   headers.set("X-Request-ID", requestId);

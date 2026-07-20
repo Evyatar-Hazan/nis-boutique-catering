@@ -45,6 +45,21 @@ export const publicMediaAssetSchema = z.discriminatedUnion('kind', [
   }),
 ]);
 
+export const getPublicMediaReferenceIds = (
+  document: Pick<PublicSiteDocument, 'media' | 'sections'>,
+): readonly string[] => [...new Set([
+  document.sections.hero.mediaId,
+  document.sections.trust.mediaId,
+  ...document.sections.services.items.map((item) => item.mediaId),
+  ...document.sections.gallery.items.map((item) => item.mediaId),
+  ...(document.sections.gallery.videoMediaId
+    ? [document.sections.gallery.videoMediaId]
+    : []),
+  ...document.media
+    .filter((asset) => asset.kind === 'video')
+    .map((asset) => asset.posterMediaId),
+])];
+
 const heroSectionSchema = sectionHeadingSchema.extend({
   description: bodyTextSchema,
   primaryCta: whatsappCtaSchema,
