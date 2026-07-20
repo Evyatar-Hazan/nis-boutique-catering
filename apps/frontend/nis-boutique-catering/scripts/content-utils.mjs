@@ -2,6 +2,7 @@ import { createSign } from 'node:crypto';
 import { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, extname, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
+import { getResponsiveImageWidths } from '@monorepo/content-schema/media';
 
 export const appRoot = resolve(import.meta.dirname, '..');
 export const fallbackPath = resolve(appRoot, 'content/fallback-content.json');
@@ -81,8 +82,6 @@ export const validateContentShape = (snapshot) => {
 
 export const pathFromPublicSrc = (src, targetPublicRoot = publicRoot) => resolve(targetPublicRoot, src.replace(/^\//, ''));
 
-export const getResponsiveWidths = (width) => [...new Set([720, 1200].filter((item) => item < width).concat(width))];
-
 export const getVariantPath = (src, width, format, targetPublicRoot = publicRoot) =>
   pathFromPublicSrc(src, targetPublicRoot).replace(/\.[^.]+$/, `-${width}w.${format}`);
 
@@ -136,7 +135,7 @@ export const optimizeCmsMedia = (
     ensurePrimaryWebp(sourcePath, media, targetPublicRoot);
   }
 
-  for (const width of getResponsiveWidths(Number(media.width))) {
+  for (const width of getResponsiveImageWidths(media)) {
     if (hasCwebp && !(media.src.endsWith('.webp') && width === Number(media.width))) {
       const webpPath = getVariantPath(media.src, width, 'webp', targetPublicRoot);
       mkdirSync(dirname(webpPath), { recursive: true });

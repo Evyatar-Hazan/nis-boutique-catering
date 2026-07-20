@@ -25,11 +25,16 @@ export const getPrimaryHeroMediaId = (content: HeroMediaContent) => {
   return heroMedia?.items[1] ?? heroMedia?.items[0];
 };
 
-const responsiveBreakpoints = [720, 1200] as const;
+const repositoryMediaBreakpoints = [720, 1200] as const;
+const cmsMediaBreakpoints = [720, 960, 1200] as const;
 
-const getResponsiveWidths = (image: ResponsiveImageAsset) => [
-  ...new Set([...responsiveBreakpoints.filter((width) => width < image.width), image.width]),
-];
+export const getResponsiveImageWidths = (image: ResponsiveImageAsset) => {
+  const breakpoints = image.src.includes('/media/cms/')
+    ? cmsMediaBreakpoints
+    : repositoryMediaBreakpoints;
+
+  return [...new Set([...breakpoints.filter((width) => width < image.width), image.width])];
+};
 
 const getResponsiveVariantSrc = (
   src: string,
@@ -55,7 +60,7 @@ export const getResponsiveImageSrcSet = (
     return undefined;
   }
 
-  return getResponsiveWidths(image).map((width) => {
+  return getResponsiveImageWidths(image).map((width) => {
     if (format === 'webp' && image.src.endsWith('.webp') && width === image.width) {
       return `${image.src} ${width}w`;
     }

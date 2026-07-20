@@ -37,5 +37,6 @@ describe('createHeroPreload', () => {
     expect(preload.type).toBe('image/webp');
     expect(preload.href).toBe('/media/cms/hero.webp');
     expect(preload.imageSrcSet).toContain('/media/cms/hero-720w.webp 720w');
+    expect(preload.imageSrcSet).toContain('/media/cms/hero-960w.webp 960w');
   });
 });
