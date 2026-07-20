@@ -1,11 +1,11 @@
 ---
 title: NIS Public Site Redesign Tracker
-status: in_progress
+status: completed
 owner: Evyatar Hazan
 created: 2026-07-20
 updated: 2026-07-21
 source_of_truth: true
-implementation_gate: ready
+implementation_gate: closed
 ---
 
 # NIS Public Site Redesign — Source of Truth and Execution Tracker
@@ -35,9 +35,9 @@ implementation_gate: ready
 
 ## שער מימוש גלובלי
 
-**סטטוס נוכחי: `READY`**
+**סטטוס נוכחי: `COMPLETED`**
 
-ה־release המקורי ומשימת התחזוקה `UI-005` הושלמו ואומתו בפרודקשן. ב־2026-07-21 נפתח שער תחזוקה ממוקד עבור `UI-006`: הוספת Scrollytelling עדין באמצעות Scroll-Triggered ו־Scroll-Driven Animations, ללא שינוי מבנה, תוכן, לוגיקה או עיצוב.
+ה־release המקורי ומשימות התחזוקה `UI-005` ו־`UI-006` הושלמו ואומתו בפרודקשן. שער המימוש סגור; כל שינוי נוסף מחייב משימה חדשה, baseline ושער מפורש.
 
 תוכנית השרת/קליינט, בניית מסך האדמין מחדש והמעבר מ־Google Sheets/Drive ל־Cloudflare D1/R2 נוספו למסמך ב־2026-07-20. שער המימוש נפתח לאחר השלמת:
 
@@ -1149,7 +1149,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### UI-006 — Add progressive scroll motion without structural drift
 
-- **Status:** `VERIFYING`
+- **Status:** `DONE`
 - **Dependencies:** `UI-004`, `QA-002`, `QA-003`, `QA-004`, `REL-004`.
 - **Definition:** להרחיב את מנגנון ה־reveal הקיים ל־API גנרי ומודולרי עבור Scroll-Triggered Animations ולהוסיף Scroll-Driven media motion עדין ב־progressive enhancement, בלי לשנות hierarchy, תוכן, business logic, navigation, forms, component names, props או public APIs קיימים.
 - **Acceptance criteria:**
@@ -1160,7 +1160,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
   - האתר נשאר זהה מבחינת צבעים, טיפוגרפיה, spacing, sizes, content ופעולות; אין CLS או horizontal overflow ב־desktop/tablet/mobile.
   - gate אוטומטי חוסם animation רציפה, layout-property animation, ‏`transition: all`, scroll hijacking או reduced-motion לא מלא.
 - **Verification:** unit tests ל־policy/config/fallback/stagger/once; ‏`pnpm motion:check`; ‏`pnpm validate`; דפדפן ב־375×812, ‏768×1024 ו־1440×1000; reduced-motion ו־JavaScript-disabled fallback; בדיקות navigation/gallery/lightbox/FAQ/form/keyboard; performance trace, CLS/overflow/console/network; לאחר push — CI/deploy ואימות production.
-- **Evidence (local, 2026-07-21):** אין ספריית motion בפרויקט ולא נוסף dependency. ‏`useScrollAnimation` הוא owner יחיד של IntersectionObserver ותומך ב־delay/duration/threshold/stagger/once; ‏`useRevealOnScroll` נשאר compatibility export ללא שינוי ב־`App`. נוספו fade/slide/scale/direction על nodes קיימים בלבד ושני view timelines feature-detected לווידאו הגלריה ולתמונת האמון; אין wrapper, שינוי hierarchy, content, props, state, business logic או scroll listener חדש. ‏`motion:check` חוסם continuous/layout/`transition: all`/scroll hijacking ודורש fallback מלא. ‏141/141 בדיקות, lint, type-check, builds, ‏`pnpm validate` ו־`parity:local` עברו. Chrome ב־375×812, ‏768×1024 ו־1440×1000 אישר 30/30 reveals לאחר walkthrough, שני scroll timelines פעילים, 0 overflow, ‏0 broken media ו־0 console errors; gallery filter ‏6→2, lightbox open/close, FAQ, validation/focus, anchors ו־keyboard behavior נשארו תקינים. fallback ללא class הראה 30/30 תכנים גלויים. Chrome מבודד עם `prefers-reduced-motion: reduce` הראה 30/30 גלויים מיד, שני scroll effects עם `animation:none`/`transform:none`, ‏0 active animations ו־0 overflow; הבדיקה חשפה ותיקנה specificity regression לפני פרסום. trace מקומי ב־375px תחת Fast 4G ו־CPU×4: LCP ‏689ms ו־CLS ‏0.01. bundle ציבורי: CSS ‏83.50KB/15.33KB gzip, main JS ‏346.85KB/102.24KB gzip ו־lazy ‏11.49KB/3.90KB gzip—תוספת כוללת קטנה ללא dependency או layout regression. המשימה ב־`VERIFYING` עד CI/deploy ואימות Production.
+- **Evidence (local + production, 2026-07-21):** אין ספריית motion בפרויקט ולא נוסף dependency. ‏`useScrollAnimation` הוא owner יחיד של IntersectionObserver ותומך ב־delay/duration/threshold/stagger/once; ‏`useRevealOnScroll` נשאר compatibility export ללא שינוי ב־`App`. נוספו fade/slide/scale/direction על nodes קיימים בלבד ושני view timelines feature-detected לווידאו הגלריה ולתמונת האמון; אין wrapper, שינוי hierarchy, content, props, state, business logic או scroll listener חדש. ‏`motion:check` חוסם continuous/layout/`transition: all`/scroll hijacking ודורש fallback מלא. ‏141/141 בדיקות, lint, type-check, builds, ‏`pnpm validate` ו־`parity:local` עברו. Chrome מקומי ב־375×812, ‏768×1024 ו־1440×1000 אישר 30/30 reveals לאחר walkthrough, שני scroll timelines פעילים, 0 overflow, ‏0 broken media ו־0 console errors; gallery filter ‏6→2, lightbox open/close, FAQ, validation/focus, anchors ו־keyboard behavior נשארו תקינים. fallback ללא class הראה 30/30 תכנים גלויים. Chrome מבודד עם `prefers-reduced-motion: reduce` הראה 30/30 גלויים מיד, scroll effects עם `animation:none`/`transform:none`, ‏0 active animations ו־0 overflow; הבדיקה חשפה ותיקנה specificity regression לפני פרסום. trace מקומי ב־375px תחת Fast 4G ו־CPU×4: LCP ‏689ms ו־CLS ‏0.01. bundle ציבורי: CSS ‏83.50KB/15.33KB gzip, main JS ‏346.85KB/102.24KB gzip ו־lazy ‏11.49KB/3.90KB gzip. commit `005b9fa` עבר CI `29784916016` ו־deploy `29784916068`. Production ב־375×812, ‏768×1024 ו־1440×1000 אישר את כל 30 ה־reveals לאחר walkthrough, שני scroll timelines, פעולות gallery/lightbox/form, ‏0 overflow ו־0 broken media; לא נמצאו console errors של האתר. reduced-motion אמיתי בפרודקשן אישר 30/30 גלויים, ‏0 active animations ו־media עם `animation:none`/`transform:none`. ה־public וה־Studio roots וה־health החזירו `200`; Studio login shell נטען וה־session הלא־מאומת נשאר `401` כמצופה. כל תנאי הקבלה הושלמו.
 
 ## Open decisions before implementation
 
@@ -1218,9 +1218,15 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 | Phase 7 — Quality | Done | 5 | 5 |
 | Phase 8 — Release | Done | 4 | 4 |
 | Phase 9 — Theme maintainability | Done | 1 | 1 |
-| Phase 10 — Scroll storytelling | In progress | 0 | 1 |
+| Phase 10 — Scroll storytelling | Done | 1 | 1 |
 
 ## Change Log
+
+### 2026-07-21 — UI-006 scroll storytelling completed
+
+- commit `005b9fa` עבר CI `29784916016` ו־deploy `29784916068`; שני משטחי production וה־health החזירו `200`.
+- Production עבר ב־375×812, ‏768×1024 ו־1440×1000 עם 30/30 reveals לאחר walkthrough, שני scroll timelines, ‏0 overflow, ‏0 broken media וללא console errors של האתר; gallery/lightbox/form נשארו תקינים.
+- reduced-motion אמיתי ביטל את כל התנועה והציג 30/30 תכנים; Studio login shell נשאר תקין ו־`/api/auth/session` הלא־מאומת החזיר `401` כמצופה. `UI-006` נסגרה `DONE`, Phase 10 הושלמה והשער נסגר.
 
 ### 2026-07-21 — UI-006 scroll storytelling started
 
