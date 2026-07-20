@@ -905,7 +905,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### MIG-004 — Run the production freeze, delta import and cutover
 
-- **Status:** `BACKLOG`
+- **Status:** `IN_PROGRESS`
 - **Dependencies:** `MIG-003`, `ADM-008`, explicit cutover approval.
 - **Definition:** לבצע חלון הקפאת כתיבה, delta export/import, parity ואז להעביר את הסטודיו ל־API החדש.
 - **Acceptance criteria:** זמן freeze מתועד; אין delta חסר; owner flow עובר לפני פתיחת כתיבה; feature/config rollback יכול להחזיר את הסטודיו הישן במהלך החלון.
@@ -1060,7 +1060,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### QA-005 — Perform duplication and architecture audit
 
-- **Status:** `IN_PROGRESS`
+- **Status:** `DONE`
 - **Dependencies:** `QA-001`–`QA-004`.
 - **Definition:** לבצע ביקורת סופית שמוכיחה שהמימוש לא יצר duplication, monolith חדש או boundary violation.
 - **Acceptance criteria:**
@@ -1069,7 +1069,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
   - אין `any`, unsafe assertions, deep imports או circular dependencies חדשים.
   - shared abstractions אינן כלליות מדי ולכל אחת צרכנים ברורים.
 - **Verification:** `rg`, lint/type-check, dependency graph, focused code review ו־diff audit.
-- **Evidence:** pending.
+- **Evidence:** בוצעה ביקורת focused על 117 קובצי מקור authored. ‏`jscpd` זיהה תחילה שלוש משפחות duplication אמיתיות ב־publish logging/repository ובפענוח שגיאות API; הן אוחדו ל־abstractions ממוקדות עם צרכנים ברורים, וסריקה חוזרת החזירה 0 clones ו־0 שורות/tokens כפולים. wrapper בדיקות עמוק הוסר וכל הצרכנים משתמשים ישירות ב־public test-fixtures subpath. ‏`madge` סרק 136 קבצים והחזיר 0 circular dependencies; `architecture:boundaries` עבר. חיפוש `rg` בקוד authored אישר 0 `any`, ‏0 `as unknown as` ו־0 `@ts-ignore`/`@ts-nocheck`; assertions שנמצאו הוחלפו ב־type guard וב־generated snapshot טיפוסי, ונתוני fallback הושלמו לחוזה המלא במקום לעקוף אותו. `App.tsx` נשאר composition root, ו־diff review לא מצא component/markup/style/business logic כפולים או abstraction כללית ללא owner. ‏137/137 בדיקות ב־36 קבצים, lint, type-check, content/media checks וכל builds עברו ב־full `pnpm validate`. commit `be59cea`; ‏CI `29745014493` ו־deploy `29745014576` עברו; Cloudflare deployments ‏`d183721a`/`6a9f12d5` עלו. Chrome Production אישר שישה sections באתר, login shell בסטודיו, bundles תקינים, 0 overflow ו־0 console warnings/errors (מלבד `401` צפוי ל־session אנונימי); כל בקשות ה־root/assets החזירו `200`.
 
 ### Phase 8 — Release and production closure
 
@@ -1550,3 +1550,9 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - צילום מהיר חשף ותיקן reveal elements שיכלו להישאר שקופים אחרי קפיצה בגלילה; policy משותף ובדיקת regression מכסים כעת גם elements שנדלקו מעל ה־viewport.
 - ב־375px נוסף clearance עם safe-area לפוטר לאחר שה־sticky CTA הסתיר את הקישור האחרון; בפרודקשן נשארו 44px גלויים בין הקישור לסרגל בקצה הגלילה.
 - ‏135/135 בדיקות ו־full validation עברו. commit `870f412`, ‏CI `29741056702`, deploy `29741056760`, deployments ‏`385b0df2`/`0d9e5b85` ו־bundle החי אומתו; Production נשאר `200` ו־D1 נקי. `QA-003` נסגרה כ־`DONE` ו־`QA-004` החלה.
+
+### 2026-07-20 — QA-005 duplication and architecture audit
+
+- הוסרו unsafe assertions ו־deep test wrapper; snapshot generated מקבל כעת טיפוס מפורש ונתוני fallback עומדים בחוזה במקום להסתיר פערים באמצעות cast.
+- שלוש משפחות duplication אמיתיות אוחדו ל־helpers ממוקדים. ‏`jscpd` חזר עם 0 clones על 117 קובצי authored, ‏`madge` עם 0 cycles על 136 קבצים, ו־`rg` עם 0 `any`/unsafe assertions/directives בקוד הייצור.
+- ‏137/137 בדיקות ו־full validation עברו. commit `be59cea`, ‏CI `29745014493`, deploy `29745014576`, deployments ‏`d183721a`/`6a9f12d5` ו־Production browser אומתו. `QA-005` נסגרה כ־`DONE`; המשימה הפתוחה הראשונה לפי סדר התלויות, `MIG-004`, החלה.
