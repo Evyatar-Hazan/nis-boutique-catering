@@ -887,21 +887,21 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### MIG-002 — Build a deterministic migration transformer
 
-- **Status:** `VERIFYING`
+- **Status:** `DONE`
 - **Dependencies:** `MIG-001`, `CF-002`, `ARC-002`.
 - **Definition:** להמיר export קיים ל־D1 revisions ול־R2 manifest באמצעות קוד חד־פעמי repeatable שאינו משכפל את schema.
 - **Acceptance criteria:** אותו input מפיק אותו output; IDs נשמרים; `driveFileId` ממופה ל־media ID/object key; retired sections archived; כל warning חוסם/מתועד במפורש.
 - **Verification:** fixture tests, dry run כפול, output diff ו־`contentSnapshotSchema` validation.
-- **Evidence:** נוסף transformer חד־פעמי typed שקורא ישירות את `contentSnapshotSchema`, ‏`publicSiteDocumentSchema`, ‏Drive manifest וה־backup manifest, ללא schema מקביל וללא clock/runtime randomness. הוא שומר את IDs הפעילים, ממפה 16 נכסי Drive ל־media IDs ולמפתחות R2 יציבים, יוצר revision v2 תקין, ומתעד בנפרד 6 פריטי gallery, ‏100 sections ושני קובצי Drive שאינם עוברים למסמך הפעיל. unknown groups, source חסר או counts בלתי צפויים חוסמים את ההמרה. שלוש בדיקות fixture עברו, כולל unknown group חוסם; שתי הרצות dry-run בתיקיות נפרדות היו byte-identical. תוצר קנוני נשמר ב־`migration/legacy-google/20260720T080523Z`: ‏`archive.json` ‏SHA `c4904a9c…`, ‏`r2-manifest.json` ‏SHA `be34d73a…`, ‏`revision.json` ‏SHA `e9d4e138…`, revision ID ‏`b5bd90fb-ded3-583c-ab50-8bfa17f2bd26`. ‏`publicSiteDocumentSchema` validation ו־full `pnpm validate` עברו; המשימה ממתינה רק ל־push, CI/deploy ו־Production smoke לפני `DONE`.
+- **Evidence:** נוסף transformer חד־פעמי typed שקורא ישירות את `contentSnapshotSchema`, ‏`publicSiteDocumentSchema`, ‏Drive manifest וה־backup manifest, ללא schema מקביל וללא clock/runtime randomness. הוא שומר את IDs הפעילים, ממפה 16 נכסי Drive ל־media IDs ולמפתחות R2 יציבים, יוצר revision v2 תקין, ומתעד בנפרד 6 פריטי gallery, ‏100 sections ושני קובצי Drive שאינם עוברים למסמך הפעיל. unknown groups, source חסר או counts בלתי צפויים חוסמים את ההמרה. שלוש בדיקות fixture עברו, כולל unknown group חוסם; שתי הרצות dry-run בתיקיות נפרדות היו byte-identical. תוצר קנוני נשמר ב־`migration/legacy-google/20260720T080523Z`: ‏`archive.json` ‏SHA `c4904a9c…`, ‏`r2-manifest.json` ‏SHA `be34d73a…`, ‏`revision.json` ‏SHA `e9d4e138…`, revision ID ‏`b5bd90fb-ded3-583c-ab50-8bfa17f2bd26`. ‏`publicSiteDocumentSchema` validation ו־full `pnpm validate` עברו. Commit `4e066b6`, ‏CI `29727541218` ו־deploy `29727541187` עברו; deployments ‏`7b78457a`/`51e41acb` נפרסו, ושני ה־roots וה־health החזירו `200` עם D1/R2 ready.
 
 #### MIG-003 — Import and validate in preview
 
-- **Status:** `BACKLOG`
+- **Status:** `IN_PROGRESS`
 - **Dependencies:** `MIG-002`, `CF-006`, `CF-007`.
 - **Definition:** לייבא את כל התוכן והמדיה ל־D1/R2 preview ולהריץ parity מלאה בלי להשפיע על production.
 - **Acceptance criteria:** counts/IDs/hashes תואמים; כל media נפתחת; draft/published מוגדרים; אין orphan/duplicate object; admin bootstrap תקין.
 - **Verification:** automated parity report, R2 object HEAD/read sampling, preview studio login ו־preview public build.
-- **Evidence:** pending.
+- **Evidence:** העבודה החלה מהתוצרים הקנוניים של `MIG-002`; הייבוא יבוצע רק מול D1/R2 Preview ולא ישנה את Production.
 
 #### MIG-004 — Run the production freeze, delta import and cutover
 
@@ -1450,3 +1450,4 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - `MIG-002` עברה ל־`VERIFYING`; transformer typed ממיר את הגיבוי immutable למסמך v2, ‏R2 manifest ורשימת archive בלי schema כפול.
 - 16 media IDs ומקורות Drive מופו למפתחות R2 יציבים; 6 פריטי gallery, ‏100 sections ושני קובצי Drive הופרדו במפורש מהתוכן הפעיל.
 - שלוש בדיקות fixture, ‏schema validation, שתי הרצות byte-identical ו־full `pnpm validate` עברו. התוצרים הקנוניים וה־SHA-256 שלהם נשמרו תחת `migration/legacy-google/20260720T080523Z` לקראת import ל־Preview.
+- commit `4e066b6` עבר CI `29727541218` ו־deploy `29727541187`; Production smoke אישר `200` בשני ה־roots וב־health עם D1/R2 ready. `MIG-002` נסגרה כ־`DONE` ו־`MIG-003` החלה מול Preview בלבד.
