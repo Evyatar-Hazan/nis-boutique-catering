@@ -887,12 +887,12 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### MIG-002 — Build a deterministic migration transformer
 
-- **Status:** `IN_PROGRESS`
+- **Status:** `VERIFYING`
 - **Dependencies:** `MIG-001`, `CF-002`, `ARC-002`.
 - **Definition:** להמיר export קיים ל־D1 revisions ול־R2 manifest באמצעות קוד חד־פעמי repeatable שאינו משכפל את schema.
 - **Acceptance criteria:** אותו input מפיק אותו output; IDs נשמרים; `driveFileId` ממופה ל־media ID/object key; retired sections archived; כל warning חוסם/מתועד במפורש.
 - **Verification:** fixture tests, dry run כפול, output diff ו־`contentSnapshotSchema` validation.
-- **Evidence:** העבודה החלה מהגיבוי המאומת `20260720T080523Z`; ה־transformer ישתמש ישירות ב־`contentSnapshotSchema` וב־Drive manifest, ללא schema מקביל.
+- **Evidence:** נוסף transformer חד־פעמי typed שקורא ישירות את `contentSnapshotSchema`, ‏`publicSiteDocumentSchema`, ‏Drive manifest וה־backup manifest, ללא schema מקביל וללא clock/runtime randomness. הוא שומר את IDs הפעילים, ממפה 16 נכסי Drive ל־media IDs ולמפתחות R2 יציבים, יוצר revision v2 תקין, ומתעד בנפרד 6 פריטי gallery, ‏100 sections ושני קובצי Drive שאינם עוברים למסמך הפעיל. unknown groups, source חסר או counts בלתי צפויים חוסמים את ההמרה. שלוש בדיקות fixture עברו, כולל unknown group חוסם; שתי הרצות dry-run בתיקיות נפרדות היו byte-identical. תוצר קנוני נשמר ב־`migration/legacy-google/20260720T080523Z`: ‏`archive.json` ‏SHA `c4904a9c…`, ‏`r2-manifest.json` ‏SHA `be34d73a…`, ‏`revision.json` ‏SHA `e9d4e138…`, revision ID ‏`b5bd90fb-ded3-583c-ab50-8bfa17f2bd26`. ‏`publicSiteDocumentSchema` validation ו־full `pnpm validate` עברו; המשימה ממתינה רק ל־push, CI/deploy ו־Production smoke לפני `DONE`.
 
 #### MIG-003 — Import and validate in preview
 
@@ -1444,3 +1444,9 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - workflow כולל Cloudflare lane הנשלט ב־`PUBLIC_CONTENT_SOURCE`; legacy lane נשאר פעיל רק עד cutover `MIG-005` כדי לא לבנות מ־Production D1 הריק. כל נתוני Preview נמחקו. `CF-009` עברה ל־`VERIFYING` עד push/CI/deploy ו־Production checks.
 - commit `68e6d9b` עבר CI `29724776801` ו־deploy `29724776832`; Production deployment `04a43bb6` מצביע אליו.
 - Production החזיר `404 published_content_not_found` כמצופה לפני import, נשאר עם 0 jobs/revisions/media ו־0 FK violations, ו־health/public/studio החזירו `200`. `CF-009` נסגרה כ־`DONE`.
+
+### 2026-07-20 — MIG-002 deterministic transformer
+
+- `MIG-002` עברה ל־`VERIFYING`; transformer typed ממיר את הגיבוי immutable למסמך v2, ‏R2 manifest ורשימת archive בלי schema כפול.
+- 16 media IDs ומקורות Drive מופו למפתחות R2 יציבים; 6 פריטי gallery, ‏100 sections ושני קובצי Drive הופרדו במפורש מהתוכן הפעיל.
+- שלוש בדיקות fixture, ‏schema validation, שתי הרצות byte-identical ו־full `pnpm validate` עברו. התוצרים הקנוניים וה־SHA-256 שלהם נשמרו תחת `migration/legacy-google/20260720T080523Z` לקראת import ל־Preview.

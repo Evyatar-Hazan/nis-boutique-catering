@@ -14,6 +14,7 @@
     "content:seed": "node scripts/seed-content.mjs",
     "content:sync": "node scripts/sync-content.mjs",
     "content:sync:cloudflare": "tsx scripts/sync-cloudflare-content.ts",
+    "migration:transform": "tsx scripts/migrate-legacy-backup.ts",
     "lint": "eslint .",
     "media:check": "node scripts/check-media.mjs",
     "media:optimize": "node scripts/optimize-media.mjs",
