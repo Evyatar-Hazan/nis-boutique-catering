@@ -979,16 +979,16 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### ADM-006 — Implement admin management and session revocation
 
-- **Status:** `IN_PROGRESS`
+- **Status:** `DONE`
 - **Dependencies:** `ADM-003`, `CF-004`, `CF-005`.
 - **Definition:** להעביר ניהול אדמינים ל־D1 ולהוסיף add/activate/deactivate תוך הגנה מנעילה עצמית.
 - **Acceptance criteria:** email normalized/unique; לא ניתן להשבית את האדמין הפעיל האחרון או את עצמך בלי handoff; deactivation מבטלת sessions; אין public bootstrap route.
 - **Verification:** CRUD authorization tests, last-admin/self-deactivate tests ו־revoked browser session test.
-- **Evidence:** pending.
+- **Evidence:** נוסף domain repository מרכזי ל־D1 ו־API מאומת יחיד עבור list/add/activate/deactivate, עם Zod strict, אימייל מנורמל ו־unique, guard אטומי בשאילתת העדכון נגד השבתת החשבון הפעיל/המנהל האחרון, וביטול כל sessions בעת השבתה. session DTO כולל כעת admin ID מהשרת, וה־UI החדש מציג מנהלים, סטטוס Google, מספר חיבורים, הוספה, אישור מפורש להשבתה, הפעלה מחדש והסבר נעילה; אין bootstrap route ציבורי. נוספו בדיקות repository ו־component ל־normalization/duplicate, self/last-active, revoke/reactivate ו־confirmation; ‏65/65 בדיקות סטודיו ו־full `pnpm validate` עברו. Wrangler local + Chrome בשני contexts אישרו anonymous `401`, יצירה עם lowercase, self `409`, deactivate→session `401` בדפדפן השני, login gate, reactivate ו־mobile ללא overflow; נתוני הבדיקה נמחקו ו־FK check נשאר נקי. Commit `a2ccb76` עבר CI `29735767725` ו־deploy `29735767757`; Production deployments ‏`f38e2557` (studio) ו־`143a99a3` (public) עלו. שני roots ו־health החזירו `200`, bundle חי כולל את ממשק הניהול, `/api/admins` מחזיר `401` ללא session, ו־Production D1 נשאר עם מנהל פעיל יחיד, 0 sessions ו־0 FK violations.
 
 #### ADM-007 — Implement draft, publish, history and rollback UX
 
-- **Status:** `BACKLOG`
+- **Status:** `IN_PROGRESS`
 - **Dependencies:** `ADM-004`, `ADM-005`, `CF-008`.
 - **Definition:** להציג save state, revision history, publish progress/failure ו־rollback מפורש בלי לערבב save draft עם live deploy.
 - **Acceptance criteria:** draft/published badges מדויקים; publish confirmation מציג revision; failed job ניתן retry; rollback דורש confirmation ומציג תוצאה; double-submit חסום.
@@ -1500,3 +1500,10 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - endpoint מאומת חדש מציג media של טיוטה ישירות מ־R2, ו־D1 reference guard נשאר הסמכות הסופית. נתמכים גם IDs הקריאים של migration וגם UUID של העלאות חדשות.
 - ‏59/59 בדיקות סטודיו ו־full validation עברו. בדיקת Wrangler/Chrome מקומית השלימה upload→preview→replace→save→reload, duplicate ‏409, alt edit, archive/restore, mobile/keyboard ו־orphan scan ריק; כל נתוני הבדיקה נוקו. `ADM-005` עברה ל־`VERIFYING` עד push, CI/deploy ואימות Preview/Production.
 - commit `9fe2a54` עבר CI `29734691146` ו־deploy `29734691163`; Preview deployment `5bc5be59` אישר upload/preview/duplicate/reference guard/archive/restore/mobile/keyboard מול D1/R2 אמיתיים. לאחר cleanup נשארו 16 media, ‏2 revisions, ‏0 sessions/FK/orphans; Production deployment `c394d49f` נשאר נקי ומאובטח. `ADM-005` נסגרה כ־`DONE` ו־`ADM-006` החלה.
+
+### 2026-07-20 — ADM-006 admin management and revocation
+
+- נוסף API מאומת ו־repository יחיד לניהול מנהלים ב־D1: add/activate/deactivate, normalization/unique, guard אטומי נגד self/last-active וביטול sessions בהשבתה; אין bootstrap route ציבורי.
+- נוסף מסך responsive לניהול גישה עם סטטוס Google/session, אישור השבתה מפורש, הסברי נעילה והפעלה מחדש. ‏65/65 בדיקות סטודיו ו־full validation עברו.
+- Wrangler local + Chrome בשני contexts אישרו create/deactivate/revoke browser session/reactivate/self protection; כל נתוני הבדיקה נוקו ו־FK נשאר תקין.
+- commit `a2ccb76` עבר CI `29735767725` ו־deploy `29735767757`; Production deployments ‏`f38e2557`/`143a99a3` עלו, roots/health החזירו `200`, endpoint נשאר חסום ב־`401` ללא session ו־Production D1 נשאר עם מנהל פעיל יחיד ו־0 sessions/FK violations. `ADM-006` נסגרה כ־`DONE` ו־`ADM-007` החלה.
