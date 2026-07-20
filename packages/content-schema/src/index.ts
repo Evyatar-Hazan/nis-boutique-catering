@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 export * from './publicSite';
+export * from './media';
 
 export const galleryCategoryIds = ['all', 'tables', 'trays', 'salads', 'coffee', 'fish'] as const;
 
@@ -79,13 +80,14 @@ export const contentSnapshotSchema = z.object({
   sections: z.array(sectionBlockSchema).default([]),
 });
 
+export type ContentSnapshot = z.infer<typeof contentSnapshotSchema>;
+
 export type EditableGalleryCategory = z.infer<typeof editableGalleryCategorySchema>;
 export type ImageAssetRecord = z.infer<typeof imageAssetSchema>;
 export type GalleryItemRecord = z.infer<typeof galleryItemSchema>;
 export type SiteSettingsRecord = z.infer<typeof siteSettingsSchema>;
 export type ServiceRecord = z.infer<typeof serviceSchema>;
 export type SectionBlockRecord = z.infer<typeof sectionBlockSchema>;
-export type ContentSnapshot = z.infer<typeof contentSnapshotSchema>;
 
 export type PreviewCopySectionFallback = {
   readonly eyebrow: string;

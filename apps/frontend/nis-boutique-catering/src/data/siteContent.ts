@@ -20,7 +20,11 @@ import {
   Users,
   type LucideIcon,
 } from 'lucide-react';
-import { publicHeroDefaults, type ContentSnapshot } from '@monorepo/content-schema';
+import {
+  getPrimaryHeroMediaId,
+  publicHeroDefaults,
+  type ContentSnapshot,
+} from '@monorepo/content-schema';
 import { contentSnapshot as generatedContentSnapshot } from '../generated/siteContent.generated';
 
 const contentSnapshot = generatedContentSnapshot as unknown as ContentSnapshot;
@@ -842,7 +846,7 @@ export const heroContent = {
 
 export const heroMedia = {
   background: getGeneratedMedia(heroMediaSection?.items[0], foodMedia.hostingTableOverview),
-  primary: getGeneratedMedia(heroMediaSection?.items[1], foodMedia.salmonSkewersLemon),
+  primary: getGeneratedMedia(getPrimaryHeroMediaId(contentSnapshot), foodMedia.salmonSkewersLemon),
   side: getGeneratedMedia(heroMediaSection?.items[2], foodMedia.dipsTrayClose),
   tall: getGeneratedMedia(heroMediaSection?.items[3], foodMedia.tableSettingBlueGold),
 } as const;
