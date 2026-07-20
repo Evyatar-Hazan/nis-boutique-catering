@@ -867,12 +867,12 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### CF-010 — Add observability, budgets and operational runbook
 
-- **Status:** `IN_PROGRESS`
+- **Status:** `DONE`
 - **Dependencies:** `CF-003`–`CF-009`.
 - **Definition:** להוסיף structured logs ללא PII/secrets, usage monitoring, alerts/runbook ל־D1/R2/Functions ולתקציב החינמי.
 - **Acceptance criteria:** request/publish IDs ניתנים למעקב; auth tokens ו־content body אינם בלוג; thresholds מתועדים; backup/restore/session-revoke/failed-publish procedures קיימים.
 - **Verification:** simulated failures, log review, Cloudflare usage dashboard check ו־tabletop restore exercise.
-- **Evidence:** המימוש החל לאחר סגירת `CF-003`–`CF-009`. יתווספו request/publish structured events עם allowlist שדות בלבד, monitor יומי מול Cloudflare GraphQL עם warning/critical לפני המכסות, ו־runbook לגיבוי, שחזור, ביטול sessions ו־failed publish.
+- **Evidence:** נוסף observability domain יחיד עם events מובנים ל־`api_request` ול־`publish_job`. השדות הם allowlist בלבד: request/path ללא query/status/duration/errorCode ו־request/job/revision/operation/attempt; אין headers, cookies, principal, body, content או token. בדיקה ייעודית הזריקה query/header/cookie secrets ואישרה שאינם באירוע, ו־Production tail על deployment `a49b3f2a` הראה request IDs ניתנים למעקב, health ‏`200` ו־missing route ‏`404` עם structured path נקי. נוסף monitor יומי וידני מול Cloudflare GraphQL Analytics ו־D1 inventory, עם warning ב־70%, critical ב־85%, job summary וכשל מפורש ב־critical; סימולציות safe/critical יצאו 0/2. token קריאה ייעודי מוצפן מחזיק רק `Account Analytics:Read` ו־`D1:Read`; token ניסוי שנחשף במסך אישור בוטל ואומת לפני יצירת `v2`. run אמיתי `29726062902` עבר במצב `ok`: D1 reads ‏1,145, writes ‏480, storage ‏196,608 bytes, ‏R2 operations ‏80/storage ‏0 ו־Functions requests ‏0 בחלון. נוסף runbook נבדק אוטומטית עם מכסות רשמיות, גיבוי/manifest, Time Travel restore, session revoke, failed-publish retry/rollback וסגירת אירוע. תרגיל tabletop שמר bookmark ‏`0000000d-00000000-000050ae-b19f6ae0e8246a619f699b85a6460ec1`, תיקן את תחביר Wrangler בפועל, אישר migrations no-op, ‏0 FK violations ו־0 revisions/media/jobs/sessions בלי restore ל־Production. ‏45/45 בדיקות סטודיו ו־full `pnpm validate` עברו. Commits `1b59b7c`, ‏`8218447` ו־`b2ad28e`; CI `29726063501`, deploy `29726063331`, Usage Monitor `29726062902`, ו־Production deployment `a49b3f2a` כולם עברו; שני ה־roots וה־health החזירו `200`.
 
 ### Phase 5 — Data and media migration
 

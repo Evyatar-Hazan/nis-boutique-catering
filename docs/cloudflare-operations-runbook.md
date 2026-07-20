@@ -42,7 +42,7 @@ node scripts/check-cloudflare-usage.mjs --simulate=critical
 2. צור D1 Time Travel bookmark קריא בלבד:
 
    ```sh
-   pnpm --filter @monorepo/nis-content-studio exec wrangler d1 time-travel info nis-content-production --remote
+   pnpm --filter @monorepo/nis-content-studio exec wrangler d1 time-travel info nis-content-production --env production
    ```
 
 3. שמור את ה־bookmark, timestamp ו־migration count בראיות המשימה; אין לשמור token.
@@ -54,7 +54,7 @@ node scripts/check-cloudflare-usage.mjs --simulate=critical
 תרגיל tabletop מבוצע ללא שינוי Production: מתעדים bookmark, מאמתים migrations ו־FK, מציינים מי מאשר rollback ומריצים את בדיקות הבריאות. שחזור אמיתי דורש אישור מפורש וחלון תחזוקה. בודקים תחילה ב־Preview או במסד חדש, ואז:
 
 ```sh
-pnpm --filter @monorepo/nis-content-studio exec wrangler d1 time-travel restore nis-content-production --bookmark=<BOOKMARK> --remote
+pnpm --filter @monorepo/nis-content-studio exec wrangler d1 time-travel restore nis-content-production --bookmark=<BOOKMARK> --env production
 ```
 
 לאחר restore: הרץ migrations במצב no-op, ‏`PRAGMA foreign_key_check`, ספירת revisions/media/jobs, login, published snapshot ו־health. אם אחת הבדיקות נכשלת, עצור פרסום ואל תמחק את ראיות השחזור.
