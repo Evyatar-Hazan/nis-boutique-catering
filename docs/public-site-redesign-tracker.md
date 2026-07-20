@@ -840,12 +840,12 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### CF-007 — Implement R2 media lifecycle APIs
 
-- **Status:** `VERIFYING`
+- **Status:** `DONE`
 - **Dependencies:** `CF-001`, `CF-005`, `ARC-002`.
 - **Definition:** לממש upload/list/update-metadata/soft-delete/restore למדיה, עם streaming ל־R2 ומטא־דאטה ב־D1.
 - **Acceptance criteria:** allowlist של MIME וגודל; object keys server-generated; hash מונע כפילות מקרית; אין Base64; מחיקה פיזית חסומה כשיש reference פעיל.
 - **Verification:** upload אמיתי ל־R2 preview, קובץ לא תקין/גדול, duplicate hash, referenced delete ו־orphan scan.
-- **Evidence:** נוסף domain media יחיד עם `GET/POST/PATCH/DELETE /api/media` ו־`GET /api/media/orphans`. upload מקבל raw body בלבד ומעביר את `ReadableStream` ישירות ל־R2; Content-Length חובה ומוגבל ל־12MB, MIME מוגבל לפורמטים שבחוזה, object key נוצר בשרת, dimensions/alt/checksum נבדקים ו־R2 מאמת SHA-256 בזמן הכתיבה. אין Base64. D1 שומר metadata בלבד, checksum unique מונע כפילות, וכשל metadata מוחק רק את object החדש כדי למנוע orphan. archive הוא soft-delete בלבד; physical delete אינו חשוף ב־API, ו־draft/published references נבדקים מחדש מול schema וחוסמים archive ב־`409`. אותם routes מטפלים ב־list, metadata, restore ו־orphan scan בלי implementations כפולים. ‏41/41 בדיקות סטודיו ו־full `pnpm validate` עברו. Wrangler local ו־Preview deployment `974ccb84` אישרו upload אמיתי של WebP ‏101,570 bytes, duplicate `409`, MIME ‏`415`, oversize ‏`413`, list, metadata update, archive/restore, referenced delete `409` ו־orphan scan ריק. נתוני D1/R2/session/draft הזמניים נמחקו במדויק אחרי שתי הבדיקות; Preview חזר ל־0 media ו־0 content rows. נדרש עדיין push/CI/deploy ואימות Production read-only/negative לפני `DONE`.
+- **Evidence:** נוסף domain media יחיד עם `GET/POST/PATCH/DELETE /api/media` ו־`GET /api/media/orphans`. upload מקבל raw body בלבד ומעביר את `ReadableStream` ישירות ל־R2; Content-Length חובה ומוגבל ל־12MB, MIME מוגבל לפורמטים שבחוזה, object key נוצר בשרת, dimensions/alt/checksum נבדקים ו־R2 מאמת SHA-256 בזמן הכתיבה. אין Base64. D1 שומר metadata בלבד, checksum unique מונע כפילות, וכשל metadata מוחק רק את object החדש כדי למנוע orphan. archive הוא soft-delete בלבד; physical delete אינו חשוף ב־API, ו־draft/published references נבדקים מחדש מול schema וחוסמים archive ב־`409`. אותם routes מטפלים ב־list, metadata, restore ו־orphan scan בלי implementations כפולים. ‏41/41 בדיקות סטודיו ו־full `pnpm validate` עברו. Wrangler local ו־Preview deployment `974ccb84` אישרו upload אמיתי של WebP ‏101,570 bytes, duplicate `409`, MIME ‏`415`, oversize ‏`413`, list, metadata update, archive/restore, referenced delete `409` ו־orphan scan ריק. נתוני D1/R2/session/draft הזמניים נמחקו במדויק אחרי שתי הבדיקות; Preview חזר ל־0 media ו־0 content rows. Commit `986829e` עבר CI `29722739332` ו־deploy `29722739333`; Production deployment `b578a7c7` מצביע אליו. Production החזיר `401` ל־media/orphan reads ללא session ו־`403` ל־mutation ללא Origin, שמר 0 media/content rows, והחזיר `200` ב־health ובשני ה־roots.
 
 #### CF-008 — Implement atomic publish, rollback and workflow dispatch
 
@@ -1423,3 +1423,5 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - archive הוא soft-delete וחסום ב־`409` כאשר draft/published תקין מפנה ל־media ID; physical delete אינו חשוף ב־API. restore ועדכון alt אטומיים ב־D1.
 - 41/41 בדיקות סטודיו ו־full validation עברו. Local ו־Preview `974ccb84` אישרו upload אמיתי, duplicate, invalid type, oversize, list, update, archive/restore, referenced delete ו־orphan scan ריק.
 - כל test object/row/session/draft נמחקו במדויק מ־local ומ־Preview; Preview חזר ל־0 media/content rows. `CF-007` עברה ל־`VERIFYING` עד push/CI/deploy ואימות Production של המשטח השלילי/read-only.
+- commit `986829e` עבר CI `29722739332` ו־Cloudflare deploy `29722739333`; Production deployment `b578a7c7` מצביע ל־commit זה.
+- Production אישר `401` ל־media/orphan reads ללא session, ‏`403` ל־mutation ללא Origin, ‏0 media/content rows ו־health/public/studio `200`. `CF-007` נסגרה כ־`DONE`.
