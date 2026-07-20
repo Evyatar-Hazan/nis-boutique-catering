@@ -13,6 +13,7 @@ import {
   rollbackPublishedRevision,
 } from "../publish/service";
 import { apiSecurityPolicies } from "../security/policy";
+import { writeOperationalEvent } from "../observability/logging";
 
 const publishSchema = z.object({
   draftId: z.string().uuid(),
@@ -47,6 +48,15 @@ export const publishDraftRoute: ApiRoute<Env> = {
       expectedVersion: input.expectedVersion,
       idempotencyKey: requireIdempotencyKey(request),
     });
+    writeOperationalEvent({
+      attemptCount: result.job.attemptCount,
+      event: "publish_job",
+      jobId: result.job.id,
+      operation: result.job.operation,
+      requestId,
+      revisionId: result.revision.id,
+      status: result.job.status,
+    });
     return jsonApiResponse(result, 200, requestId);
   },
 };
@@ -57,8 +67,18 @@ export const retryPublishRoute: ApiRoute<Env> = {
   security: apiSecurityPolicies.publish,
   handler: async ({ env, request, requestId }) => {
     const { jobId } = await parseJsonBody(request, retrySchema);
+    const job = await retryPublishDispatch(env, jobId);
+    writeOperationalEvent({
+      attemptCount: job.attemptCount,
+      event: "publish_job",
+      jobId: job.id,
+      operation: job.operation,
+      requestId,
+      revisionId: job.revisionId,
+      status: job.status,
+    });
     return jsonApiResponse(
-      { job: await retryPublishDispatch(env, jobId) },
+      { job },
       200,
       requestId,
     );
@@ -75,6 +95,15 @@ export const rollbackPublishRoute: ApiRoute<Env> = {
       adminId: requireApiPrincipal(principal).adminId,
       idempotencyKey: requireIdempotencyKey(request),
       sourceRevisionId: input.sourceRevisionId,
+    });
+    writeOperationalEvent({
+      attemptCount: result.job.attemptCount,
+      event: "publish_job",
+      jobId: result.job.id,
+      operation: result.job.operation,
+      requestId,
+      revisionId: result.revision.id,
+      status: result.job.status,
     });
     return jsonApiResponse(result, 200, requestId);
   },

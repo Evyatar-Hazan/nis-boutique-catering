@@ -16,6 +16,7 @@
     "design:tokens:check": "node scripts/check-design-tokens.mjs",
     "motion:check": "node scripts/check-motion-system.mjs",
     "security:headers": "node scripts/check-response-headers.mjs",
+    "cloudflare:runbook:check": "node scripts/check-cloudflare-runbook.mjs",
     "artifacts:list": "node scripts/local-artifacts.mjs list",
     "artifacts:clean": "node scripts/local-artifacts.mjs clean",
     "parity:local": "node scripts/run-local-parity.mjs validate",
@@ -45,7 +46,7 @@
     "test": "turbo run test",
     "clean": "turbo run clean && rm -rf node_modules",
     "type-check": "turbo run type-check",
-    "validate": "pnpm tracker:check && pnpm architecture:boundaries && pnpm design:tokens:check && pnpm motion:check && pnpm security:headers && turbo run content:check media:check lint test type-check && turbo run build"
+    "validate": "pnpm tracker:check && pnpm architecture:boundaries && pnpm design:tokens:check && pnpm motion:check && pnpm security:headers && pnpm cloudflare:runbook:check && turbo run content:check media:check lint test type-check && turbo run build"
   },
   "volta": {
     "node": "24.11.0",

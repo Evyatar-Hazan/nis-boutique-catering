@@ -5,6 +5,7 @@ import { ApiError } from "./errors";
 import { dispatchApiRequest } from "./router";
 import type { ApiRoute } from "./types";
 import { parseJsonBody } from "./validation";
+import type { OperationalEvent } from "../observability/logging";
 
 interface TestEnvironment {
   readonly label: string;
@@ -78,6 +79,50 @@ describe("dispatchApiRequest", () => {
     expect(response.status).toBe(500);
     expect(body.error.code).toBe("internal_error");
     expect(body.error.message).not.toContain("private implementation detail");
+  });
+
+  it("logs only allowlisted operational fields without request secrets or content", async () => {
+    const events: OperationalEvent[] = [];
+    const clock = [100, 112];
+    const request = new Request(
+      "https://example.com/api/example?token=query-secret",
+      {
+        headers: {
+          Authorization: "Bearer header-secret",
+          Cookie: "session=cookie-secret",
+        },
+      },
+    );
+
+    const response = await dispatchApiRequest(
+      request,
+      environment,
+      [okRoute],
+      undefined,
+      {
+        now: () => clock.shift() ?? 112,
+        write: (event) => events.push(event),
+      },
+    );
+
+    expect(response.status).toBe(200);
+    expect(events).toHaveLength(1);
+    expect(events[0]).toMatchObject({
+      durationMs: 12,
+      event: "api_request",
+      method: "GET",
+      path: "/api/example",
+      status: 200,
+    });
+    expect(events[0]?.requestId).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/u,
+    );
+
+    const serialized = JSON.stringify(events);
+    expect(serialized).not.toContain("query-secret");
+    expect(serialized).not.toContain("header-secret");
+    expect(serialized).not.toContain("cookie-secret");
+    expect(serialized).not.toContain("token=");
   });
 });
 

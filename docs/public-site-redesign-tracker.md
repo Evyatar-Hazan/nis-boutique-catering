@@ -867,12 +867,12 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### CF-010 — Add observability, budgets and operational runbook
 
-- **Status:** `BACKLOG`
+- **Status:** `IN_PROGRESS`
 - **Dependencies:** `CF-003`–`CF-009`.
 - **Definition:** להוסיף structured logs ללא PII/secrets, usage monitoring, alerts/runbook ל־D1/R2/Functions ולתקציב החינמי.
 - **Acceptance criteria:** request/publish IDs ניתנים למעקב; auth tokens ו־content body אינם בלוג; thresholds מתועדים; backup/restore/session-revoke/failed-publish procedures קיימים.
 - **Verification:** simulated failures, log review, Cloudflare usage dashboard check ו־tabletop restore exercise.
-- **Evidence:** pending.
+- **Evidence:** המימוש החל לאחר סגירת `CF-003`–`CF-009`. יתווספו request/publish structured events עם allowlist שדות בלבד, monitor יומי מול Cloudflare GraphQL עם warning/critical לפני המכסות, ו־runbook לגיבוי, שחזור, ביטול sessions ו־failed publish.
 
 ### Phase 5 — Data and media migration
 
