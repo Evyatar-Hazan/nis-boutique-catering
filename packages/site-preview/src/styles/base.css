@@ -333,7 +333,7 @@
 
 @keyframes trust-proof-number {
   from {
-    opacity: 0.08;
+    opacity: var(--trust-number-start-opacity, 0.08);
     transform: translate3d(0, 36px, 0) scale(0.78);
   }
 
@@ -345,7 +345,7 @@
 
 @keyframes trust-proof-copy {
   from {
-    opacity: 0.14;
+    opacity: var(--trust-copy-start-opacity, 0.14);
     transform: translate3d(28px, 22px, 0);
   }
 
@@ -357,7 +357,7 @@
 
 @keyframes trust-proof-icon {
   from {
-    opacity: 0;
+    opacity: var(--trust-icon-start-opacity, 0);
     transform: translate3d(0, 18px, 0) rotate(-16deg) scale(0.72);
   }
 
@@ -553,6 +553,22 @@
   .scroll-motion-ready .trust-point > div {
     animation-name: trust-proof-copy;
     animation-range: entry 18% cover 58%;
+  }
+}
+
+@media (min-width: 981px) {
+  @supports (animation-timeline: view()) {
+    .scroll-motion-ready .trust-point::before {
+      animation-range: entry 0% cover 28%;
+    }
+
+    .scroll-motion-ready .trust-point .card-icon {
+      animation-range: entry 2% cover 32%;
+    }
+
+    .scroll-motion-ready .trust-point > div {
+      animation-range: entry 4% cover 38%;
+    }
   }
 }
 

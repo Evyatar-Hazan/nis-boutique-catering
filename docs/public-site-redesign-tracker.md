@@ -1,11 +1,11 @@
 ---
 title: NIS Public Site Redesign Tracker
-status: completed
+status: active
 owner: Evyatar Hazan
 created: 2026-07-20
 updated: 2026-07-22
 source_of_truth: true
-implementation_gate: closed
+implementation_gate: ready
 ---
 
 # NIS Public Site Redesign — Source of Truth and Execution Tracker
@@ -35,9 +35,9 @@ implementation_gate: closed
 
 ## שער מימוש גלובלי
 
-**סטטוס נוכחי: `COMPLETED`**
+**סטטוס נוכחי: `READY`**
 
-כל 59 המשימות הושלמו ואומתו בפרודקשן. `UI-012` סגרה את השיפור הממוקד של אזור האמון; שער המימוש סגור ואין משימת מימוש פתוחה.
+כל 59 המשימות הקודמות הושלמו ואומתו בפרודקשן. `UI-013` פתוחה כעת לתיקון ממוקד של קומפוזיציית אזור האמון בדסקטופ בלבד; שער המימוש פתוח עד השלמת local, ‏CI/deploy ואימות Production.
 
 תוכנית השרת/קליינט, בניית מסך האדמין מחדש והמעבר מ־Google Sheets/Drive ל־Cloudflare D1/R2 נוספו למסמך ב־2026-07-20. שער המימוש נפתח לאחר השלמת:
 
@@ -1275,6 +1275,24 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - **Local implementation evidence (2026-07-22):** אזור האמון עוצב מחדש ב־CSS בלבד כ־“Cinematic Proof Frame”: פרק ink בגובה 1931px בדסקטופ, watermark ‏05, כותרת 93.6/80.64/53.6px, תמונת הוכחה sticky בגובה 760px בדסקטופ ו־stack רגיל ב־tablet/mobile, ושלוש שורות אמון ממוספרות ללא cards. `TrustSection`, ה־DOM, התוכן, התמונה, ה־alt, ה־icons, ה־props וה־data source לא השתנו. לכל point הוגדר timeline מקומי `--trust-point`; מדידה חיה הראתה opacity ‏0.47/0.36/0.38 ומטריצות transform פעילות עבור number/icon/copy בנקודת גלילה, בעוד התמונה ממשיכה לצרוך `--trust-scene`. בדיקות Playwright ב־1440×1000, ‏768×1024 ו־375×812 אישרו 3 points, תמונה אחת, ‏0 overflow, ‏0 broken media ו־0 console warnings/errors; reduced-motion החזיר `animation: none`, ‏opacity ‏1 ו־transform ‏none לכל שכבות התנועה. כל 142 הבדיקות, `tracker:check`, ‏`architecture:boundaries`, ‏`design:tokens:check`, ‏`motion:check`, lint, type-check, builds, full `pnpm validate`, ‏`parity:local` ו־`git diff --check` עברו. צילומי מסך: `output/playwright/ui-012-trust-1440-heading.png`, ‏`output/playwright/ui-012-trust-768-heading.png`, ‏`output/playwright/ui-012-trust-375-heading.png`. `UI-012` עברה ל־`VERIFYING` עד push, CI/deploy ואימות Production.
 - **Production evidence (2026-07-22):** commit `0b031c8` עבר CI ‏`29874177581` ו־Cloudflare deploy ‏`29874177532`; deployment ‏`e9ef76f4` והדומיין הקנוני מגישים את bundle ‏`index-CCc_zQ7A.css`. Production ב־1440×1000, ‏768×1024 ו־375×812 אישר כותרת 93.6/80.64/53.6px, שלושה trust points בסדר המאושר, תמונה אחת תקינה, ‏sticky בדסקטופ ו־`position: relative` ב־tablet/mobile, ‏0 overflow ו־0 console warnings/errors. number/icon/copy של point 3 צרכו `--trust-point` והתקדמו ממצב opacity/transform התחלתי למצב 1/1/0.87 בזמן הגלילה; reduced-motion המקומי וה־bundle הזהה אישרו `animation: none`, ‏opacity ‏1 ו־transform ‏none. תשעה קישורי WhatsApp, קישור ניווט יחיד ל־`#process`, טופס וכפתור שליחה נשארו זמינים. public, Studio, health ו־published החזירו `200`; `UI-012`, ‏Phase 16 וכל 59 המשימות נסגרו `DONE` ושער המימוש נסגר.
 
+### Phase 17 — Trust desktop refinement
+
+#### UI-013 — Rebalance the cinematic proof chapter on desktop
+
+- **Status:** `VERIFYING`
+- **Dependencies:** `UI-012`.
+- **Definition:** לתקן רק את קומפוזיציית הדסקטופ של `trust-section` לאחר משוב משתמש שהמימוש החי אינו נראה טוב במסך מחשב. לשמור על רעיון “Cinematic Proof Frame”, התוכן, התמונה, ה־DOM, ה־component API, ה־state, ה־data source וההתנהגות ב־tablet/mobile, אך להפוך את הפרק למאוזן, קריא וקצר יותר.
+- **Acceptance criteria:**
+  - ב־viewport רחב מ־980px הכותרת אינה יוצרת מסה אנכית מוגזמת, התמונה ועמודת הטקסט אינן מתנגשות, ושלוש ההוכחות מקבלות היררכיה וקצב אחידים.
+  - גובה הסקשן ב־1440×1000 קטן משמעותית מ־1,932px, תמונת ה־sticky נשארת בתוך גבולותיו, ולפחות שתי הוכחות נראות כמידע קריא ולא כטקסט כמעט נעלם בכל פריים מרכזי.
+  - motion של number/icon/copy נשאר scroll-driven אך מתחיל ממצב קריא ועדין יותר; אין opacity כמעט אפסי, listener, hijacking, dependency, layout animation או `transition: all`.
+  - selectors מתחת ל־980px אינם משתנים חזותית; 768×1024 ו־375×812 נשארים stack ללא sticky, overflow, חיתוך או overlap.
+  - `TrustSection`, ה־DOM, הכותרת, התיאור, שלושת ה־articles, התמונה, ה־alt, ה־icons, ה־props והלוגיקה אינם משתנים; אין שינוי בשום section אחר.
+  - `prefers-reduced-motion` משאיר את כל התוכן גלוי; אין raw colors חדשים, media שבורה, overflow אופקי או שגיאות console.
+- **Verification:** `pnpm tracker:check`, ‏`design:tokens:check`, ‏`motion:check`, tests/type-check/lint/build/full `pnpm validate`, ‏`parity:local`, ‏`git diff --check`; בדפדפן ב־1440×1000 למדוד section/heading/media/columns/opacities/sticky/overflow ולצלם כמה נקודות גלילה, וב־768×1024 ו־375×812 לבצע regression comparison; לאחר push — CI/deploy ואימות production/public/Studio/health/published.
+- **Evidence (2026-07-22):** משוב המשתמש זיהה שהמימוש אינו נראה טוב בדסקטופ. בדיקה לוקאלית ב־1440px אישרה את הסיבה: כותרת בגובה כ־402px, חפיפה אופקית של כ־64px בין התמונה לעמודת התוכן, section בגובה כ־1,932px ושלושת ה־copies במצב פתיחה `opacity: 0.14`. נבחר refinement בשם “Balanced Proof Spread”: שתי עמודות ללא התנגשות, כותרת מרוסנת, מדיה נמוכה יותר, rows צפופים יותר ו־motion שמתחיל במצב קריא. הקבצים המתוכננים לשינוי הם `theme.css`, ‏`base.css`, קובץ המעקב ובדיקת מספר המשימות בלבד; `UI-013` הועברה ל־`IN_PROGRESS` והשער נפתח ל־`READY`.
+- **Local implementation evidence (2026-07-22):** ב־desktop בלבד נוסף “Balanced Proof Spread”: גובה הסקשן ירד מ־1,931.5px ל־1,173.6px, גובה הכותרת מ־402.5px ל־194.9px, חפיפת המדיה/תוכן של 64px הוחלפה במרווח 29.5px, וגובה כל proof row ירד מ־259.2px ל־172.8px. המדיה נשארת sticky בגובה כ־564px; בנקודת הכניסה הראשונה opacities של copies הם 0.96/0.73/0.49, ולאחר 320px הם 1/1/0.93. הדבר הושג ב־CSS בלבד עם custom-property defaults השומרים את ערכי mobile המקוריים ו־animation ranges מהירים יותר ב־desktop. regression ב־768×1024 וב־375×812 החזיר בדיוק את המדידות הקודמות: heading ‏80.64/53.6px, section ‏1953.19/1584.11px, media ‏relative, ‏0 overflow, שלושה points ותמונה תקינה; console נקי. `TrustSection`, ‏DOM, content, media ו־logic לא השתנו. כל 142 הבדיקות, targeted trust tests, ‏tracker/design-token/motion/architecture/security checks, lint, type-check, builds, full `pnpm validate`, ‏`parity:local` ו־`git diff --check` עברו. `UI-013` עברה ל־`VERIFYING` עד CI/deploy ואימות Production.
+
 ## Open decisions before implementation
 
 | ID | Decision | Status | Blocks |
@@ -1338,8 +1356,21 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 | Phase 14 — Gallery motion refinement | Done | 1 | 1 |
 | Phase 15 — Process art direction | Done | 1 | 1 |
 | Phase 16 — Trust art direction | Done | 1 | 1 |
+| Phase 17 — Trust desktop refinement | Verifying | 0 | 1 |
 
 ## Change Log
+
+### 2026-07-22 — UI-013 balanced desktop proof spread verified locally
+
+- הסקשן קוצר בכ־39%, הכותרת קוצרה בכ־52%, חפיפת העמודות הוסרה וה־proof rows נשארים קריאים לאורך הגלילה.
+- 768px ו־375px נשארו זהים למדידות הקודמות; 142 בדיקות, local parity וכל שערי העיצוב והתנועה עברו.
+- `UI-013` הועברה ל־`VERIFYING` עד CI/deploy ואימות Production.
+
+### 2026-07-22 — UI-013 trust desktop refinement started
+
+- משוב משתמש ובדיקה מדודה אישרו שבדסקטופ הכותרת, התמונה, אורך הסקשן וה־opacity הראשוני יוצרים קומפוזיציה כבדה ולא מאוזנת.
+- נבחר “Balanced Proof Spread”: שתי עמודות נקיות, כותרת קצרה יותר חזותית, תמונה sticky מרוסנת והוכחות קריאות יותר לאורך הגלילה, ללא שינוי mobile/DOM/content/logic.
+- `UI-013` נוספה כמשימה ה־60 והועברה ל־`IN_PROGRESS`; שער המימוש נפתח ל־`READY`.
 
 ### 2026-07-22 — UI-012 cinematic proof chapter completed
 
