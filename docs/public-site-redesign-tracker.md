@@ -1,11 +1,11 @@
 ---
 title: NIS Public Site Redesign Tracker
-status: active
+status: completed
 owner: Evyatar Hazan
 created: 2026-07-20
 updated: 2026-07-22
 source_of_truth: true
-implementation_gate: ready
+implementation_gate: closed
 ---
 
 # NIS Public Site Redesign — Source of Truth and Execution Tracker
@@ -35,9 +35,9 @@ implementation_gate: ready
 
 ## שער מימוש גלובלי
 
-**סטטוס נוכחי: `READY`**
+**סטטוס נוכחי: `COMPLETED`**
 
-ה־release וכל משימות ההמשך עד `UI-008` הושלמו ואומתו בפרודקשן. בעקבות בקשת המשתמש להמשיך לחלק הבא בלבד, `UI-009` נפתחה לשיפור ממוקד של הגלריה באותה שפה קולנועית של ה־Hero והשירותים. שער המימוש פתוח למשימה זו בלבד.
+ה־release וכל 56 המשימות, כולל שיפור הגלריה ב־`UI-009`, הושלמו ואומתו בפרודקשן. שער המימוש סגור; שינוי נוסף מחייב משימה חדשה, הגדרה מלאה ופתיחה מפורשת מחדש.
 
 תוכנית השרת/קליינט, בניית מסך האדמין מחדש והמעבר מ־Google Sheets/Drive ל־Cloudflare D1/R2 נוספו למסמך ב־2026-07-20. שער המימוש נפתח לאחר השלמת:
 
@@ -1202,7 +1202,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### UI-009 — Turn the gallery into a cinematic contact sheet
 
-- **Status:** `VERIFYING`
+- **Status:** `DONE`
 - **Dependencies:** `UI-008`, `WEB-003`, `UI-005`.
 - **Definition:** לשפר רק את `#gallery` כך שימשיך ישירות את הפרק הקולנועי של ה־Hero והשירותים: רקע ink רציף, כותרת גדולה, video frame מוביל ו־contact sheet אסימטרי לשש התמונות — בלי לשנות את `GallerySection`, סדר ה־DOM, התוכן, המדיה, הפילטרים, lightbox, props, state או לוגיקה.
 - **Acceptance criteria:**
@@ -1215,6 +1215,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - **Verification:** `pnpm tracker:check`, ‏`pnpm design:tokens:check`, ‏`pnpm motion:check`, tests/type-check/lint/build/full `pnpm validate`, ‏`parity:local`; בדפדפן ב־1440×1000, ‏768×1024 ו־375×812 עם screenshot/computed checks לכותרת, video, שש תמונות, ארבעה פילטרים, lightbox, keyboard, overflow, media, console ו־reduced-motion; לאחר push — CI/deploy ואימות public/Studio/health בפרודקשן.
 - **Evidence (2026-07-22):** ה־tracker, הארכיטקטורה, `GallerySection`, ‏CSS והבדיקות נקראו מחדש. baseline חי ב־1440×1000 אישר video אחד, שש תמונות, ארבעה פילטרים, ‏0 overflow ו־console נקי, אך הסקשן חוזר למשטח בהיר ול־masonry סטנדרטי מיד אחרי השירותים הכהים ולכן אינו ממשיך את אפקט ה־“וואו”. נבחר כיוון “Cinematic Contact Sheet”: רקע ink, כותרת ענקית, video frame, גריד אסימטרי ומספור פרק, תוך שמירת כל החוזים והאינטראקציות. `UI-009` הועברה ל־`IN_PROGRESS` ושער המימוש נפתח ל־`READY`.
 - **Local implementation evidence (2026-07-22):** `#gallery` הוסב ב־`theme.css` בלבד לפרק “Cinematic Contact Sheet”: רקע ink רציף, watermark ‏03, כותרת 107/84/58px, מסננים ממוספרים, video frame וגריד אסימטרי לשש תמונות. `GallerySection`, ה־DOM, התוכן, media IDs, state, props, named animations וכל שאר הסקשנים לא השתנו; checker המעקב עודכן במפורש מ־55 ל־56 משימות. בדיקות browser ב־1440×1000, ‏768×1024 ו־375×812 אישרו video אחד, שש תמונות, 6 פילטרים ב־fallback, פילטר `סלטים` עם 3 תוצאות, פתיחת lightbox וסגירה ב־Escape, touch targets בגובה 48px, וידאו לא־sticky במסכים צרים, ‏0 overflow, ‏0 broken media ו־0 console warnings/errors. reduced-motion החזיר opacity ‏1 ו־transform ‏none לכותרת ולתמונה. כל 142 הבדיקות, `tracker:check`, ‏`design:tokens:check`, ‏`motion:check`, lint, type-check, builds, full `pnpm validate`, ‏`parity:local` ו־`git diff --check` עברו. `UI-009` עברה ל־`VERIFYING` עד push, CI/deploy ואימות Production.
+- **Production evidence (2026-07-22):** commit `077e86d` עבר CI ‏`29870520582` ו־Cloudflare deploy ‏`29870520800`; deployment ‏`5c5d2769` והדומיין הקנוני מגישים את bundle ‏`index-BjZVQiyV.css`. בדיקות Production ב־1440×1000, ‏768×1024 ו־375×812 אישרו את הכותרת בגודל 107/84/58px, ארבעה פילטרים בגובה 48px, שש תמונות ללא שבר, video לא־sticky ב־tablet/mobile, ‏0 overflow ו־0 console warnings/errors. פילטר `סלטים` הציג את שתי הרשומות החיות המשויכות אליו; lightbox נפתח עם `role=dialog`/`aria-modal` ונסגר ב־Escape. `UI-009` וכל 56 המשימות נסגרו `DONE` ושער המימוש נסגר.
 
 ## Open decisions before implementation
 
@@ -1275,9 +1276,15 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 | Phase 10 — Scroll storytelling | Done | 1 | 1 |
 | Phase 11 — Hero art direction | Done | 1 | 1 |
 | Phase 12 — Services art direction | Done | 1 | 1 |
-| Phase 13 — Gallery art direction | In progress | 0 | 1 |
+| Phase 13 — Gallery art direction | Done | 1 | 1 |
 
 ## Change Log
+
+### 2026-07-22 — UI-009 cinematic gallery completed
+
+- `#gallery` ממשיך כעת את שפת ה־Hero והשירותים כ־“Cinematic Contact Sheet”: רקע ink, כותרת ענקית, video frame וגריד אסימטרי — ללא שינוי קומפוננטות, DOM, תוכן או לוגיקה.
+- commit `077e86d`, ‏CI `29870520582` ו־deploy `29870520800` עברו; bundle החדש ו־Production אומתו ב־desktop/tablet/mobile ללא overflow, מדיה שבורה או שגיאות console, כולל פילטרים ו־lightbox נגיש.
+- `UI-009`, ‏Phase 13 וכל 56 המשימות סומנו `DONE`; שער המימוש נסגר.
 
 ### 2026-07-22 — UI-009 gallery art direction started
 
