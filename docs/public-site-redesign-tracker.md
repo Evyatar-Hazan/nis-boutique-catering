@@ -1,11 +1,11 @@
 ---
 title: NIS Public Site Redesign Tracker
-status: active
+status: completed
 owner: Evyatar Hazan
 created: 2026-07-20
 updated: 2026-07-21
 source_of_truth: true
-implementation_gate: ready
+implementation_gate: closed
 ---
 
 # NIS Public Site Redesign — Source of Truth and Execution Tracker
@@ -35,9 +35,9 @@ implementation_gate: ready
 
 ## שער מימוש גלובלי
 
-**סטטוס נוכחי: `READY`**
+**סטטוס נוכחי: `COMPLETED`**
 
-ה־release המקורי וכל משימות ההמשך עד `UI-007` הושלמו ואומתו בפרודקשן. בעקבות משוב המשתמש, `UI-008` נפתחה מחדש: המבנה הקיים של אזור השירותים תקין, אך העוצמה החזותית שלו עדיין אינה ממשיכה את ה־Hero. שער המימוש פתוח לתיקון ממוקד באותו אזור בלבד.
+ה־release וכל 55 המשימות הושלמו ואומתו בפרודקשן. אזור השירותים ממשיך כעת את עוצמת ה־Hero כפרק קולנועי כהה, בלי שינוי תוכן, DOM, קומפוננטות או לוגיקה. שער המימוש סגור.
 
 תוכנית השרת/קליינט, בניית מסך האדמין מחדש והמעבר מ־Google Sheets/Drive ל־Cloudflare D1/R2 נוספו למסמך ב־2026-07-20. שער המימוש נפתח לאחר השלמת:
 
@@ -1183,7 +1183,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### UI-008 — Turn the three services into an editorial choice table
 
-- **Status:** `VERIFYING`
+- **Status:** `DONE`
 - **Dependencies:** `UI-006`, `UI-007`, `WEB-002`.
 - **Definition:** לשפר רק את `#experiences` באותה שפה editorial של ה־Hero: להפוך שלושה כרטיסים שווי־משקל לקומפוזיציית בחירה אסימטרית עם שירות מוביל, שני שירותים משלימים, מספור וקווים דקים — בלי לשנות את `ServicesSection`, ‏`ServiceCard`, סדר ה־DOM, תוכן, CTA, תמונות, props או לוגיקה.
 - **Acceptance criteria:**
@@ -1196,6 +1196,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - **Evidence (2026-07-21):** מקור האמת, הארכיטקטורה, `ServicesSection`, ‏`ServiceCard`, CSS והבדיקות נקראו מחדש. baseline חי ב־1728×962 אישר שלושה כרטיסים שווי־רוחב בגובה כ־555–566px; כל התוכן והפעולות תקינים אך אין היררכיה חזותית שממשיכה את ה־Hero. נבחרה והוטמעה ב־`theme.css` קומפוזיציית “שולחן בחירה” editorial: כרטיס ראשון מוביל בגובה 784px ושני כרטיסים משלימים בגובה 384px, מספור 01–03, כותרת מפוצלת וקווי מערכת — ללא שינוי DOM, component API, תוכן, מדיה או לוגיקה. ב־768×1024 וב־375×812 שלושת הכרטיסים עוברים לסדר אנכי מלא; כל CTA בגובה 48px ויכול להיכנס במלואו מעל ה־sticky CTA. בדיקות דפדפן מקומיות בשלושת ה־breakpoints אישרו 3/3 כרטיסים, סדר נכון, WhatsApp href תקין, anchor heading מתחת ל־header, ‏0 overflow, ‏0 broken images ו־0 console warnings/errors. כל 142 הבדיקות, `tracker:check`, ‏`design:tokens:check`, ‏`motion:check`, lint, type-check, builds, full `pnpm validate`, ‏`parity:local` ו־`git diff --check` עברו. commit `7e2f38e`; ‏CI `29861024560` ו־Cloudflare deploy `29861024555` עברו. Production ב־1728×906, ‏1440×1000, ‏768×1024 ו־375×812 אישר שלושה כרטיסים, היררכיית desktop, stack מלא ב־tablet/mobile, כל CTA בגובה 48px במסכים הצרים, WhatsApp href שמור, ‏0 overflow, ‏0 broken images ו־0 console warnings/errors. `UI-008` נסגרה `DONE`.
 - **Reopen note (2026-07-21):** המשתמש קבע שהמימוש אמנם מסודר, אך אינו מספק את אפקט ה־“וואו” ואינו מרגיש כהמשך ישיר ל־Hero. התיקון המתוכנן שומר את אותה קומפוזיציית desktop ואת כל החוזים, אך הופך את הסקשן ל־cinematic dark chapter: תמונות full-bleed, copy ו־CTA כשכבה בתוך התמונה, מספור גדול, כותרת בקנה המידה של ה־Hero, רקע ink רציף וכניסת scroll אחת ממוקדת. ב־tablet/mobile הכרטיסים נשארים stack מלא וקריא עם gradient מקומי; reduced-motion נשאר ללא תנועה.
 - **Reopened implementation evidence (2026-07-21):** `#experiences` הוסב ב־CSS בלבד לפרק קולנועי כהה שממשיך ישירות את ה־Hero: מעבר זוויתי, כותרת בקנה מידה של ה־Hero, רקע ink/plum, מספור 01–03 דומיננטי, תמונה גדולה בכרטיס המוביל ושתי תמונות full-bleed בכרטיסים המשלימים. ה־DOM, הקומפוננטות, ה־props, התוכן, סדר השירותים, המדיה, הקישורים והלוגיקה לא השתנו. בדיקות מקומיות ב־1440×1000, ‏768×1024 ו־375×812 אישרו את הקומפוזיציה, stack מלא במסכים צרים, CTA בגובה 48px, ‏3/3 קישורי WhatsApp, ‏0 overflow, ‏0 תמונות שבורות ו־0 warnings/errors ב־console. `tracker:check`, ‏`design:tokens:check`, ‏`motion:check`, כל 142 הבדיקות, lint, type-check, builds, full `pnpm validate`, ‏`parity:local` ו־`git diff --check` עברו. `UI-008` עברה ל־`VERIFYING` עד push, CI/deploy ואימות Production.
+- **Reopened production evidence (2026-07-21):** commit `05d8fc7`, ‏CI `29863387161` ו־Cloudflare deploy `29863387163` עברו. Production ב־1440×1000, ‏768×1024 ו־375×812 אישר את המעבר הזוויתי מה־Hero, כותרת 109/84/58px, שלושה כרטיסים מלאים, כל CTA בגובה 48px לאחר reveal, שלושה קישורי WhatsApp שמורים, ‏0 overflow, ‏0 תמונות שבורות ו־0 warnings/errors ב־console. public, Studio ו־health החזירו `200`; D1 ו־R2 מדווחים `ready`. `UI-008` נסגרה `DONE`.
 
 ## Open decisions before implementation
 
@@ -1255,9 +1256,15 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 | Phase 9 — Theme maintainability | Done | 1 | 1 |
 | Phase 10 — Scroll storytelling | Done | 1 | 1 |
 | Phase 11 — Hero art direction | Done | 1 | 1 |
-| Phase 12 — Services art direction | In progress | 0 | 1 |
+| Phase 12 — Services art direction | Done | 1 | 1 |
 
 ## Change Log
+
+### 2026-07-21 — UI-008 cinematic continuation completed
+
+- אזור `#experiences` פורסם מחדש כפרק כהה וקולנועי שמתחיל במעבר זוויתי מתוך ה־Hero וממשיך בכותרת ענקית, תמונות דומיננטיות ומספור 01–03.
+- commit `05d8fc7`, ‏CI `29863387161` ו־deploy `29863387163` עברו; Production אומת ב־desktop/tablet/mobile ללא overflow, תמונות שבורות או שגיאות console.
+- `UI-008` וכל 55 המשימות סומנו `DONE`; שער המימוש נסגר.
 
 ### 2026-07-21 — UI-008 reopened after visual review
 
