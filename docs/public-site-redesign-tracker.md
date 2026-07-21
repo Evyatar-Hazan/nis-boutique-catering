@@ -1,11 +1,11 @@
 ---
 title: NIS Public Site Redesign Tracker
-status: completed
+status: active
 owner: Evyatar Hazan
 created: 2026-07-20
 updated: 2026-07-22
 source_of_truth: true
-implementation_gate: closed
+implementation_gate: ready
 ---
 
 # NIS Public Site Redesign — Source of Truth and Execution Tracker
@@ -35,9 +35,9 @@ implementation_gate: closed
 
 ## שער מימוש גלובלי
 
-**סטטוס נוכחי: `COMPLETED`**
+**סטטוס נוכחי: `READY`**
 
-כל 58 המשימות, כולל מסלול ההזמנה העריכתי והגלילה המקומית ב־`UI-011`, הושלמו ואומתו בפרודקשן. שער המימוש סגור; שינוי נוסף מחייב משימה חדשה ופתיחה מפורשת מחדש.
+58 המשימות הקודמות הושלמו ואומתו בפרודקשן. `UI-012` פתוחה כעת לשיפור ממוקד של אזור האמון בלבד; שער המימוש פתוח עד השלמת בדיקות local, ‏CI/deploy ואימות Production.
 
 תוכנית השרת/קליינט, בניית מסך האדמין מחדש והמעבר מ־Google Sheets/Drive ל־Cloudflare D1/R2 נוספו למסמך ב־2026-07-20. שער המימוש נפתח לאחר השלמת:
 
@@ -1255,6 +1255,25 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - **Local implementation evidence (2026-07-22):** `#process` עוצב מחדש ב־CSS בלבד כ־“Editorial Order Journey”: watermark ‏04, כותרת 104/84/54px, מסלול מרכזי מדורג בדסקטופ ומסלול אנכי ב־tablet/mobile. `ProcessSection`, ה־DOM, ארבעת השלבים, שלוש ההערות, התוכן, icons, props, state וה־data source לא השתנו. לכל step הוגדר named view timeline מקומי `--process-step` שמניע בנפרד number/icon/title/body, בעוד `--process-scene` ממשיך את rail; מדידה חיה הראתה מעבר הדרגתי של step 4 ל־opacity ‏0.75/0.56/0.59 עבור number/icon/title. בדיקות Playwright ב־1440×1000, ‏768×1024 ו־375×812 אישרו 4 steps, ‏3 notes, ‏0 overflow, ‏0 broken media ו־0 console warnings/errors; reduced-motion החזיר `animation: none`, ‏opacity ‏1 ו־transform ‏none לכל ארבע השכבות. כל 142 הבדיקות, `tracker:check`, ‏`design:tokens:check`, ‏`motion:check`, lint, type-check, builds, full `pnpm validate`, ‏`parity:local` ו־`git diff --check` עברו. צילומי מסך: `output/playwright/ui-011-process-1440-heading.png`, ‏`output/playwright/ui-011-process-768-heading.png`, ‏`output/playwright/ui-011-process-375-heading.png`. `UI-011` עברה ל־`VERIFYING` עד push, CI/deploy ואימות Production.
 - **Production evidence (2026-07-22):** commit `bd08b43` עבר CI ‏`29873057170` ו־Cloudflare deploy ‏`29873057166`; deployment ‏`cdfcd079` והדומיין הקנוני מגישים את bundle ‏`index-B5Ep9BAf.css`. Production ב־1440×1000, ‏768×1024 ו־375×812 אישר כותרת 104/84/54px, ארבעה steps בסדר המאושר, שלוש notes, ‏0 overflow, ‏0 broken media ו־0 console warnings/errors. number/icon/title/body של step 4 צרכו `--process-step` והציגו opacity/transform משתנים בכל breakpoint; reduced-motion החזיר `animation: none`, ‏opacity ‏1 ו־transform ‏none. תשעה קישורי WhatsApp, קישור ניווט יחיד ל־`#process` וכפתור שליחת הטופס נשארו זמינים. public, Studio, health ו־published החזירו `200`; `UI-011` וכל 58 המשימות נסגרו `DONE` ושער המימוש נסגר.
 
+### Phase 16 — Trust art direction
+
+#### UI-012 — Turn trust claims into a cinematic proof chapter
+
+- **Status:** `VERIFYING`
+- **Dependencies:** `UI-011`, `UI-006`.
+- **Definition:** לשפר את אזור `trust-section` בלבד ולהפוך את שלוש טענות האמון ותמונת השולחן הקיימת לפרק editorial קולנועי שממשיך את שפת ה־Hero, הגלריה ותהליך ההזמנה — ללא שינוי תוכן, תמונה, hierarchy, component API, state, data source, לוגיקה או section אחר.
+- **Acceptance criteria:**
+  - הכותרת, התיאור, שלושת ה־articles ותמונת האמון נשארים באותו DOM, באותו סדר סמנטי ועם אותו copy, alt, icons ו־data source; אין אזכור או תמונה של יהודית ואין section ביוגרפי.
+  - Desktop מציג “Cinematic Proof Frame”: פרק ink ממוספר `NIS / 05`, תמונה גדולה ודומיננטית ועמודת אמון editorial שאינה נראית כשלושה cards גנריים; sticky מותר רק לתמונה, בתוך גבולות הסקשן וללא נעילת גלילה.
+  - Tablet/mobile מציגים stack קריא ללא sticky, חיתוך, overlap או תוכן מוסתר; התמונה נשארת ביחס תקין ושלושת היתרונות נשארים ברורים.
+  - לכל `trust-point` יש view timeline מקומי שמניע בעדינות את המספר, האייקון והטקסט לפי כניסתו למסך; תמונת האמון ממשיכה את parallax הקיים בבעלות `--trust-scene`.
+  - התנועה מבוססת `transform` ו־`opacity` בלבד, ללא scroll listener, hijacking, dependency חדש, animation אינסופית, `transition: all`, layout animation או `will-change` קבוע.
+  - `prefers-reduced-motion` מבטל את כל התנועה ומשאיר את התוכן והתמונה גלויים; fallback ללא JavaScript, קוראי מסך וניווט מקלדת נשארים תקינים.
+  - אין overflow אופקי, מדיה שבורה או שגיאות console ב־1440×1000, ‏768×1024 ו־375×812; `#process`, אזור הקשר, הטופס, הניווט והקישורים אינם משתנים.
+- **Verification:** `pnpm tracker:check`, ‏`pnpm design:tokens:check`, ‏`pnpm motion:check`, tests/type-check/lint/build/full `pnpm validate`, ‏`parity:local`; בדפדפן בשלושת ה־breakpoints: DOM/order, heading/points/image, sticky boundaries, overflow/media/console, computed timelines בכמה נקודות גלילה ו־reduced-motion; לאחר push — CI/deploy ואימות public/Studio/health/published בפרודקשן.
+- **Evidence (2026-07-22):** קובץ המעקב, `TrustSection`, ה־CSS והבדיקות נקראו מחדש. baseline לוקאלי ב־1440×1000 אישר section בגובה 800px עם תמונה אחת ושלושה cards לבנים זהים, ‏0 overflow וללא בעיה פונקציונלית; עם זאת, הוא נראה כבלוק UI רגיל ואינו ממשיך את הדרמה העריכית של ארבעת הפרקים הקודמים. נבחר כיוון “Cinematic Proof Frame”: רקע ink, watermark ‏05, תמונת הוכחה גדולה ועמודת יתרונות ממוספרת עם timelines מקומיים, תוך שמירה מלאה על ה־DOM, התוכן והמדיה. `UI-012` הועברה ל־`IN_PROGRESS` ושער המימוש נפתח ל־`READY`.
+- **Local implementation evidence (2026-07-22):** אזור האמון עוצב מחדש ב־CSS בלבד כ־“Cinematic Proof Frame”: פרק ink בגובה 1931px בדסקטופ, watermark ‏05, כותרת 93.6/80.64/53.6px, תמונת הוכחה sticky בגובה 760px בדסקטופ ו־stack רגיל ב־tablet/mobile, ושלוש שורות אמון ממוספרות ללא cards. `TrustSection`, ה־DOM, התוכן, התמונה, ה־alt, ה־icons, ה־props וה־data source לא השתנו. לכל point הוגדר timeline מקומי `--trust-point`; מדידה חיה הראתה opacity ‏0.47/0.36/0.38 ומטריצות transform פעילות עבור number/icon/copy בנקודת גלילה, בעוד התמונה ממשיכה לצרוך `--trust-scene`. בדיקות Playwright ב־1440×1000, ‏768×1024 ו־375×812 אישרו 3 points, תמונה אחת, ‏0 overflow, ‏0 broken media ו־0 console warnings/errors; reduced-motion החזיר `animation: none`, ‏opacity ‏1 ו־transform ‏none לכל שכבות התנועה. כל 142 הבדיקות, `tracker:check`, ‏`architecture:boundaries`, ‏`design:tokens:check`, ‏`motion:check`, lint, type-check, builds, full `pnpm validate`, ‏`parity:local` ו־`git diff --check` עברו. צילומי מסך: `output/playwright/ui-012-trust-1440-heading.png`, ‏`output/playwright/ui-012-trust-768-heading.png`, ‏`output/playwright/ui-012-trust-375-heading.png`. `UI-012` עברה ל־`VERIFYING` עד push, CI/deploy ואימות Production.
+
 ## Open decisions before implementation
 
 | ID | Decision | Status | Blocks |
@@ -1317,8 +1336,21 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 | Phase 13 — Gallery art direction | Done | 1 | 1 |
 | Phase 14 — Gallery motion refinement | Done | 1 | 1 |
 | Phase 15 — Process art direction | Done | 1 | 1 |
+| Phase 16 — Trust art direction | Verifying | 0 | 1 |
 
 ## Change Log
+
+### 2026-07-22 — UI-012 local cinematic proof chapter verified
+
+- אזור האמון מציג כעת פרק 05 כהה, תמונת הוכחה sticky בדסקטופ ושלוש הוכחות ממוספרות עם view timeline מקומי, ללא שינוי DOM, תוכן, תמונה או לוגיקה.
+- כל 142 הבדיקות והבדיקות הסטטיות עברו; Playwright בשלושת ה־breakpoints אישר 0 overflow, ‏0 broken media, ‏0 console errors ו־reduced-motion מלא.
+- `UI-012` הועברה ל־`VERIFYING` עד השלמת CI/deploy ואימות Production.
+
+### 2026-07-22 — UI-012 trust art direction started
+
+- החלק היחיד שנבחר לשיפור הוא אזור האמון; ה־baseline תקין אך נראה כתמונה לצד שלושה cards גנריים ואינו ממשיך את עוצמת הפרקים הקודמים.
+- הכיוון הוא “Cinematic Proof Frame”: פרק ink ממוספר 05, תמונת הוכחה דומיננטית ושלושה יתרונות editorial עם view timeline עצמאי, בלי לשנות DOM, תוכן, תמונה או לוגיקה.
+- `UI-012` נוספה כמשימה ה־59 והועברה ל־`IN_PROGRESS`; שער המימוש נפתח ל־`READY`.
 
 ### 2026-07-22 — UI-011 editorial order journey completed
 

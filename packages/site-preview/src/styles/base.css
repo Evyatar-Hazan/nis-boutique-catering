@@ -331,6 +331,42 @@
   }
 }
 
+@keyframes trust-proof-number {
+  from {
+    opacity: 0.08;
+    transform: translate3d(0, 36px, 0) scale(0.78);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes trust-proof-copy {
+  from {
+    opacity: 0.14;
+    transform: translate3d(28px, 22px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes trust-proof-icon {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0) rotate(-16deg) scale(0.72);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+  }
+}
+
 @supports (animation-timeline: view()) {
   .scroll-motion-ready .scroll-scene--hero {
     view-timeline-name: --hero-scene;
@@ -354,6 +390,11 @@
 
   .scroll-motion-ready .scroll-scene--trust {
     view-timeline-name: --trust-scene;
+    view-timeline-axis: block;
+  }
+
+  .scroll-motion-ready .trust-point {
+    view-timeline-name: --trust-point;
     view-timeline-axis: block;
   }
 
@@ -489,6 +530,29 @@
     animation-timing-function: linear;
     animation-timeline: --trust-scene;
     animation-range: entry 0% exit 100%;
+  }
+
+  .scroll-motion-ready .trust-point::before,
+  .scroll-motion-ready .trust-point .card-icon,
+  .scroll-motion-ready .trust-point > div {
+    animation-fill-mode: both;
+    animation-timing-function: linear;
+    animation-timeline: --trust-point;
+  }
+
+  .scroll-motion-ready .trust-point::before {
+    animation-name: trust-proof-number;
+    animation-range: entry 2% cover 44%;
+  }
+
+  .scroll-motion-ready .trust-point .card-icon {
+    animation-name: trust-proof-icon;
+    animation-range: entry 12% cover 48%;
+  }
+
+  .scroll-motion-ready .trust-point > div {
+    animation-name: trust-proof-copy;
+    animation-range: entry 18% cover 58%;
   }
 }
 
@@ -3141,7 +3205,10 @@ details p {
   .scroll-motion-ready .process-step h3,
   .scroll-motion-ready .process-step p,
   .scroll-motion-ready .trust-media > img,
-  .scroll-motion-ready img.trust-media {
+  .scroll-motion-ready img.trust-media,
+  .scroll-motion-ready .trust-point::before,
+  .scroll-motion-ready .trust-point .card-icon,
+  .scroll-motion-ready .trust-point > div {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;
