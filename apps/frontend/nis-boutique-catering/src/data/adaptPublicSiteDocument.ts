@@ -66,7 +66,7 @@ export const adaptPublicSiteDocument = (
         active: true,
         group: 'hero-media',
         id: 'hero-media',
-        items: [document.sections.hero.mediaId],
+        items: [document.sections.trust.mediaId, document.sections.hero.mediaId],
         order: 0,
       },
       ...document.sections.process.steps.map((step) => ({

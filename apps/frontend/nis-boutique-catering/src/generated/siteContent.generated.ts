@@ -189,7 +189,7 @@ export const contentSnapshot: ContentSnapshot = {
       "order": 4,
       "active": true,
       "tall": false,
-      "mediaId": "vegetable-focaccia"
+      "mediaId": "event-buffet-salad-rolls"
     },
     {
       "id": "mini-burger-trays",
@@ -776,7 +776,7 @@ export const contentSnapshot: ContentSnapshot = {
       "text": "התמונות שמרכיבות את הרקע והקומפוזיציה במסך הפתיחה.",
       "items": [
         "hosting-table-overview",
-        "salmon-skewers-lemon",
+        "event-buffet-salad-rolls",
         "dips-tray-close",
         "table-setting-blue-gold"
       ],

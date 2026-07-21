@@ -19,7 +19,7 @@ export const getPublicTrustPoints = (source: readonly TrustPointSource[]) => {
 };
 
 export const TrustSection = () => {
-  const { foodMedia, trustCards: sourcePoints } = useSiteSectionPreviewData();
+  const { heroMedia, trustCards: sourcePoints } = useSiteSectionPreviewData();
   const trustPoints = getPublicTrustPoints(sourcePoints);
 
   return (
@@ -62,7 +62,7 @@ export const TrustSection = () => {
           className="trust-media reveal scroll-driven-media"
           data-reveal-duration="760"
           data-reveal-variant="focus"
-          image={foodMedia.hostingTableOverview}
+          image={heroMedia.background}
           alt="שולחן אירוח של Nis עם מנות ומגשים מוכנים להגשה"
           loading="lazy"
           decoding="async"

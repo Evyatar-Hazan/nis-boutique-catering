@@ -54,6 +54,10 @@ describe('public document compatibility adapter', () => {
     );
     expect(snapshot.gallery).toHaveLength(document.sections.gallery.items.length);
     expect(snapshot.gallery.find(({ category }) => category === 'salads')).toBeDefined();
+    expect(snapshot.sections.find(({ id }) => id === 'hero-media')?.items).toEqual([
+      document.sections.trust.mediaId,
+      document.sections.hero.mediaId,
+    ]);
     expect(groups).toEqual(new Set(['copy', 'hero-media', 'process', 'trust', 'faq']));
     expect([...groups]).not.toEqual(expect.arrayContaining(['story', 'manifesto', 'audience', 'menu']));
   });

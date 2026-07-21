@@ -1,11 +1,11 @@
 ---
 title: NIS Public Site Redesign Tracker
-status: completed
+status: active
 owner: Evyatar Hazan
 created: 2026-07-20
 updated: 2026-07-21
 source_of_truth: true
-implementation_gate: closed
+implementation_gate: ready
 ---
 
 # NIS Public Site Redesign — Source of Truth and Execution Tracker
@@ -35,9 +35,9 @@ implementation_gate: closed
 
 ## שער מימוש גלובלי
 
-**סטטוס נוכחי: `COMPLETED`**
+**סטטוס נוכחי: `READY`**
 
-ה־release המקורי, משימת התחזוקה `UI-005` ומימוש ה־Scrollytelling המתוקן `UI-006` הושלמו ואומתו בפרודקשן. הבדיקה הסופית כללה מדידת תנועה frame-by-frame, קפיצת גלילה קיצונית בשלושה breakpoints, reduced-motion, fallback ללא JS וכל האינטראקציות הקיימות. שער המימוש נסגר.
+ה־release המקורי, משימת התחזוקה `UI-005` ומימוש ה־Scrollytelling המתוקן `UI-006` הושלמו ואומתו בפרודקשן. משימת `UI-007` נפתחה כדי להפוך את ה־Hero לקומפוזיציה editorial דרמטית המבוססת על צילום הבופה הקיים ב־R2, ולהשאיר את צילום השולחן הרחב כהוכחת שפע באזור האמון. שער המימוש פתוח ומוכן לביצוע השינוי הממוקד.
 
 תוכנית השרת/קליינט, בניית מסך האדמין מחדש והמעבר מ־Google Sheets/Drive ל־Cloudflare D1/R2 נוספו למסמך ב־2026-07-20. שער המימוש נפתח לאחר השלמת:
 
@@ -1162,6 +1162,23 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - **Verification:** unit tests ל־policy/config/fallback/stagger/once; ‏`pnpm motion:check`; ‏`pnpm validate`; דפדפן ב־375×812, ‏768×1024 ו־1440×1000; reduced-motion ו־JavaScript-disabled fallback; בדיקות navigation/gallery/lightbox/FAQ/form/keyboard; performance trace, CLS/overflow/console/network; לאחר push — CI/deploy ואימות production.
 - **Evidence (2026-07-21):** ניסיון ראשון ב־commit `005b9fa` עבר בדיקות ופריסה אך נפסל לאחר שבדיקת frame-level הוכיחה שה־reveal duration נעלם במצב `is-visible`; הוא נשמר לצורך audit בלבד ואינו הוכחת השלמה. במימוש המחודש ה־transition הועבר לבעלות `.scroll-motion-ready .reveal` ולכן נשאר פעיל בשני המצבים; DevTools מדד opacity ‏0→0.69→1 ו־translateY ‏42px→13px→0 לאורך 680ms עם שני `CSSTransition` פעילים. נוספו עשרה scroll-linked animations תחת feature detection ובאמצעות named view timelines בבעלות sections: Hero depth/exit, שירותי media depth, gallery sticky journey + alternating image depth, process rail + sequential markers ו־trust image journey. Contact ויתר התוכן משתמשים ב־reveal/stagger מובחנים; אין wrapper, שינוי hierarchy, content, props, state, business logic או dependency חדש. `motion:check` חוסם מעתה transition שקיים רק ב־hidden state ודורש named timeline, animation range ו־reduced path. ‏141/141 בדיקות, lint, type-check, builds, ‏`pnpm validate`, ‏`parity:local` ו־`git diff --check` עברו. Chrome ב־375×812, ‏768×1024 ו־1440×1000 מדד 30/30 reveals, עד 21 transitions פעילות בזמן walkthrough, כל עשרת ה־scene names, ‏0 overflow, ‏0 broken media ו־0 console errors. gallery ‏6→2, lightbox open/Escape-close, FAQ open וטופס עם 3 errors/focus לשם נשארו תקינים. קו התהליך התקדם בפועל scale ‏0→0.48→0.92→1; Hero, services, gallery ו־trust שינו transform/progress בין נקודות גלילה. fallback ללא root motion class הציג 30/30 עם 0 animations. Chrome אמיתי עם `prefers-reduced-motion: reduce` הציג 30/30, ‏0 transitions, ‏0 scene animations ו־0 transforms. trace ב־375px תחת Fast 4G ו־CPU×4: LCP ‏741ms ו־CLS ‏0.00. bundle ציבורי: CSS ‏89.53KB/16.15KB gzip, main JS ‏346.93KB/102.26KB gzip ו־lazy ‏11.88KB/3.97KB gzip. commit `9d8ce60`, ‏CI `29787056691` ו־deploy `29787056709` עברו; בדיקת Production אישרה Hero רציף, reveal פעיל 680ms וקו תהליך scale ‏0.07→0.67→1, אך קפיצת גלילה מהירה במיוחד השאירה 3/30 פריטים שקופים משום ש־IntersectionObserver אינו מחויב לדווח על אלמנט שיחס החיתוך שלו נשאר 0 משני צדי הקפיצה. תיקון ממוקד מרחיב את observer root כלפי מעלה לאורך גובה המסמך וה־viewport, כך שאלמנט שקפץ מעל המסך משנה מצב חיתוך בלי listener חדש; regression ייעודי נוסף. ‏142/142 בדיקות, full `validate`, ‏`parity:local`, tracker ו־diff checks עברו. קפיצת גלילה אחת של 10,000–12,000px ב־1440×1000, ‏768×1024 ו־375×812 הסתיימה בכל מידה עם 30/30 visible, ‏0 hidden, ‏0 overflow ו־0 broken media. commit התיקון `3b240df`, ‏CI `29787579164` ו־deploy `29787579149` עברו; deployments ‏`373b8509`/`c9ea210f` עלו. אותו fast-scroll ב־Production הסתיים בשלושת ה־breakpoints עם 30/30 visible, ‏0 hidden, ‏0 overflow, ‏0 broken media ו־console נקי. ה־bundle החי `index-B8kt1uHG.js` מחזיר JavaScript ‏200; ששת ה־sections, תשעת animation names של elements ו־`process-rail-grow` העשירי עם `--process-scene` פעילים. public/studio/health/published החזירו `200`, ו־session אנונימי החזיר `401` כמצופה. `UI-006` נסגרה `DONE`.
 
+### Phase 11 — Hero art direction
+
+#### UI-007 — Build a cinematic editorial Hero from the approved buffet media
+
+- **Status:** `VERIFYING`
+- **Dependencies:** `UI-005`, `UI-006`, `REL-004`.
+- **Definition:** להפוך את ה־Hero הקיים לקומפוזיציה editorial גדולה וייחודית: צילום `event-buffet-salad-rolls` יהיה המדיה הראשית, הכותרת תשבור בעדינות את גבול הטקסט/צילום, ה־CTA והערכים יישארו ברורים, ו־`hosting-table-overview` יישאר באזור האמון כהוכחת היקף — בלי לשנות hierarchy, component API, תוכן עסקי, פלטה או לוגיקה.
+- **Acceptance criteria:**
+  - המבנה הקיים נשמר: `HeroSection`, ה־props, סדר ה־DOM, הניווט, ה־CTA והערכים אינם משתנים; השינוי מבוסס CSS ותוכן קיים ב־D1/R2 בלבד.
+  - Desktop מציג צילום אנכי דומיננטי, כותרת גדולה החוצה את קו הקומפוזיציה אך אינה מכסה אוכל קריטי, וטקסט/CTA קריאים ללא collage או רכיב נוסף שמתחרה בסקשן השירותים.
+  - Tablet ו־mobile מציגים crop מותאם, סדר קריאה טבעי, CTA מלאים ו־Hero שאינו חוסם את המשך העמוד; אין overflow אופקי או טקסט חתוך.
+  - `event-buffet-salad-rolls` נבחר כ־Hero revision דרך ה־Studio ו־`hosting-table-overview` נשאר מדיית ה־Trust; D1/R2 נשארים מקור האמת היחיד ואין asset כפול ב־repo.
+  - תנועת ה־Hero הקיימת, `prefers-reduced-motion`, fallback ללא JavaScript, focus, contrast, preload ו־responsive image variants ממשיכים לעבוד ללא CLS.
+  - אין שינוי בצבעים, בטיפוגרפיה, בששת הסקשנים, בטפסים, בגלריה או בלוגיקה עסקית.
+- **Verification:** `pnpm tracker:check`, ‏`pnpm design:tokens:check`, ‏`pnpm motion:check`, ‏tests/type-check/lint/build/full `pnpm validate`, ‏`parity:local`; בדפדפן ב־1440×1000, ‏768×1024 ו־375×812 עם screenshot/computed checks ל־overflow, crop, heading, CTA, media, console ו־interactions; לאחר save/publish/push — CI/deploy ואימות public/Studio/health/published בפרודקשן.
+- **Evidence (2026-07-21):** ה־tracker והארכיטקטורה נקראו מחדש. צילום ה־Hero שסופק תואם לנכס הקיים `event-buffet-salad-rolls`; בבדיקת צילום ה־Trust נמצא שהרשומה הישנה `hosting-table-overview` מצביעה בפועל לצילום quiche ואינה התמונה שסופקה. התמונה הנכונה הועלתה פעם אחת ל־R2 תחת `originals/6cd8987a-d827-4c4f-b965-25edd216b3c5/nis-trust-buffet-table.jpg` ונרשמה ב־D1 כ־`6cd8987a-d827-4c4f-b965-25edd216b3c5`; checksum ‏`6230e2154384f6dd85826802e131996bb35597b68ad6cd00ee44d05f5187ecc3` וגודל ‏99,122 bytes אומתו מחדש מול R2 ו־D1. קומפוזיציית ה־Hero הוטמעה ב־`theme.css`: frame editorial אנכי, כותרת החוצה בפועל את קו המדיה, gradient קריאות, CTA/ערכים שמורים ו־mobile overlap ללא שינוי DOM או component API. גובה tablet תוקן כך שהמסר וה־CTA נכנסים למסלול הגלילה הראשון. adapter ה־public ממפה כעת את trust/hero לשני תפקידי המדיה ו־`TrustSection` צורכת את מדיית trust בלי API חדש; בדיקות regression עודכנו. screenshots מקומיים ב־1440×1000, ‏768×1024 ו־375×812 אישרו Hero תקין, 0 overflow, ‏0 broken images ו־0 console errors. טיוטת Studio ‏`10d0356c` גרסה 2 נשמרה עם שתי הבחירות הנכונות אך טרם פורסמה. full `pnpm validate`, ‏`parity:local` ו־`git diff --check` עברו; `UI-007` הועברה ל־`VERIFYING` לקראת push, CI, publish ואימות Production.
+
 ## Open decisions before implementation
 
 | ID | Decision | Status | Blocks |
@@ -1219,8 +1236,15 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 | Phase 8 — Release | Done | 4 | 4 |
 | Phase 9 — Theme maintainability | Done | 1 | 1 |
 | Phase 10 — Scroll storytelling | Done | 1 | 1 |
+| Phase 11 — Hero art direction | In progress | 0 | 1 |
 
 ## Change Log
+
+### 2026-07-21 — UI-007 cinematic Hero implementation started
+
+- שתי התמונות שסופקו כבר קיימות ב־D1/R2 וב־responsive build assets: `event-buffet-salad-rolls` מיועדת ל־Hero ו־`hosting-table-overview` נשארת ב־Trust.
+- המימוש מוגבל לקומפוזיציית Hero משותפת ב־`packages/site-preview`, בחירת המדיה דרך ה־Studio ובדיקות מלאות; אין שינוי hierarchy, פלטה, תוכן עסקי או לוגיקה.
+- `UI-007` הועברה ל־`IN_PROGRESS` ושער המימוש נפתח ל־`READY`.
 
 ### 2026-07-21 — UI-006 scroll storytelling reimplementation completed
 
