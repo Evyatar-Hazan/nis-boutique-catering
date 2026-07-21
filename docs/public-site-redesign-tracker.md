@@ -1,11 +1,11 @@
 ---
 title: NIS Public Site Redesign Tracker
-status: active
+status: completed
 owner: Evyatar Hazan
 created: 2026-07-20
 updated: 2026-07-22
 source_of_truth: true
-implementation_gate: ready
+implementation_gate: closed
 ---
 
 # NIS Public Site Redesign — Source of Truth and Execution Tracker
@@ -35,9 +35,9 @@ implementation_gate: ready
 
 ## שער מימוש גלובלי
 
-**סטטוס נוכחי: `READY`**
+**סטטוס נוכחי: `COMPLETED`**
 
-58 המשימות הקודמות הושלמו ואומתו בפרודקשן. `UI-012` פתוחה כעת לשיפור ממוקד של אזור האמון בלבד; שער המימוש פתוח עד השלמת בדיקות local, ‏CI/deploy ואימות Production.
+כל 59 המשימות הושלמו ואומתו בפרודקשן. `UI-012` סגרה את השיפור הממוקד של אזור האמון; שער המימוש סגור ואין משימת מימוש פתוחה.
 
 תוכנית השרת/קליינט, בניית מסך האדמין מחדש והמעבר מ־Google Sheets/Drive ל־Cloudflare D1/R2 נוספו למסמך ב־2026-07-20. שער המימוש נפתח לאחר השלמת:
 
@@ -1259,7 +1259,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### UI-012 — Turn trust claims into a cinematic proof chapter
 
-- **Status:** `VERIFYING`
+- **Status:** `DONE`
 - **Dependencies:** `UI-011`, `UI-006`.
 - **Definition:** לשפר את אזור `trust-section` בלבד ולהפוך את שלוש טענות האמון ותמונת השולחן הקיימת לפרק editorial קולנועי שממשיך את שפת ה־Hero, הגלריה ותהליך ההזמנה — ללא שינוי תוכן, תמונה, hierarchy, component API, state, data source, לוגיקה או section אחר.
 - **Acceptance criteria:**
@@ -1273,6 +1273,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - **Verification:** `pnpm tracker:check`, ‏`pnpm design:tokens:check`, ‏`pnpm motion:check`, tests/type-check/lint/build/full `pnpm validate`, ‏`parity:local`; בדפדפן בשלושת ה־breakpoints: DOM/order, heading/points/image, sticky boundaries, overflow/media/console, computed timelines בכמה נקודות גלילה ו־reduced-motion; לאחר push — CI/deploy ואימות public/Studio/health/published בפרודקשן.
 - **Evidence (2026-07-22):** קובץ המעקב, `TrustSection`, ה־CSS והבדיקות נקראו מחדש. baseline לוקאלי ב־1440×1000 אישר section בגובה 800px עם תמונה אחת ושלושה cards לבנים זהים, ‏0 overflow וללא בעיה פונקציונלית; עם זאת, הוא נראה כבלוק UI רגיל ואינו ממשיך את הדרמה העריכית של ארבעת הפרקים הקודמים. נבחר כיוון “Cinematic Proof Frame”: רקע ink, watermark ‏05, תמונת הוכחה גדולה ועמודת יתרונות ממוספרת עם timelines מקומיים, תוך שמירה מלאה על ה־DOM, התוכן והמדיה. `UI-012` הועברה ל־`IN_PROGRESS` ושער המימוש נפתח ל־`READY`.
 - **Local implementation evidence (2026-07-22):** אזור האמון עוצב מחדש ב־CSS בלבד כ־“Cinematic Proof Frame”: פרק ink בגובה 1931px בדסקטופ, watermark ‏05, כותרת 93.6/80.64/53.6px, תמונת הוכחה sticky בגובה 760px בדסקטופ ו־stack רגיל ב־tablet/mobile, ושלוש שורות אמון ממוספרות ללא cards. `TrustSection`, ה־DOM, התוכן, התמונה, ה־alt, ה־icons, ה־props וה־data source לא השתנו. לכל point הוגדר timeline מקומי `--trust-point`; מדידה חיה הראתה opacity ‏0.47/0.36/0.38 ומטריצות transform פעילות עבור number/icon/copy בנקודת גלילה, בעוד התמונה ממשיכה לצרוך `--trust-scene`. בדיקות Playwright ב־1440×1000, ‏768×1024 ו־375×812 אישרו 3 points, תמונה אחת, ‏0 overflow, ‏0 broken media ו־0 console warnings/errors; reduced-motion החזיר `animation: none`, ‏opacity ‏1 ו־transform ‏none לכל שכבות התנועה. כל 142 הבדיקות, `tracker:check`, ‏`architecture:boundaries`, ‏`design:tokens:check`, ‏`motion:check`, lint, type-check, builds, full `pnpm validate`, ‏`parity:local` ו־`git diff --check` עברו. צילומי מסך: `output/playwright/ui-012-trust-1440-heading.png`, ‏`output/playwright/ui-012-trust-768-heading.png`, ‏`output/playwright/ui-012-trust-375-heading.png`. `UI-012` עברה ל־`VERIFYING` עד push, CI/deploy ואימות Production.
+- **Production evidence (2026-07-22):** commit `0b031c8` עבר CI ‏`29874177581` ו־Cloudflare deploy ‏`29874177532`; deployment ‏`e9ef76f4` והדומיין הקנוני מגישים את bundle ‏`index-CCc_zQ7A.css`. Production ב־1440×1000, ‏768×1024 ו־375×812 אישר כותרת 93.6/80.64/53.6px, שלושה trust points בסדר המאושר, תמונה אחת תקינה, ‏sticky בדסקטופ ו־`position: relative` ב־tablet/mobile, ‏0 overflow ו־0 console warnings/errors. number/icon/copy של point 3 צרכו `--trust-point` והתקדמו ממצב opacity/transform התחלתי למצב 1/1/0.87 בזמן הגלילה; reduced-motion המקומי וה־bundle הזהה אישרו `animation: none`, ‏opacity ‏1 ו־transform ‏none. תשעה קישורי WhatsApp, קישור ניווט יחיד ל־`#process`, טופס וכפתור שליחה נשארו זמינים. public, Studio, health ו־published החזירו `200`; `UI-012`, ‏Phase 16 וכל 59 המשימות נסגרו `DONE` ושער המימוש נסגר.
 
 ## Open decisions before implementation
 
@@ -1336,9 +1337,15 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 | Phase 13 — Gallery art direction | Done | 1 | 1 |
 | Phase 14 — Gallery motion refinement | Done | 1 | 1 |
 | Phase 15 — Process art direction | Done | 1 | 1 |
-| Phase 16 — Trust art direction | Verifying | 0 | 1 |
+| Phase 16 — Trust art direction | Done | 1 | 1 |
 
 ## Change Log
+
+### 2026-07-22 — UI-012 cinematic proof chapter completed
+
+- אזור האמון החי ממשיך כעת את שפת ה־Hero והפרקים הקודמים עם פרק ink ‏05, תמונת הוכחה sticky ושלוש הוכחות ממוספרות שנבנות בגלילה.
+- commit `0b031c8`, ‏CI `29874177581` ו־deploy `29874177532` עברו; Production אומת בשלושה breakpoints מול bundle ‏`index-CCc_zQ7A.css`, ללא overflow, מדיה שבורה או שגיאות Console.
+- `UI-012`, ‏Phase 16 וכל 59 המשימות סומנו `DONE`; שער המימוש נסגר.
 
 ### 2026-07-22 — UI-012 local cinematic proof chapter verified
 
