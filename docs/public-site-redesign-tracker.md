@@ -1,11 +1,11 @@
 ---
 title: NIS Public Site Redesign Tracker
-status: active
+status: completed
 owner: Evyatar Hazan
 created: 2026-07-20
 updated: 2026-07-21
 source_of_truth: true
-implementation_gate: ready
+implementation_gate: closed
 ---
 
 # NIS Public Site Redesign — Source of Truth and Execution Tracker
@@ -35,9 +35,9 @@ implementation_gate: ready
 
 ## שער מימוש גלובלי
 
-**סטטוס נוכחי: `READY`**
+**סטטוס נוכחי: `COMPLETED`**
 
-ה־release המקורי, משימת התחזוקה `UI-005` ומימוש ה־Scrollytelling המתוקן `UI-006` הושלמו ואומתו בפרודקשן. משימת `UI-007` נפתחה כדי להפוך את ה־Hero לקומפוזיציה editorial דרמטית המבוססת על צילום הבופה הקיים ב־R2, ולהשאיר את צילום השולחן הרחב כהוכחת שפע באזור האמון. שער המימוש פתוח ומוכן לביצוע השינוי הממוקד.
+ה־release המקורי, משימת התחזוקה `UI-005`, מימוש ה־Scrollytelling המתוקן `UI-006` וקומפוזיציית ה־Hero החדשה `UI-007` הושלמו ואומתו בפרודקשן. שער המימוש סגור; כל 54 המשימות הושלמו.
 
 תוכנית השרת/קליינט, בניית מסך האדמין מחדש והמעבר מ־Google Sheets/Drive ל־Cloudflare D1/R2 נוספו למסמך ב־2026-07-20. שער המימוש נפתח לאחר השלמת:
 
@@ -1166,18 +1166,18 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### UI-007 — Build a cinematic editorial Hero from the approved buffet media
 
-- **Status:** `VERIFYING`
+- **Status:** `DONE`
 - **Dependencies:** `UI-005`, `UI-006`, `REL-004`.
 - **Definition:** להפוך את ה־Hero הקיים לקומפוזיציה editorial גדולה וייחודית: צילום `event-buffet-salad-rolls` יהיה המדיה הראשית, הכותרת תשבור בעדינות את גבול הטקסט/צילום, ה־CTA והערכים יישארו ברורים, ו־`hosting-table-overview` יישאר באזור האמון כהוכחת היקף — בלי לשנות hierarchy, component API, תוכן עסקי, פלטה או לוגיקה.
 - **Acceptance criteria:**
   - המבנה הקיים נשמר: `HeroSection`, ה־props, סדר ה־DOM, הניווט, ה־CTA והערכים אינם משתנים; השינוי מבוסס CSS ותוכן קיים ב־D1/R2 בלבד.
   - Desktop מציג צילום אנכי דומיננטי, כותרת גדולה החוצה את קו הקומפוזיציה אך אינה מכסה אוכל קריטי, וטקסט/CTA קריאים ללא collage או רכיב נוסף שמתחרה בסקשן השירותים.
   - Tablet ו־mobile מציגים crop מותאם, סדר קריאה טבעי, CTA מלאים ו־Hero שאינו חוסם את המשך העמוד; אין overflow אופקי או טקסט חתוך.
-  - `event-buffet-salad-rolls` נבחר כ־Hero revision דרך ה־Studio ו־`hosting-table-overview` נשאר מדיית ה־Trust; D1/R2 נשארים מקור האמת היחיד ואין asset כפול ב־repo.
+  - `event-buffet-salad-rolls` נבחר כ־Hero revision דרך ה־Studio וצילום השפע שסופק נבחר כמדיית ה־Trust; D1/R2 נשארים מקור האמת היחיד ואין asset כפול ב־repo.
   - תנועת ה־Hero הקיימת, `prefers-reduced-motion`, fallback ללא JavaScript, focus, contrast, preload ו־responsive image variants ממשיכים לעבוד ללא CLS.
   - אין שינוי בצבעים, בטיפוגרפיה, בששת הסקשנים, בטפסים, בגלריה או בלוגיקה עסקית.
 - **Verification:** `pnpm tracker:check`, ‏`pnpm design:tokens:check`, ‏`pnpm motion:check`, ‏tests/type-check/lint/build/full `pnpm validate`, ‏`parity:local`; בדפדפן ב־1440×1000, ‏768×1024 ו־375×812 עם screenshot/computed checks ל־overflow, crop, heading, CTA, media, console ו־interactions; לאחר save/publish/push — CI/deploy ואימות public/Studio/health/published בפרודקשן.
-- **Evidence (2026-07-21):** ה־tracker והארכיטקטורה נקראו מחדש. צילום ה־Hero שסופק תואם לנכס הקיים `event-buffet-salad-rolls`; בבדיקת צילום ה־Trust נמצא שהרשומה הישנה `hosting-table-overview` מצביעה בפועל לצילום quiche ואינה התמונה שסופקה. התמונה הנכונה הועלתה פעם אחת ל־R2 תחת `originals/6cd8987a-d827-4c4f-b965-25edd216b3c5/nis-trust-buffet-table.jpg` ונרשמה ב־D1 כ־`6cd8987a-d827-4c4f-b965-25edd216b3c5`; checksum ‏`6230e2154384f6dd85826802e131996bb35597b68ad6cd00ee44d05f5187ecc3` וגודל ‏99,122 bytes אומתו מחדש מול R2 ו־D1. קומפוזיציית ה־Hero הוטמעה ב־`theme.css`: frame editorial אנכי, כותרת החוצה בפועל את קו המדיה, gradient קריאות, CTA/ערכים שמורים ו־mobile overlap ללא שינוי DOM או component API. גובה tablet תוקן כך שהמסר וה־CTA נכנסים למסלול הגלילה הראשון. adapter ה־public ממפה כעת את trust/hero לשני תפקידי המדיה ו־`TrustSection` צורכת את מדיית trust בלי API חדש; בדיקות regression עודכנו. screenshots מקומיים ב־1440×1000, ‏768×1024 ו־375×812 אישרו Hero תקין, 0 overflow, ‏0 broken images ו־0 console errors. טיוטת Studio ‏`10d0356c` גרסה 2 נשמרה עם שתי הבחירות הנכונות אך טרם פורסמה. full `pnpm validate`, ‏`parity:local` ו־`git diff --check` עברו; `UI-007` הועברה ל־`VERIFYING` לקראת push, CI, publish ואימות Production.
+- **Evidence (2026-07-21):** ה־tracker והארכיטקטורה נקראו מחדש. צילום ה־Hero שסופק תואם לנכס הקיים `event-buffet-salad-rolls`; בבדיקת צילום ה־Trust נמצא שהרשומה הישנה `hosting-table-overview` מצביעה בפועל לצילום quiche ואינה התמונה שסופקה. התמונה הנכונה הועלתה פעם אחת ל־R2 תחת `originals/6cd8987a-d827-4c4f-b965-25edd216b3c5/nis-trust-buffet-table.jpg` ונרשמה ב־D1 כ־`6cd8987a-d827-4c4f-b965-25edd216b3c5`; checksum ‏`6230e2154384f6dd85826802e131996bb35597b68ad6cd00ee44d05f5187ecc3` וגודל ‏99,122 bytes אומתו מחדש מול R2 ו־D1. קומפוזיציית ה־Hero הוטמעה ב־`theme.css`: frame editorial אנכי, כותרת החוצה בפועל את קו המדיה, gradient קריאות, CTA/ערכים שמורים ו־mobile overlap ללא שינוי DOM או component API. גובה tablet תוקן כך שהמסר וה־CTA נכנסים למסלול הגלילה הראשון. adapter ה־public ממפה כעת את trust/hero לשני תפקידי המדיה ו־`TrustSection` צורכת את מדיית trust בלי API חדש; בדיקות regression עודכנו. screenshots מקומיים ב־1440×1000, ‏768×1024 ו־375×812 אישרו Hero תקין, 0 overflow, ‏0 broken images ו־0 console errors. full `pnpm validate`, ‏`parity:local` ו־`git diff --check` עברו. commit `e585ec1`; ‏CI `29859294624` ו־deploy הקוד `29859294534` עברו. טיוטת Studio ‏`10d0356c` גרסה 2 פורסמה והפעילה deploy תוכן `29859479384`, שעבר. ה־published API מאשר Hero ‏`event-buffet-salad-rolls`, ‏Trust ‏`6cd8987a-d827-4c4f-b965-25edd216b3c5` ושני הנכסים במסמך החי. Production ב־1440×1000, ‏768×1024 ו־375×812 אישר את הקומפוזיציה ואת שני הצילומים, 0 overflow, ‏0 broken images, ‏0 console warnings/errors ו־mobile sticky CTA תקין; public, Studio ו־health החזירו `200`/ready. `UI-007` נסגרה `DONE`.
 
 ## Open decisions before implementation
 
@@ -1236,13 +1236,19 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 | Phase 8 — Release | Done | 4 | 4 |
 | Phase 9 — Theme maintainability | Done | 1 | 1 |
 | Phase 10 — Scroll storytelling | Done | 1 | 1 |
-| Phase 11 — Hero art direction | In progress | 0 | 1 |
+| Phase 11 — Hero art direction | Done | 1 | 1 |
 
 ## Change Log
 
+### 2026-07-21 — UI-007 cinematic Hero completed
+
+- הקומפוזיציה ה־editorial, צילום ה־Hero וצילום ה־Trust החדשים פורסמו ואומתו בשלושת ה־breakpoints ללא שינוי hierarchy, פלטה או לוגיקה עסקית.
+- commit `e585ec1`, ‏CI `29859294624`, ‏deploy הקוד `29859294534` ו־deploy התוכן `29859479384` עברו; public/Studio/health/published אומתו חיים.
+- `UI-007` סומנה `DONE`, Phase 11 הושלמה, כל 54 המשימות הושלמו ושער המימוש נסגר.
+
 ### 2026-07-21 — UI-007 cinematic Hero implementation started
 
-- שתי התמונות שסופקו כבר קיימות ב־D1/R2 וב־responsive build assets: `event-buffet-salad-rolls` מיועדת ל־Hero ו־`hosting-table-overview` נשארת ב־Trust.
+- צילום ה־Hero קיים כ־`event-buffet-salad-rolls`; צילום ה־Trust התגלה כחסר והועלה פעם אחת ל־D1/R2 כ־`6cd8987a-d827-4c4f-b965-25edd216b3c5`.
 - המימוש מוגבל לקומפוזיציית Hero משותפת ב־`packages/site-preview`, בחירת המדיה דרך ה־Studio ובדיקות מלאות; אין שינוי hierarchy, פלטה, תוכן עסקי או לוגיקה.
 - `UI-007` הועברה ל־`IN_PROGRESS` ושער המימוש נפתח ל־`READY`.
 
