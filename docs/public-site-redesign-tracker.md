@@ -1,11 +1,11 @@
 ---
 title: NIS Public Site Redesign Tracker
-status: active
+status: completed
 owner: Evyatar Hazan
 created: 2026-07-20
 updated: 2026-07-22
 source_of_truth: true
-implementation_gate: ready
+implementation_gate: closed
 ---
 
 # NIS Public Site Redesign — Source of Truth and Execution Tracker
@@ -35,9 +35,9 @@ implementation_gate: ready
 
 ## שער מימוש גלובלי
 
-**סטטוס נוכחי: `READY`**
+**סטטוס נוכחי: `COMPLETED`**
 
-כל 60 המשימות הקודמות הושלמו ואומתו בפרודקשן. `UI-014` פתוחה כעת לשיפור ממוקד של אזור FAQ/יצירת הקשר בלבד; שער המימוש פתוח עד השלמת local, ‏CI/deploy ואימות Production.
+כל 61 המשימות הושלמו ואומתו בפרודקשן. `UI-014` סגרה את אזור FAQ/יצירת הקשר כפרק Editorial Concierge; שער המימוש סגור ואין משימה פתוחה במסמך.
 
 תוכנית השרת/קליינט, בניית מסך האדמין מחדש והמעבר מ־Google Sheets/Drive ל־Cloudflare D1/R2 נוספו למסמך ב־2026-07-20. שער המימוש נפתח לאחר השלמת:
 
@@ -1298,7 +1298,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### UI-014 — Turn FAQ and contact into an editorial concierge chapter
 
-- **Status:** `VERIFYING`
+- **Status:** `DONE`
 - **Dependencies:** `UI-013`, `UI-006`.
 - **Definition:** לשפר את `#contact` בלבד ולהפוך את ה־FAQ, ערוצי הקשר וטופס הפנייה לפרק 06 ברור ומרשים שמסיים את מסלול ה־scrollytelling ומוביל לפעולה, ללא שינוי תוכן, שדות, hierarchy, component API, state, validation, submit behavior, data source או section אחר.
 - **Acceptance criteria:**
@@ -1311,6 +1311,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - **Verification:** `pnpm tracker:check`, ‏`design:tokens:check`, ‏`motion:check`, targeted Contact tests, tests/type-check/lint/build/full `pnpm validate`, ‏`parity:local`, ‏`git diff --check`; בדפדפן ב־1440×1000, ‏768×1024 ו־375×812 למדוד DOM/order/layout/timelines/overflow/console, לפתוח ולסגור FAQ במקלדת, לאמת validation/focus ולבדוק hrefs; לאחר push — CI/deploy ואימות public/Studio/health/published בפרודקשן.
 - **Evidence (2026-07-22):** baseline לוקאלי ב־1440×1000 הציג section בגובה 950.28px, heading בגובה 131.06px, ארבעה FAQ בתוך panel זכוכית 509×252px וטופס panel ‏623×431px עם שישה fields. ‏DOM, validation ו־0 overflow תקינים, אך שני panels גנריים על אותו רקע כהה אינם יוצרים מעבר מפרק 05, מספור 06 או היררכיית פעולה. נבחר “Editorial Concierge”: משטח נייר חם, heading מפוצל, FAQ כאינדקס ממוספר וטופס ink מרכזי, עם timelines מקומיים ל־FAQ. הקבצים המתוכננים לשינוי הם `theme.css`, ‏`base.css`, קובץ המעקב ובדיקת מספר המשימות בלבד; `UI-014` הועברה ל־`IN_PROGRESS` והשער נפתח ל־`READY`.
 - **Local implementation evidence (2026-07-22):** החלק יושם ב־CSS ממוקד בלבד, ללא שינוי ב־`ContactSection`, ב־DOM, בתוכן או בלוגיקה. ב־1440×1000 הפרק מוצג כמשטח נייר חם בגובה 1,385.05px עם heading מפוצל, FAQ ממוספר ‏491.67×548.8px וטופס ink ‏688.33×555.39px באותה שורה; ארבעת ה־FAQ וששת השדות נשמרו ו־overflow נשאר 0. ב־768×1024 הם נערמים ל־728×592px ואחריו טופס ‏728×647px; ב־375×812 נשמרו 4 FAQ, ‏6 fields ויעדי מגע בגובה 52–100px, ללא overflow. פתיחת FAQ החזירה `aria-expanded`, validation ריק הציג את שלוש שגיאות החובה והעביר focus ל־`name`; WhatsApp/phone/email נשארו עם אותם hrefs וה־console נקי. ב־`prefers-reduced-motion` כל ארבעת motion surfaces מחזירים `animation-name: none`, ‏`opacity: 1` ו־`transform: none`. ‏targeted Contact tests ‏3/3, כל 142 הבדיקות, tracker/architecture/design-token/motion/security/runbook checks, ‏lint, type-check, builds, ‏full `pnpm validate`, ‏`parity:local` ו־`git diff --check` עברו; `UI-014` עברה ל־`VERIFYING` עד CI/deploy ואימות Production.
+- **Production evidence (2026-07-22):** commit `c1c79d4` עבר CI ‏`29876222733` ו־Cloudflare deploy ‏`29876222753`; deployments ‏`a2063402` לציבורי ו־`910b400f` ל־Studio הושלמו, והדומיין הקנוני מגיש את bundle ‏`index-BCA1IZEp.css`. Production ב־1440×1000 החזיר section ‏1,385.03px, heading ‏69.12px, FAQ ‏491.67×547.8px וטופס ‏688.33×555.39px באותה שורה; ב־768×1024 וב־375×812 ה־stack נשמר עם section ‏2,085.67/2,198.91px, ארבעה FAQ, שישה fields, יעדי מגע ‏52–100px ו־0 overflow. Accordion החזיר `expanded`, validation העביר focus ל־`name`, ‏reduced-motion החזיר `animation: none`, ‏`opacity: 1` ו־`transform: none`, וה־console נקי. public, Studio, health ו־published החזירו `200`; `UI-014`, ‏Phase 18 וכל 61 המשימות נסגרו `DONE` והשער נסגר.
 
 ## Open decisions before implementation
 
@@ -1376,9 +1377,15 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 | Phase 15 — Process art direction | Done | 1 | 1 |
 | Phase 16 — Trust art direction | Done | 1 | 1 |
 | Phase 17 — Trust desktop refinement | Done | 1 | 1 |
-| Phase 18 — Contact art direction | Verifying | 0 | 1 |
+| Phase 18 — Contact art direction | Done | 1 | 1 |
 
 ## Change Log
+
+### 2026-07-22 — UI-014 editorial concierge completed
+
+- commit `c1c79d4`, ‏CI `29876222733` ו־deploy `29876222753` עברו; הדומיין הקנוני מגיש את `index-BCA1IZEp.css` ו־public/Studio/health/published מחזירים `200`.
+- Production אומת ב־desktop, tablet ו־mobile עם פרק 06, שני טורים בדסקטופ, stack במסכים קטנים, Accordion/validation/reduced-motion תקינים ו־0 overflow או שגיאות Console.
+- `UI-014`, ‏Phase 18 וכל 61 המשימות סומנו `DONE`; שער המימוש נסגר.
 
 ### 2026-07-22 — UI-014 editorial concierge verified locally
 
