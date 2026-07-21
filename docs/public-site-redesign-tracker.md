@@ -1347,6 +1347,8 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - **Verification:** `pnpm tracker:check`, ‏`design:tokens:check`, ‏`motion:check`, SiteChrome tests, tests/type-check/lint/build/full `pnpm validate`, ‏`parity:local`, ‏`git diff --check`; בדפדפן ב־1440×1000, ‏768×1024 ו־375×812 למדוד topbar/logo/nav/CTA/menu/targets/overflow/console במצב top ו־scrolled, לבדוק active state, focus, open/select/Escape ו־reduced-motion; לאחר push — CI/deploy ואימות public/Studio/health/published בפרודקשן.
 - **Evidence (2026-07-22):** baseline לוקאלי מציג פס paper בהיר וגנרי שמנותק מה־Hero הכהה: ב־1440×1000 גובהו 89px, הלוגו ‏273.59×64px, הניווט ‏882.86×41px וה־CTA ‏123.55×48px; לאחר גלילה הגובה יורד ל־81px. ב־768×1024 וב־375×812 התפריט הוא panel לבן בגובה 230px עם ארבעה targets של 48px, בעוד יתר מסלול האתר כבר משתמש ב־ink, זהב ומספור editorial. בכל המצבים ה־DOM, ארבעת anchors, CTA, menu focus/Escape ו־0 overflow תקינים. נבחר “Editorial Masthead”: header ink שמתחבר ל־Hero, ניווט ממוספר, CTA זהוב ותפריט mobile כהה; הקבצים המתוכננים לשינוי הם `theme.css`, קובץ המעקב ובדיקת מספר המשימות בלבד. `UI-016` הועברה ל־`IN_PROGRESS` והשער נפתח ל־`READY`.
 - **Local implementation evidence (2026-07-22):** ה־Navbar יושם כ־“Editorial Masthead” ב־CSS ממוקד בלבד, ללא שינוי ב־`Topbar`, ב־DOM, ב־props, ב־state, בארבעת ה־hrefs או בלוגיקת menu/focus/Escape. ב־1440×1000 נשמר גובה 89px ללא layout jump בין top ל־scrolled; הלוגו ‏244.8×64px, הניווט ‏887.2×50px, ארבעת links בגובה 48px וה־CTA ‏148×48px. ב־768×1024 וב־375×812 נשמרו headers בגובה 89/75px; תפריט ink נפתח ל־721.94×290px ול־347×282px עם targets של 64/62px, ללא clipping או overflow. המספור 01–04, active state, open/select/Escape, focus חזרה לכפתור ו־WhatsApp CTA אומתו; reduced-motion מבטל את transitions הייעודיים וה־console נקי. SiteChrome tests ‏2/2, כל 142 הבדיקות, tracker/architecture/design-token/motion/security/runbook checks, ‏lint, type-check, builds, ‏full `pnpm validate`, ‏`parity:local` ו־`git diff --check` עברו; `UI-016` עברה ל־`VERIFYING` עד CI/deploy ואימות Production.
+- **Production verification finding (2026-07-22):** CI `29878404426` ו־deploy `29878404424` עברו וה־bundle `index-B6xWB6M4.css` עלה, אך בדיקת browser חיה גילתה שה־active link אינו מתעדכן כאשר `useScrollState` אוסף את IDs לפני ש־`LazySiteSections` סיימו להיטען. הבעיה קיימת בלוגיקת הניווט הקודמת ונחשפה כעת; `UI-016` הוחזרה ל־`IN_PROGRESS` לתיקון ממוקד בתוך hook הקיים ולבדיקת regression, ללא listener חדש או שינוי ב־DOM/API.
+- **Active-state fix evidence (2026-07-22):** `useScrollState` שומר את אותו scroll listener ו־requestAnimationFrame, אך פותר כעת את חמשת section elements בתוך העדכון במקום לשמור snapshot מוקדם; כך sections שנטענו ב־lazy משתתפים ב־active state מיד בגלילה. נוסף test ממוקד שמוכיח מעבר מ־`#top` ל־`#gallery` לאחר הוספת sections מאוחרת. הבדיקות הממוקדות עברו 3/3, browser לוקאלי ללא click סימן `#gallery` כ־`is-active`, כל 143 הבדיקות, full `pnpm validate`, ‏`parity:local` ו־`git diff --check` עברו; המשימה חזרה ל־`VERIFYING` עד deploy ואימות Production חוזר.
 
 ## Open decisions before implementation
 
@@ -1417,6 +1419,17 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 | Phase 20 — Navbar art direction | Verifying | 0 | 1 |
 
 ## Change Log
+
+### 2026-07-22 — UI-016 active-state gap fixed locally
+
+- `useScrollState` פותר כעת lazy sections בזמן עדכון הגלילה במקום לשמור רשימה מוקדמת; לא נוסף listener ולא השתנה API.
+- regression test חדש וה־browser המקומי אישרו ש־`#gallery` מקבל `is-active` גם כשהסקשנים נטענים אחרי render; כל 143 הבדיקות וה־full validation עברו.
+- `UI-016` חזרה ל־`VERIFYING` עד deploy ואימות Production חוזר.
+
+### 2026-07-22 — UI-016 Production active-state gap found
+
+- ה־CSS והפריסה עברו, אך בדפדפן Production ה־active link נשאר ריק לאחר גלילה לסקשן lazy.
+- שורש הבעיה: `useScrollState` שמר רשימת sections מוקדם מדי, לפני טעינת `LazySiteSections`; המשימה חזרה ל־`IN_PROGRESS` לתיקון hook קיים ולבדיקת regression.
 
 ### 2026-07-22 — UI-016 editorial masthead verified locally
 
