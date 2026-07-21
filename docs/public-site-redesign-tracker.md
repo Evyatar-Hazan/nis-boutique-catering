@@ -1,11 +1,11 @@
 ---
 title: NIS Public Site Redesign Tracker
-status: active
+status: completed
 owner: Evyatar Hazan
 created: 2026-07-20
 updated: 2026-07-21
 source_of_truth: true
-implementation_gate: ready
+implementation_gate: closed
 ---
 
 # NIS Public Site Redesign — Source of Truth and Execution Tracker
@@ -35,9 +35,9 @@ implementation_gate: ready
 
 ## שער מימוש גלובלי
 
-**סטטוס נוכחי: `READY`**
+**סטטוס נוכחי: `COMPLETED`**
 
-ה־release המקורי, משימת התחזוקה `UI-005`, מימוש ה־Scrollytelling המתוקן `UI-006` וקומפוזיציית ה־Hero החדשה `UI-007` הושלמו ואומתו בפרודקשן. משימת `UI-008` נפתחה לשיפור אזור השירותים בלבד באותה שפה editorial, בלי שינוי תוכן, DOM או לוגיקה. שער המימוש פתוח ומוכן לשינוי הממוקד.
+ה־release המקורי וכל משימות ההמשך עד `UI-008` הושלמו ואומתו בפרודקשן. אזור השירותים ממשיך כעת את שפת ה־Hero באמצעות קומפוזיציית “שולחן בחירה” editorial, בלי שינוי תוכן, DOM או לוגיקה. כל 55 המשימות הושלמו ושער המימוש סגור.
 
 תוכנית השרת/קליינט, בניית מסך האדמין מחדש והמעבר מ־Google Sheets/Drive ל־Cloudflare D1/R2 נוספו למסמך ב־2026-07-20. שער המימוש נפתח לאחר השלמת:
 
@@ -1183,7 +1183,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### UI-008 — Turn the three services into an editorial choice table
 
-- **Status:** `VERIFYING`
+- **Status:** `DONE`
 - **Dependencies:** `UI-006`, `UI-007`, `WEB-002`.
 - **Definition:** לשפר רק את `#experiences` באותה שפה editorial של ה־Hero: להפוך שלושה כרטיסים שווי־משקל לקומפוזיציית בחירה אסימטרית עם שירות מוביל, שני שירותים משלימים, מספור וקווים דקים — בלי לשנות את `ServicesSection`, ‏`ServiceCard`, סדר ה־DOM, תוכן, CTA, תמונות, props או לוגיקה.
 - **Acceptance criteria:**
@@ -1193,7 +1193,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
   - אין שינוי hierarchy, markup, component API, state, תוכן עסקי, מדיה, WhatsApp links או named scroll animations; `prefers-reduced-motion` וה־fallback ללא JavaScript נשארים תקינים.
   - השינוי ממוקד ב־CSS ובבדיקות regression הכרחיות בלבד; אין selector או component כפול ואין raw color חדש.
 - **Verification:** `pnpm tracker:check`, ‏`pnpm design:tokens:check`, ‏`pnpm motion:check`, ‏tests/type-check/lint/build/full `pnpm validate`, ‏`parity:local`; בדפדפן ב־1440×1000, ‏768×1024 ו־375×812 עם screenshot/computed checks ל־grid, סדר, overflow, cards, CTA, images, console ו־WhatsApp href; לאחר push — CI/deploy ואימות public/Studio/health/published בפרודקשן.
-- **Evidence (2026-07-21):** מקור האמת, הארכיטקטורה, `ServicesSection`, ‏`ServiceCard`, CSS והבדיקות נקראו מחדש. baseline חי ב־1728×962 אישר שלושה כרטיסים שווי־רוחב בגובה כ־555–566px; כל התוכן והפעולות תקינים אך אין היררכיה חזותית שממשיכה את ה־Hero. נבחרה והוטמעה ב־`theme.css` קומפוזיציית “שולחן בחירה” editorial: כרטיס ראשון מוביל בגובה 784px ושני כרטיסים משלימים בגובה 384px, מספור 01–03, כותרת מפוצלת וקווי מערכת — ללא שינוי DOM, component API, תוכן, מדיה או לוגיקה. ב־768×1024 וב־375×812 שלושת הכרטיסים עוברים לסדר אנכי מלא; כל CTA בגובה 48px ויכול להיכנס במלואו מעל ה־sticky CTA. בדיקות דפדפן מקומיות בשלושת ה־breakpoints אישרו 3/3 כרטיסים, סדר נכון, WhatsApp href תקין, anchor heading מתחת ל־header, ‏0 overflow, ‏0 broken images ו־0 console warnings/errors. כל 142 הבדיקות, `tracker:check`, ‏`design:tokens:check`, ‏`motion:check`, lint, type-check, builds, full `pnpm validate`, ‏`parity:local` ו־`git diff --check` עברו; `UI-008` נשארת `VERIFYING` לקראת push, CI/deploy ואימות Production.
+- **Evidence (2026-07-21):** מקור האמת, הארכיטקטורה, `ServicesSection`, ‏`ServiceCard`, CSS והבדיקות נקראו מחדש. baseline חי ב־1728×962 אישר שלושה כרטיסים שווי־רוחב בגובה כ־555–566px; כל התוכן והפעולות תקינים אך אין היררכיה חזותית שממשיכה את ה־Hero. נבחרה והוטמעה ב־`theme.css` קומפוזיציית “שולחן בחירה” editorial: כרטיס ראשון מוביל בגובה 784px ושני כרטיסים משלימים בגובה 384px, מספור 01–03, כותרת מפוצלת וקווי מערכת — ללא שינוי DOM, component API, תוכן, מדיה או לוגיקה. ב־768×1024 וב־375×812 שלושת הכרטיסים עוברים לסדר אנכי מלא; כל CTA בגובה 48px ויכול להיכנס במלואו מעל ה־sticky CTA. בדיקות דפדפן מקומיות בשלושת ה־breakpoints אישרו 3/3 כרטיסים, סדר נכון, WhatsApp href תקין, anchor heading מתחת ל־header, ‏0 overflow, ‏0 broken images ו־0 console warnings/errors. כל 142 הבדיקות, `tracker:check`, ‏`design:tokens:check`, ‏`motion:check`, lint, type-check, builds, full `pnpm validate`, ‏`parity:local` ו־`git diff --check` עברו. commit `7e2f38e`; ‏CI `29861024560` ו־Cloudflare deploy `29861024555` עברו. Production ב־1728×906, ‏1440×1000, ‏768×1024 ו־375×812 אישר שלושה כרטיסים, היררכיית desktop, stack מלא ב־tablet/mobile, כל CTA בגובה 48px במסכים הצרים, WhatsApp href שמור, ‏0 overflow, ‏0 broken images ו־0 console warnings/errors. `UI-008` נסגרה `DONE`.
 
 ## Open decisions before implementation
 
@@ -1253,9 +1253,15 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 | Phase 9 — Theme maintainability | Done | 1 | 1 |
 | Phase 10 — Scroll storytelling | Done | 1 | 1 |
 | Phase 11 — Hero art direction | Done | 1 | 1 |
-| Phase 12 — Services art direction | In progress | 0 | 1 |
+| Phase 12 — Services art direction | Done | 1 | 1 |
 
 ## Change Log
+
+### 2026-07-21 — UI-008 services art direction completed
+
+- אזור `#experiences` פורסם כקומפוזיציית “שולחן בחירה” editorial עם שירות מוביל, שני שירותים משלימים ומספור 01–03; לא שונו התוכן, המדיה, ה־DOM, ה־API או הלוגיקה.
+- commit `7e2f38e`, ‏CI `29861024560` ו־deploy `29861024555` עברו; Production אומת ב־desktop/tablet/mobile ללא overflow, תמונות שבורות או שגיאות console.
+- `UI-008` סומנה `DONE`, Phase 12 הושלמה, כל 55 המשימות הושלמו ושער המימוש נסגר.
 
 ### 2026-07-21 — UI-008 services art direction started
 
