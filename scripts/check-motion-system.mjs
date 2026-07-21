@@ -75,7 +75,7 @@ if (!/animation-duration:\s*0\.01ms\s*!important/.test(reducedMotionBlock)) {
 if (!/@supports \(animation-timeline: view\(\)\)/.test(baseStyles) || !/view-timeline-name:\s*--[a-z-]+/.test(baseStyles) || !/animation-range:/.test(baseStyles)) {
   failures.push('base.css: scroll-driven media motion must be feature-detected with a view timeline');
 }
-for (const selector of ['.scroll-scene__hero-copy', '.gallery-video > video', '.process-list::after', '.trust-media > img']) {
+for (const selector of ['.scroll-scene__hero-copy', '.gallery-item > .optimized-picture', '.process-list::after', '.trust-media > img']) {
   if (!reducedMotionBlock.includes(selector)) {
     failures.push(`base.css: reduced-motion must neutralize scroll scene ${selector}`);
   }

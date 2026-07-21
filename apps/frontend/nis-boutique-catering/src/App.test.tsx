@@ -65,7 +65,7 @@ describe('Nis boutique catering app', () => {
     const filteredButtons = await screen.findAllByRole('button', { name: /פתח תמונה:/i });
     expect(filteredButtons).toHaveLength(2);
     expect(screen.getByRole('button', { name: 'דגים' })).toHaveAttribute('aria-pressed', 'true');
-    expect(container.querySelectorAll('#gallery video')).toHaveLength(1);
+    expect(container.querySelectorAll('#gallery video')).toHaveLength(0);
     expect(container.querySelector('.real-media-section')).not.toBeInTheDocument();
   });
 

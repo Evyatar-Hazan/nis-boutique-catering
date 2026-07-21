@@ -32,14 +32,13 @@ describe('integrated gallery media surface', () => {
     ]);
   });
 
-  it('shows six initial images, one video and filters without duplicate media sections', () => {
+  it('shows six initial images and filters without video or duplicate media sections', () => {
     const onFilterChange = vi.fn();
     const { container } = render(<SiteSectionPreviewDataProvider value={fallbackSiteSectionPreviewData}>
       <GallerySection activeCategory="all" images={images} onFilterChange={onFilterChange} onOpenImage={vi.fn()} />
     </SiteSectionPreviewDataProvider>);
     expect(screen.getAllByRole('button', { name: /פתח תמונה:/ })).toHaveLength(6);
-    expect(screen.getByLabelText('וידאו מהאירוח')).toHaveAttribute('preload', 'metadata');
-    expect(container.querySelectorAll('video')).toHaveLength(1);
+    expect(container.querySelectorAll('video')).toHaveLength(0);
     expect(container.querySelector('.real-media-section')).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'דגים' }));
     expect(onFilterChange).toHaveBeenCalledWith('fish');

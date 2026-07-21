@@ -199,17 +199,49 @@
   }
 }
 
-@keyframes gallery-video-journey {
+@keyframes gallery-frame-forward {
   from {
-    transform: translate3d(0, 5%, 0) scale(1.13);
+    opacity: 0.46;
+    transform: translate3d(-6vw, 8%, 0) scale(0.92) rotate(-1.2deg);
   }
 
-  45% {
-    transform: translate3d(0, 0, 0) scale(1.05);
+  52% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
   }
 
   to {
-    transform: translate3d(0, -5%, 0) scale(1.1);
+    opacity: 0.9;
+    transform: translate3d(2vw, -2%, 0) scale(0.98) rotate(0.35deg);
+  }
+}
+
+@keyframes gallery-frame-reverse {
+  from {
+    opacity: 0.46;
+    transform: translate3d(6vw, 8%, 0) scale(0.92) rotate(1.2deg);
+  }
+
+  52% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+  }
+
+  to {
+    opacity: 0.9;
+    transform: translate3d(-2vw, -2%, 0) scale(0.98) rotate(-0.35deg);
+  }
+}
+
+@keyframes gallery-caption-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 26px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
   }
 }
 
@@ -289,6 +321,11 @@
     view-timeline-axis: block;
   }
 
+  .scroll-motion-ready .gallery-item {
+    view-timeline-name: --gallery-frame;
+    view-timeline-axis: block;
+  }
+
   .scroll-motion-ready .scroll-scene--trust {
     view-timeline-name: --trust-scene;
     view-timeline-axis: block;
@@ -328,19 +365,27 @@
     animation-range: entry 0% exit 100%;
   }
 
-  .scroll-motion-ready .gallery-video > video {
-    animation-name: gallery-video-journey;
+  .scroll-motion-ready .gallery-item:nth-child(odd) > .optimized-picture {
+    animation-name: gallery-frame-forward;
     animation-fill-mode: both;
     animation-timing-function: linear;
-    animation-timeline: --gallery-scene;
-    animation-range: entry 0% exit 100%;
+    animation-timeline: --gallery-frame;
+    animation-range: entry 4% exit 92%;
+  }
+
+  .scroll-motion-ready .gallery-item:nth-child(even) > .optimized-picture {
+    animation-name: gallery-frame-reverse;
+    animation-fill-mode: both;
+    animation-timing-function: linear;
+    animation-timeline: --gallery-frame;
+    animation-range: entry 4% exit 92%;
   }
 
   .scroll-motion-ready .gallery-item:nth-child(odd) img {
     animation-name: gallery-image-forward;
     animation-fill-mode: both;
     animation-timing-function: linear;
-    animation-timeline: --gallery-scene;
+    animation-timeline: --gallery-frame;
     animation-range: entry 0% exit 100%;
   }
 
@@ -348,8 +393,16 @@
     animation-name: gallery-image-reverse;
     animation-fill-mode: both;
     animation-timing-function: linear;
-    animation-timeline: --gallery-scene;
+    animation-timeline: --gallery-frame;
     animation-range: entry 0% exit 100%;
+  }
+
+  .scroll-motion-ready .gallery-item span {
+    animation-name: gallery-caption-rise;
+    animation-fill-mode: both;
+    animation-timing-function: linear;
+    animation-timeline: --gallery-frame;
+    animation-range: entry 28% cover 54%;
   }
 
   .scroll-motion-ready .process-list {
@@ -3036,8 +3089,9 @@ details p {
   .scroll-motion-ready img.hero-main-image,
   .scroll-motion-ready .services-section .media-card > .optimized-picture > img,
   .scroll-motion-ready .services-section .media-card > img,
-  .scroll-motion-ready .gallery-video > video,
+  .scroll-motion-ready .gallery-item > .optimized-picture,
   .scroll-motion-ready .gallery-item img,
+  .scroll-motion-ready .gallery-item span,
   .scroll-motion-ready .process-list::after,
   .scroll-motion-ready .process-step .step-number,
   .scroll-motion-ready .trust-media > img,

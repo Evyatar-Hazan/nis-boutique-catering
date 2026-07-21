@@ -1,11 +1,11 @@
 ---
 title: NIS Public Site Redesign Tracker
-status: completed
+status: active
 owner: Evyatar Hazan
 created: 2026-07-20
 updated: 2026-07-22
 source_of_truth: true
-implementation_gate: closed
+implementation_gate: ready
 ---
 
 # NIS Public Site Redesign — Source of Truth and Execution Tracker
@@ -35,9 +35,9 @@ implementation_gate: closed
 
 ## שער מימוש גלובלי
 
-**סטטוס נוכחי: `COMPLETED`**
+**סטטוס נוכחי: `READY`**
 
-ה־release וכל 56 המשימות, כולל שיפור הגלריה ב־`UI-009`, הושלמו ואומתו בפרודקשן. שער המימוש סגור; שינוי נוסף מחייב משימה חדשה, הגדרה מלאה ופתיחה מפורשת מחדש.
+כל 56 המשימות הקודמות הושלמו ואומתו בפרודקשן. לבקשת המשתמש נפתחה `UI-010` להסרת הווידאו מהגלריה ולחיזוק תנועת הגלילה של התמונות בלבד; שער המימוש פתוח למשימה זו בלבד.
 
 תוכנית השרת/קליינט, בניית מסך האדמין מחדש והמעבר מ־Google Sheets/Drive ל־Cloudflare D1/R2 נוספו למסמך ב־2026-07-20. שער המימוש נפתח לאחר השלמת:
 
@@ -1217,6 +1217,24 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - **Local implementation evidence (2026-07-22):** `#gallery` הוסב ב־`theme.css` בלבד לפרק “Cinematic Contact Sheet”: רקע ink רציף, watermark ‏03, כותרת 107/84/58px, מסננים ממוספרים, video frame וגריד אסימטרי לשש תמונות. `GallerySection`, ה־DOM, התוכן, media IDs, state, props, named animations וכל שאר הסקשנים לא השתנו; checker המעקב עודכן במפורש מ־55 ל־56 משימות. בדיקות browser ב־1440×1000, ‏768×1024 ו־375×812 אישרו video אחד, שש תמונות, 6 פילטרים ב־fallback, פילטר `סלטים` עם 3 תוצאות, פתיחת lightbox וסגירה ב־Escape, touch targets בגובה 48px, וידאו לא־sticky במסכים צרים, ‏0 overflow, ‏0 broken media ו־0 console warnings/errors. reduced-motion החזיר opacity ‏1 ו־transform ‏none לכותרת ולתמונה. כל 142 הבדיקות, `tracker:check`, ‏`design:tokens:check`, ‏`motion:check`, lint, type-check, builds, full `pnpm validate`, ‏`parity:local` ו־`git diff --check` עברו. `UI-009` עברה ל־`VERIFYING` עד push, CI/deploy ואימות Production.
 - **Production evidence (2026-07-22):** commit `077e86d` עבר CI ‏`29870520582` ו־Cloudflare deploy ‏`29870520800`; deployment ‏`5c5d2769` והדומיין הקנוני מגישים את bundle ‏`index-BjZVQiyV.css`. בדיקות Production ב־1440×1000, ‏768×1024 ו־375×812 אישרו את הכותרת בגודל 107/84/58px, ארבעה פילטרים בגובה 48px, שש תמונות ללא שבר, video לא־sticky ב־tablet/mobile, ‏0 overflow ו־0 console warnings/errors. פילטר `סלטים` הציג את שתי הרשומות החיות המשויכות אליו; lightbox נפתח עם `role=dialog`/`aria-modal` ונסגר ב־Escape. `UI-009` וכל 56 המשימות נסגרו `DONE` ושער המימוש נסגר.
 
+### Phase 14 — Gallery motion refinement
+
+#### UI-010 — Remove gallery video and deepen image-led scroll motion
+
+- **Status:** `VERIFYING`
+- **Dependencies:** `UI-009`, `UI-006`.
+- **Definition:** להסיר לחלוטין את הווידאו מתוך `#gallery`, להרחיב את שש התמונות לכל רוחב הסקשן ולחזק את חוויית הגלילה באמצעות תנועה אישית לכל frame — בלי לשנות פילטרים, lightbox, תוכן התמונות, API, state או חלק אחר באתר.
+- **Acceptance criteria:**
+  - אין אלמנט `video`, source, poster, controls או placeholder וידאו בתוך `#gallery`; אין חלל ריק שנשאר במקומו.
+  - שש התמונות ממלאות את רוחב הגלריה ב־desktop בגריד editorial אסימטרי, וב־tablet/mobile נשמר סדר קריאה טבעי ללא חיתוך או overflow.
+  - לכל תמונה יש scroll-driven journey עצמאי ומורגש המשלב תנועה אנכית/אופקית ועומק באמצעות `transform`/`opacity` בלבד; הכיתוב נחשף בהדרגה לפי כניסת ה־frame למסך.
+  - אין scroll hijacking, listener חדש, dependency חדש, אנימציה אינסופית, `transition: all`, animation של layout properties או `will-change` קבוע.
+  - `prefers-reduced-motion` מבטל את כל התנועה ומשאיר תמונות וכיתובים גלויים; fallback ללא JavaScript נשאר מלא.
+  - ארבעת הפילטרים וה־lightbox נשארים נגישים ופועלים באמצעות עכבר ומקלדת; לא משתנים content/media IDs או לוגיקה עסקית.
+- **Verification:** `pnpm tracker:check`, ‏`pnpm design:tokens:check`, ‏`pnpm motion:check`, tests/type-check/lint/build/full `pnpm validate`, ‏`parity:local`; בדפדפן ב־1440×1000, ‏768×1024 ו־375×812: 0 video, שש תמונות, ארבעה פילטרים, lightbox/Escape, overflow/media/console, computed animation timelines בכמה נקודות גלילה ו־reduced-motion; לאחר push — CI/deploy ואימות public/Studio/health/published בפרודקשן.
+- **Evidence (2026-07-22):** המשתמש ביקש במפורש להסיר את הסרטון ולהוסיף יותר אנימציית גלילה. הקוד וה־tracker נקראו מחדש: הווידאו נמצא כ־`figure` נפרד ב־`GallerySection`, בעוד שש התמונות כבר משתמשות ב־reveal גנרי וב־parallax משותף המבוסס על timeline של הסקשן כולו. נבחרה קומפוזיציית photo-only עם timeline אנונימי לכל frame, כדי שכל תמונה תגיב למיקומה שלה במסך ולא כולן ינועו יחד. `UI-010` הועברה ל־`IN_PROGRESS` ושער המימוש נפתח ל־`READY`.
+- **Local implementation evidence (2026-07-22):** רכיב הווידאו הוסר מ־`GallerySection` והגריד הוגדל ל־12 עמודות עם שש תמונות בלבד; לא נשאר video/source/poster/placeholder ב־DOM. לכל `gallery-item` הוגדר named view timeline מקומי `--gallery-frame`, וה־picture, התמונה והכיתוב צורכים אותו בנפרד באמצעות frame drift דו־כיווני, parallax אנכי ו־caption rise; אין listener, dependency או animation מתמשכת. בדיקות Playwright ב־1440×1000, ‏768×1024 ו־375×812 אישרו 0 video, שש תמונות, 0 overflow, ‏0 broken media, פילטרים בגובה 48px ו־console ללא warnings/errors. מדידה בארבע נקודות גלילה הראתה timeline מתקדם מ־‎-52.75% ל־89.74%, opacity של frame מ־0.46 ל־0.91 וכיתוב מ־0 ל־1; `prefers-reduced-motion` החזיר `animation: none`, ‏opacity ‏1 ו־transform ‏none לכל שלוש השכבות. פילטר `דגים` החזיר שתי תמונות, וה־lightbox נפתח כ־dialog modal ונסגר ב־Escape. כל 142 הבדיקות, `tracker:check`, ‏`design:tokens:check`, ‏`motion:check`, lint, type-check, builds, full `pnpm validate`, ‏`parity:local` ו־`git diff --check` עברו; `UI-010` עברה ל־`VERIFYING` עד push, CI/deploy ואימות Production.
+
 ## Open decisions before implementation
 
 | ID | Decision | Status | Blocks |
@@ -1277,8 +1295,15 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 | Phase 11 — Hero art direction | Done | 1 | 1 |
 | Phase 12 — Services art direction | Done | 1 | 1 |
 | Phase 13 — Gallery art direction | Done | 1 | 1 |
+| Phase 14 — Gallery motion refinement | In progress | 0 | 1 |
 
 ## Change Log
+
+### 2026-07-22 — UI-010 gallery motion refinement started
+
+- המשתמש ביקש להסיר לחלוטין את הסרטון מתוך הגלריה ולהפוך את תנועת הגלילה של התמונות למורגשת יותר.
+- נבחרה גלריית photo-only ברוחב מלא עם timeline עצמאי לכל frame, תנועת עומק וכיתוב שנחשף בגלילה, ללא scroll hijacking או dependency חדש.
+- `UI-010` נוספה כמשימה ה־57 והועברה ל־`IN_PROGRESS`; שער המימוש נפתח ל־`READY`.
 
 ### 2026-07-22 — UI-009 cinematic gallery completed
 

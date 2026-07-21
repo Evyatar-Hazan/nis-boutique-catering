@@ -32,7 +32,7 @@ export const GallerySection = ({
   onFilterChange,
   onOpenImage,
 }: GallerySectionProps) => {
-  const { foodMedia, sectionCopy, videoMedia } = useSiteSectionPreviewData();
+  const { sectionCopy } = useSiteSectionPreviewData();
   const filters = getGalleryFilters(images);
   const filteredImages = activeCategory === 'all'
     ? images
@@ -59,12 +59,6 @@ export const GallerySection = ({
           ))}
         </div>
         <div className="gallery-media-layout">
-          <figure className="gallery-video reveal scroll-driven-media" data-reveal-duration="760" data-reveal-threshold="0.08" data-reveal-variant="focus">
-            <video controls muted playsInline preload="metadata" poster={foodMedia.hostingTableOverview.src} aria-label="וידאו מהאירוח">
-              <source src={videoMedia.eventVideo} type="video/mp4" />
-            </video>
-            <figcaption>רגע אמיתי מההכנה ומהאירוח של Nis</figcaption>
-          </figure>
           <div className="gallery-grid" data-reveal-stagger="55" aria-live="polite">
             {visibleImages.map((image, index) => (
               <button
