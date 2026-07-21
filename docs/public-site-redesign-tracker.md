@@ -1,11 +1,11 @@
 ---
 title: NIS Public Site Redesign Tracker
-status: active
+status: completed
 owner: Evyatar Hazan
 created: 2026-07-20
 updated: 2026-07-22
 source_of_truth: true
-implementation_gate: ready
+implementation_gate: closed
 ---
 
 # NIS Public Site Redesign — Source of Truth and Execution Tracker
@@ -35,9 +35,9 @@ implementation_gate: ready
 
 ## שער מימוש גלובלי
 
-**סטטוס נוכחי: `READY`**
+**סטטוס נוכחי: `COMPLETED`**
 
-כל 59 המשימות הקודמות הושלמו ואומתו בפרודקשן. `UI-013` פתוחה כעת לתיקון ממוקד של קומפוזיציית אזור האמון בדסקטופ בלבד; שער המימוש פתוח עד השלמת local, ‏CI/deploy ואימות Production.
+כל 60 המשימות הושלמו ואומתו בפרודקשן. `UI-013` סגרה את התיקון הממוקד של קומפוזיציית אזור האמון בדסקטופ; שער המימוש סגור ואין משימת מימוש פתוחה.
 
 תוכנית השרת/קליינט, בניית מסך האדמין מחדש והמעבר מ־Google Sheets/Drive ל־Cloudflare D1/R2 נוספו למסמך ב־2026-07-20. שער המימוש נפתח לאחר השלמת:
 
@@ -1279,7 +1279,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### UI-013 — Rebalance the cinematic proof chapter on desktop
 
-- **Status:** `VERIFYING`
+- **Status:** `DONE`
 - **Dependencies:** `UI-012`.
 - **Definition:** לתקן רק את קומפוזיציית הדסקטופ של `trust-section` לאחר משוב משתמש שהמימוש החי אינו נראה טוב במסך מחשב. לשמור על רעיון “Cinematic Proof Frame”, התוכן, התמונה, ה־DOM, ה־component API, ה־state, ה־data source וההתנהגות ב־tablet/mobile, אך להפוך את הפרק למאוזן, קריא וקצר יותר.
 - **Acceptance criteria:**
@@ -1292,6 +1292,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - **Verification:** `pnpm tracker:check`, ‏`design:tokens:check`, ‏`motion:check`, tests/type-check/lint/build/full `pnpm validate`, ‏`parity:local`, ‏`git diff --check`; בדפדפן ב־1440×1000 למדוד section/heading/media/columns/opacities/sticky/overflow ולצלם כמה נקודות גלילה, וב־768×1024 ו־375×812 לבצע regression comparison; לאחר push — CI/deploy ואימות production/public/Studio/health/published.
 - **Evidence (2026-07-22):** משוב המשתמש זיהה שהמימוש אינו נראה טוב בדסקטופ. בדיקה לוקאלית ב־1440px אישרה את הסיבה: כותרת בגובה כ־402px, חפיפה אופקית של כ־64px בין התמונה לעמודת התוכן, section בגובה כ־1,932px ושלושת ה־copies במצב פתיחה `opacity: 0.14`. נבחר refinement בשם “Balanced Proof Spread”: שתי עמודות ללא התנגשות, כותרת מרוסנת, מדיה נמוכה יותר, rows צפופים יותר ו־motion שמתחיל במצב קריא. הקבצים המתוכננים לשינוי הם `theme.css`, ‏`base.css`, קובץ המעקב ובדיקת מספר המשימות בלבד; `UI-013` הועברה ל־`IN_PROGRESS` והשער נפתח ל־`READY`.
 - **Local implementation evidence (2026-07-22):** ב־desktop בלבד נוסף “Balanced Proof Spread”: גובה הסקשן ירד מ־1,931.5px ל־1,173.6px, גובה הכותרת מ־402.5px ל־194.9px, חפיפת המדיה/תוכן של 64px הוחלפה במרווח 29.5px, וגובה כל proof row ירד מ־259.2px ל־172.8px. המדיה נשארת sticky בגובה כ־564px; בנקודת הכניסה הראשונה opacities של copies הם 0.96/0.73/0.49, ולאחר 320px הם 1/1/0.93. הדבר הושג ב־CSS בלבד עם custom-property defaults השומרים את ערכי mobile המקוריים ו־animation ranges מהירים יותר ב־desktop. regression ב־768×1024 וב־375×812 החזיר בדיוק את המדידות הקודמות: heading ‏80.64/53.6px, section ‏1953.19/1584.11px, media ‏relative, ‏0 overflow, שלושה points ותמונה תקינה; console נקי. `TrustSection`, ‏DOM, content, media ו־logic לא השתנו. כל 142 הבדיקות, targeted trust tests, ‏tracker/design-token/motion/architecture/security checks, lint, type-check, builds, full `pnpm validate`, ‏`parity:local` ו־`git diff --check` עברו. `UI-013` עברה ל־`VERIFYING` עד CI/deploy ואימות Production.
+- **Production evidence (2026-07-22):** commit `67d7e9e` עבר CI ‏`29874997546` ו־Cloudflare deploy ‏`29874997564`; deployment ציבורי `3e2200c8` והדומיין הקנוני מגישים את bundle ‏`index-Dhxz-Sj9.css`. Production ב־1440×1000 החזיר section ‏1173.58px, heading ‏69.12px/194.91px, media sticky בגובה 608px, ‏0 column overlap, שלושה points עם copy opacities ‏1/0.84/0.63 בפריים הראשון ו־1/1/1 לאחר 300px, תמונה תקינה, ‏0 overflow ו־0 console warnings/errors. Production ב־768×1024 וב־375×812 נשאר זהה ל־baseline: section ‏1953.19/1584.11px, heading ‏80.64/53.6px, media ‏relative בגובה 525.31/317.25px, שלושה points, תמונה תקינה ו־0 overflow. תשעה קישורי WhatsApp, הטופס וכפתור השליחה נשארו זמינים; public, Studio, health ו־published החזירו `200`. `UI-013`, ‏Phase 17 וכל 60 המשימות נסגרו `DONE` והשער נסגר.
 
 ## Open decisions before implementation
 
@@ -1356,9 +1357,15 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 | Phase 14 — Gallery motion refinement | Done | 1 | 1 |
 | Phase 15 — Process art direction | Done | 1 | 1 |
 | Phase 16 — Trust art direction | Done | 1 | 1 |
-| Phase 17 — Trust desktop refinement | Verifying | 0 | 1 |
+| Phase 17 — Trust desktop refinement | Done | 1 | 1 |
 
 ## Change Log
+
+### 2026-07-22 — UI-013 balanced desktop proof spread completed
+
+- אזור האמון החי בדסקטופ קצר ומאוזן יותר, ללא חפיפת עמודות ועם שלוש הוכחות קריאות לאורך מסלול גלילה קצר יותר; tablet/mobile נשארו ללא שינוי.
+- commit `67d7e9e`, ‏CI `29874997546` ו־deploy `29874997564` עברו; Production אומת בשלושת ה־breakpoints מול bundle ‏`index-Dhxz-Sj9.css` וללא overflow, מדיה שבורה או שגיאות Console.
+- `UI-013`, ‏Phase 17 וכל 60 המשימות סומנו `DONE`; שער המימוש נסגר.
 
 ### 2026-07-22 — UI-013 balanced desktop proof spread verified locally
 
