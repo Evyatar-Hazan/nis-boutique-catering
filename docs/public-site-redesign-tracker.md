@@ -1,11 +1,11 @@
 ---
 title: NIS Public Site Redesign Tracker
-status: completed
+status: active
 owner: Evyatar Hazan
 created: 2026-07-20
 updated: 2026-07-22
 source_of_truth: true
-implementation_gate: closed
+implementation_gate: ready
 ---
 
 # NIS Public Site Redesign — Source of Truth and Execution Tracker
@@ -35,9 +35,9 @@ implementation_gate: closed
 
 ## שער מימוש גלובלי
 
-**סטטוס נוכחי: `COMPLETED`**
+**סטטוס נוכחי: `READY`**
 
-כל 60 המשימות הושלמו ואומתו בפרודקשן. `UI-013` סגרה את התיקון הממוקד של קומפוזיציית אזור האמון בדסקטופ; שער המימוש סגור ואין משימת מימוש פתוחה.
+כל 60 המשימות הקודמות הושלמו ואומתו בפרודקשן. `UI-014` פתוחה כעת לשיפור ממוקד של אזור FAQ/יצירת הקשר בלבד; שער המימוש פתוח עד השלמת local, ‏CI/deploy ואימות Production.
 
 תוכנית השרת/קליינט, בניית מסך האדמין מחדש והמעבר מ־Google Sheets/Drive ל־Cloudflare D1/R2 נוספו למסמך ב־2026-07-20. שער המימוש נפתח לאחר השלמת:
 
@@ -1294,6 +1294,24 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - **Local implementation evidence (2026-07-22):** ב־desktop בלבד נוסף “Balanced Proof Spread”: גובה הסקשן ירד מ־1,931.5px ל־1,173.6px, גובה הכותרת מ־402.5px ל־194.9px, חפיפת המדיה/תוכן של 64px הוחלפה במרווח 29.5px, וגובה כל proof row ירד מ־259.2px ל־172.8px. המדיה נשארת sticky בגובה כ־564px; בנקודת הכניסה הראשונה opacities של copies הם 0.96/0.73/0.49, ולאחר 320px הם 1/1/0.93. הדבר הושג ב־CSS בלבד עם custom-property defaults השומרים את ערכי mobile המקוריים ו־animation ranges מהירים יותר ב־desktop. regression ב־768×1024 וב־375×812 החזיר בדיוק את המדידות הקודמות: heading ‏80.64/53.6px, section ‏1953.19/1584.11px, media ‏relative, ‏0 overflow, שלושה points ותמונה תקינה; console נקי. `TrustSection`, ‏DOM, content, media ו־logic לא השתנו. כל 142 הבדיקות, targeted trust tests, ‏tracker/design-token/motion/architecture/security checks, lint, type-check, builds, full `pnpm validate`, ‏`parity:local` ו־`git diff --check` עברו. `UI-013` עברה ל־`VERIFYING` עד CI/deploy ואימות Production.
 - **Production evidence (2026-07-22):** commit `67d7e9e` עבר CI ‏`29874997546` ו־Cloudflare deploy ‏`29874997564`; deployment ציבורי `3e2200c8` והדומיין הקנוני מגישים את bundle ‏`index-Dhxz-Sj9.css`. Production ב־1440×1000 החזיר section ‏1173.58px, heading ‏69.12px/194.91px, media sticky בגובה 608px, ‏0 column overlap, שלושה points עם copy opacities ‏1/0.84/0.63 בפריים הראשון ו־1/1/1 לאחר 300px, תמונה תקינה, ‏0 overflow ו־0 console warnings/errors. Production ב־768×1024 וב־375×812 נשאר זהה ל־baseline: section ‏1953.19/1584.11px, heading ‏80.64/53.6px, media ‏relative בגובה 525.31/317.25px, שלושה points, תמונה תקינה ו־0 overflow. תשעה קישורי WhatsApp, הטופס וכפתור השליחה נשארו זמינים; public, Studio, health ו־published החזירו `200`. `UI-013`, ‏Phase 17 וכל 60 המשימות נסגרו `DONE` והשער נסגר.
 
+### Phase 18 — Contact art direction
+
+#### UI-014 — Turn FAQ and contact into an editorial concierge chapter
+
+- **Status:** `VERIFYING`
+- **Dependencies:** `UI-013`, `UI-006`.
+- **Definition:** לשפר את `#contact` בלבד ולהפוך את ה־FAQ, ערוצי הקשר וטופס הפנייה לפרק 06 ברור ומרשים שמסיים את מסלול ה־scrollytelling ומוביל לפעולה, ללא שינוי תוכן, שדות, hierarchy, component API, state, validation, submit behavior, data source או section אחר.
+- **Acceptance criteria:**
+  - `ContactSection`, הכותרת, התיאור, שלושת ערוצי הקשר, ארבעת פריטי ה־FAQ, ששת השדות וכפתור השליחה נשארים באותו DOM ובאותו סדר סמנטי, עם אותם labels, hrefs, validation ו־submit flow.
+  - Desktop מציג “Editorial Concierge”: מעבר ברור מפרק 05 הכהה למשטח נייר חם ממוספר `NIS / 06`, heading editorial רחב, FAQ ממוספר ללא card גנרי וטופס כהה כמשטח הפעולה הראשי.
+  - Tablet/mobile מציגים stack קריא שבו הכותרת, ערוצי הקשר, ה־FAQ והטופס אינם נחתכים או חופפים; כל target אינטראקטיבי נשאר לפחות 44px.
+  - לכל FAQ item יש view timeline מקומי עדין שמניע rule/number/copy באמצעות transform/opacity בלבד; הטופס מקבל entrance מוכוון section אך אינו מזיז fields בזמן הקלדה או interaction.
+  - פתיחה/סגירה של Accordion, focus order, inline errors, focus לשדה השגוי הראשון, submit, WhatsApp, phone ו־email נשארים תקינים במקלדת ובעכבר.
+  - אין dependency, scroll listener, hijacking, animation אינסופית, layout animation, `transition: all`, raw colors חדשים, overflow אופקי או שגיאות console; `prefers-reduced-motion` משאיר הכול גלוי וסטטי.
+- **Verification:** `pnpm tracker:check`, ‏`design:tokens:check`, ‏`motion:check`, targeted Contact tests, tests/type-check/lint/build/full `pnpm validate`, ‏`parity:local`, ‏`git diff --check`; בדפדפן ב־1440×1000, ‏768×1024 ו־375×812 למדוד DOM/order/layout/timelines/overflow/console, לפתוח ולסגור FAQ במקלדת, לאמת validation/focus ולבדוק hrefs; לאחר push — CI/deploy ואימות public/Studio/health/published בפרודקשן.
+- **Evidence (2026-07-22):** baseline לוקאלי ב־1440×1000 הציג section בגובה 950.28px, heading בגובה 131.06px, ארבעה FAQ בתוך panel זכוכית 509×252px וטופס panel ‏623×431px עם שישה fields. ‏DOM, validation ו־0 overflow תקינים, אך שני panels גנריים על אותו רקע כהה אינם יוצרים מעבר מפרק 05, מספור 06 או היררכיית פעולה. נבחר “Editorial Concierge”: משטח נייר חם, heading מפוצל, FAQ כאינדקס ממוספר וטופס ink מרכזי, עם timelines מקומיים ל־FAQ. הקבצים המתוכננים לשינוי הם `theme.css`, ‏`base.css`, קובץ המעקב ובדיקת מספר המשימות בלבד; `UI-014` הועברה ל־`IN_PROGRESS` והשער נפתח ל־`READY`.
+- **Local implementation evidence (2026-07-22):** החלק יושם ב־CSS ממוקד בלבד, ללא שינוי ב־`ContactSection`, ב־DOM, בתוכן או בלוגיקה. ב־1440×1000 הפרק מוצג כמשטח נייר חם בגובה 1,385.05px עם heading מפוצל, FAQ ממוספר ‏491.67×548.8px וטופס ink ‏688.33×555.39px באותה שורה; ארבעת ה־FAQ וששת השדות נשמרו ו־overflow נשאר 0. ב־768×1024 הם נערמים ל־728×592px ואחריו טופס ‏728×647px; ב־375×812 נשמרו 4 FAQ, ‏6 fields ויעדי מגע בגובה 52–100px, ללא overflow. פתיחת FAQ החזירה `aria-expanded`, validation ריק הציג את שלוש שגיאות החובה והעביר focus ל־`name`; WhatsApp/phone/email נשארו עם אותם hrefs וה־console נקי. ב־`prefers-reduced-motion` כל ארבעת motion surfaces מחזירים `animation-name: none`, ‏`opacity: 1` ו־`transform: none`. ‏targeted Contact tests ‏3/3, כל 142 הבדיקות, tracker/architecture/design-token/motion/security/runbook checks, ‏lint, type-check, builds, ‏full `pnpm validate`, ‏`parity:local` ו־`git diff --check` עברו; `UI-014` עברה ל־`VERIFYING` עד CI/deploy ואימות Production.
+
 ## Open decisions before implementation
 
 | ID | Decision | Status | Blocks |
@@ -1358,8 +1376,21 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 | Phase 15 — Process art direction | Done | 1 | 1 |
 | Phase 16 — Trust art direction | Done | 1 | 1 |
 | Phase 17 — Trust desktop refinement | Done | 1 | 1 |
+| Phase 18 — Contact art direction | Verifying | 0 | 1 |
 
 ## Change Log
+
+### 2026-07-22 — UI-014 editorial concierge verified locally
+
+- פרק 06 יושם כ־Editorial Concierge ב־CSS בלבד: heading מפוצל, FAQ ממוספר וטופס ink מרכזי עם motion מקומי ועדין.
+- desktop, tablet ו־mobile אומתו ללא overflow; Accordion, validation/focus, ארבע שאלות, שישה שדות ו־reduced-motion נשארו תקינים.
+- כל 142 הבדיקות, full validation ו־local parity עברו; `UI-014` הועברה ל־`VERIFYING` עד CI/deploy ואימות Production.
+
+### 2026-07-22 — UI-014 editorial concierge started
+
+- החלק היחיד שנבחר לשיפור הוא `#contact`; ה־baseline תקין אך נראה כשני glass panels גנריים ואינו מסיים את מסלול ה־scrollytelling בפרק מובחן.
+- נבחר “Editorial Concierge”: פרק נייר חם 06, heading editorial, FAQ ממוספר וטופס ink כמשטח הפעולה המרכזי, בלי לשנות DOM, תוכן או לוגיקה.
+- `UI-014` נוספה כמשימה ה־61 והועברה ל־`IN_PROGRESS`; שער המימוש נפתח ל־`READY`.
 
 ### 2026-07-22 — UI-013 balanced desktop proof spread completed
 

@@ -367,6 +367,54 @@
   }
 }
 
+@keyframes contact-index-number {
+  from {
+    opacity: 0.24;
+    transform: translate3d(18px, 0, 0) scale(0.84);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes contact-index-copy {
+  from {
+    opacity: 0.44;
+    transform: translate3d(24px, 0, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes contact-index-rule {
+  from {
+    opacity: 0.28;
+    transform: scaleX(0.16);
+  }
+
+  to {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+@keyframes contact-form-mark {
+  from {
+    opacity: 0.24;
+    transform: translate3d(0, 18px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
 @supports (animation-timeline: view()) {
   .scroll-motion-ready .scroll-scene--hero {
     view-timeline-name: --hero-scene;
@@ -390,6 +438,16 @@
 
   .scroll-motion-ready .scroll-scene--trust {
     view-timeline-name: --trust-scene;
+    view-timeline-axis: block;
+  }
+
+  .scroll-motion-ready .scroll-scene--contact {
+    view-timeline-name: --contact-scene;
+    view-timeline-axis: block;
+  }
+
+  .scroll-motion-ready .contact-faq .accordion__item {
+    view-timeline-name: --contact-faq-item;
     view-timeline-axis: block;
   }
 
@@ -553,6 +611,37 @@
   .scroll-motion-ready .trust-point > div {
     animation-name: trust-proof-copy;
     animation-range: entry 18% cover 58%;
+  }
+
+  .scroll-motion-ready .contact-faq .accordion__item::before,
+  .scroll-motion-ready .contact-faq .accordion__item::after,
+  .scroll-motion-ready .contact-faq .accordion__item h3 {
+    animation-fill-mode: both;
+    animation-timing-function: linear;
+    animation-timeline: --contact-faq-item;
+  }
+
+  .scroll-motion-ready .contact-faq .accordion__item::before {
+    animation-name: contact-index-number;
+    animation-range: entry 0% cover 32%;
+  }
+
+  .scroll-motion-ready .contact-faq .accordion__item::after {
+    animation-name: contact-index-rule;
+    animation-range: entry 4% cover 38%;
+  }
+
+  .scroll-motion-ready .contact-faq .accordion__item h3 {
+    animation-name: contact-index-copy;
+    animation-range: entry 6% cover 42%;
+  }
+
+  .scroll-motion-ready .contact-form::before {
+    animation-name: contact-form-mark;
+    animation-fill-mode: both;
+    animation-timing-function: linear;
+    animation-timeline: --contact-scene;
+    animation-range: entry 8% cover 34%;
   }
 }
 
@@ -3065,6 +3154,15 @@ details p {
     inset-block-end: 18px;
     width: 44px;
     height: 44px;
+    transform: none;
+  }
+
+  .scroll-motion-ready .contact-faq .accordion__item::before,
+  .scroll-motion-ready .contact-faq .accordion__item::after,
+  .scroll-motion-ready .contact-faq .accordion__item h3,
+  .scroll-motion-ready .contact-form::before {
+    animation: none;
+    opacity: 1;
     transform: none;
   }
 
