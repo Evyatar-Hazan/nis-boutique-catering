@@ -1,11 +1,11 @@
 ---
 title: NIS Public Site Redesign Tracker
-status: completed
+status: active
 owner: Evyatar Hazan
 created: 2026-07-20
 updated: 2026-07-22
 source_of_truth: true
-implementation_gate: closed
+implementation_gate: ready
 ---
 
 # NIS Public Site Redesign — Source of Truth and Execution Tracker
@@ -35,9 +35,9 @@ implementation_gate: closed
 
 ## שער מימוש גלובלי
 
-**סטטוס נוכחי: `COMPLETED`**
+**סטטוס נוכחי: `READY`**
 
-כל 57 המשימות, כולל הסרת הווידאו וחיזוק תנועת הגלריה ב־`UI-010`, הושלמו ואומתו בפרודקשן. שער המימוש סגור; שינוי נוסף מחייב משימה חדשה ופתיחה מפורשת מחדש.
+57 המשימות הקודמות הושלמו ואומתו בפרודקשן. `UI-011` פתוחה כעת לשיפור ממוקד של `#process` בלבד; שער המימוש פתוח עד השלמת בדיקות local, ‏CI/deploy ואימות Production.
 
 תוכנית השרת/קליינט, בניית מסך האדמין מחדש והמעבר מ־Google Sheets/Drive ל־Cloudflare D1/R2 נוספו למסמך ב־2026-07-20. שער המימוש נפתח לאחר השלמת:
 
@@ -1236,6 +1236,24 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - **Local implementation evidence (2026-07-22):** רכיב הווידאו הוסר מ־`GallerySection` והגריד הוגדל ל־12 עמודות עם שש תמונות בלבד; לא נשאר video/source/poster/placeholder ב־DOM. לכל `gallery-item` הוגדר named view timeline מקומי `--gallery-frame`, וה־picture, התמונה והכיתוב צורכים אותו בנפרד באמצעות frame drift דו־כיווני, parallax אנכי ו־caption rise; אין listener, dependency או animation מתמשכת. בדיקות Playwright ב־1440×1000, ‏768×1024 ו־375×812 אישרו 0 video, שש תמונות, 0 overflow, ‏0 broken media, פילטרים בגובה 48px ו־console ללא warnings/errors. מדידה בארבע נקודות גלילה הראתה timeline מתקדם מ־‎-52.75% ל־89.74%, opacity של frame מ־0.46 ל־0.91 וכיתוב מ־0 ל־1; `prefers-reduced-motion` החזיר `animation: none`, ‏opacity ‏1 ו־transform ‏none לכל שלוש השכבות. פילטר `דגים` החזיר שתי תמונות, וה־lightbox נפתח כ־dialog modal ונסגר ב־Escape. כל 142 הבדיקות, `tracker:check`, ‏`design:tokens:check`, ‏`motion:check`, lint, type-check, builds, full `pnpm validate`, ‏`parity:local` ו־`git diff --check` עברו; `UI-010` עברה ל־`VERIFYING` עד push, CI/deploy ואימות Production.
 - **Production evidence (2026-07-22):** commit `3f501e3` עבר CI ‏`29871827675` ו־Cloudflare deploy ‏`29871827565`; deployment ‏`83dcad32` והדומיין הקנוני מגישים את bundle ‏`index-BlzWc7zH.css`. Production ב־1440×1000, ‏768×1024 ו־375×812 אישר 0 video, שש תמונות, ארבעה פילטרים בגובה 48px, ‏0 overflow, ‏0 broken media ו־0 console warnings/errors. timeline של frame חי התקדם מ־‎-45.66% דרך 49.33% ל־96.83%, עם שינוי ממשי ב־opacity/transform ובכיתוב; reduced-motion החזיר `animation: none`, ‏opacity ‏1 ו־transform ‏none. פילטר `סלטים` החזיר שתי תמונות וה־lightbox נפתח כ־dialog modal ונסגר ב־Escape. public, Studio, health ו־published החזירו `200`; `UI-010` וכל 57 המשימות נסגרו `DONE` ושער המימוש נסגר.
 
+### Phase 15 — Process art direction
+
+#### UI-011 — Turn the order process into a scroll-led editorial journey
+
+- **Status:** `VERIFYING`
+- **Dependencies:** `UI-010`, `UI-006`.
+- **Definition:** לשפר את `#process` בלבד ולהפוך את ארבעת שלבי ההזמנה ממערך כרטיסים גנרי למסלול editorial ברור שמתקדם עם הגלילה, תוך המשך ישיר של שפת ה־Hero, השירותים והגלריה — ללא שינוי תוכן, סדר, hierarchy, component API, state, לוגיקה או סקשן אחר.
+- **Acceptance criteria:**
+  - הכותרת, ארבעת השלבים ושלוש ההערות התפעוליות נשארים באותו DOM ובאותו סדר סמנטי; לא משתנים copy, icons, props, state או data source.
+  - Desktop מציג מסלול הזמנה אנכי/מדורג עם מספור גדול, קו התקדמות editorial וקומפוזיציה שאינה נראית כארבעה cards זהים; tablet/mobile נשארים במסלול אנכי ברור ונוח לקריאה.
+  - לכל `process-step` יש view timeline מקומי שמניע בעדינות את המספר, האייקון והטקסט לפי הכניסה שלו למסך; קו המסלול מתקדם לפי timeline של הרשימה כולה.
+  - התנועה מבוססת `transform` ו־`opacity` בלבד, ללא scroll listener, hijacking, dependency חדש, animation אינסופית, `transition: all` או layout shift.
+  - `prefers-reduced-motion` מבטל את כל התנועה ומשאיר את התוכן גלוי; fallback ללא JavaScript, מקלדת וקוראי מסך נשארים תקינים.
+  - אין overflow אופקי או הסתרת תוכן ב־1440×1000, ‏768×1024 ו־375×812; הסקשנים הסמוכים, הניווט, הטפסים והקישורים ממשיכים לעבוד ללא שינוי.
+- **Verification:** `pnpm tracker:check`, ‏`pnpm design:tokens:check`, ‏`pnpm motion:check`, tests/type-check/lint/build/full `pnpm validate`, ‏`parity:local`; בדפדפן בשלושת ה־breakpoints: DOM/order, heading/steps/notes, overflow, console, computed timelines בכמה נקודות גלילה ו־reduced-motion; לאחר push — CI/deploy ואימות public/Studio/health/published בפרודקשן.
+- **Evidence (2026-07-22):** קובץ המעקב, `ProcessSection`, ה־CSS והבדיקות נקראו מחדש. baseline לוקאלי ב־1440×1000 אישר ארבעה cards אחידים בשורה עם rail אופקי דק ושלוש הערות, ללא שגיאה פונקציונלית אך גם ללא המשך לעומק העריכתי והאסימטריה של ה־Hero והגלריה. נבחר כיוון “Editorial Order Journey”: פרק בהיר עם watermark ‏04, כותרת גדולה, מסלול מדורג וקצב גלילה מקומי לכל שלב, תוך שמירה מלאה על ה־DOM והתוכן. `UI-011` הועברה ל־`IN_PROGRESS` ושער המימוש נפתח ל־`READY`.
+- **Local implementation evidence (2026-07-22):** `#process` עוצב מחדש ב־CSS בלבד כ־“Editorial Order Journey”: watermark ‏04, כותרת 104/84/54px, מסלול מרכזי מדורג בדסקטופ ומסלול אנכי ב־tablet/mobile. `ProcessSection`, ה־DOM, ארבעת השלבים, שלוש ההערות, התוכן, icons, props, state וה־data source לא השתנו. לכל step הוגדר named view timeline מקומי `--process-step` שמניע בנפרד number/icon/title/body, בעוד `--process-scene` ממשיך את rail; מדידה חיה הראתה מעבר הדרגתי של step 4 ל־opacity ‏0.75/0.56/0.59 עבור number/icon/title. בדיקות Playwright ב־1440×1000, ‏768×1024 ו־375×812 אישרו 4 steps, ‏3 notes, ‏0 overflow, ‏0 broken media ו־0 console warnings/errors; reduced-motion החזיר `animation: none`, ‏opacity ‏1 ו־transform ‏none לכל ארבע השכבות. כל 142 הבדיקות, `tracker:check`, ‏`design:tokens:check`, ‏`motion:check`, lint, type-check, builds, full `pnpm validate`, ‏`parity:local` ו־`git diff --check` עברו. צילומי מסך: `output/playwright/ui-011-process-1440-heading.png`, ‏`output/playwright/ui-011-process-768-heading.png`, ‏`output/playwright/ui-011-process-375-heading.png`. `UI-011` עברה ל־`VERIFYING` עד push, CI/deploy ואימות Production.
+
 ## Open decisions before implementation
 
 | ID | Decision | Status | Blocks |
@@ -1297,8 +1315,21 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 | Phase 12 — Services art direction | Done | 1 | 1 |
 | Phase 13 — Gallery art direction | Done | 1 | 1 |
 | Phase 14 — Gallery motion refinement | Done | 1 | 1 |
+| Phase 15 — Process art direction | Verifying | 0 | 1 |
 
 ## Change Log
+
+### 2026-07-22 — UI-011 process art direction started
+
+- החלק היחיד שנבחר לשיפור הוא `#process`; ה־baseline תקין אך נראה כמערך cards רגיל שאינו ממשיך את עוצמת ה־Hero והגלריה.
+- הכיוון הוא “Editorial Order Journey”: watermark ‏04, כותרת רחבה, מסלול מדורג ו־view timeline עצמאי לכל שלב, בלי לשנות DOM, תוכן או לוגיקה.
+- `UI-011` נוספה כמשימה ה־58 והועברה ל־`IN_PROGRESS`; שער המימוש נפתח ל־`READY`.
+
+### 2026-07-22 — UI-011 local process implementation verified
+
+- המסלול החדש הוטמע ב־CSS בלבד: פרק 04, קומפוזיציה מדורגת בדסקטופ ומסלול אנכי במסכים צרים, ללא שינוי DOM או תוכן.
+- view timeline עצמאי לכל step מניע number/icon/title/body; reduced-motion משאיר את כולם גלויים וללא תנועה.
+- `pnpm validate`, ‏`parity:local` ובדיקות browser בשלושה breakpoints עברו; `UI-011` הועברה ל־`VERIFYING` עד אימות הענן והפרודקשן.
 
 ### 2026-07-22 — UI-010 photo-only scroll gallery completed
 

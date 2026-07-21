@@ -287,11 +287,37 @@
 
 @keyframes process-marker-focus {
   from {
-    transform: scale(0.72) rotate(-14deg);
+    opacity: 0.22;
+    transform: translate3d(0, 32px, 0) scale(0.72) rotate(-14deg);
   }
 
   to {
+    opacity: 1;
     transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes process-copy-arrive {
+  from {
+    opacity: 0.12;
+    transform: translate3d(var(--process-copy-x, 0), 26px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes process-icon-arrive {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0) rotate(-18deg) scale(0.7);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
   }
 }
 
@@ -410,6 +436,11 @@
     view-timeline-axis: block;
   }
 
+  .scroll-motion-ready .process-step {
+    view-timeline-name: --process-step;
+    view-timeline-axis: block;
+  }
+
   .scroll-motion-ready .process-list::after {
     animation-name: process-rail-grow;
     animation-fill-mode: both;
@@ -423,20 +454,32 @@
     animation-name: process-marker-focus;
     animation-fill-mode: both;
     animation-timing-function: linear;
-    animation-timeline: --process-scene;
-    animation-range: entry 12% cover 38%;
+    animation-timeline: --process-step;
+    animation-range: entry 4% cover 42%;
   }
 
-  .scroll-motion-ready .process-step:nth-child(2) .step-number {
-    animation-range: entry 20% cover 46%;
+  .scroll-motion-ready .process-step .card-icon {
+    animation-name: process-icon-arrive;
+    animation-fill-mode: both;
+    animation-timing-function: linear;
+    animation-timeline: --process-step;
+    animation-range: entry 16% cover 50%;
   }
 
-  .scroll-motion-ready .process-step:nth-child(3) .step-number {
-    animation-range: entry 28% cover 54%;
+  .scroll-motion-ready .process-step h3,
+  .scroll-motion-ready .process-step p {
+    animation-name: process-copy-arrive;
+    animation-fill-mode: both;
+    animation-timing-function: linear;
+    animation-timeline: --process-step;
   }
 
-  .scroll-motion-ready .process-step:nth-child(4) .step-number {
-    animation-range: entry 36% cover 62%;
+  .scroll-motion-ready .process-step h3 {
+    animation-range: entry 18% cover 52%;
+  }
+
+  .scroll-motion-ready .process-step p {
+    animation-range: entry 26% cover 60%;
   }
 
   .scroll-motion-ready .trust-media > img,
@@ -3094,6 +3137,9 @@ details p {
   .scroll-motion-ready .gallery-item span,
   .scroll-motion-ready .process-list::after,
   .scroll-motion-ready .process-step .step-number,
+  .scroll-motion-ready .process-step .card-icon,
+  .scroll-motion-ready .process-step h3,
+  .scroll-motion-ready .process-step p,
   .scroll-motion-ready .trust-media > img,
   .scroll-motion-ready img.trust-media {
     animation: none !important;
