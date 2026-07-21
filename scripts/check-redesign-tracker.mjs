@@ -11,7 +11,7 @@ const taskStatuses = [...tracker.matchAll(/^- \*\*Status:\*\* `([A-Z_]+)`$/gm)].
 const isCompleted = tracker.includes('status: completed');
 const errors = [];
 
-if (taskIds.length !== 55) errors.push(`expected 55 tasks, found ${taskIds.length}`);
+if (taskIds.length !== 56) errors.push(`expected 56 tasks, found ${taskIds.length}`);
 if (uniqueTaskIds.size !== taskIds.length) errors.push('duplicate task IDs found');
 
 for (const label of ['Definition', 'Acceptance criteria', 'Verification', 'Evidence']) {

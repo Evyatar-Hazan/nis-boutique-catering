@@ -1,11 +1,11 @@
 ---
 title: NIS Public Site Redesign Tracker
-status: completed
+status: active
 owner: Evyatar Hazan
 created: 2026-07-20
-updated: 2026-07-21
+updated: 2026-07-22
 source_of_truth: true
-implementation_gate: closed
+implementation_gate: ready
 ---
 
 # NIS Public Site Redesign — Source of Truth and Execution Tracker
@@ -35,9 +35,9 @@ implementation_gate: closed
 
 ## שער מימוש גלובלי
 
-**סטטוס נוכחי: `COMPLETED`**
+**סטטוס נוכחי: `READY`**
 
-ה־release וכל 55 המשימות הושלמו ואומתו בפרודקשן. אזור השירותים ממשיך כעת את עוצמת ה־Hero כפרק קולנועי כהה, בלי שינוי תוכן, DOM, קומפוננטות או לוגיקה. שער המימוש סגור.
+ה־release וכל משימות ההמשך עד `UI-008` הושלמו ואומתו בפרודקשן. בעקבות בקשת המשתמש להמשיך לחלק הבא בלבד, `UI-009` נפתחה לשיפור ממוקד של הגלריה באותה שפה קולנועית של ה־Hero והשירותים. שער המימוש פתוח למשימה זו בלבד.
 
 תוכנית השרת/קליינט, בניית מסך האדמין מחדש והמעבר מ־Google Sheets/Drive ל־Cloudflare D1/R2 נוספו למסמך ב־2026-07-20. שער המימוש נפתח לאחר השלמת:
 
@@ -1198,6 +1198,24 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - **Reopened implementation evidence (2026-07-21):** `#experiences` הוסב ב־CSS בלבד לפרק קולנועי כהה שממשיך ישירות את ה־Hero: מעבר זוויתי, כותרת בקנה מידה של ה־Hero, רקע ink/plum, מספור 01–03 דומיננטי, תמונה גדולה בכרטיס המוביל ושתי תמונות full-bleed בכרטיסים המשלימים. ה־DOM, הקומפוננטות, ה־props, התוכן, סדר השירותים, המדיה, הקישורים והלוגיקה לא השתנו. בדיקות מקומיות ב־1440×1000, ‏768×1024 ו־375×812 אישרו את הקומפוזיציה, stack מלא במסכים צרים, CTA בגובה 48px, ‏3/3 קישורי WhatsApp, ‏0 overflow, ‏0 תמונות שבורות ו־0 warnings/errors ב־console. `tracker:check`, ‏`design:tokens:check`, ‏`motion:check`, כל 142 הבדיקות, lint, type-check, builds, full `pnpm validate`, ‏`parity:local` ו־`git diff --check` עברו. `UI-008` עברה ל־`VERIFYING` עד push, CI/deploy ואימות Production.
 - **Reopened production evidence (2026-07-21):** commit `05d8fc7`, ‏CI `29863387161` ו־Cloudflare deploy `29863387163` עברו. Production ב־1440×1000, ‏768×1024 ו־375×812 אישר את המעבר הזוויתי מה־Hero, כותרת 109/84/58px, שלושה כרטיסים מלאים, כל CTA בגובה 48px לאחר reveal, שלושה קישורי WhatsApp שמורים, ‏0 overflow, ‏0 תמונות שבורות ו־0 warnings/errors ב־console. public, Studio ו־health החזירו `200`; D1 ו־R2 מדווחים `ready`. `UI-008` נסגרה `DONE`.
 
+### Phase 13 — Gallery art direction
+
+#### UI-009 — Turn the gallery into a cinematic contact sheet
+
+- **Status:** `VERIFYING`
+- **Dependencies:** `UI-008`, `WEB-003`, `UI-005`.
+- **Definition:** לשפר רק את `#gallery` כך שימשיך ישירות את הפרק הקולנועי של ה־Hero והשירותים: רקע ink רציף, כותרת גדולה, video frame מוביל ו־contact sheet אסימטרי לשש התמונות — בלי לשנות את `GallerySection`, סדר ה־DOM, התוכן, המדיה, הפילטרים, lightbox, props, state או לוגיקה.
+- **Acceptance criteria:**
+  - Desktop מציג כותרת בקנה מידה editorial, מספור `NIS / 03`, video frame מוביל וגריד תמונות אסימטרי ברור; כל שש התמונות נשארות גלויות ב־`הכל` ואין carousel או גלילה פנימית.
+  - המעבר מאזור השירותים לגלריה מרגיש רציף באמצעות אותם tokens, פלטה, טיפוגרפיה, קווים ומספור; אין redesign של `#process` או חלק אחר.
+  - כל ארבעת מצבי הסינון הקיימים, video controls וה־lightbox נשארים שמישים באמצעות עכבר ומקלדת; focus גלוי ו־touch targets בגובה 44px לפחות.
+  - Tablet ו־mobile משתמשים בפריסה קריאה וללא חיתוך; הווידאו אינו sticky במסך צר, כל media נשאר ביחס תקין, ואין overflow אופקי או תוכן שמוסתר בידי ה־sticky CTA.
+  - אין שינוי hierarchy, markup, component API, תוכן, media IDs, state או named scroll animations; `prefers-reduced-motion`, lazy loading וה־fallback ללא JavaScript נשארים תקינים.
+  - השינוי ממוקד ב־CSS ובבדיקות regression הכרחיות בלבד; אין raw color, selector כפול, dependency חדש, `transition: all` או animation של layout properties.
+- **Verification:** `pnpm tracker:check`, ‏`pnpm design:tokens:check`, ‏`pnpm motion:check`, tests/type-check/lint/build/full `pnpm validate`, ‏`parity:local`; בדפדפן ב־1440×1000, ‏768×1024 ו־375×812 עם screenshot/computed checks לכותרת, video, שש תמונות, ארבעה פילטרים, lightbox, keyboard, overflow, media, console ו־reduced-motion; לאחר push — CI/deploy ואימות public/Studio/health בפרודקשן.
+- **Evidence (2026-07-22):** ה־tracker, הארכיטקטורה, `GallerySection`, ‏CSS והבדיקות נקראו מחדש. baseline חי ב־1440×1000 אישר video אחד, שש תמונות, ארבעה פילטרים, ‏0 overflow ו־console נקי, אך הסקשן חוזר למשטח בהיר ול־masonry סטנדרטי מיד אחרי השירותים הכהים ולכן אינו ממשיך את אפקט ה־“וואו”. נבחר כיוון “Cinematic Contact Sheet”: רקע ink, כותרת ענקית, video frame, גריד אסימטרי ומספור פרק, תוך שמירת כל החוזים והאינטראקציות. `UI-009` הועברה ל־`IN_PROGRESS` ושער המימוש נפתח ל־`READY`.
+- **Local implementation evidence (2026-07-22):** `#gallery` הוסב ב־`theme.css` בלבד לפרק “Cinematic Contact Sheet”: רקע ink רציף, watermark ‏03, כותרת 107/84/58px, מסננים ממוספרים, video frame וגריד אסימטרי לשש תמונות. `GallerySection`, ה־DOM, התוכן, media IDs, state, props, named animations וכל שאר הסקשנים לא השתנו; checker המעקב עודכן במפורש מ־55 ל־56 משימות. בדיקות browser ב־1440×1000, ‏768×1024 ו־375×812 אישרו video אחד, שש תמונות, 6 פילטרים ב־fallback, פילטר `סלטים` עם 3 תוצאות, פתיחת lightbox וסגירה ב־Escape, touch targets בגובה 48px, וידאו לא־sticky במסכים צרים, ‏0 overflow, ‏0 broken media ו־0 console warnings/errors. reduced-motion החזיר opacity ‏1 ו־transform ‏none לכותרת ולתמונה. כל 142 הבדיקות, `tracker:check`, ‏`design:tokens:check`, ‏`motion:check`, lint, type-check, builds, full `pnpm validate`, ‏`parity:local` ו־`git diff --check` עברו. `UI-009` עברה ל־`VERIFYING` עד push, CI/deploy ואימות Production.
+
 ## Open decisions before implementation
 
 | ID | Decision | Status | Blocks |
@@ -1257,8 +1275,15 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 | Phase 10 — Scroll storytelling | Done | 1 | 1 |
 | Phase 11 — Hero art direction | Done | 1 | 1 |
 | Phase 12 — Services art direction | Done | 1 | 1 |
+| Phase 13 — Gallery art direction | In progress | 0 | 1 |
 
 ## Change Log
+
+### 2026-07-22 — UI-009 gallery art direction started
+
+- החלק הבא היחיד שנבחר לשיפור הוא `#gallery`; ה־baseline תקין פונקציונלית אך חוזר למשטח בהיר ול־masonry גנרי שאינם ממשיכים את הדרמה של השירותים.
+- הכיוון המאושר הוא “Cinematic Contact Sheet” עם video frame מוביל, גריד אסימטרי ורקע ink רציף, ללא שינוי DOM, תוכן, מדיה או לוגיקה.
+- `UI-009` נוספה כמשימה ה־56 והועברה ל־`IN_PROGRESS`; שער המימוש נפתח ל־`READY`.
 
 ### 2026-07-21 — UI-008 cinematic continuation completed
 
