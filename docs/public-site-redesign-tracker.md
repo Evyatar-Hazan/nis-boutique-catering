@@ -1,11 +1,11 @@
 ---
 title: NIS Public Site Redesign Tracker
-status: completed
+status: active
 owner: Evyatar Hazan
 created: 2026-07-20
 updated: 2026-07-22
 source_of_truth: true
-implementation_gate: closed
+implementation_gate: ready
 ---
 
 # NIS Public Site Redesign — Source of Truth and Execution Tracker
@@ -35,9 +35,9 @@ implementation_gate: closed
 
 ## שער מימוש גלובלי
 
-**סטטוס נוכחי: `COMPLETED`**
+**סטטוס נוכחי: `READY`**
 
-כל 62 המשימות הושלמו ואומתו בפרודקשן. `UI-015` סגרה את השיפור הממוקד של ה־Footer בלבד; שער המימוש סגור ואין משימה פתוחה במסמך.
+כל 62 המשימות הקודמות הושלמו ואומתו בפרודקשן. `UI-016` פתוחה כעת לשיפור ממוקד של ה־Navbar העליון בלבד; שער המימוש פתוח עד השלמת local, ‏CI/deploy ואימות Production.
 
 תוכנית השרת/קליינט, בניית מסך האדמין מחדש והמעבר מ־Google Sheets/Drive ל־Cloudflare D1/R2 נוספו למסמך ב־2026-07-20. שער המימוש נפתח לאחר השלמת:
 
@@ -1331,6 +1331,23 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - **Local implementation evidence (2026-07-22):** ה־Footer יושם כ־“Final Signature” ב־CSS בלבד, ללא שינוי ב־`Footer`, ב־DOM, בתוכן או ב־hrefs. ב־1440×1000 גובהו 633.59px, grid ‏1180×432px, חתימת `Nis` בגודל 216px ושתי העמודות מיושרות באותה שורה; ארבעת הקישורים הם ‏491.66×88px ו־overflow נשאר 0. ב־768×1024 ה־Footer נערם לגובה 965.24px עם targets של 88px; ב־375×812 גובהו 870.44px, חתימה 116.25px, ארבעה targets ‏347×72px ו־creator credit בגובה 44px, ללא חפיפה עם ה־sticky CTA וללא overflow. ה־timeline מתקדם בפועל: כשה־Footer נכנס ב־842px signature/links הם opacity ‏0.41/0.38 עם transforms ‏32.93px/−27.72px, ב־500px הם ‏0.92/0.78, ובסיום הם 1/0.94. reduced-motion מחזיר לכל surfaces ‏`animation: none`, ‏`opacity: 1` ו־`transform: none`; ניווט Tab מחזיר `:focus-visible` ו־shadow ring, ארבעת hrefs נשמרו וה־console נקי. SiteChrome tests ‏2/2, כל 142 הבדיקות, tracker/architecture/design-token/motion/security/runbook checks, ‏lint, type-check, builds, ‏full `pnpm validate`, ‏`parity:local` ו־`git diff --check` עברו; `UI-015` עברה ל־`VERIFYING` עד CI/deploy ואימות Production.
 - **Production evidence (2026-07-22):** commit `e240570` נפרס בהצלחה; CI `29877258226` ו־deploy `29877258167` עברו, עם deployments ‏`759fb10b` לאתר הציבורי ו־`03b3a2d3` לסטודיו ועם bundle חי `index-zMiABJjt.css`. public, Studio, health ו־published החזירו `200`. בדפדפן Production נקי: ב־1440×1000 גובה ה־Footer ‏633.59px, חתימה 216px וארבעה targets של 88px; ב־768×1024 גובהו 964.22px ו־targets של 88px; ב־375×812 גובהו 869.42px, חתימה 116.25px ו־targets של 72px. בכל שלושת ה־viewports נמדדו 0 overflow ו־0 console errors/warnings, ארבעת יעדי הקשר נשארו תקינים, creator credit בגובה 44px, focus ring גלוי ו־reduced-motion החזיר לכל חמשת surfaces ‏`animation: none`, ‏`opacity: 1`, ‏`transform: none`. `UI-015` נסגרה כ־`DONE` וכל 62 המשימות הושלמו.
 
+### Phase 20 — Navbar art direction
+
+#### UI-016 — Turn the top navigation into an editorial masthead
+
+- **Status:** `VERIFYING`
+- **Dependencies:** `UI-015`, `UI-003`.
+- **Definition:** לשפר את ה־Navbar העליון בלבד ולהפוך אותו ל־“Editorial Masthead” שמחבר את ה־Hero ואת שפת הפרקים החדשה, ללא שינוי ב־`Topbar`, ב־DOM, בארבעת פריטי הניווט, ב־hrefs, ב־active-section state, ב־WhatsApp CTA או בלוגיקת mobile menu/focus/Escape.
+- **Acceptance criteria:**
+  - `Topbar`, הלוגו, ארבעת anchors, ה־CTA וכפתור התפריט נשארים באותו סדר סמנטי ועם אותם labels, hrefs, events, refs, state ו־ARIA.
+  - Desktop מציג masthead ink עמוק עם חתימת מותג זהובה, ניווט editorial ממוספר 01–04, active state ברור ו־CTA מובחן שממשיך את שפת ה־Hero וה־Footer; מצב scrolled נהיה קומפקטי בלי layout jump או הסתרת תוכן.
+  - Tablet/mobile מציגים header מאוזן ותפריט ink מלא ורחב מתחתיו; כל link/button נשאר target של 44px לפחות, התוכן אינו נחתך וה־CTA אינו מתנגש בלוגו או בכפתור התפריט.
+  - hover מוגבל ל־pointer מדויק; focus-visible ברור, פתיחה/סגירה, focus אוטומטי לקישור הראשון, בחירה ו־Escape ממשיכים לעבוד ללא אנימציה שמעכבת פעולת מקלדת.
+  - אין dependency, scroll listener חדש, scroll hijacking, animation אינסופית, layout animation, `transition: all`, raw colors חדשים, overflow אופקי או שגיאות console; `prefers-reduced-motion` מבטל transform transitions שאינם נחוצים.
+- **Verification:** `pnpm tracker:check`, ‏`design:tokens:check`, ‏`motion:check`, SiteChrome tests, tests/type-check/lint/build/full `pnpm validate`, ‏`parity:local`, ‏`git diff --check`; בדפדפן ב־1440×1000, ‏768×1024 ו־375×812 למדוד topbar/logo/nav/CTA/menu/targets/overflow/console במצב top ו־scrolled, לבדוק active state, focus, open/select/Escape ו־reduced-motion; לאחר push — CI/deploy ואימות public/Studio/health/published בפרודקשן.
+- **Evidence (2026-07-22):** baseline לוקאלי מציג פס paper בהיר וגנרי שמנותק מה־Hero הכהה: ב־1440×1000 גובהו 89px, הלוגו ‏273.59×64px, הניווט ‏882.86×41px וה־CTA ‏123.55×48px; לאחר גלילה הגובה יורד ל־81px. ב־768×1024 וב־375×812 התפריט הוא panel לבן בגובה 230px עם ארבעה targets של 48px, בעוד יתר מסלול האתר כבר משתמש ב־ink, זהב ומספור editorial. בכל המצבים ה־DOM, ארבעת anchors, CTA, menu focus/Escape ו־0 overflow תקינים. נבחר “Editorial Masthead”: header ink שמתחבר ל־Hero, ניווט ממוספר, CTA זהוב ותפריט mobile כהה; הקבצים המתוכננים לשינוי הם `theme.css`, קובץ המעקב ובדיקת מספר המשימות בלבד. `UI-016` הועברה ל־`IN_PROGRESS` והשער נפתח ל־`READY`.
+- **Local implementation evidence (2026-07-22):** ה־Navbar יושם כ־“Editorial Masthead” ב־CSS ממוקד בלבד, ללא שינוי ב־`Topbar`, ב־DOM, ב־props, ב־state, בארבעת ה־hrefs או בלוגיקת menu/focus/Escape. ב־1440×1000 נשמר גובה 89px ללא layout jump בין top ל־scrolled; הלוגו ‏244.8×64px, הניווט ‏887.2×50px, ארבעת links בגובה 48px וה־CTA ‏148×48px. ב־768×1024 וב־375×812 נשמרו headers בגובה 89/75px; תפריט ink נפתח ל־721.94×290px ול־347×282px עם targets של 64/62px, ללא clipping או overflow. המספור 01–04, active state, open/select/Escape, focus חזרה לכפתור ו־WhatsApp CTA אומתו; reduced-motion מבטל את transitions הייעודיים וה־console נקי. SiteChrome tests ‏2/2, כל 142 הבדיקות, tracker/architecture/design-token/motion/security/runbook checks, ‏lint, type-check, builds, ‏full `pnpm validate`, ‏`parity:local` ו־`git diff --check` עברו; `UI-016` עברה ל־`VERIFYING` עד CI/deploy ואימות Production.
+
 ## Open decisions before implementation
 
 | ID | Decision | Status | Blocks |
@@ -1397,8 +1414,21 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 | Phase 17 — Trust desktop refinement | Done | 1 | 1 |
 | Phase 18 — Contact art direction | Done | 1 | 1 |
 | Phase 19 — Footer art direction | Done | 1 | 1 |
+| Phase 20 — Navbar art direction | Verifying | 0 | 1 |
 
 ## Change Log
+
+### 2026-07-22 — UI-016 editorial masthead verified locally
+
+- ה־Navbar הפך ל־Editorial Masthead ב־CSS בלבד: masthead ink, ניווט 01–04, CTA זהוב ותפריט mobile כהה.
+- desktop, tablet ו־mobile אומתו ללא overflow; גובה ה־header יציב בגלילה, targets הם 48–64px ו־active/focus/open/select/Escape/reduced-motion תקינים.
+- כל 142 הבדיקות, full validation ו־local parity עברו; `UI-016` הועברה ל־`VERIFYING` עד CI/deploy ואימות Production.
+
+### 2026-07-22 — UI-016 editorial masthead started
+
+- החלק היחיד שנבחר לשיפור הוא ה־Navbar העליון; ה־baseline תקין פונקציונלית אך נשאר פס paper גנרי שאינו ממשיך את שפת ה־Hero והפרקים.
+- נבחר “Editorial Masthead”: masthead ink, ניווט ממוספר 01–04, CTA זהוב ותפריט mobile כהה, ללא שינוי DOM, hrefs, state או לוגיקה.
+- `UI-016` נוספה כמשימה ה־63 והועברה ל־`IN_PROGRESS`; שער המימוש נפתח ל־`READY`.
 
 ### 2026-07-22 — UI-015 final signature completed in Production
 
