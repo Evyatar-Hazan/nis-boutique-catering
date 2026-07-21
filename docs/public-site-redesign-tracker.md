@@ -1,11 +1,11 @@
 ---
 title: NIS Public Site Redesign Tracker
-status: completed
+status: active
 owner: Evyatar Hazan
 created: 2026-07-20
 updated: 2026-07-22
 source_of_truth: true
-implementation_gate: closed
+implementation_gate: ready
 ---
 
 # NIS Public Site Redesign — Source of Truth and Execution Tracker
@@ -35,9 +35,9 @@ implementation_gate: closed
 
 ## שער מימוש גלובלי
 
-**סטטוס נוכחי: `COMPLETED`**
+**סטטוס נוכחי: `READY`**
 
-כל 61 המשימות הושלמו ואומתו בפרודקשן. `UI-014` סגרה את אזור FAQ/יצירת הקשר כפרק Editorial Concierge; שער המימוש סגור ואין משימה פתוחה במסמך.
+כל 61 המשימות הקודמות הושלמו ואומתו בפרודקשן. `UI-015` פתוחה כעת לשיפור ממוקד של ה־Footer בלבד; שער המימוש פתוח עד השלמת local, ‏CI/deploy ואימות Production.
 
 תוכנית השרת/קליינט, בניית מסך האדמין מחדש והמעבר מ־Google Sheets/Drive ל־Cloudflare D1/R2 נוספו למסמך ב־2026-07-20. שער המימוש נפתח לאחר השלמת:
 
@@ -1313,6 +1313,23 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - **Local implementation evidence (2026-07-22):** החלק יושם ב־CSS ממוקד בלבד, ללא שינוי ב־`ContactSection`, ב־DOM, בתוכן או בלוגיקה. ב־1440×1000 הפרק מוצג כמשטח נייר חם בגובה 1,385.05px עם heading מפוצל, FAQ ממוספר ‏491.67×548.8px וטופס ink ‏688.33×555.39px באותה שורה; ארבעת ה־FAQ וששת השדות נשמרו ו־overflow נשאר 0. ב־768×1024 הם נערמים ל־728×592px ואחריו טופס ‏728×647px; ב־375×812 נשמרו 4 FAQ, ‏6 fields ויעדי מגע בגובה 52–100px, ללא overflow. פתיחת FAQ החזירה `aria-expanded`, validation ריק הציג את שלוש שגיאות החובה והעביר focus ל־`name`; WhatsApp/phone/email נשארו עם אותם hrefs וה־console נקי. ב־`prefers-reduced-motion` כל ארבעת motion surfaces מחזירים `animation-name: none`, ‏`opacity: 1` ו־`transform: none`. ‏targeted Contact tests ‏3/3, כל 142 הבדיקות, tracker/architecture/design-token/motion/security/runbook checks, ‏lint, type-check, builds, ‏full `pnpm validate`, ‏`parity:local` ו־`git diff --check` עברו; `UI-014` עברה ל־`VERIFYING` עד CI/deploy ואימות Production.
 - **Production evidence (2026-07-22):** commit `c1c79d4` עבר CI ‏`29876222733` ו־Cloudflare deploy ‏`29876222753`; deployments ‏`a2063402` לציבורי ו־`910b400f` ל־Studio הושלמו, והדומיין הקנוני מגיש את bundle ‏`index-BCA1IZEp.css`. Production ב־1440×1000 החזיר section ‏1,385.03px, heading ‏69.12px, FAQ ‏491.67×547.8px וטופס ‏688.33×555.39px באותה שורה; ב־768×1024 וב־375×812 ה־stack נשמר עם section ‏2,085.67/2,198.91px, ארבעה FAQ, שישה fields, יעדי מגע ‏52–100px ו־0 overflow. Accordion החזיר `expanded`, validation העביר focus ל־`name`, ‏reduced-motion החזיר `animation: none`, ‏`opacity: 1` ו־`transform: none`, וה־console נקי. public, Studio, health ו־published החזירו `200`; `UI-014`, ‏Phase 18 וכל 61 המשימות נסגרו `DONE` והשער נסגר.
 
+### Phase 19 — Footer art direction
+
+#### UI-015 — Turn the footer into a final brand signature
+
+- **Status:** `VERIFYING`
+- **Dependencies:** `UI-014`, `UI-003`.
+- **Definition:** לשפר את ה־Footer בלבד ולהפוך אותו לסיום מובחן ומרשים של מסלול ה־scrollytelling באמצעות “Final Signature”, ללא שינוי hierarchy, content, hrefs, version, creator credit, component API, state, navigation או section אחר.
+- **Acceptance criteria:**
+  - `Footer`, ה־DOM, חתימת המותג, tagline, version, creator credit וארבעת הקישורים נשארים באותו סדר סמנטי ועם אותם hrefs ו־targets.
+  - Desktop מציג סיום ink עמוק עם חתימת `Nis` גדולה, label מסכם, אינדקס קשר ממוספר וקומפוזיציית 12 עמודות שממשיכה את שפת פרקים 01–06.
+  - Tablet/mobile מציגים stack קריא ללא חפיפה עם ה־mobile sticky CTA; כל ארבעת קישורי ה־Footer מקבלים target בגובה 44px לפחות.
+  - כניסת ה־Footer משתמשת ב־named view timeline אחד לצורך orientation/closure בלבד ומניעה signature/links באמצעות transform/opacity; hover מוגבל למכשירי pointer מדויק ואינו נדרש להבנת הקישור.
+  - אין dependency, scroll listener, hijacking, animation אינסופית, layout animation, `transition: all`, raw colors חדשים, overflow אופקי או שגיאות console; `prefers-reduced-motion` משאיר הכול גלוי וסטטי.
+- **Verification:** `pnpm tracker:check`, ‏`design:tokens:check`, ‏`motion:check`, SiteChrome tests, tests/type-check/lint/build/full `pnpm validate`, ‏`parity:local`, ‏`git diff --check`; בדפדפן ב־1440×1000, ‏768×1024 ו־375×812 למדוד footer/grid/signature/links/targets/overflow/console ולבדוק את ארבעת hrefs, focus ו־reduced-motion; לאחר push — CI/deploy ואימות public/Studio/health/published בפרודקשן.
+- **Evidence (2026-07-22):** baseline לוקאלי ב־1440×1000 הציג Footer כפס גנרי בגובה 196.5px, brand ‏198.21×127.5px וקישורים בשורה ‏496.84×21px. ב־375×812 ה־Footer בגובה 437.5px אך ארבעת targets בגובה 21/21/21/16px בלבד; ה־DOM, ארבעת hrefs ו־0 overflow תקינים. נבחר “Final Signature”: סיום ink עמוק, חתימת מותג גדולה ואינדקס קשר ממוספר, עם view timeline יחיד ועדין. הקבצים המתוכננים לשינוי הם `theme.css`, ‏`base.css`, קובץ המעקב ובדיקת מספר המשימות בלבד; `UI-015` הועברה ל־`IN_PROGRESS` והשער נפתח ל־`READY`.
+- **Local implementation evidence (2026-07-22):** ה־Footer יושם כ־“Final Signature” ב־CSS בלבד, ללא שינוי ב־`Footer`, ב־DOM, בתוכן או ב־hrefs. ב־1440×1000 גובהו 633.59px, grid ‏1180×432px, חתימת `Nis` בגודל 216px ושתי העמודות מיושרות באותה שורה; ארבעת הקישורים הם ‏491.66×88px ו־overflow נשאר 0. ב־768×1024 ה־Footer נערם לגובה 965.24px עם targets של 88px; ב־375×812 גובהו 870.44px, חתימה 116.25px, ארבעה targets ‏347×72px ו־creator credit בגובה 44px, ללא חפיפה עם ה־sticky CTA וללא overflow. ה־timeline מתקדם בפועל: כשה־Footer נכנס ב־842px signature/links הם opacity ‏0.41/0.38 עם transforms ‏32.93px/−27.72px, ב־500px הם ‏0.92/0.78, ובסיום הם 1/0.94. reduced-motion מחזיר לכל surfaces ‏`animation: none`, ‏`opacity: 1` ו־`transform: none`; ניווט Tab מחזיר `:focus-visible` ו־shadow ring, ארבעת hrefs נשמרו וה־console נקי. SiteChrome tests ‏2/2, כל 142 הבדיקות, tracker/architecture/design-token/motion/security/runbook checks, ‏lint, type-check, builds, ‏full `pnpm validate`, ‏`parity:local` ו־`git diff --check` עברו; `UI-015` עברה ל־`VERIFYING` עד CI/deploy ואימות Production.
+
 ## Open decisions before implementation
 
 | ID | Decision | Status | Blocks |
@@ -1378,8 +1395,21 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 | Phase 16 — Trust art direction | Done | 1 | 1 |
 | Phase 17 — Trust desktop refinement | Done | 1 | 1 |
 | Phase 18 — Contact art direction | Done | 1 | 1 |
+| Phase 19 — Footer art direction | Verifying | 0 | 1 |
 
 ## Change Log
+
+### 2026-07-22 — UI-015 final signature verified locally
+
+- ה־Footer הפך לסיום Final Signature ב־CSS בלבד: חתימת `Nis` גדולה, אינדקס קשר 01–04 ו־view timeline יחיד ועדין.
+- desktop, tablet ו־mobile אומתו ללא overflow; targets גדלו ל־72–88px, focus ו־reduced-motion תקינים וכל התוכן וה־hrefs נשמרו.
+- כל 142 הבדיקות, full validation ו־local parity עברו; `UI-015` הועברה ל־`VERIFYING` עד CI/deploy ואימות Production.
+
+### 2026-07-22 — UI-015 final signature started
+
+- החלק היחיד שנבחר לשיפור הוא ה־Footer; ה־baseline תקין פונקציונלית אך גנרי, ובמובייל targets של הקישורים הם 16–21px בלבד.
+- נבחר “Final Signature”: חתימת `Nis` גדולה, אינדקס קשר ממוספר וסיום ink שממשיך את שפת הפרקים, ללא שינוי DOM, תוכן או hrefs.
+- `UI-015` נוספה כמשימה ה־62 והועברה ל־`IN_PROGRESS`; שער המימוש נפתח ל־`READY`.
 
 ### 2026-07-22 — UI-014 editorial concierge completed
 

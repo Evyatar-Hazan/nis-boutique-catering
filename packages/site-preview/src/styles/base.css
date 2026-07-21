@@ -415,6 +415,42 @@
   }
 }
 
+@keyframes footer-signature-arrive {
+  from {
+    opacity: 0.18;
+    transform: translate3d(0, 46px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes footer-links-arrive {
+  from {
+    opacity: 0.24;
+    transform: translate3d(-34px, 0, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes footer-meta-arrive {
+  from {
+    opacity: 0.32;
+    transform: translate3d(0, 18px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
 @supports (animation-timeline: view()) {
   .scroll-motion-ready .scroll-scene--hero {
     view-timeline-name: --hero-scene;
@@ -448,6 +484,11 @@
 
   .scroll-motion-ready .contact-faq .accordion__item {
     view-timeline-name: --contact-faq-item;
+    view-timeline-axis: block;
+  }
+
+  .scroll-motion-ready .site-footer {
+    view-timeline-name: --footer-scene;
     view-timeline-axis: block;
   }
 
@@ -642,6 +683,33 @@
     animation-timing-function: linear;
     animation-timeline: --contact-scene;
     animation-range: entry 8% cover 34%;
+  }
+
+  .scroll-motion-ready .site-footer .footer-brand strong,
+  .scroll-motion-ready .site-footer .footer-links,
+  .scroll-motion-ready .site-footer .footer-brand p,
+  .scroll-motion-ready .site-footer .footer-version,
+  .scroll-motion-ready .site-footer .creator-credit {
+    animation-fill-mode: both;
+    animation-timing-function: linear;
+    animation-timeline: --footer-scene;
+  }
+
+  .scroll-motion-ready .site-footer .footer-brand strong {
+    animation-name: footer-signature-arrive;
+    animation-range: entry 0% cover 34%;
+  }
+
+  .scroll-motion-ready .site-footer .footer-links {
+    animation-name: footer-links-arrive;
+    animation-range: entry 6% cover 42%;
+  }
+
+  .scroll-motion-ready .site-footer .footer-brand p,
+  .scroll-motion-ready .site-footer .footer-version,
+  .scroll-motion-ready .site-footer .creator-credit {
+    animation-name: footer-meta-arrive;
+    animation-range: entry 14% cover 50%;
   }
 }
 
@@ -3322,7 +3390,12 @@ details p {
   .scroll-motion-ready img.trust-media,
   .scroll-motion-ready .trust-point::before,
   .scroll-motion-ready .trust-point .card-icon,
-  .scroll-motion-ready .trust-point > div {
+  .scroll-motion-ready .trust-point > div,
+  .scroll-motion-ready .site-footer .footer-brand strong,
+  .scroll-motion-ready .site-footer .footer-links,
+  .scroll-motion-ready .site-footer .footer-brand p,
+  .scroll-motion-ready .site-footer .footer-version,
+  .scroll-motion-ready .site-footer .creator-credit {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;
