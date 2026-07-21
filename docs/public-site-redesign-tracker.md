@@ -1,11 +1,11 @@
 ---
 title: NIS Public Site Redesign Tracker
-status: active
+status: completed
 owner: Evyatar Hazan
 created: 2026-07-20
 updated: 2026-07-22
 source_of_truth: true
-implementation_gate: ready
+implementation_gate: closed
 ---
 
 # NIS Public Site Redesign — Source of Truth and Execution Tracker
@@ -35,9 +35,9 @@ implementation_gate: ready
 
 ## שער מימוש גלובלי
 
-**סטטוס נוכחי: `READY`**
+**סטטוס נוכחי: `COMPLETED`**
 
-57 המשימות הקודמות הושלמו ואומתו בפרודקשן. `UI-011` פתוחה כעת לשיפור ממוקד של `#process` בלבד; שער המימוש פתוח עד השלמת בדיקות local, ‏CI/deploy ואימות Production.
+כל 58 המשימות, כולל מסלול ההזמנה העריכתי והגלילה המקומית ב־`UI-011`, הושלמו ואומתו בפרודקשן. שער המימוש סגור; שינוי נוסף מחייב משימה חדשה ופתיחה מפורשת מחדש.
 
 תוכנית השרת/קליינט, בניית מסך האדמין מחדש והמעבר מ־Google Sheets/Drive ל־Cloudflare D1/R2 נוספו למסמך ב־2026-07-20. שער המימוש נפתח לאחר השלמת:
 
@@ -1240,7 +1240,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### UI-011 — Turn the order process into a scroll-led editorial journey
 
-- **Status:** `VERIFYING`
+- **Status:** `DONE`
 - **Dependencies:** `UI-010`, `UI-006`.
 - **Definition:** לשפר את `#process` בלבד ולהפוך את ארבעת שלבי ההזמנה ממערך כרטיסים גנרי למסלול editorial ברור שמתקדם עם הגלילה, תוך המשך ישיר של שפת ה־Hero, השירותים והגלריה — ללא שינוי תוכן, סדר, hierarchy, component API, state, לוגיקה או סקשן אחר.
 - **Acceptance criteria:**
@@ -1253,6 +1253,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - **Verification:** `pnpm tracker:check`, ‏`pnpm design:tokens:check`, ‏`pnpm motion:check`, tests/type-check/lint/build/full `pnpm validate`, ‏`parity:local`; בדפדפן בשלושת ה־breakpoints: DOM/order, heading/steps/notes, overflow, console, computed timelines בכמה נקודות גלילה ו־reduced-motion; לאחר push — CI/deploy ואימות public/Studio/health/published בפרודקשן.
 - **Evidence (2026-07-22):** קובץ המעקב, `ProcessSection`, ה־CSS והבדיקות נקראו מחדש. baseline לוקאלי ב־1440×1000 אישר ארבעה cards אחידים בשורה עם rail אופקי דק ושלוש הערות, ללא שגיאה פונקציונלית אך גם ללא המשך לעומק העריכתי והאסימטריה של ה־Hero והגלריה. נבחר כיוון “Editorial Order Journey”: פרק בהיר עם watermark ‏04, כותרת גדולה, מסלול מדורג וקצב גלילה מקומי לכל שלב, תוך שמירה מלאה על ה־DOM והתוכן. `UI-011` הועברה ל־`IN_PROGRESS` ושער המימוש נפתח ל־`READY`.
 - **Local implementation evidence (2026-07-22):** `#process` עוצב מחדש ב־CSS בלבד כ־“Editorial Order Journey”: watermark ‏04, כותרת 104/84/54px, מסלול מרכזי מדורג בדסקטופ ומסלול אנכי ב־tablet/mobile. `ProcessSection`, ה־DOM, ארבעת השלבים, שלוש ההערות, התוכן, icons, props, state וה־data source לא השתנו. לכל step הוגדר named view timeline מקומי `--process-step` שמניע בנפרד number/icon/title/body, בעוד `--process-scene` ממשיך את rail; מדידה חיה הראתה מעבר הדרגתי של step 4 ל־opacity ‏0.75/0.56/0.59 עבור number/icon/title. בדיקות Playwright ב־1440×1000, ‏768×1024 ו־375×812 אישרו 4 steps, ‏3 notes, ‏0 overflow, ‏0 broken media ו־0 console warnings/errors; reduced-motion החזיר `animation: none`, ‏opacity ‏1 ו־transform ‏none לכל ארבע השכבות. כל 142 הבדיקות, `tracker:check`, ‏`design:tokens:check`, ‏`motion:check`, lint, type-check, builds, full `pnpm validate`, ‏`parity:local` ו־`git diff --check` עברו. צילומי מסך: `output/playwright/ui-011-process-1440-heading.png`, ‏`output/playwright/ui-011-process-768-heading.png`, ‏`output/playwright/ui-011-process-375-heading.png`. `UI-011` עברה ל־`VERIFYING` עד push, CI/deploy ואימות Production.
+- **Production evidence (2026-07-22):** commit `bd08b43` עבר CI ‏`29873057170` ו־Cloudflare deploy ‏`29873057166`; deployment ‏`cdfcd079` והדומיין הקנוני מגישים את bundle ‏`index-B5Ep9BAf.css`. Production ב־1440×1000, ‏768×1024 ו־375×812 אישר כותרת 104/84/54px, ארבעה steps בסדר המאושר, שלוש notes, ‏0 overflow, ‏0 broken media ו־0 console warnings/errors. number/icon/title/body של step 4 צרכו `--process-step` והציגו opacity/transform משתנים בכל breakpoint; reduced-motion החזיר `animation: none`, ‏opacity ‏1 ו־transform ‏none. תשעה קישורי WhatsApp, קישור ניווט יחיד ל־`#process` וכפתור שליחת הטופס נשארו זמינים. public, Studio, health ו־published החזירו `200`; `UI-011` וכל 58 המשימות נסגרו `DONE` ושער המימוש נסגר.
 
 ## Open decisions before implementation
 
@@ -1315,9 +1316,15 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 | Phase 12 — Services art direction | Done | 1 | 1 |
 | Phase 13 — Gallery art direction | Done | 1 | 1 |
 | Phase 14 — Gallery motion refinement | Done | 1 | 1 |
-| Phase 15 — Process art direction | Verifying | 0 | 1 |
+| Phase 15 — Process art direction | Done | 1 | 1 |
 
 ## Change Log
+
+### 2026-07-22 — UI-011 editorial order journey completed
+
+- `#process` מציג כעת מסלול הזמנה עריכתי מדורג עם פרק 04, rail מתקדם ו־view timeline עצמאי לכל שלב, ללא שינוי DOM, תוכן או לוגיקה.
+- commit `bd08b43`, ‏CI `29873057170` ו־deploy `29873057166` עברו; Production אומת בשלושה breakpoints כולל תנועה מדודה, reduced-motion, controls ו־console נקי.
+- `UI-011`, ‏Phase 15 וכל 58 המשימות סומנו `DONE`; שער המימוש נסגר.
 
 ### 2026-07-22 — UI-011 process art direction started
 
