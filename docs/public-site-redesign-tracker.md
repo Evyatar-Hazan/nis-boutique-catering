@@ -1,11 +1,11 @@
 ---
 title: NIS Public Site Redesign Tracker
-status: in_progress
+status: completed
 owner: Evyatar Hazan
 created: 2026-07-20
 updated: 2026-07-22
 source_of_truth: true
-implementation_gate: ready
+implementation_gate: closed
 ---
 
 # NIS Public Site Redesign — Source of Truth and Execution Tracker
@@ -35,9 +35,9 @@ implementation_gate: ready
 
 ## שער מימוש גלובלי
 
-**סטטוס נוכחי: `READY`**
+**סטטוס נוכחי: `COMPLETED`**
 
-63 משימות הושלמו ואומתו בפרודקשן. `UI-017` נמצאת כעת בביצוע כדי להוסיף ל־Navbar סימון ציבורי ברור ועדין שהאתר נמצא בהרצה; שער המימוש פתוח למשימה זו בלבד.
+כל 64 המשימות הושלמו ואומתו בפרודקשן. `UI-017` הוסיפה ל־Navbar סימון ציבורי ברור ועדין שהאתר נמצא בהרצה; שער המימוש סגור ואין משימה פתוחה במסמך.
 
 תוכנית השרת/קליינט, בניית מסך האדמין מחדש והמעבר מ־Google Sheets/Drive ל־Cloudflare D1/R2 נוספו למסמך ב־2026-07-20. שער המימוש נפתח לאחר השלמת:
 
@@ -1355,7 +1355,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### UI-017 — Mark the public site as currently in rollout
 
-- **Status:** `VERIFYING`
+- **Status:** `DONE`
 - **Dependencies:** `UI-016`.
 - **Definition:** להוסיף ל־Navbar בלבד תווית ציבורית קבועה `האתר בהרצה`, כדי שלקוחות שכבר צופים באתר יבינו שהוא פעיל אך עדיין בתהליך הרצה, בלי ליצור banner אזהרה, לפגוע באמון או לשנות ניווט, CTA, תוכן עסקי או layout של section אחר.
 - **Acceptance criteria:**
@@ -1366,6 +1366,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - **Verification:** tracker/design-token/motion/architecture checks, ‏SiteChrome tests, ‏lint/type-check/build/full validation, ‏local parity ו־`git diff --check`; בדפדפן ב־1440×1000, ‏768×1024 ו־375×812 לבדוק נראות הטקסט, header/logo/nav/CTA/menu, ‏0 overflow ו־console נקי; לאחר push — CI/deploy ואימות public/Studio/health/published בפרודקשן.
 - **Evidence (2026-07-22):** האתר החי מציג Editorial Masthead תקין אך אינו חושף ללקוחות שהאתר עדיין בהרצה. נבחרה תווית סטטוס קומפקטית בתוך brand lockup, ולא banner או modal, כדי להעביר את המידע מיד בלי להפריע למסלול ההזמנה. הקבצים המתוכננים לשינוי הם `SiteChrome.tsx`, בדיקת `SiteChrome`, ‏`theme.css`, קובץ המעקב ובדיקת מספר המשימות בלבד; `UI-017` הועברה ל־`IN_PROGRESS` והשער נפתח ל־`READY`.
 - **Local implementation evidence (2026-07-22):** `Topbar` מציג כעת פעם אחת `האתר בהרצה` בתוך אזור המותג, עם accessible name מעודכן, נקודת זהב סטטית ו־styles מתוך token contract בלבד. ב־1440×1000 התווית ‏88.25×24px בתוך header קיים בגובה 89px; ב־768×1024 היא נשארת ‏88.25×24px; וב־375×812 היא ‏78.58×21.59px בתוך header בגובה 75px. בשלושת הגדלים נמדדו 0 overflow ו־0 console warnings/errors, והלוגו, ה־CTA, כפתור התפריט והניווט אינם חופפים. במובייל התפריט נשאר ‏347×282px, focus עובר לקישור הראשון ו־Escape סוגר ומחזיר focus. בדיקת `SiteChrome` הממוקדת, כל 143 הבדיקות, tracker/architecture/design-token/motion/security/runbook checks, ‏lint, type-check, builds, ‏full validation, ‏local parity ו־`git diff --check` עברו; `UI-017` עברה ל־`VERIFYING` עד CI/deploy ואימות Production.
+- **Production evidence (2026-07-22):** commit `768c732` עבר CI/deploy ‏`29893174849`/`29893174856`; deployments ‏`a93cad34` לאתר הציבורי ו־`47814b98` ל־Studio, וה־bundle הציבורי החי הוא `index-DDMBT9PJ.css`. בדומיין הראשי `האתר בהרצה` מופיע פעם אחת ונגיש בשם המותג. Production ב־1440×1000 וב־768×1024 אישר תווית ‏88.25×24px ו־headers בגובה 89px; ב־375×812 התווית ‏78.58×21.59px בתוך header בגובה 75px. בשלושת ה־viewports נמדדו 0 overflow ו־0 console warnings/errors; במובייל תפריט ‏347×282px, focus לקישור הראשון ו־Escape→focus תקינים. public, Studio, health ו־published החזירו `200`; `UI-017`, ‏Phase 21 וכל 64 המשימות נסגרו `DONE`.
 
 ## Open decisions before implementation
 
@@ -1434,9 +1435,15 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 | Phase 18 — Contact art direction | Done | 1 | 1 |
 | Phase 19 — Footer art direction | Done | 1 | 1 |
 | Phase 20 — Navbar art direction | Done | 1 | 1 |
-| Phase 21 — Public rollout status | In progress | 0 | 1 |
+| Phase 21 — Public rollout status | Done | 1 | 1 |
 
 ## Change Log
+
+### 2026-07-22 — UI-017 public rollout status completed in Production
+
+- commit `768c732`, ‏CI `29893174849`, deploy `29893174856`, deployments ‏`a93cad34`/`47814b98` ו־bundle חי `index-DDMBT9PJ.css` אומתו.
+- Production בדסקטופ, טאבלט ומובייל אישר תווית `האתר בהרצה` אחת ונגישה, ללא חפיפה, overflow או console errors; menu/focus/Escape נשארו תקינים.
+- `UI-017` נסגרה כ־`DONE`, ‏Phase 21 הושלמה 1/1, שער המימוש נסגר וכל 64 המשימות במסמך הושלמו.
 
 ### 2026-07-22 — UI-017 public rollout status started
 
