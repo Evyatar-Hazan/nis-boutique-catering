@@ -71,6 +71,7 @@
   font-family: var(--font-display);
   font-size: clamp(2.75rem, 8vw, 5.5rem);
   line-height: 1;
+  overflow-wrap: anywhere;
 }
 
 .accessibility-lead {
