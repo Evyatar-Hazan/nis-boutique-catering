@@ -1,11 +1,11 @@
 ---
 title: NIS Public Site Redesign Tracker
-status: active
+status: completed
 owner: Evyatar Hazan
 created: 2026-07-20
 updated: 2026-07-22
 source_of_truth: true
-implementation_gate: ready
+implementation_gate: closed
 ---
 
 # NIS Public Site Redesign — Source of Truth and Execution Tracker
@@ -35,9 +35,9 @@ implementation_gate: ready
 
 ## שער מימוש גלובלי
 
-**סטטוס נוכחי: `READY`**
+**סטטוס נוכחי: `COMPLETED`**
 
-כל 62 המשימות הקודמות הושלמו ואומתו בפרודקשן. `UI-016` פתוחה כעת לשיפור ממוקד של ה־Navbar העליון בלבד; שער המימוש פתוח עד השלמת local, ‏CI/deploy ואימות Production.
+כל 63 המשימות הושלמו ואומתו בפרודקשן. `UI-016` סגרה את השיפור הממוקד של ה־Navbar העליון; שער המימוש סגור ואין משימה פתוחה במסמך.
 
 תוכנית השרת/קליינט, בניית מסך האדמין מחדש והמעבר מ־Google Sheets/Drive ל־Cloudflare D1/R2 נוספו למסמך ב־2026-07-20. שער המימוש נפתח לאחר השלמת:
 
@@ -1335,7 +1335,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### UI-016 — Turn the top navigation into an editorial masthead
 
-- **Status:** `VERIFYING`
+- **Status:** `DONE`
 - **Dependencies:** `UI-015`, `UI-003`.
 - **Definition:** לשפר את ה־Navbar העליון בלבד ולהפוך אותו ל־“Editorial Masthead” שמחבר את ה־Hero ואת שפת הפרקים החדשה, ללא שינוי ב־`Topbar`, ב־DOM, בארבעת פריטי הניווט, ב־hrefs, ב־active-section state, ב־WhatsApp CTA או בלוגיקת mobile menu/focus/Escape.
 - **Acceptance criteria:**
@@ -1349,6 +1349,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - **Local implementation evidence (2026-07-22):** ה־Navbar יושם כ־“Editorial Masthead” ב־CSS ממוקד בלבד, ללא שינוי ב־`Topbar`, ב־DOM, ב־props, ב־state, בארבעת ה־hrefs או בלוגיקת menu/focus/Escape. ב־1440×1000 נשמר גובה 89px ללא layout jump בין top ל־scrolled; הלוגו ‏244.8×64px, הניווט ‏887.2×50px, ארבעת links בגובה 48px וה־CTA ‏148×48px. ב־768×1024 וב־375×812 נשמרו headers בגובה 89/75px; תפריט ink נפתח ל־721.94×290px ול־347×282px עם targets של 64/62px, ללא clipping או overflow. המספור 01–04, active state, open/select/Escape, focus חזרה לכפתור ו־WhatsApp CTA אומתו; reduced-motion מבטל את transitions הייעודיים וה־console נקי. SiteChrome tests ‏2/2, כל 142 הבדיקות, tracker/architecture/design-token/motion/security/runbook checks, ‏lint, type-check, builds, ‏full `pnpm validate`, ‏`parity:local` ו־`git diff --check` עברו; `UI-016` עברה ל־`VERIFYING` עד CI/deploy ואימות Production.
 - **Production verification finding (2026-07-22):** CI `29878404426` ו־deploy `29878404424` עברו וה־bundle `index-B6xWB6M4.css` עלה, אך בדיקת browser חיה גילתה שה־active link אינו מתעדכן כאשר `useScrollState` אוסף את IDs לפני ש־`LazySiteSections` סיימו להיטען. הבעיה קיימת בלוגיקת הניווט הקודמת ונחשפה כעת; `UI-016` הוחזרה ל־`IN_PROGRESS` לתיקון ממוקד בתוך hook הקיים ולבדיקת regression, ללא listener חדש או שינוי ב־DOM/API.
 - **Active-state fix evidence (2026-07-22):** `useScrollState` שומר את אותו scroll listener ו־requestAnimationFrame, אך פותר כעת את חמשת section elements בתוך העדכון במקום לשמור snapshot מוקדם; כך sections שנטענו ב־lazy משתתפים ב־active state מיד בגלילה. נוסף test ממוקד שמוכיח מעבר מ־`#top` ל־`#gallery` לאחר הוספת sections מאוחרת. הבדיקות הממוקדות עברו 3/3, browser לוקאלי ללא click סימן `#gallery` כ־`is-active`, כל 143 הבדיקות, full `pnpm validate`, ‏`parity:local` ו־`git diff --check` עברו; המשימה חזרה ל־`VERIFYING` עד deploy ואימות Production חוזר.
+- **Production evidence (2026-07-22):** מימוש ה־masthead ב־commit `1b46f8f` עבר CI/deploy ‏`29878404426`/`29878404424`; תיקון ה־active state ב־commit `303e670` עבר CI/deploy ‏`29878706274`/`29878706254`, עם deployments ‏`1f3393c1` לציבורי ו־`d97370be` ל־Studio ו־bundles חיים `index-B6xWB6M4.css`/`index-PMdlQnS_.js`. Production ב־1440×1000 אישר header קבוע בגובה 89px, ניווט ‏887.2×50px, CTA ‏148×48px, מספור 01–04 ו־`#gallery` פעיל לאחר גלילה; ב־768×1024 וב־375×812 התפריטים ‏721.94×290px ו־347×282px עם targets של 64/62px. בכל שלושת ה־viewports נמדדו 0 overflow ו־0 console errors/warnings; open/focus/Escape, active state וארבעת hrefs תקינים, ו־reduced-motion מחזיר transition של 0.01ms. public, Studio, health ו־published החזירו `200`; `UI-016`, ‏Phase 20 וכל 63 המשימות נסגרו `DONE`.
 
 ## Open decisions before implementation
 
@@ -1416,9 +1417,15 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 | Phase 17 — Trust desktop refinement | Done | 1 | 1 |
 | Phase 18 — Contact art direction | Done | 1 | 1 |
 | Phase 19 — Footer art direction | Done | 1 | 1 |
-| Phase 20 — Navbar art direction | Verifying | 0 | 1 |
+| Phase 20 — Navbar art direction | Done | 1 | 1 |
 
 ## Change Log
+
+### 2026-07-22 — UI-016 editorial masthead completed in Production
+
+- commits `1b46f8f`/`303e670`, ‏CI `29878706274`, deploy `29878706254`, deployments ‏`1f3393c1`/`d97370be` ו־bundles החיים `index-B6xWB6M4.css`/`index-PMdlQnS_.js` אומתו.
+- Production בדסקטופ, טאבלט ומובייל אישר masthead ומספור, targets של 48–64px, active state תקין ל־lazy sections, open/focus/Escape/reduced-motion, ‏0 overflow ו־console נקי.
+- `UI-016` נסגרה כ־`DONE`, ‏Phase 20 הושלמה 1/1, שער המימוש נסגר וכל 63 המשימות במסמך הושלמו.
 
 ### 2026-07-22 — UI-016 active-state gap fixed locally
 
