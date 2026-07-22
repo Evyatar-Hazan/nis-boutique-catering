@@ -9,6 +9,7 @@ import { SectionSkeleton } from './components/SectionSkeleton';
 import { FloatingActions, Footer, LightboxDialog, Topbar } from './components/SiteChrome';
 import { email, galleryImages, sectionIds, siteMicrocopy, siteVersion, type GalleryCategory } from './data/siteContent';
 import { defaultSiteSectionPreviewData } from './data/sitePreviewData';
+import { PaletteLab } from './features/palette-lab/PaletteLab';
 import { usePointerGlow } from './hooks/usePointerGlow';
 import { useRevealOnScroll } from './hooks/useRevealOnScroll';
 import { useScrollState } from './hooks/useScrollState';
@@ -108,6 +109,7 @@ function App() {
 
       <Footer email={email} footerWhatsapp={footerWhatsapp} version={siteVersion} />
       <FloatingActions floatingWhatsapp={floatingWhatsapp} />
+      <PaletteLab />
       <LightboxDialog
         image={selectedImage}
         imageCount={filteredGalleryImages.length}

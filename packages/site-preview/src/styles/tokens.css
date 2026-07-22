@@ -176,3 +176,287 @@
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --lift-ease: cubic-bezier(0.19, 1, 0.22, 1);
 }
+
+/*
+ * Temporary Palette Lab
+ * ---------------------
+ * Each option defines only its authored color ingredients. The shared mapping
+ * below feeds the existing primitive and semantic contracts, so every section
+ * changes together without component-level theme branches.
+ */
+:root[data-palette='olive-linen'] {
+  --palette-lab-dark-1: #172018;
+  --palette-lab-dark-2: #202a21;
+  --palette-lab-dark-3: #2d382d;
+  --palette-lab-light-1: #fffdf5;
+  --palette-lab-light-2: #f3ecd9;
+  --palette-lab-light-3: #dfd2b8;
+  --palette-lab-brand: #825034;
+  --palette-lab-premium: #c7a35d;
+  --palette-lab-premium-dark: #80611f;
+  --palette-lab-secondary: #466049;
+  --palette-lab-secondary-soft: #dbe5d8;
+  --palette-lab-text: #20251f;
+  --palette-lab-muted: #62655c;
+  --palette-lab-focus: #72561b;
+  --palette-lab-danger: #963333;
+  --palette-lab-success: #356444;
+  --palette-lab-dark-1-rgb: 23 32 24;
+  --palette-lab-dark-2-rgb: 32 42 33;
+  --palette-lab-dark-3-rgb: 45 56 45;
+  --palette-lab-light-1-rgb: 255 253 245;
+  --palette-lab-light-2-rgb: 243 236 217;
+  --palette-lab-light-3-rgb: 223 210 184;
+  --palette-lab-brand-rgb: 130 80 52;
+  --palette-lab-premium-rgb: 199 163 93;
+  --palette-lab-secondary-rgb: 70 96 73;
+  --palette-lab-secondary-soft-rgb: 219 229 216;
+  --palette-lab-text-rgb: 32 37 31;
+}
+
+:root[data-palette='bordeaux-terracotta'] {
+  --palette-lab-dark-1: #250f17;
+  --palette-lab-dark-2: #341620;
+  --palette-lab-dark-3: #4b2528;
+  --palette-lab-light-1: #fffaf4;
+  --palette-lab-light-2: #f4e5d8;
+  --palette-lab-light-3: #e3c7b5;
+  --palette-lab-brand: #8e3544;
+  --palette-lab-premium: #d29a62;
+  --palette-lab-premium-dark: #7a541d;
+  --palette-lab-secondary: #5d684f;
+  --palette-lab-secondary-soft: #e2e1ce;
+  --palette-lab-text: #2c1719;
+  --palette-lab-muted: #6c5c58;
+  --palette-lab-focus: #79551a;
+  --palette-lab-danger: #982f3a;
+  --palette-lab-success: #49623c;
+  --palette-lab-dark-1-rgb: 37 15 23;
+  --palette-lab-dark-2-rgb: 52 22 32;
+  --palette-lab-dark-3-rgb: 75 37 40;
+  --palette-lab-light-1-rgb: 255 250 244;
+  --palette-lab-light-2-rgb: 244 229 216;
+  --palette-lab-light-3-rgb: 227 199 181;
+  --palette-lab-brand-rgb: 142 53 68;
+  --palette-lab-premium-rgb: 210 154 98;
+  --palette-lab-secondary-rgb: 93 104 79;
+  --palette-lab-secondary-soft-rgb: 226 225 206;
+  --palette-lab-text-rgb: 44 23 25;
+}
+
+:root[data-palette='midnight-copper'] {
+  --palette-lab-dark-1: #0d1720;
+  --palette-lab-dark-2: #142532;
+  --palette-lab-dark-3: #223846;
+  --palette-lab-light-1: #fffaf1;
+  --palette-lab-light-2: #eee6d8;
+  --palette-lab-light-3: #d9c9b7;
+  --palette-lab-brand: #96503b;
+  --palette-lab-premium: #d09a62;
+  --palette-lab-premium-dark: #76501b;
+  --palette-lab-secondary: #46665f;
+  --palette-lab-secondary-soft: #d8e4df;
+  --palette-lab-text: #17242b;
+  --palette-lab-muted: #5e6668;
+  --palette-lab-focus: #76531c;
+  --palette-lab-danger: #96363a;
+  --palette-lab-success: #356457;
+  --palette-lab-dark-1-rgb: 13 23 32;
+  --palette-lab-dark-2-rgb: 20 37 50;
+  --palette-lab-dark-3-rgb: 34 56 70;
+  --palette-lab-light-1-rgb: 255 250 241;
+  --palette-lab-light-2-rgb: 238 230 216;
+  --palette-lab-light-3-rgb: 217 201 183;
+  --palette-lab-brand-rgb: 150 80 59;
+  --palette-lab-premium-rgb: 208 154 98;
+  --palette-lab-secondary-rgb: 70 102 95;
+  --palette-lab-secondary-soft-rgb: 216 228 223;
+  --palette-lab-text-rgb: 23 36 43;
+}
+
+:root[data-palette='forest-butter'] {
+  --palette-lab-dark-1: #10221b;
+  --palette-lab-dark-2: #183128;
+  --palette-lab-dark-3: #274438;
+  --palette-lab-light-1: #fffced;
+  --palette-lab-light-2: #f5edc9;
+  --palette-lab-light-3: #dfd39c;
+  --palette-lab-brand: #8f4e38;
+  --palette-lab-premium: #deb65c;
+  --palette-lab-premium-dark: #765715;
+  --palette-lab-secondary: #41634e;
+  --palette-lab-secondary-soft: #d8e7d8;
+  --palette-lab-text: #17271f;
+  --palette-lab-muted: #5e675d;
+  --palette-lab-focus: #765719;
+  --palette-lab-danger: #963733;
+  --palette-lab-success: #356549;
+  --palette-lab-dark-1-rgb: 16 34 27;
+  --palette-lab-dark-2-rgb: 24 49 40;
+  --palette-lab-dark-3-rgb: 39 68 56;
+  --palette-lab-light-1-rgb: 255 252 237;
+  --palette-lab-light-2-rgb: 245 237 201;
+  --palette-lab-light-3-rgb: 223 211 156;
+  --palette-lab-brand-rgb: 143 78 56;
+  --palette-lab-premium-rgb: 222 182 92;
+  --palette-lab-secondary-rgb: 65 99 78;
+  --palette-lab-secondary-soft-rgb: 216 231 216;
+  --palette-lab-text-rgb: 23 39 31;
+}
+
+:root[data-palette='stone-coral'] {
+  --palette-lab-dark-1: #28272b;
+  --palette-lab-dark-2: #37343a;
+  --palette-lab-dark-3: #4a454b;
+  --palette-lab-light-1: #fffaf7;
+  --palette-lab-light-2: #f2e7df;
+  --palette-lab-light-3: #ddcbc0;
+  --palette-lab-brand: #9b454d;
+  --palette-lab-premium: #d39d6d;
+  --palette-lab-premium-dark: #75521e;
+  --palette-lab-secondary: #526b62;
+  --palette-lab-secondary-soft: #dce6e1;
+  --palette-lab-text: #292529;
+  --palette-lab-muted: #686064;
+  --palette-lab-focus: #765419;
+  --palette-lab-danger: #96343a;
+  --palette-lab-success: #3f6451;
+  --palette-lab-dark-1-rgb: 40 39 43;
+  --palette-lab-dark-2-rgb: 55 52 58;
+  --palette-lab-dark-3-rgb: 74 69 75;
+  --palette-lab-light-1-rgb: 255 250 247;
+  --palette-lab-light-2-rgb: 242 231 223;
+  --palette-lab-light-3-rgb: 221 203 192;
+  --palette-lab-brand-rgb: 155 69 77;
+  --palette-lab-premium-rgb: 211 157 109;
+  --palette-lab-secondary-rgb: 82 107 98;
+  --palette-lab-secondary-soft-rgb: 220 230 225;
+  --palette-lab-text-rgb: 41 37 41;
+}
+
+:root[data-palette] {
+  --espresso: var(--palette-lab-dark-1);
+  --espresso-2: var(--palette-lab-dark-2);
+  --cocoa: var(--palette-lab-dark-3);
+  --ivory: var(--palette-lab-light-1);
+  --cream: var(--palette-lab-light-2);
+  --linen: var(--palette-lab-light-3);
+  --sage: var(--palette-lab-secondary);
+  --sage-soft: var(--palette-lab-secondary-soft);
+  --rose: var(--palette-lab-brand);
+  --clay: var(--palette-lab-brand);
+  --gold: var(--palette-lab-premium);
+  --gold-dark: var(--palette-lab-premium-dark);
+  --ink: var(--palette-lab-text);
+  --muted: var(--palette-lab-muted);
+  --paper: var(--palette-lab-light-1);
+  --focus: var(--palette-lab-focus);
+  --danger: var(--palette-lab-danger);
+  --success: var(--palette-lab-success);
+  --line: rgb(var(--palette-lab-text-rgb) / 0.12);
+  --line-strong: rgb(var(--palette-lab-text-rgb) / 0.24);
+  --ink-deep: var(--palette-lab-dark-1);
+  --ink-soft: var(--palette-lab-dark-2);
+  --champagne: var(--palette-lab-light-3);
+  --champagne-2: var(--palette-lab-premium);
+  --mist: rgb(var(--palette-lab-light-1-rgb) / 0.78);
+  --glass-dark: rgb(var(--palette-lab-dark-2-rgb) / 0.56);
+  --glass-light: rgb(var(--palette-lab-light-1-rgb) / 0.12);
+  --hero-line: rgb(var(--palette-lab-light-3-rgb) / 0.2);
+  --palette-warm-white: var(--palette-lab-light-1);
+  --palette-warm-canvas: var(--palette-lab-light-2);
+  --palette-warm-surface: var(--palette-lab-light-2);
+  --palette-linen-soft: var(--palette-lab-light-2);
+  --palette-blush-white: var(--palette-lab-light-1);
+  --palette-blush-surface: var(--palette-lab-light-1);
+  --palette-gold-light: var(--palette-lab-light-3);
+  --palette-sage-ink: var(--palette-lab-secondary);
+  --palette-espresso-deep: var(--palette-lab-dark-1);
+  --palette-espresso-night: var(--palette-lab-dark-1);
+  --palette-espresso-footer: var(--palette-lab-dark-1);
+  --palette-plum-deep: var(--palette-lab-dark-2);
+  --palette-cocoa-deep: var(--palette-lab-dark-2);
+  --palette-ivory-rgb: var(--palette-lab-light-1-rgb);
+  --palette-ivory-warm-rgb: var(--palette-lab-light-1-rgb);
+  --palette-mist-rgb: var(--palette-lab-light-1-rgb);
+  --palette-cream-light-rgb: var(--palette-lab-light-2-rgb);
+  --palette-cream-blush-rgb: var(--palette-lab-light-2-rgb);
+  --palette-paper-blush-rgb: var(--palette-lab-light-1-rgb);
+  --palette-paper-warm-rgb: var(--palette-lab-light-1-rgb);
+  --palette-champagne-light-rgb: var(--palette-lab-light-3-rgb);
+  --palette-champagne-pale-rgb: var(--palette-lab-light-3-rgb);
+  --palette-champagne-soft-rgb: var(--palette-lab-light-2-rgb);
+  --palette-champagne-wash-rgb: var(--palette-lab-light-3-rgb);
+  --palette-cream-wash-rgb: var(--palette-lab-light-2-rgb);
+  --palette-warm-canvas-rgb: var(--palette-lab-light-2-rgb);
+  --palette-linen-light-rgb: var(--palette-lab-light-2-rgb);
+  --palette-cream-rgb: var(--palette-lab-light-2-rgb);
+  --palette-champagne-rgb: var(--palette-lab-light-3-rgb);
+  --palette-gold-rgb: var(--palette-lab-premium-rgb);
+  --palette-amber-rgb: var(--palette-lab-premium-rgb);
+  --palette-champagne-2-rgb: var(--palette-lab-premium-rgb);
+  --palette-rose-rgb: var(--palette-lab-brand-rgb);
+  --palette-sage-rgb: var(--palette-lab-secondary-rgb);
+  --palette-sage-deep-rgb: var(--palette-lab-secondary-rgb);
+  --palette-sage-soft-rgb: var(--palette-lab-secondary-soft-rgb);
+  --palette-sage-mist-rgb: var(--palette-lab-secondary-soft-rgb);
+  --palette-ink-rgb: var(--palette-lab-text-rgb);
+  --palette-cocoa-rgb: var(--palette-lab-dark-3-rgb);
+  --palette-umber-rgb: var(--palette-lab-dark-3-rgb);
+  --palette-ink-soft-rgb: var(--palette-lab-dark-2-rgb);
+  --palette-plum-rgb: var(--palette-lab-dark-2-rgb);
+  --palette-plum-cool-rgb: var(--palette-lab-dark-2-rgb);
+  --palette-plum-deep-rgb: var(--palette-lab-dark-2-rgb);
+  --palette-plum-muted-rgb: var(--palette-lab-dark-2-rgb);
+  --palette-coffee-rgb: var(--palette-lab-dark-2-rgb);
+  --palette-coffee-deep-rgb: var(--palette-lab-dark-1-rgb);
+  --palette-shadow-plum-rgb: var(--palette-lab-dark-2-rgb);
+  --palette-shadow-rgb: var(--palette-lab-dark-1-rgb);
+  --palette-espresso-rgb: var(--palette-lab-dark-1-rgb);
+  --palette-cacao-rgb: var(--palette-lab-dark-1-rgb);
+  --palette-ink-deep-rgb: var(--palette-lab-dark-1-rgb);
+  --palette-ink-muted-rgb: var(--palette-lab-dark-1-rgb);
+  --palette-ink-cool-rgb: var(--palette-lab-dark-1-rgb);
+  --palette-night-rgb: var(--palette-lab-dark-1-rgb);
+  --palette-midnight-rgb: var(--palette-lab-dark-1-rgb);
+  --palette-night-cool-rgb: var(--palette-lab-dark-1-rgb);
+  --palette-night-soft-rgb: var(--palette-lab-dark-1-rgb);
+  --palette-night-deep-rgb: var(--palette-lab-dark-1-rgb);
+  --palette-coffee-black-rgb: var(--palette-lab-dark-1-rgb);
+}
+
+[data-palette-option='original'] {
+  --palette-lab-preview-dark: #110d10;
+  --palette-lab-preview-light: #f5ece4;
+  --palette-lab-preview-accent: #d8bb84;
+}
+
+[data-palette-option='olive-linen'] {
+  --palette-lab-preview-dark: #172018;
+  --palette-lab-preview-light: #f3ecd9;
+  --palette-lab-preview-accent: #c7a35d;
+}
+
+[data-palette-option='bordeaux-terracotta'] {
+  --palette-lab-preview-dark: #250f17;
+  --palette-lab-preview-light: #f4e5d8;
+  --palette-lab-preview-accent: #d29a62;
+}
+
+[data-palette-option='midnight-copper'] {
+  --palette-lab-preview-dark: #0d1720;
+  --palette-lab-preview-light: #eee6d8;
+  --palette-lab-preview-accent: #d09a62;
+}
+
+[data-palette-option='forest-butter'] {
+  --palette-lab-preview-dark: #10221b;
+  --palette-lab-preview-light: #f5edc9;
+  --palette-lab-preview-accent: #deb65c;
+}
+
+[data-palette-option='stone-coral'] {
+  --palette-lab-preview-dark: #28272b;
+  --palette-lab-preview-light: #f2e7df;
+  --palette-lab-preview-accent: #d39d6d;
+}

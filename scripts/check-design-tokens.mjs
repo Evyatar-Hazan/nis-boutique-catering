@@ -92,11 +92,13 @@ const luminance = (hex) => {
   return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
 };
 
-const contrast = (foreground, background) => {
-  const foregroundLuminance = luminance(parseHexToken(foreground));
-  const backgroundLuminance = luminance(parseHexToken(background));
+const contrastHex = (foreground, background) => {
+  const foregroundLuminance = luminance(foreground);
+  const backgroundLuminance = luminance(background);
   return (Math.max(foregroundLuminance, backgroundLuminance) + 0.05) / (Math.min(foregroundLuminance, backgroundLuminance) + 0.05);
 };
+
+const contrast = (foreground, background) => contrastHex(parseHexToken(foreground), parseHexToken(background));
 
 const textPairs = [
   ['ink', 'paper'],
@@ -114,9 +116,39 @@ for (const [foreground, background] of textPairs) {
   if (ratio < 4.5) errors.push(`${foreground}/${background} contrast is ${ratio.toFixed(2)}:1`);
 }
 
+const paletteLabIds = ['olive-linen', 'bordeaux-terracotta', 'midnight-copper', 'forest-butter', 'stone-coral'];
+const paletteLabPairs = [
+  ['text', 'light-1'],
+  ['text', 'light-2'],
+  ['light-1', 'dark-1'],
+  ['muted', 'light-1'],
+  ['focus', 'light-1'],
+  ['light-1', 'brand'],
+  ['light-1', 'secondary'],
+];
+
+for (const paletteId of paletteLabIds) {
+  const blockMatch = tokens.match(new RegExp(`:root\\[data-palette='${paletteId}'\\]\\s*\\{([\\s\\S]*?)\\}`));
+  if (!blockMatch) {
+    errors.push(`Palette Lab definition missing: ${paletteId}`);
+    continue;
+  }
+
+  const readPaletteHex = (name) => {
+    const tokenMatch = blockMatch[1].match(new RegExp(`--palette-lab-${name}:\\s*(#[0-9a-fA-F]{6})`));
+    if (!tokenMatch) throw new Error(`Cannot read ${paletteId} Palette Lab token: ${name}`);
+    return tokenMatch[1];
+  };
+
+  for (const [foreground, background] of paletteLabPairs) {
+    const ratio = contrastHex(readPaletteHex(foreground), readPaletteHex(background));
+    if (ratio < 4.5) errors.push(`${paletteId} ${foreground}/${background} contrast is ${ratio.toFixed(2)}:1`);
+  }
+}
+
 if (errors.length > 0) {
   for (const error of errors) console.error(`Design token error: ${error}`);
   process.exitCode = 1;
 } else {
-  console.log(`Design token check passed: ${Object.keys(requiredTokenGroups).length} token groups, ${textPairs.length} WCAG AA text pairs, zero raw colors in authored theme styles, Noto Serif Hebrew with display=swap.`);
+  console.log(`Design token check passed: ${Object.keys(requiredTokenGroups).length} token groups, ${textPairs.length + (paletteLabIds.length * paletteLabPairs.length)} WCAG AA text pairs across six palettes, zero raw colors in authored theme styles, Noto Serif Hebrew with display=swap.`);
 }

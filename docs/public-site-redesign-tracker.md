@@ -1,11 +1,11 @@
 ---
 title: NIS Public Site Redesign Tracker
-status: completed
+status: in_progress
 owner: Evyatar Hazan
 created: 2026-07-20
 updated: 2026-07-22
 source_of_truth: true
-implementation_gate: closed
+implementation_gate: ready
 ---
 
 # NIS Public Site Redesign — Source of Truth and Execution Tracker
@@ -35,9 +35,9 @@ implementation_gate: closed
 
 ## שער מימוש גלובלי
 
-**סטטוס נוכחי: `COMPLETED`**
+**סטטוס נוכחי: `READY`**
 
-כל 64 המשימות הושלמו ואומתו בפרודקשן. `UI-017` הוסיפה ל־Navbar סימון ציבורי ברור ועדין שהאתר נמצא בהרצה; שער המימוש סגור ואין משימה פתוחה במסמך.
+64 המשימות הקודמות הושלמו ואומתו בפרודקשן. `UI-018` נמצאת בביצוע ומוסיפה מעבדת פלטות זמנית עם שש אפשרויות שניתנות להשוואה ושיתוף; `UI-019` תישאר חסומה עד שהלקוחה תבחר פלטה אחת, ואז יוסר כל מנגנון הניסוי ותישאר רק הבחירה הסופית.
 
 תוכנית השרת/קליינט, בניית מסך האדמין מחדש והמעבר מ־Google Sheets/Drive ל־Cloudflare D1/R2 נוספו למסמך ב־2026-07-20. שער המימוש נפתח לאחר השלמת:
 
@@ -1368,6 +1368,35 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - **Local implementation evidence (2026-07-22):** `Topbar` מציג כעת פעם אחת `האתר בהרצה` בתוך אזור המותג, עם accessible name מעודכן, נקודת זהב סטטית ו־styles מתוך token contract בלבד. ב־1440×1000 התווית ‏88.25×24px בתוך header קיים בגובה 89px; ב־768×1024 היא נשארת ‏88.25×24px; וב־375×812 היא ‏78.58×21.59px בתוך header בגובה 75px. בשלושת הגדלים נמדדו 0 overflow ו־0 console warnings/errors, והלוגו, ה־CTA, כפתור התפריט והניווט אינם חופפים. במובייל התפריט נשאר ‏347×282px, focus עובר לקישור הראשון ו־Escape סוגר ומחזיר focus. בדיקת `SiteChrome` הממוקדת, כל 143 הבדיקות, tracker/architecture/design-token/motion/security/runbook checks, ‏lint, type-check, builds, ‏full validation, ‏local parity ו־`git diff --check` עברו; `UI-017` עברה ל־`VERIFYING` עד CI/deploy ואימות Production.
 - **Production evidence (2026-07-22):** commit `768c732` עבר CI/deploy ‏`29893174849`/`29893174856`; deployments ‏`a93cad34` לאתר הציבורי ו־`47814b98` ל־Studio, וה־bundle הציבורי החי הוא `index-DDMBT9PJ.css`. בדומיין הראשי `האתר בהרצה` מופיע פעם אחת ונגיש בשם המותג. Production ב־1440×1000 וב־768×1024 אישר תווית ‏88.25×24px ו־headers בגובה 89px; ב־375×812 התווית ‏78.58×21.59px בתוך header בגובה 75px. בשלושת ה־viewports נמדדו 0 overflow ו־0 console warnings/errors; במובייל תפריט ‏347×282px, focus לקישור הראשון ו־Escape→focus תקינים. public, Studio, health ו־published החזירו `200`; `UI-017`, ‏Phase 21 וכל 64 המשימות נסגרו `DONE`.
 
+### Phase 22 — Temporary palette comparison
+
+#### UI-018 — Build a six-option Palette Lab
+
+- **Status:** `VERIFYING`
+- **Dependencies:** `UI-017`, ‏`UI-005`.
+- **Definition:** להוסיף לאתר הציבורי מעבדת פלטות זמנית, מודולרית ונגישה, שמאפשרת להשוות בין הפלטה הנוכחית לחמש חלופות על אותו אתר אמיתי בלי לשכפל רכיבים או לשנות תוכן, DOM עסקי, ניווט או לוגיקה; הבורר ייחשף רק בכתובת עם `paletteLab=1`, והבחירה תינתן לשיתוף בקישור מדויק.
+- **Acceptance criteria:**
+  - קיימות בדיוק שש אפשרויות מזוהות ומסומנות: `שזיף ושמפניה` הנוכחית, `זית ופשתן`, ‏`בורדו וטרקוטה`, ‏`כחול לילה ונחושת`, ‏`ירוק יער וחמאה` ו־`אבן וקורל`; כל אחת משנה את אותו token contract המרכזי ולא CSS מקומי של sections.
+  - ללא `paletteLab=1` לא מופיע control ניסויי; פרמטר `palette` חוקי עדיין מחיל את הפלטה לצורך קישור שיתוף, וערך לא חוקי חוזר בבטחה לפלטה המקורית.
+  - סדר ההכרעה הוא query string → ‏`localStorage` → הפלטה המקורית; שינוי בחירה מעדכן את ה־URL ואת האחסון, נשמר בטעינה מחדש וניתן לאיפוס, וכפתור העתקה יוצר קישור מלא לפלטה הפעילה.
+  - הבורר keyboard-accessible, מציג שם ותיאור ברור, `aria-pressed`/focus גלויים ו־swatches מתוך tokens בלבד; desktop, tablet ו־mobile אינם מקבלים overflow, clipping או חפיפה עם ה־Navbar, ה־sticky CTA או ה־floating actions.
+  - כל שש הפלטות עומדות בבדיקות contrast לתפקידי הטקסט והפעולה המרכזיים, אין raw colors מחוץ ל־`tokens.css`, אין `any`, ‏dependency חדש, שכפול section/component, שינוי schema/API/content או motion מתמשך; `prefers-reduced-motion` נשמר.
+- **Verification:** בדיקות unit/component ל־resolution, URL/storage, הצגה מותנית, בחירה, איפוס והעתקת קישור; הרחבת design-token gate לכל שש הפלטות; tracker/architecture/design-token/motion/security/runbook checks, ‏lint/type-check/build/full validation, ‏local parity ו־`git diff --check`; בדפדפן ב־1440×1000, ‏768×1024 ו־375×812 לבדוק כל פלטה, persistence/share/reset, מצב רגיל ללא control, ‏0 overflow ו־console נקי; לאחר push — CI/deploy ואותן בדיקות ב־Production יחד עם public/Studio/health/published.
+- **Evidence (2026-07-22):** נבחרה ארכיטקטורת Palette Lab זמנית מעל מערכת ה־CSS tokens הקיימת: registry typed יחיד, override על `data-palette` ב־root, priority של query→storage→original ו־panel נגיש שמוצג רק עם `paletteLab=1`. הקבצים המתוכננים לשינוי הם feature חדש תחת `src/features/palette-lab`, ‏`App.tsx`, ‏`tokens.css`, ‏design-token gate, בדיקות, קובץ המעקב ובדיקת מספר המשימות. אין שינוי בקומפוננטות או בסקשנים הקיימים; `UI-018` הועברה ל־`IN_PROGRESS` והשער נפתח ל־`READY`.
+- **Local implementation evidence (2026-07-22):** נבנו registry ו־resolver typed, אתחול לפני React למניעת flash, ‏Palette Lab נגיש עם שש אפשרויות, copy/reset ו־query→storage→original, ומיפוי CSS יחיד שמזין את כל primitive/semantic tokens הקיימים. אין dependency, שינוי section/DOM עסקי או raw color מחוץ ל־`tokens.css`. design gate בודק כעת 43 זוגות WCAG AA בכל שש הפלטות. בדפדפן לוקאלי כל חלופה החזירה dark/light/accent ייחודיים, URL ואחסון נכונים ו־0 overflow; copy, reload persistence, reset, query ללא panel ו־invalid fallback אומתו. ב־1440×1000 הפאנל 448px; ב־768×1024 הוא ‏448×722.17px; וב־375×812 הוא ‏351×700px עם 10px clearance מעל sticky CTA. focus ring גלוי וה־console נקי. שבע בדיקות Palette Lab, כל 150 הבדיקות, tracker/architecture/design-token/motion/security/runbook checks, ‏lint, type-check, builds, ‏full validation, ‏local parity ו־`git diff --check` עברו; `UI-018` עברה ל־`VERIFYING` עד CI/deploy ואימות Production.
+
+#### UI-019 — Promote the selected palette and remove the lab
+
+- **Status:** `BLOCKED`
+- **Dependencies:** `UI-018`, בחירה מפורשת של הלקוחה בפלטה אחת.
+- **Definition:** לאחר קבלת הבחירה, להפוך את הפלטה שנבחרה לברירת המחדל היחידה ולהסיר לחלוטין את Palette Lab, חמש החלופות, query/storage behavior, ה־UI והבדיקות הזמניות, בלי להשאיר dead code או contract כפול.
+- **Acceptance criteria:**
+  - הפלטה שנבחרה היא ברירת המחדל היחידה ב־`tokens.css`; אין selector חלופי, registry, control, ‏`paletteLab`/`palette` query handling או מפתח `localStorage` זמני.
+  - האתר הרגיל שומר על אותה חזות שנבחרה ועל כל ההתנהגות, הנגישות וה־responsive verification שאושרו ב־`UI-018`.
+  - חיפוש repository, architecture/duplication gates וכל הבדיקות מאשרים שאין קוד ניסוי, CSS מת או reference שנותר.
+- **Verification:** `rg` מלא למזהי הניסוי, tracker/architecture/design-token/motion checks, ‏tests/lint/type-check/build/full validation, ‏local parity, דפדפן בשלושה breakpoints ו־Production CI/deploy; השוואת הצבעים המחושבים מול הפלטה שנבחרה.
+- **Evidence:** חסומה בכוונה עד שהלקוחה תבחר אחת משש האפשרויות החיות; אין לבחור עבורה ואין להסיר את כלי ההשוואה לפני החלטה מפורשת.
+
 ## Open decisions before implementation
 
 | ID | Decision | Status | Blocks |
@@ -1436,8 +1465,21 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 | Phase 19 — Footer art direction | Done | 1 | 1 |
 | Phase 20 — Navbar art direction | Done | 1 | 1 |
 | Phase 21 — Public rollout status | Done | 1 | 1 |
+| Phase 22 — Temporary palette comparison | Active | 0 | 2 |
 
 ## Change Log
+
+### 2026-07-22 — UI-018 six-option Palette Lab verified locally
+
+- נבנה feature typed ומבודד שמחיל שש פלטות דרך אותו token contract; כלי הבחירה מופיע רק עם `paletteLab=1`, בעוד קישור `palette` לבדו מחיל צבעים בלי לחשוף control.
+- copy, URL, ‏local storage, reload, reset ו־invalid fallback עברו; desktop, tablet ו־mobile הציגו 0 overflow, focus גלוי ו־console נקי, עם clearance מלא מה־sticky CTA.
+- שבע בדיקות ייעודיות, 43 בדיקות contrast, כל 150 בדיקות הפרויקט, full validation ו־local parity עברו; `UI-018` הועברה ל־`VERIFYING` עד CI/deploy ואימות Production.
+
+### 2026-07-22 — UI-018 six-option Palette Lab started
+
+- לפי בקשת המשתמש, תיבנה השוואה חיה בין הפלטה הנוכחית לחמש חלופות על אותו אתר, עם שמירה ושיתוף קישור ובלי לשנות את מבנה הסקשנים.
+- הבורר יופיע רק עם `paletteLab=1`; קישור עם `palette` יחיל בחירה, ו־query יקבל קדימות על local storage ועל המקור.
+- `UI-018` נוספה כמשימה ה־65 והועברה ל־`IN_PROGRESS`; `UI-019` נוספה כמשימת cleanup חסומה עד בחירת הלקוחה; שער המימוש נפתח ל־`READY`.
 
 ### 2026-07-22 — UI-017 public rollout status completed in Production
 
