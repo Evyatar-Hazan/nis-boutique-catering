@@ -5,6 +5,7 @@ import { Topbar } from './SiteChrome';
 describe('Topbar', () => {
   it('renders four primary anchors with active state', () => {
     render(<Topbar activeNavSection="#gallery" isScrolled={false} topbarWhatsapp="https://wa.me/972500000000" />);
+    expect(screen.getByRole('link', { name: 'Nis, boutique catering — האתר בהרצה' })).toHaveTextContent('האתר בהרצה');
     const navigation = screen.getByRole('navigation', { name: 'עמודי האתר' });
     const links = within(navigation).getAllByRole('link');
     expect(links).toHaveLength(4);

@@ -28,8 +28,9 @@ export const Topbar = ({ activeNavSection, isScrolled, topbarWhatsapp }: TopbarP
   }, [isMenuOpen]);
   return (
     <header className={isScrolled ? 'topbar is-scrolled' : 'topbar'} aria-label="ניווט ראשי">
-      <a className="brand" href="#top" aria-label="Nis, boutique catering">
+      <a className="brand" href="#top" aria-label="Nis, boutique catering — האתר בהרצה">
         <OptimizedImage className="brand-logo" image={brandMedia.logo} alt="Nis - boutique catering" decoding="async" />
+        <span className="site-status-badge" aria-hidden="true">האתר בהרצה</span>
       </a>
       <nav ref={navigationRef} id="primary-navigation" className={isMenuOpen ? 'nav-links is-open' : 'nav-links'} aria-label="עמודי האתר">
         {navItems.map((item) => (
