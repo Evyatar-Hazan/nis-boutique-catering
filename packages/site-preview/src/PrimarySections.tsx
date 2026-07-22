@@ -13,7 +13,7 @@ export const HeroSection = ({ heroWhatsapp }: { readonly heroWhatsapp: string })
           <p className="eyebrow">{heroContent.eyebrow}</p>
           <h1 id="hero-title">{heroContent.title}</h1>
           <p className="hero-text">{heroContent.text}</p>
-          <div className="hero-actions" aria-label="פעולות ראשיות">
+          <div className="hero-actions" role="group" aria-label="פעולות ראשיות">
             <Button href={heroWhatsapp} data-event="hero_whatsapp">
               <MessageCircle aria-hidden="true" />
               {siteMicrocopy.heroPrimaryCta}

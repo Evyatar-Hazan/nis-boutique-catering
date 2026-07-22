@@ -15,7 +15,9 @@ describe('Content Studio', () => {
     render(<App />);
 
     expect(screen.getByRole('heading', { name: 'פאנל ניהול Nis' })).toBeInTheDocument();
-    expect(screen.getByLabelText('כניסה עם Google')).toBeInTheDocument();
+    const googleButtonRoot = document.querySelector('.google-identity-control > div');
+    expect(googleButtonRoot).toBeInTheDocument();
+    expect(googleButtonRoot).not.toHaveAttribute('aria-label');
     expect(screen.queryByRole('button', { name: /גלריה/ })).not.toBeInTheDocument();
     expect(screen.queryByText('תמונות וגלריה')).not.toBeInTheDocument();
     expect(screen.queryByDisplayValue('מיני לחמניות אישיות')).not.toBeInTheDocument();

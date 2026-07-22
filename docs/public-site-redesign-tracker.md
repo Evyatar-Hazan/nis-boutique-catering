@@ -37,7 +37,7 @@ implementation_gate: ready
 
 **סטטוס נוכחי: `READY`**
 
-`UI-018` הושלמה ואומתה בפרודקשן: מעבדת הפלטות הזמנית מציגה שש אפשרויות שניתנות להשוואה ושיתוף. בסך הכול 65 מתוך 66 משימות הן `DONE`; `UI-019` נשארת חסומה עד שהלקוחה תבחר פלטה אחת, ואז יוסר כל מנגנון הניסוי ותישאר רק הבחירה הסופית.
+`UI-018` הושלמה ואומתה בפרודקשן: מעבדת הפלטות הזמנית מציגה שש אפשרויות שניתנות להשוואה ושיתוף. בסך הכול 65 מתוך 67 משימות הן `DONE`; `QA-006` מטפלת כעת בפערי הנגישות שאומתו בביקורת 2026, ו־`UI-019` נשארת חסומה עד שהלקוחה תבחר פלטה אחת.
 
 תוכנית השרת/קליינט, בניית מסך האדמין מחדש והמעבר מ־Google Sheets/Drive ל־Cloudflare D1/R2 נוספו למסמך ב־2026-07-20. שער המימוש נפתח לאחר השלמת:
 
@@ -1398,6 +1398,24 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - **Verification:** `rg` מלא למזהי הניסוי, tracker/architecture/design-token/motion checks, ‏tests/lint/type-check/build/full validation, ‏local parity, דפדפן בשלושה breakpoints ו־Production CI/deploy; השוואת הצבעים המחושבים מול הפלטה שנבחרה.
 - **Evidence:** חסומה בכוונה עד שהלקוחה תבחר אחת משש האפשרויות החיות; אין לבחור עבורה ואין להסיר את כלי ההשוואה לפני החלטה מפורשת.
 
+### Phase 23 — Accessibility remediation and public statement
+
+#### QA-006 — Close the verified 2026 accessibility gaps
+
+- **Status:** `VERIFYING`
+- **Dependencies:** `QA-002`, ‏`UI-018`.
+- **Definition:** לסגור באופן ממוקד את פערי הנגישות שאומתו בביקורת 2026: לפרסם הצהרת נגישות נגישה ואמיתית, להסיר שימוש ARIA אסור משורש Google Identity ב־Studio, ולהכניס את פעולות הקשר הצפות ל־landmark סמנטי — בלי לשנות לוגיקה עסקית, תוכן מנוהל או מבנה הסקשנים.
+- **Acceptance criteria:**
+  - קיים מסלול ציבורי ישיר `/accessibility/` עם כותרת יחידה, תאריך עדכון, תקן היעד ת״י 5568 חלק 1 ברמת AA, פירוט התאמות שאומתו, דרכי פנייה נגישות וסייגים שאינם ממציאים נתונים עסקיים או משפטיים שלא נמסרו.
+  - קישור `הצהרת נגישות` מופיע בפוטר, נגיש במקלדת ובקורא מסך, ומסלול ההצהרה נשאר שמיש גם ב־320px וללא overflow אופקי.
+  - wrapper של Google Identity אינו נושא `aria-label` שאסור על `div` גנרי; הכפתור שמזריק Google נשאר בעל שם נגיש מטעם הרכיב החיצוני.
+  - פעולות WhatsApp/טלפון הצפות נמצאות בתוך landmark יחיד ובעל שם, בלי לשנות hrefs, נראות, sticky/fixed behavior או סדר מקלדת.
+  - axe לפי WCAG 2 A/AA מחזיר 0 violations באתר הציבורי, במסלול ההצהרה ובמסך הכניסה ל־Studio; Lighthouse Accessibility נשאר 100 בדסקטופ ובמובייל, וכל בדיקות keyboard/focus, contrast, reduced-motion ו־responsive הקיימות ממשיכות לעבור.
+  - אין טענה משפטית ל״עמידה מלאה״ לפני השלמת בדיקה אנושית בקורא מסך וקבלת הפרטים העסקיים הנדרשים לגבי תחולת התקנות והסדרי הנגישות הפיזיים.
+- **Verification:** בדיקות component ממוקדות; tracker/architecture/design-token/motion/security/runbook checks; ‏lint, type-check, builds ו־full `pnpm validate`; axe/Lighthouse ו־keyboard walkthrough מקומיים ב־1440, ‏768, ‏375 ו־320 פיקסלים; לאחר push — CI/deploy ואימות אותם מסלולים ב־Production, כולל headers, console, overflow וקישורי הפנייה.
+- **Evidence (2026-07-22):** ביקורת מבוססת־עובדות אימתה יעד ישראלי של ת״י 5568 חלק 1 ברמת AA ומצאה שלושה פערים קונקרטיים: אין הצהרת נגישות ציבורית; `aria-label="כניסה עם Google"` מוצמד ל־`div` גנרי ב־Studio וגורם `aria-prohibited-attr`; והקישור הצף ל־WhatsApp נמצא מחוץ ל־landmark. Lighthouse/axe, contrast, keyboard, focus, semantics, reduced motion ו־responsive עברו ביתר המשטחים. הקבצים המתוכננים לשינוי הם entry/component/style ובדיקות באתר הציבורי, `SiteChrome.tsx`, ‏`GoogleIdentityButton.tsx`, בדיקת Studio, ‏`vite.config.ts`, ‏sitemap, קובץ המעקב ובדיקת מספר המשימות. המשימה הועברה ל־`IN_PROGRESS`.
+- **Local implementation evidence (2026-07-22):** נוסף מסלול multi-page אמיתי `/accessibility/` עם HTML/canonical/metadata נפרדים, H1 יחיד, חמישה אזורים מתויגים, תאריך עדכון, תקן יעד AA, התאמות שאומתו, הסדרי תיאום שאינם ממציאים נגישות פיזית וטלפון/דוא״ל פעילים; הפוטר מקשר אליו. preload של ה־Hero נשאר רק בדף הבית ולכן מסלול ההצהרה נטען ללא בקשת מדיה מיותרת או console warning. פעולות הקשר הצפות נמצאות כעת ב־`nav` בעל שם, ו־`aria-label` האסור הוסר משורש Google Identity. סריקת axe מורחבת חשפה תוך כדי העבודה עוד שלושה `div`‑ים עם label ללא role בהירו, בגלריה וב־FAQ; נוספו להם `group`/`region` מתאימים ללא שינוי חזות או לוגיקה, וחיפוש חי חזר עם 0 divs כאלה. axe WCAG 2 A/AA החזיר 0 violations במסלול הראשי, בהצהרה וב־Studio; בהצהרה גם 0 incomplete. Lighthouse Accessibility החזיר 100 בדסקטופ ובמובייל בשלושת המשטחים, והאתר/ההצהרה החזירו גם Best Practices ו־SEO ‏100. keyboard smoke אימת Tab→skip link→Enter→focus על `main`. ב־1440, ‏768, ‏375 ו־320 נמדדו 0 overflow; סימולציית text resize ל־200% החזירה 0 overflow/טקסט חתוך בהצהרה ובאתר, ותווית ההרצה הותאמה לשתי שורות כשנדרש. כל 152 הבדיקות, tracker/architecture/design-token/motion/security/runbook checks, ‏lint, type-check, builds, full validation ו־`git diff --check` עברו. `QA-006` עברה ל־`VERIFYING` עד CI/deploy ואימות Production; בדיקת קורא מסך אנושית ופרטי תחולה/נגישות פיזית נשארים תנאי לטענה משפטית בלתי מסויגת.
+
 ## Open decisions before implementation
 
 | ID | Decision | Status | Blocks |
@@ -1467,8 +1485,20 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 | Phase 20 — Navbar art direction | Done | 1 | 1 |
 | Phase 21 — Public rollout status | Done | 1 | 1 |
 | Phase 22 — Temporary palette comparison | Active | 1 | 2 |
+| Phase 23 — Accessibility remediation | Active | 0 | 1 |
 
 ## Change Log
+
+### 2026-07-22 — QA-006 accessibility remediation started
+
+- הביקורת תורגמה למשימה מדידה אחת שסוגרת רק ממצאים שאומתו, בלי להמציא פרטי תחולה משפטית או נגישות פיזית.
+- `QA-006` עברה ל־`IN_PROGRESS`; הוגדרו מסלול הצהרה ציבורי, תיקוני ARIA/landmark ושערי axe/Lighthouse/keyboard/responsive מקומיים וב־Production.
+
+### 2026-07-22 — QA-006 accessibility remediation verified locally
+
+- נוסף מסלול הצהרה עצמאי ומקושר מהפוטר; תוקנו Google Identity, פעולות הקשר ועוד שלושה labels ללא role שנחשפו בסריקה המורחבת.
+- axe חזר עם 0 violations בשלושת המשטחים; Lighthouse Accessibility ‏100 בדסקטופ ובמובייל; keyboard, ‏320–1440px, ‏200% text resize, console ו־full validation עברו עם 152/152 בדיקות.
+- `QA-006` עברה ל־`VERIFYING` עד push, ‏CI/deploy ואימות Production. טענה משפטית מלאה נשארת כפופה לבדיקה אנושית ולפרטים העסקיים שלא נמסרו.
 
 ### 2026-07-22 — UI-018 six-option Palette Lab completed in Production
 

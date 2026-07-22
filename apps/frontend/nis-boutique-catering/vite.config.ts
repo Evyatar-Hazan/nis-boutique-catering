@@ -9,7 +9,10 @@ const contentPath = fileURLToPath(new URL('./src/generated/siteContent.generated
 
 const heroPreloadPlugin = () => ({
   name: 'nis-hero-preload',
-  transformIndexHtml() {
+  transformIndexHtml(_html: string, context: { path: string }) {
+    if (context.path.startsWith('/accessibility/')) {
+      return [];
+    }
     const content = JSON.parse(readFileSync(contentPath, 'utf8')) as ContentSnapshot;
     const preload = createHeroPreload(content);
 
@@ -31,4 +34,12 @@ const heroPreloadPlugin = () => ({
 
 export default defineConfig({
   plugins: [react(), heroPreloadPlugin()],
+  build: {
+    rollupOptions: {
+      input: {
+        accessibility: fileURLToPath(new URL('./accessibility/index.html', import.meta.url)),
+        main: fileURLToPath(new URL('./index.html', import.meta.url)),
+      },
+    },
+  },
 });

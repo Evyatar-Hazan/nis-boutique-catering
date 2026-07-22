@@ -3772,9 +3772,13 @@
   .topbar .site-status-badge {
     inset-inline-start: -0.15rem;
     inset-block-end: 0;
+    max-width: 100%;
     min-height: 1.35rem;
     padding-inline: 0.42rem;
     font-size: 0.55rem;
+    line-height: 1.15;
+    text-align: center;
+    white-space: normal;
   }
 
   .topbar .brand-logo,

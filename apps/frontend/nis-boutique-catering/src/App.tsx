@@ -10,6 +10,8 @@ import { FloatingActions, Footer, LightboxDialog, Topbar } from './components/Si
 import { email, galleryImages, sectionIds, siteMicrocopy, siteVersion, type GalleryCategory } from './data/siteContent';
 import { defaultSiteSectionPreviewData } from './data/sitePreviewData';
 import { PaletteLab } from './features/palette-lab/PaletteLab';
+import { AccessibilityStatementPage } from './features/accessibility/AccessibilityStatementPage';
+import { isAccessibilityStatementPath } from './features/accessibility/isAccessibilityStatementPath';
 import { usePointerGlow } from './hooks/usePointerGlow';
 import { useRevealOnScroll } from './hooks/useRevealOnScroll';
 import { useScrollState } from './hooks/useScrollState';
@@ -18,7 +20,7 @@ import './App.css';
 
 const LazySiteSections = lazy(() => import('./components/LazySiteSections'));
 
-function App() {
+function PublicSiteApp() {
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
   const [activeGalleryCategory, setActiveGalleryCategory] = useState<GalleryCategory>('all');
 
@@ -120,6 +122,10 @@ function App() {
     </div>
     </SiteSectionPreviewDataProvider>
   );
+}
+
+function App() {
+  return isAccessibilityStatementPath(window.location.pathname) ? <AccessibilityStatementPage /> : <PublicSiteApp />;
 }
 
 export default App;

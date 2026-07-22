@@ -58,7 +58,7 @@ export const GoogleIdentityButton = ({
 
   return (
     <div className="google-identity-control">
-      <div ref={buttonRoot} aria-label="כניסה עם Google" />
+      <div ref={buttonRoot} />
       {error && <p className="config-warning" role="alert">{error}</p>}
     </div>
   );

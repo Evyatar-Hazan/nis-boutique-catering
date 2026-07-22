@@ -45,7 +45,7 @@ export const GallerySection = ({
         <SectionHeading eyebrow={sectionCopy.gallery.eyebrow} title={sectionCopy.gallery.title} id="gallery-title" className="section-heading gallery-heading reveal">
           <TextParagraphs text={sectionCopy.gallery.text} />
         </SectionHeading>
-        <div className="gallery-tabs reveal" data-reveal-duration="360" data-reveal-variant="fade" aria-label="סינון גלריה לפי סוג">
+        <div className="gallery-tabs reveal" role="group" data-reveal-duration="360" data-reveal-variant="fade" aria-label="סינון גלריה לפי סוג">
           {filters.map((category) => (
             <button
               className={category.id === activeCategory ? 'gallery-tab is-active' : 'gallery-tab'}

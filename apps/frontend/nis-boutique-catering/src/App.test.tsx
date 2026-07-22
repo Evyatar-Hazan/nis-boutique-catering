@@ -5,6 +5,7 @@ import App from './App';
 const originalLocation = window.location;
 
 afterEach(() => {
+  window.history.replaceState({}, '', '/');
   Object.defineProperty(window, 'location', {
     value: originalLocation,
     configurable: true,
@@ -23,7 +24,7 @@ describe('Nis boutique catering app', () => {
   it('renders the main navigation and hero content', () => {
     const { container } = render(<App />);
 
-    expect(screen.getByRole('navigation')).toBeInTheDocument();
+    expect(screen.getByRole('navigation', { name: 'עמודי האתר' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'מה מזמינים' })).toHaveAttribute('href', '#experiences');
     expect(screen.getByRole('link', { name: 'גלריה' })).toHaveAttribute('href', '#gallery');
     expect(
@@ -155,11 +156,37 @@ describe('Nis boutique catering app', () => {
   it('renders the mobile sticky CTA with whatsapp and phone actions', () => {
     render(<App />);
 
-    const stickyCta = screen.getByLabelText('פעולות מהירות ליצירת קשר');
+    const stickyCta = document.querySelector('.mobile-sticky-cta');
+    expect(stickyCta).not.toBeNull();
+    if (!stickyCta) {
+      throw new Error('Mobile sticky CTA was not found');
+    }
     const links = stickyCta.querySelectorAll('a');
 
     expect(links).toHaveLength(2);
     expect(links[0]).toHaveAttribute('href', expect.stringContaining('wa.me/972503502615'));
     expect(links[1]).toHaveAttribute('href', 'tel:+972503502615');
+  });
+
+  it('places floating contact actions in a named navigation landmark', () => {
+    render(<App />);
+
+    const actions = screen.getByRole('navigation', { name: 'פעולות מהירות ליצירת קשר' });
+    expect(actions.querySelector('.floating-whatsapp')).toBeInTheDocument();
+    expect(actions.querySelector('.mobile-sticky-cta')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'הצהרת נגישות' })).toHaveAttribute('href', '/accessibility/');
+  });
+
+  it('renders the dedicated accessibility statement route without the public sections', () => {
+    window.history.replaceState({}, '', '/accessibility/');
+
+    render(<App />);
+
+    expect(screen.getByRole('heading', { level: 1, name: 'הצהרת נגישות' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 2, name: 'תקן היעד והבדיקות' })).toBeInTheDocument();
+    expect(screen.getByText(/ת״י 5568 חלק 1/)).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /טלפון: 050-3502615/ })).toHaveAttribute('href', 'tel:+972503502615');
+    expect(screen.getByRole('link', { name: /דואר אלקטרוני:/ })).toHaveAttribute('href', 'mailto:nisboutiquecatering@gmail.com');
+    expect(screen.queryByRole('heading', { name: 'אירוח שנראה מוקפד ומרגיש ביתי.' })).not.toBeInTheDocument();
   });
 });

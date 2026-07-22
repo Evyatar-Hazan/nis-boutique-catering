@@ -85,7 +85,7 @@ export const ContactSection = ({ contactWhatsapp, email, onInquirySubmit }: Cont
         </div>
 
         <div className="contact-conversion-grid" data-reveal-stagger="90">
-          <div className="contact-faq reveal" data-reveal-direction="inline-start" data-reveal-duration="720" aria-label="שאלות נפוצות">
+          <div className="contact-faq reveal" role="region" data-reveal-direction="inline-start" data-reveal-duration="720" aria-label="שאלות נפוצות">
             <Accordion items={publicContactDefaults.faqs} />
           </div>
 
