@@ -37,7 +37,7 @@ implementation_gate: ready
 
 **סטטוס נוכחי: `READY`**
 
-`UI-018` הושלמה ואומתה בפרודקשן: מעבדת הפלטות הזמנית מציגה שש אפשרויות שניתנות להשוואה ושיתוף. בסך הכול 65 מתוך 67 משימות הן `DONE`; `QA-006` מטפלת כעת בפערי הנגישות שאומתו בביקורת 2026, ו־`UI-019` נשארת חסומה עד שהלקוחה תבחר פלטה אחת.
+`UI-018` הושלמה ואומתה בפרודקשן: מעבדת הפלטות הזמנית מציגה שש אפשרויות שניתנות להשוואה ושיתוף. `QA-006` סגרה את פערי הנגישות הטכניים שאומתו בביקורת 2026. בסך הכול 66 מתוך 67 משימות הן `DONE`; `UI-019` נשארת חסומה עד שהלקוחה תבחר פלטה אחת.
 
 תוכנית השרת/קליינט, בניית מסך האדמין מחדש והמעבר מ־Google Sheets/Drive ל־Cloudflare D1/R2 נוספו למסמך ב־2026-07-20. שער המימוש נפתח לאחר השלמת:
 
@@ -1402,7 +1402,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### QA-006 — Close the verified 2026 accessibility gaps
 
-- **Status:** `VERIFYING`
+- **Status:** `DONE`
 - **Dependencies:** `QA-002`, ‏`UI-018`.
 - **Definition:** לסגור באופן ממוקד את פערי הנגישות שאומתו בביקורת 2026: לפרסם הצהרת נגישות נגישה ואמיתית, להסיר שימוש ARIA אסור משורש Google Identity ב־Studio, ולהכניס את פעולות הקשר הצפות ל־landmark סמנטי — בלי לשנות לוגיקה עסקית, תוכן מנוהל או מבנה הסקשנים.
 - **Acceptance criteria:**
@@ -1415,6 +1415,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - **Verification:** בדיקות component ממוקדות; tracker/architecture/design-token/motion/security/runbook checks; ‏lint, type-check, builds ו־full `pnpm validate`; axe/Lighthouse ו־keyboard walkthrough מקומיים ב־1440, ‏768, ‏375 ו־320 פיקסלים; לאחר push — CI/deploy ואימות אותם מסלולים ב־Production, כולל headers, console, overflow וקישורי הפנייה.
 - **Evidence (2026-07-22):** ביקורת מבוססת־עובדות אימתה יעד ישראלי של ת״י 5568 חלק 1 ברמת AA ומצאה שלושה פערים קונקרטיים: אין הצהרת נגישות ציבורית; `aria-label="כניסה עם Google"` מוצמד ל־`div` גנרי ב־Studio וגורם `aria-prohibited-attr`; והקישור הצף ל־WhatsApp נמצא מחוץ ל־landmark. Lighthouse/axe, contrast, keyboard, focus, semantics, reduced motion ו־responsive עברו ביתר המשטחים. הקבצים המתוכננים לשינוי הם entry/component/style ובדיקות באתר הציבורי, `SiteChrome.tsx`, ‏`GoogleIdentityButton.tsx`, בדיקת Studio, ‏`vite.config.ts`, ‏sitemap, קובץ המעקב ובדיקת מספר המשימות. המשימה הועברה ל־`IN_PROGRESS`.
 - **Local implementation evidence (2026-07-22):** נוסף מסלול multi-page אמיתי `/accessibility/` עם HTML/canonical/metadata נפרדים, H1 יחיד, חמישה אזורים מתויגים, תאריך עדכון, תקן יעד AA, התאמות שאומתו, הסדרי תיאום שאינם ממציאים נגישות פיזית וטלפון/דוא״ל פעילים; הפוטר מקשר אליו. preload של ה־Hero נשאר רק בדף הבית ולכן מסלול ההצהרה נטען ללא בקשת מדיה מיותרת או console warning. פעולות הקשר הצפות נמצאות כעת ב־`nav` בעל שם, ו־`aria-label` האסור הוסר משורש Google Identity. סריקת axe מורחבת חשפה תוך כדי העבודה עוד שלושה `div`‑ים עם label ללא role בהירו, בגלריה וב־FAQ; נוספו להם `group`/`region` מתאימים ללא שינוי חזות או לוגיקה, וחיפוש חי חזר עם 0 divs כאלה. axe WCAG 2 A/AA החזיר 0 violations במסלול הראשי, בהצהרה וב־Studio; בהצהרה גם 0 incomplete. Lighthouse Accessibility החזיר 100 בדסקטופ ובמובייל בשלושת המשטחים, והאתר/ההצהרה החזירו גם Best Practices ו־SEO ‏100. keyboard smoke אימת Tab→skip link→Enter→focus על `main`. ב־1440, ‏768, ‏375 ו־320 נמדדו 0 overflow; סימולציית text resize ל־200% החזירה 0 overflow/טקסט חתוך בהצהרה ובאתר, ותווית ההרצה הותאמה לשתי שורות כשנדרש. כל 152 הבדיקות, tracker/architecture/design-token/motion/security/runbook checks, ‏lint, type-check, builds, full validation ו־`git diff --check` עברו. `QA-006` עברה ל־`VERIFYING` עד CI/deploy ואימות Production; בדיקת קורא מסך אנושית ופרטי תחולה/נגישות פיזית נשארים תנאי לטענה משפטית בלתי מסויגת.
+- **Production evidence (2026-07-22):** commits ‏`cccaf86`/`0da413b` עברו CI ‏`29916965144`/`29917481593` ו־deploy ‏`29916965147`/`29917481586`; deployments הסופיים הם `12278c49` לציבורי ו־`b4ed2272` ל־Studio. `/`, ‏`/accessibility/`, ‏sitemap, ‏Studio, health ו־published החזירו `200`; ההצהרה החיה מחזירה title/canonical ייעודיים, H1 יחיד, חמישה regions, ‏0 hero preloads וקישורי טלפון/דוא״ל תקינים, וה־sitemap כולל אותה. דף הבית מציג קישור פוטר, landmark נפרד לפעולות הקשר ו־0 labelled divs ללא role; ב־Studio שורש Google נשאר ללא ARIA אסור וה־iframe החי מספק את השם `כפתור לכניסה באמצעות חשבון Google`. Lighthouse Accessibility החזיר 100 בדסקטופ ובמובייל לדף הבית, להצהרה ול־Studio; keyboard focus, ‏320/375/768/1440, ‏0 overflow ו־console נקי אומתו (מלבד `401` הצפוי של session אנונימי ב־Studio). בדיקת קצה של 320px עם text resize ‏200% חשפה כותרת רחבה, נוספה שבירה בטוחה, וה־bundle החי `main-BCOFH3cA.css` חזר עם 0 overflow ו־0 טקסט חתוך. `QA-006` ו־Phase 23 נסגרו `DONE`; בדיקת קורא מסך אנושית ופרטי תחולה/נגישות פיזית עדיין נדרשים לפני טענה משפטית בלתי מסויגת לעמידה מלאה.
 
 ## Open decisions before implementation
 
@@ -1485,9 +1486,15 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 | Phase 20 — Navbar art direction | Done | 1 | 1 |
 | Phase 21 — Public rollout status | Done | 1 | 1 |
 | Phase 22 — Temporary palette comparison | Active | 1 | 2 |
-| Phase 23 — Accessibility remediation | Active | 0 | 1 |
+| Phase 23 — Accessibility remediation | Done | 1 | 1 |
 
 ## Change Log
+
+### 2026-07-22 — QA-006 accessibility remediation completed in Production
+
+- commits ‏`cccaf86`/`0da413b`, שני מחזורי CI/deploy ו־deployments ‏`12278c49`/`b4ed2272` אומתו מול הדומיינים וה־bundles החיים.
+- דף הבית, ההצהרה וה־Studio עברו Lighthouse Accessibility ‏100 בדסקטופ ובמובייל; semantics, keyboard, ‏320–1440px, ‏200% text resize, links, sitemap, headers ו־console אומתו בפרודקשיין.
+- `QA-006` ו־Phase 23 נסגרו `DONE`. ההסתייגות היחידה היא גבול ראיות מפורש: קורא מסך אנושי ופרטי תחולה/נגישות פיזית נדרשים לפני טענה משפטית בלתי מסויגת לעמידה מלאה.
 
 ### 2026-07-22 — QA-006 accessibility remediation started
 
