@@ -1372,7 +1372,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### UI-018 — Build a six-option Palette Lab
 
-- **Status:** `VERIFYING`
+- **Status:** `DONE`
 - **Dependencies:** `UI-017`, ‏`UI-005`.
 - **Definition:** להוסיף לאתר הציבורי מעבדת פלטות זמנית, מודולרית ונגישה, שמאפשרת להשוות בין הפלטה הנוכחית לחמש חלופות על אותו אתר אמיתי בלי לשכפל רכיבים או לשנות תוכן, DOM עסקי, ניווט או לוגיקה; הבורר ייחשף רק בכתובת עם `paletteLab=1`, והבחירה תינתן לשיתוף בקישור מדויק.
 - **Acceptance criteria:**
@@ -1384,6 +1384,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 - **Verification:** בדיקות unit/component ל־resolution, URL/storage, הצגה מותנית, בחירה, איפוס והעתקת קישור; הרחבת design-token gate לכל שש הפלטות; tracker/architecture/design-token/motion/security/runbook checks, ‏lint/type-check/build/full validation, ‏local parity ו־`git diff --check`; בדפדפן ב־1440×1000, ‏768×1024 ו־375×812 לבדוק כל פלטה, persistence/share/reset, מצב רגיל ללא control, ‏0 overflow ו־console נקי; לאחר push — CI/deploy ואותן בדיקות ב־Production יחד עם public/Studio/health/published.
 - **Evidence (2026-07-22):** נבחרה ארכיטקטורת Palette Lab זמנית מעל מערכת ה־CSS tokens הקיימת: registry typed יחיד, override על `data-palette` ב־root, priority של query→storage→original ו־panel נגיש שמוצג רק עם `paletteLab=1`. הקבצים המתוכננים לשינוי הם feature חדש תחת `src/features/palette-lab`, ‏`App.tsx`, ‏`tokens.css`, ‏design-token gate, בדיקות, קובץ המעקב ובדיקת מספר המשימות. אין שינוי בקומפוננטות או בסקשנים הקיימים; `UI-018` הועברה ל־`IN_PROGRESS` והשער נפתח ל־`READY`.
 - **Local implementation evidence (2026-07-22):** נבנו registry ו־resolver typed, אתחול לפני React למניעת flash, ‏Palette Lab נגיש עם שש אפשרויות, copy/reset ו־query→storage→original, ומיפוי CSS יחיד שמזין את כל primitive/semantic tokens הקיימים. אין dependency, שינוי section/DOM עסקי או raw color מחוץ ל־`tokens.css`. design gate בודק כעת 43 זוגות WCAG AA בכל שש הפלטות. בדפדפן לוקאלי כל חלופה החזירה dark/light/accent ייחודיים, URL ואחסון נכונים ו־0 overflow; copy, reload persistence, reset, query ללא panel ו־invalid fallback אומתו. ב־1440×1000 הפאנל 448px; ב־768×1024 הוא ‏448×722.17px; וב־375×812 הוא ‏351×700px עם 10px clearance מעל sticky CTA. focus ring גלוי וה־console נקי. שבע בדיקות Palette Lab, כל 150 הבדיקות, tracker/architecture/design-token/motion/security/runbook checks, ‏lint, type-check, builds, ‏full validation, ‏local parity ו־`git diff --check` עברו; `UI-018` עברה ל־`VERIFYING` עד CI/deploy ואימות Production.
+- **Production evidence (2026-07-22):** commit `6544f0d` עבר CI `29894549646` ו־deploy `29894549619`; deployments ‏`5ed56d5c` לציבורי ו־`4988a59a` ל־Studio עלו, וה־bundles החיים הם `index-DMxNsK9P.css`/`index-CS8CxQNT.js`. בדומיין הראשי כל חמש החלופות החזירו dark/light/accent שונים ואת ה־ID, ‏URL וה־storage הנכונים; המקור הוא אפשרות שישית. copy, reset, regular mode ללא control וקישור `palette=midnight-copper` ללא control אומתו. ב־1440×1000 וב־768×1024 הפאנל ברוחב 448px; ב־375×812 הוא ‏351×700px, מסתיים ב־728px ומשאיר 10px לפני sticky CTA שמתחיל ב־738px. בכל המצבים 0 overflow ו־0 console errors/warnings. public, Studio, health ו־published החזירו `200`; `UI-018` נסגרה `DONE`, בעוד `UI-019` נשארת `BLOCKED` עד בחירת הלקוחה.
 
 #### UI-019 — Promote the selected palette and remove the lab
 
@@ -1465,9 +1466,15 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 | Phase 19 — Footer art direction | Done | 1 | 1 |
 | Phase 20 — Navbar art direction | Done | 1 | 1 |
 | Phase 21 — Public rollout status | Done | 1 | 1 |
-| Phase 22 — Temporary palette comparison | Active | 0 | 2 |
+| Phase 22 — Temporary palette comparison | Active | 1 | 2 |
 
 ## Change Log
+
+### 2026-07-22 — UI-018 six-option Palette Lab completed in Production
+
+- commit `6544f0d`, ‏CI `29894549646`, deploy `29894549619` ו־deployments ‏`5ed56d5c`/`4988a59a` אומתו מול bundles חיים.
+- Production אישר שש אפשרויות, צבעים מחושבים שונים, URL/storage/copy/reset, מצב רגיל מוסתר וקישור palette ישיר; desktop, tablet ו־mobile נשארו עם 0 overflow ו־console נקי.
+- `UI-018` נסגרה `DONE` ו־Phase 22 עומדת על 1/2; `UI-019` נשארת `BLOCKED` בכוונה עד בחירה מפורשת של הלקוחה.
 
 ### 2026-07-22 — UI-018 six-option Palette Lab verified locally
 
