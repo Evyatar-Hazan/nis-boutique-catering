@@ -1,4 +1,4 @@
-const businessPhoneNational = '0559445928' as const;
+const businessPhoneNational = '0559945928' as const;
 
 const toIsraeliE164 = (phone: string): `+972${string}` => {
   if (!/^05\d{8}$/u.test(phone)) {
