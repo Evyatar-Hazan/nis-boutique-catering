@@ -34,7 +34,7 @@
     "admin:build": "turbo run build --filter @monorepo/nis-content-studio",
     "build": "turbo run build",
     "cloudflare:build:admin": "pnpm --filter @monorepo/nis-content-studio build",
-    "cloudflare:build:site": "pnpm --filter @monorepo/nis-boutique-catering content:sync:cloudflare && pnpm --filter @monorepo/nis-boutique-catering build",
+    "cloudflare:build:site": "pnpm --filter @monorepo/nis-boutique-catering content:sync:cloudflare && CONTENT_CHECK_REQUIRE_GENERATED_MEDIA=1 pnpm --filter @monorepo/nis-boutique-catering content:check && pnpm --filter @monorepo/nis-boutique-catering build",
     "lint": "turbo run lint",
     "content:check": "pnpm --filter @monorepo/nis-boutique-catering content:check",
     "media:check": "pnpm --filter @monorepo/nis-boutique-catering media:check",

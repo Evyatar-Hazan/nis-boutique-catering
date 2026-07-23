@@ -15,35 +15,50 @@ const document = publicSiteDocumentSchema.parse(publicSiteDocument);
 assertUniquePublicFaqQuestions(document.sections.contact.faqs);
 const mediaById = new Map(document.media.map((asset) => [asset.id, asset]));
 const referencedIds = getPublicMediaReferenceIds(document);
-const missingMedia = referencedIds.flatMap((mediaId) => {
+const missingReferences = referencedIds.filter((mediaId) => {
   const asset = mediaById.get(mediaId);
-  if (!asset || asset.archivedAt) {
-    return [mediaId];
-  }
-  const extension = asset.kind === 'image'
-    ? '.webp'
-    : asset.mimeType === 'video/webm'
-      ? '.webm'
-      : '.mp4';
-  const primarySrc = `/media/cms/${asset.id}${extension}`;
-  if (asset.kind !== 'image') {
-    return existsSync(resolve(appRoot, `public${primarySrc}`)) ? [] : [primarySrc];
-  }
-  const image: ResponsiveImageAsset = {
-    height: asset.height,
-    responsive: true,
-    sizes: heroImageSizes,
-    src: primarySrc,
-    width: asset.width,
-  };
-  const variants = getResponsiveImageSrcSet(image, 'webp')
-    ?.split(', ')
-    .map((candidate) => candidate.split(' ')[0]) ?? [primarySrc];
-  return variants.filter((src) => !existsSync(resolve(appRoot, `public${src}`)));
+  return !asset || Boolean(asset.archivedAt);
 });
 
-if (missingMedia.length > 0) {
-  throw new Error(`Missing generated public media: ${missingMedia.join(', ')}`);
+if (missingReferences.length > 0) {
+  throw new Error(`Missing or archived referenced media: ${missingReferences.join(', ')}`);
 }
 
-console.log(`Content check passed for schema v${document.schemaVersion} with ${referencedIds.length} media references.`);
+const requireGeneratedMedia = process.env.CONTENT_CHECK_REQUIRE_GENERATED_MEDIA === '1';
+const missingGeneratedMedia = requireGeneratedMedia
+  ? referencedIds.flatMap((mediaId) => {
+      const asset = mediaById.get(mediaId);
+      if (!asset) {
+        return [mediaId];
+      }
+      const extension = asset.kind === 'image'
+        ? '.webp'
+        : asset.mimeType === 'video/webm'
+          ? '.webm'
+          : '.mp4';
+      const primarySrc = `/media/cms/${asset.id}${extension}`;
+      if (asset.kind !== 'image') {
+        return existsSync(resolve(appRoot, `public${primarySrc}`)) ? [] : [primarySrc];
+      }
+      const image: ResponsiveImageAsset = {
+        height: asset.height,
+        responsive: true,
+        sizes: heroImageSizes,
+        src: primarySrc,
+        width: asset.width,
+      };
+      const variants = getResponsiveImageSrcSet(image, 'webp')
+        ?.split(', ')
+        .map((candidate) => candidate.split(' ')[0]) ?? [primarySrc];
+      return variants.filter((src) => !existsSync(resolve(appRoot, `public${src}`)));
+    })
+  : [];
+
+if (missingGeneratedMedia.length > 0) {
+  throw new Error(`Missing generated public media: ${missingGeneratedMedia.join(', ')}`);
+}
+
+console.log(
+  `Content check passed for schema v${document.schemaVersion} with ${referencedIds.length} media references`
+    + `${requireGeneratedMedia ? ' and generated media' : ''}.`,
+);
