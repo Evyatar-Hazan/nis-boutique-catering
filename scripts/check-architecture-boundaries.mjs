@@ -24,6 +24,11 @@ const workspaces = [
     root: resolve(repoRoot, 'apps/admin/nis-content-studio'),
     allowedWorkspaceImports: new Set(['@monorepo/content-schema', '@monorepo/site-preview']),
   },
+  {
+    name: '@monorepo/nis-media-library',
+    root: resolve(repoRoot, 'apps/admin/nis-media-library'),
+    allowedWorkspaceImports: new Set(),
+  },
 ];
 
 const sourceExtensions = new Set(['.js', '.jsx', '.mjs', '.ts', '.tsx']);

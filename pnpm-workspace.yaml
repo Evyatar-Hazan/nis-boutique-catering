@@ -2,3 +2,4 @@ packages:
   - 'packages/*'
   - 'apps/frontend/nis-boutique-catering'
   - 'apps/admin/nis-content-studio'
+  - 'apps/admin/nis-media-library'

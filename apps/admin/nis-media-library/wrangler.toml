@@ -1,0 +1,37 @@
+name = "nis-media-library"
+pages_build_output_dir = "./dist"
+compatibility_date = "2026-07-20"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+GOOGLE_CLIENT_ID = "1071746882514-thn0l2mpo0t3dgrcanfb14sjmr4gpof7.apps.googleusercontent.com"
+DRIVE_ROOT_FOLDER_NAME = "NIS Catering Media"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "nis-media-library-preview"
+database_id = "3f2896c2-70e0-4279-b85b-de8e726925b5"
+migrations_dir = "migrations"
+migrations_table = "d1_migrations"
+
+[env.preview.vars]
+GOOGLE_CLIENT_ID = "1071746882514-thn0l2mpo0t3dgrcanfb14sjmr4gpof7.apps.googleusercontent.com"
+DRIVE_ROOT_FOLDER_NAME = "NIS Catering Media"
+
+[[env.preview.d1_databases]]
+binding = "DB"
+database_name = "nis-media-library-preview"
+database_id = "3f2896c2-70e0-4279-b85b-de8e726925b5"
+migrations_dir = "migrations"
+migrations_table = "d1_migrations"
+
+[env.production.vars]
+GOOGLE_CLIENT_ID = "1071746882514-thn0l2mpo0t3dgrcanfb14sjmr4gpof7.apps.googleusercontent.com"
+DRIVE_ROOT_FOLDER_NAME = "NIS Catering Media"
+
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "nis-media-library-production"
+database_id = "773b87e7-7657-4670-83c7-f0c10c4b34de"
+migrations_dir = "migrations"
+migrations_table = "d1_migrations"

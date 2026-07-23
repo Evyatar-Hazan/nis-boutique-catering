@@ -25,6 +25,13 @@
     "dev": "turbo run dev --filter @monorepo/nis-boutique-catering",
     "dev:all": "turbo run dev",
     "admin:dev": "turbo run dev --filter @monorepo/nis-content-studio",
+    "media-library:dev": "turbo run dev --filter @monorepo/nis-media-library",
+    "media-library:pages:dev": "pnpm --filter @monorepo/nis-media-library pages:dev",
+    "media-library:build": "turbo run build --filter @monorepo/nis-media-library",
+    "media-library:db:migrate:local": "pnpm --filter @monorepo/nis-media-library db:migrate:local",
+    "media-library:db:migrate:preview": "pnpm --filter @monorepo/nis-media-library db:migrate:preview",
+    "media-library:db:migrate:production": "pnpm --filter @monorepo/nis-media-library db:migrate:production",
+    "media-library:db:seed": "pnpm --filter @monorepo/nis-media-library db:seed",
     "admin:pages:dev": "pnpm --filter @monorepo/nis-content-studio pages:dev",
     "cloudflare:types": "pnpm --filter @monorepo/nis-content-studio cloudflare:types",
     "db:migrate:local": "pnpm --filter @monorepo/nis-content-studio db:migrate:local",
@@ -35,6 +42,7 @@
     "build": "turbo run build",
     "cloudflare:build:admin": "pnpm --filter @monorepo/nis-content-studio build",
     "cloudflare:build:site": "pnpm --filter @monorepo/nis-boutique-catering content:sync:cloudflare && CONTENT_CHECK_REQUIRE_GENERATED_MEDIA=1 pnpm --filter @monorepo/nis-boutique-catering content:check && pnpm --filter @monorepo/nis-boutique-catering build",
+    "cloudflare:build:media-library": "pnpm --filter @monorepo/nis-media-library build",
     "lint": "turbo run lint",
     "content:check": "pnpm --filter @monorepo/nis-boutique-catering content:check",
     "media:check": "pnpm --filter @monorepo/nis-boutique-catering media:check",
@@ -55,6 +63,7 @@
   "workspaces": [
     "packages/*",
     "apps/frontend/nis-boutique-catering",
-    "apps/admin/nis-content-studio"
+    "apps/admin/nis-content-studio",
+    "apps/admin/nis-media-library"
   ]
 }

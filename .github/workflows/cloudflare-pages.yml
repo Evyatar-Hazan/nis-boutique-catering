@@ -17,6 +17,7 @@ env:
   CLOUDFLARE_ZONE_ID: c2a593125ed4fe46262ef7c46d97e3e3
   PUBLIC_SITE_PROJECT: nis-boutique-catering
   ADMIN_STUDIO_PROJECT: nis-content-studio
+  MEDIA_LIBRARY_PROJECT: nis-media-library
 
 jobs:
   deploy:
@@ -54,6 +55,11 @@ jobs:
 
       - name: Build admin studio
         run: pnpm cloudflare:build:admin
+        env:
+          VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
+
+      - name: Build media library
+        run: pnpm cloudflare:build:media-library
         env:
           VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
 
@@ -96,6 +102,28 @@ jobs:
           }
 
           deploy_pages dist "${ADMIN_STUDIO_PROJECT}"
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Deploy media library to Cloudflare Pages
+        working-directory: apps/admin/nis-media-library
+        run: |
+          deploy_pages() {
+            local attempt=1
+            until npx wrangler@4 pages deploy "$1" \
+              --project-name="$2" \
+              --branch=main \
+              --commit-dirty=true; do
+              if [ "$attempt" -ge 3 ]; then
+                return 1
+              fi
+              sleep $((attempt * 10))
+              attempt=$((attempt + 1))
+            done
+          }
+
+          deploy_pages dist "${MEDIA_LIBRARY_PROJECT}"
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
@@ -191,3 +219,4 @@ jobs:
 
           check_robots "https://nisboutiquecatering.com/robots.txt" "Sitemap: https://nisboutiquecatering.com/sitemap.xml"
           check_robots "https://studio.nisboutiquecatering.com/robots.txt" "Disallow: /"
+          check_robots "https://media.nisboutiquecatering.com/robots.txt" "Disallow: /"

@@ -2,13 +2,18 @@
 
 Monorepo dedicated to the Nis boutique catering website.
 
-Production is fully migrated to Cloudflare: D1 owns structured content and revisions, R2 owns managed media, and Google is used only for Studio identity.
+Production is hosted on Cloudflare. D1 owns structured content and revisions, R2 owns
+public-site media, and a separate private media library uses Google Drive for the
+catering team's searchable source-photo archive.
 
 ## Structure
 
 ```text
 .
 ├── apps/
+│   ├── admin/
+│   │   ├── nis-content-studio/
+│   │   └── nis-media-library/
 │   └── frontend/
 │       └── nis-boutique-catering/
 ├── package.json
@@ -43,6 +48,9 @@ pnpm type-check
 pnpm lint
 pnpm media:check
 pnpm media:optimize
+pnpm media-library:dev
+pnpm media-library:pages:dev
+pnpm media-library:build
 pnpm artifacts:list
 pnpm artifacts:clean
 pnpm test
@@ -59,9 +67,15 @@ pnpm build
 - Run `pnpm parity:local` to mirror the CI validate job locally with the same runtime, frozen lockfile install, and workspace gate.
 - Run `pnpm parity:local:deploy` to mirror the deploy workflow build path locally. It requires the Cloudflare content API origin and the Google Identity client ID used by the Studio.
 
-## App
+## Apps
 
-The production website lives in `apps/frontend/nis-boutique-catering`.
+- Public website: `apps/frontend/nis-boutique-catering`
+- Content Studio: `apps/admin/nis-content-studio`
+- Private Drive media library: `apps/admin/nis-media-library`
+
+The Drive library is intentionally separate from the public publishing pipeline.
+Uploading a source photo to Drive does not publish it to the website or replace the
+Studio's D1/R2 source of truth.
 
 ## Documentation
 
@@ -69,6 +83,7 @@ The production website lives in `apps/frontend/nis-boutique-catering`.
 - Full content pipeline and publishing flow: [docs/content-flow.md](/Users/evyatarhazan/Desktop/project/nis-boutique-catering/docs/content-flow.md)
 - Historical architecture and operational timeline: [docs/history.md](/Users/evyatarhazan/Desktop/project/nis-boutique-catering/docs/history.md)
 - Studio setup and operations: [CONTENT_STUDIO.md](/Users/evyatarhazan/Desktop/project/nis-boutique-catering/CONTENT_STUDIO.md)
+- Drive media library architecture and operations: [docs/media-library.md](/Users/evyatarhazan/Desktop/project/nis-boutique-catering/docs/media-library.md)
 - Local parity env template: [.env.example](/Users/evyatarhazan/Desktop/project/nis-boutique-catering/.env.example)
 
 ## Local Artifacts
