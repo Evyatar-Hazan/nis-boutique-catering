@@ -21,6 +21,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import {
+  businessContact,
   getPrimaryHeroMediaId,
   heroImageSizes,
   publicHeroDefaults,
@@ -32,10 +33,8 @@ const contentSnapshot: ContentSnapshot = generatedContentSnapshot;
 
 const generatedSettings = contentSnapshot.settings;
 
-export const phoneDisplay = generatedSettings.phoneDisplay || '050-3502615';
-export const phoneHref = generatedSettings.phoneHref || 'tel:+972503502615';
+export const { phoneDisplay, phoneHref, whatsappBase } = businessContact;
 export const email = generatedSettings.email || 'nisboutiquecatering@gmail.com';
-export const whatsappBase = generatedSettings.whatsappBase || 'https://wa.me/972503502615';
 export const siteVersion = generatedSettings.siteVersion || 'v0.1.1';
 
 export const sectionIds = ['top', 'experiences', 'gallery', 'process', 'contact'] as const;

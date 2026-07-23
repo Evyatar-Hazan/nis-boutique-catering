@@ -12,6 +12,10 @@
       "types": "./src/media.ts",
       "import": "./src/media.ts"
     },
+    "./contact": {
+      "types": "./src/contact.ts",
+      "import": "./src/contact.ts"
+    },
     "./test-fixtures": {
       "types": "./src/testFixtures.ts",
       "import": "./src/testFixtures.ts"

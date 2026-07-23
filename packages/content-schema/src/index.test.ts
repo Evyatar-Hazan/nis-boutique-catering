@@ -26,10 +26,7 @@ const snapshot = {
   version: '1',
   updatedAt: '2026-06-17T00:00:00.000Z',
   settings: {
-    phoneDisplay: '050-3502615',
-    phoneHref: 'tel:+972503502615',
     email: 'nisboutiquecatering@gmail.com',
-    whatsappBase: 'https://wa.me/972503502615',
     siteVersion: 'v0.1.2',
   },
   media: [{ id: 'tray', src: '/media/cms/tray.webp', width: 1200, height: 1600, responsive: true }],

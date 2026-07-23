@@ -13,7 +13,7 @@ import {
   Utensils,
   type LucideIcon,
 } from 'lucide-react';
-import { publicHeroDefaults } from '@monorepo/content-schema';
+import { businessContact, publicHeroDefaults } from '@monorepo/content-schema';
 import type { SiteSectionPreviewData } from './SiteSectionPreviewData';
 
 const image = (
@@ -115,7 +115,7 @@ export const fallbackSiteSectionPreviewData: SiteSectionPreviewData = {
     { title: 'תפריט שבת לדוגמה', intro: 'כיוון כללי לשולחן שבת.', items: ['סלטים', 'דגים', 'עיקריות', 'תוספות'] },
     { title: 'מגשי אירוח', intro: 'פתרון לאירוח קטן.', items: ['מאפים', 'כריכונים', 'מגשים מלוחים'] },
   ],
-  phoneHref: 'tel:+972503502615',
+  phoneHref: businessContact.phoneHref,
   processSteps: [
     card('שולחים הודעה', 'וואטסאפ או טופס מסודר.', MessageCircle),
     card('מחדדים כיוון', 'סוג אירוח, תאריך וכמות.', CalendarDays),
@@ -236,5 +236,5 @@ export const fallbackSiteSectionPreviewData: SiteSectionPreviewData = {
     saladCupsPrep: '/media/food/nis-salad-cups-prep.mp4',
     eventVideo: '/media/food/events/nis-event-table-video.mp4',
   },
-  whatsappBase: 'https://wa.me/972503502615',
+  whatsappBase: businessContact.whatsappBase,
 };

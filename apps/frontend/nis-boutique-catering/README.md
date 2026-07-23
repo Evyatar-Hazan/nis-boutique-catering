@@ -25,7 +25,7 @@ src/
 ## Temporary V1 Data
 
 - Business email: `nisboutiquecatering@gmail.com`
-- Phone and WhatsApp: `050-3502615`
+- Phone and WhatsApp are derived from the single canonical value in `packages/content-schema/src/contact.ts`.
 - Activity area: Beitar Illit and nearby areas by coordination
 - Minimum order: decided per inquiry
 - Lead time: contact as early as possible

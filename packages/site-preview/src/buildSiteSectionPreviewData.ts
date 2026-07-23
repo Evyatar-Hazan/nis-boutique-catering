@@ -1,4 +1,5 @@
 import {
+  businessContact,
   getActiveSectionsByGroup,
   getPreviewCopySection,
   getPreviewMicrocopy,
@@ -82,7 +83,8 @@ export const buildSiteSectionPreviewData = (
 
   return {
     ...defaults,
-    phoneHref: content.settings.phoneHref || defaults.phoneHref,
+    phoneHref: businessContact.phoneHref,
+    whatsappBase: businessContact.whatsappBase,
     heroContent: {
       eyebrow: publicHeroDefaults.eyebrow,
       title: publicHeroDefaults.title,

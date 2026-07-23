@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, within } from '@testing-library/react';
+import { businessContact } from '@monorepo/content-schema';
 import { afterEach, describe, expect, it } from 'vitest';
 import App from './App';
 
@@ -147,7 +148,7 @@ describe('Nis boutique catering app', () => {
 
     fireEvent.submit(screen.getByRole('button', { name: 'שלחו פנייה בוואטסאפ' }).closest('form')!);
 
-    expect(window.location.href).toContain('https://wa.me/972503502615?text=');
+    expect(window.location.href).toContain(`${businessContact.whatsappBase}?text=`);
     expect(decodeURIComponent(window.location.href)).toContain('שם מלא: שרה כהן');
     expect(decodeURIComponent(window.location.href)).toContain('במה אתם מתעניינים?: ניס בטעם של שבת');
     expect(decodeURIComponent(window.location.href)).toContain('הודעה קצרה: נשמח למארז לדרך');
@@ -164,8 +165,8 @@ describe('Nis boutique catering app', () => {
     const links = stickyCta.querySelectorAll('a');
 
     expect(links).toHaveLength(2);
-    expect(links[0]).toHaveAttribute('href', expect.stringContaining('wa.me/972503502615'));
-    expect(links[1]).toHaveAttribute('href', 'tel:+972503502615');
+    expect(links[0]).toHaveAttribute('href', expect.stringContaining(businessContact.whatsappBase));
+    expect(links[1]).toHaveAttribute('href', businessContact.phoneHref);
   });
 
   it('places floating contact actions in a named navigation landmark', () => {
@@ -185,7 +186,10 @@ describe('Nis boutique catering app', () => {
     expect(screen.getByRole('heading', { level: 1, name: 'הצהרת נגישות' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { level: 2, name: 'תקן היעד והבדיקות' })).toBeInTheDocument();
     expect(screen.getByText(/ת״י 5568 חלק 1/)).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /טלפון: 050-3502615/ })).toHaveAttribute('href', 'tel:+972503502615');
+    expect(screen.getByRole('link', { name: `טלפון: ${businessContact.phoneDisplay}` })).toHaveAttribute(
+      'href',
+      businessContact.phoneHref,
+    );
     expect(screen.getByRole('link', { name: /דואר אלקטרוני:/ })).toHaveAttribute('href', 'mailto:nisboutiquecatering@gmail.com');
     expect(screen.queryByRole('heading', { name: 'אירוח שנראה מוקפד ומרגיש ביתי.' })).not.toBeInTheDocument();
   });

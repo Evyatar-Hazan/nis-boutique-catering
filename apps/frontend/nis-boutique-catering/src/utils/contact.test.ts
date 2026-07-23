@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { businessContact } from '@monorepo/content-schema';
 
 import { buildInquiryWhatsappLink, buildWhatsappLink } from './contact';
 
@@ -7,7 +8,7 @@ describe('WhatsApp contact links', () => {
     const message = 'שלום Nis, שבת & אירוח קטן?';
     const link = buildWhatsappLink(message);
 
-    expect(link).toMatch(/^https:\/\/wa\.me\/972503502615\?text=/u);
+    expect(link.startsWith(`${businessContact.whatsappBase}?text=`)).toBe(true);
     expect(new URL(link).searchParams.get('text')).toBe(message);
   });
 

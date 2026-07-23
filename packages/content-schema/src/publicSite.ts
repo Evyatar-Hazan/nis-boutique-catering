@@ -218,10 +218,7 @@ export const publicSiteDocumentSchema = z.object({
   version: idSchema,
   updatedAt: timestampSchema,
   settings: z.object({
-    phoneDisplay: shortTextSchema,
-    phoneHref: z.string().trim().regex(/^tel:\+?[0-9]+$/),
     email: z.string().trim().email(),
-    whatsappBase: z.string().trim().url(),
     seoTitle: shortTextSchema,
     seoDescription: bodyTextSchema,
   }),

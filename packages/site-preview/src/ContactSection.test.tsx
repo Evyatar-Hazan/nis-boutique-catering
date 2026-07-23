@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 import '@testing-library/jest-dom/vitest';
+import { businessContact } from '@monorepo/content-schema';
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { ContactSection } from './ContactSection';
@@ -11,7 +12,7 @@ const renderContact = (onInquirySubmit = vi.fn()) => ({
   ...render(
     <SiteSectionPreviewDataProvider value={fallbackSiteSectionPreviewData}>
       <ContactSection
-        contactWhatsapp="https://wa.me/972503502615"
+        contactWhatsapp={businessContact.whatsappBase}
         email="nis@example.com"
         onInquirySubmit={onInquirySubmit}
       />

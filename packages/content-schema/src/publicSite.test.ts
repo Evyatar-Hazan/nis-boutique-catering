@@ -30,10 +30,7 @@ const validDocument: PublicSiteDocument = {
   version: 'revision-1',
   updatedAt: '2026-07-20T00:00:00.000Z',
   settings: {
-    phoneDisplay: '050-3502615',
-    phoneHref: 'tel:+972503502615',
     email: 'nisboutiquecatering@gmail.com',
-    whatsappBase: 'https://wa.me/972503502615',
     seoTitle: 'Nis Boutique Catering',
     seoDescription: 'קייטרינג בוטיק לאירוח מוקפד.',
   },

@@ -113,12 +113,9 @@ export const adaptPublicSiteDocument = (
     })),
     settings: {
       email: document.settings.email,
-      phoneDisplay: document.settings.phoneDisplay,
-      phoneHref: document.settings.phoneHref,
       seoDescription: document.settings.seoDescription,
       seoTitle: document.settings.seoTitle,
       siteVersion: document.version,
-      whatsappBase: document.settings.whatsappBase,
     },
     updatedAt: document.updatedAt,
     version: document.version,

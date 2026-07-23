@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { businessContact } from '@monorepo/content-schema/contact';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import type { ContentSnapshot } from '@monorepo/content-schema';
@@ -9,26 +10,29 @@ const contentPath = fileURLToPath(new URL('./src/generated/siteContent.generated
 
 const heroPreloadPlugin = () => ({
   name: 'nis-hero-preload',
-  transformIndexHtml(_html: string, context: { path: string }) {
+  transformIndexHtml(html: string, context: { path: string }) {
     if (context.path.startsWith('/accessibility/')) {
       return [];
     }
     const content = JSON.parse(readFileSync(contentPath, 'utf8')) as ContentSnapshot;
     const preload = createHeroPreload(content);
 
-    return [{
-      tag: 'link',
-      attrs: {
-        rel: 'preload',
-        as: 'image',
-        type: preload.type,
-        href: preload.href,
-        ...(preload.imageSrcSet ? { imagesrcset: preload.imageSrcSet } : {}),
-        ...(preload.imageSizes ? { imagesizes: preload.imageSizes } : {}),
-        fetchpriority: 'high',
-      },
-      injectTo: 'head' as const,
-    }];
+    return {
+      html: html.replace('__NIS_BUSINESS_PHONE_E164__', businessContact.phoneE164),
+      tags: [{
+        tag: 'link',
+        attrs: {
+          rel: 'preload',
+          as: 'image',
+          type: preload.type,
+          href: preload.href,
+          ...(preload.imageSrcSet ? { imagesrcset: preload.imageSrcSet } : {}),
+          ...(preload.imageSizes ? { imagesizes: preload.imageSizes } : {}),
+          fetchpriority: 'high',
+        },
+        injectTo: 'head' as const,
+      }],
+    };
   },
 });
 

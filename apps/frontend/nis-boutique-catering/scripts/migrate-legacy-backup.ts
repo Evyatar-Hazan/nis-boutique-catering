@@ -142,11 +142,8 @@ export const transformLegacyBackup = async (backupRoot: string) => {
     },
     settings: {
       email: legacy.settings.email,
-      phoneDisplay: legacy.settings.phoneDisplay,
-      phoneHref: legacy.settings.phoneHref,
       seoDescription: legacy.settings.seoDescription ?? 'קייטרינג בוטיק לאירוח מוקפד מביתר עילית.',
       seoTitle: legacy.settings.seoTitle ?? 'Nis Boutique Catering',
-      whatsappBase: legacy.settings.whatsappBase,
     },
     updatedAt,
     version: `legacy-${backup.backedUpAt}`,

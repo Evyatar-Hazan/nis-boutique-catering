@@ -83,11 +83,8 @@ export const createPublicSiteDocument = (
   },
   settings: {
     email: 'owner@example.com',
-    phoneDisplay: '050-0000000',
-    phoneHref: 'tel:+972500000000',
     seoDescription: 'קייטרינג בוטיק לאירוח מוקפד.',
     seoTitle: 'Nis Boutique Catering',
-    whatsappBase: 'https://wa.me/972500000000',
   },
   updatedAt: '2026-07-20T00:00:00.000Z',
   version,

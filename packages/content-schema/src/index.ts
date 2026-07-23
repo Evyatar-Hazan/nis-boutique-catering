@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 export * from './publicSite';
 export * from './media';
+export * from './contact';
 
 export const galleryCategoryIds = ['all', 'tables', 'trays', 'salads', 'coffee', 'fish'] as const;
 
@@ -34,10 +35,7 @@ export const galleryItemSchema = z.object({
 });
 
 export const siteSettingsSchema = z.object({
-  phoneDisplay: z.string().min(1),
-  phoneHref: z.string().min(1),
   email: z.string().email(),
-  whatsappBase: z.string().url(),
   siteVersion: z.string().min(1),
   seoTitle: z.string().min(1).optional(),
   seoDescription: z.string().min(1).optional(),
@@ -122,20 +120,6 @@ export const contentFieldHelp = {
     media: {
       label: 'ספריית תמונות',
       help: 'תמונות המקור בדרייב ומה שנוצר מהן לאתר.',
-    },
-  },
-  settings: {
-    phoneDisplay: {
-      label: 'טלפון שמוצג באתר',
-      help: 'מופיע בכפתורי יצירת קשר ובאזור הסיום.',
-    },
-    phoneHref: {
-      label: 'קישור טלפון',
-      help: 'הקישור שלחיצה עליו פותחת שיחה במובייל.',
-    },
-    whatsappBase: {
-      label: 'קישור WhatsApp',
-      help: 'כל כפתורי הוואטסאפ באתר משתמשים בכתובת הזו.',
     },
   },
   media: {

@@ -7,10 +7,7 @@ const snapshot = (items: readonly string[], src: string): ContentSnapshot => ({
   updatedAt: '2026-07-20T00:00:00.000Z',
   settings: {
     email: 'hello@example.com',
-    phoneDisplay: '050-0000000',
-    phoneHref: 'tel:+972500000000',
     siteVersion: 'test',
-    whatsappBase: 'https://wa.me/972500000000',
   },
   gallery: [],
   services: [],
