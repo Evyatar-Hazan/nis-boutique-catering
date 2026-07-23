@@ -39,7 +39,7 @@ src/
 pnpm --filter @monorepo/nis-boutique-catering dev
 pnpm --filter @monorepo/nis-boutique-catering type-check
 pnpm --filter @monorepo/nis-boutique-catering lint
-pnpm --filter @monorepo/nis-boutique-catering media:optimize
+pnpm --filter @monorepo/nis-boutique-catering content:check
 pnpm --filter @monorepo/nis-boutique-catering media:check
 pnpm --filter @monorepo/nis-boutique-catering test
 pnpm --filter @monorepo/nis-boutique-catering build

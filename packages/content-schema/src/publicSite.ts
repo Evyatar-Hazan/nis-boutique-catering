@@ -302,3 +302,23 @@ export const publicSiteDocumentSchema = z.object({
 export type PublicMediaAsset = z.infer<typeof publicMediaAssetSchema>;
 export type PublicGalleryCategory = z.infer<typeof publicGalleryCategorySchema>;
 export type PublicSiteDocument = z.infer<typeof publicSiteDocumentSchema>;
+
+export const deduplicatePublicFaqQuestions = <
+  T extends { readonly question: string },
+>(faqs: readonly T[]): T[] => {
+  const questions = new Set<string>();
+  return faqs.filter(({ question }) => {
+    const normalizedQuestion = question.trim();
+    if (questions.has(normalizedQuestion)) return false;
+    questions.add(normalizedQuestion);
+    return true;
+  });
+};
+
+export const assertUniquePublicFaqQuestions = (
+  faqs: readonly { readonly question: string }[],
+) => {
+  if (deduplicatePublicFaqQuestions(faqs).length !== faqs.length) {
+    throw new Error('Duplicate questions in faqs');
+  }
+};

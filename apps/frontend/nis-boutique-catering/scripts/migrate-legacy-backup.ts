@@ -1,4 +1,5 @@
 import {
+  deduplicatePublicFaqQuestions,
   contentSnapshotSchema,
   publicContactDefaults,
   publicHeroDefaults,
@@ -88,7 +89,14 @@ export const transformLegacyBackup = async (backupRoot: string) => {
   const selectedGallery = activeGallery.slice(0, 9);
   const process = legacy.sections.filter(({ active, deletedAt, group }) => group === 'process' && active && !deletedAt).sort((a, b) => a.order - b.order);
   const coordination = legacy.sections.filter(({ active, deletedAt, group }) => group === 'coordination' && active && !deletedAt).sort((a, b) => a.order - b.order).slice(0, 3);
-  const faqs = legacy.sections.filter(({ active, deletedAt, group }) => group === 'faq' && active && !deletedAt).sort((a, b) => a.order - b.order).slice(0, 4);
+  const faqs = deduplicatePublicFaqQuestions(
+    legacy.sections
+      .filter(({ active, deletedAt, group, title }) => (
+        group === 'faq' && active && !deletedAt && Boolean(title?.trim())
+      ))
+      .sort((a, b) => a.order - b.order)
+      .map((item) => ({ ...item, question: item.title?.trim() ?? '' })),
+  ).slice(0, 4);
   if (process.length !== 4) warnings.push(`Expected 4 process steps, found ${process.length}.`);
   if (faqs.length < 3) warnings.push(`Expected at least 3 FAQs, found ${faqs.length}.`);
 

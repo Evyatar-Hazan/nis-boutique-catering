@@ -2,12 +2,15 @@
 import '@testing-library/jest-dom/vitest';
 import { cleanup, render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
-import { fallbackSiteSectionPreviewData } from './fallbackSiteSectionPreviewData';
 import { ServicesSection } from './ServicesSection';
 import { SiteSectionPreviewDataProvider } from './SiteSectionPreviewData';
+import { siteSectionPreviewDataFixture } from './test/siteSectionPreviewDataFixture';
 
-const renderServices = (services = fallbackSiteSectionPreviewData.services) => render(
-  <SiteSectionPreviewDataProvider value={{ ...fallbackSiteSectionPreviewData, services }}>
+const renderServices = (items = siteSectionPreviewDataFixture.services.items) => render(
+  <SiteSectionPreviewDataProvider value={{
+    ...siteSectionPreviewDataFixture,
+    services: { ...siteSectionPreviewDataFixture.services, items },
+  }}>
     <ServicesSection />
   </SiteSectionPreviewDataProvider>,
 );
@@ -34,7 +37,7 @@ describe('ServicesSection', () => {
   });
 
   it('shows one clear unavailable state instead of partial service cards', () => {
-    renderServices(fallbackSiteSectionPreviewData.services.slice(0, 2));
+    renderServices(siteSectionPreviewDataFixture.services.items.slice(0, 2));
     expect(screen.getByRole('status')).toHaveTextContent('אפשרויות ההזמנה מתעדכנות כרגע');
     expect(screen.queryByRole('article')).not.toBeInTheDocument();
   });

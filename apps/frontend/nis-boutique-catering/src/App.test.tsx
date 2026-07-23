@@ -62,11 +62,11 @@ describe('Nis boutique catering app', () => {
     const initialButtons = await screen.findAllByRole('button', { name: /פתח תמונה:/i });
     expect(initialButtons).toHaveLength(6);
 
-    fireEvent.click(screen.getByRole('button', { name: 'דגים' }));
+    fireEvent.click(screen.getByRole('button', { name: 'סלטים' }));
 
     const filteredButtons = await screen.findAllByRole('button', { name: /פתח תמונה:/i });
     expect(filteredButtons).toHaveLength(2);
-    expect(screen.getByRole('button', { name: 'דגים' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: 'סלטים' })).toHaveAttribute('aria-pressed', 'true');
     expect(container.querySelectorAll('#gallery video')).toHaveLength(0);
     expect(container.querySelector('.real-media-section')).not.toBeInTheDocument();
   });
@@ -103,9 +103,9 @@ describe('Nis boutique catering app', () => {
 
     const offers = within(experienceSection);
     expect(offers.getAllByRole('article')).toHaveLength(3);
-    expect(offers.getByRole('heading', { level: 3, name: 'אוכל לשבת' })).toBeInTheDocument();
-    expect(offers.getByRole('heading', { level: 3, name: 'אירוח קטן' })).toBeInTheDocument();
-    expect(offers.getByRole('heading', { level: 3, name: 'מארזים לדרך' })).toBeInTheDocument();
+    expect(offers.getByRole('heading', { level: 3, name: 'ניס בטעם של שבת' })).toBeInTheDocument();
+    expect(offers.getByRole('heading', { level: 3, name: 'ניס בכיס' })).toBeInTheDocument();
+    expect(offers.getByRole('heading', { level: 3, name: 'Travel Nis' })).toBeInTheDocument();
     expect(offers.queryByRole('tablist')).not.toBeInTheDocument();
   });
 

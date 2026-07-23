@@ -1,236 +1,126 @@
 import {
+  CheckCircle2,
+  ChefHat,
+  ClipboardList,
+  HeartHandshake,
+  MessageCircle,
+  Package,
+  Sparkles,
+  Utensils,
+} from 'lucide-react';
+import {
   businessContact,
-  getActiveSectionsByGroup,
-  getPreviewCopySection,
-  getPreviewMicrocopy,
-  getPreviewMicrocopyItems,
-  publicHeroDefaults,
-  type ContentSnapshot,
-  type ImageAssetRecord,
+  heroImageSizes,
+  type PublicGalleryCategory,
+  type PublicMediaAsset,
+  type PublicSiteDocument,
 } from '@monorepo/content-schema';
-import type { ImageAsset } from './sitePreviewTypes';
-import type { SiteSectionPreviewData } from './SiteSectionPreviewData';
-import { fallbackSiteSectionPreviewData } from './fallbackSiteSectionPreviewData';
+import type {
+  ContactFormLabels,
+  SiteSectionPreviewData,
+} from './SiteSectionPreviewData';
+import type { GalleryCategory, ImageAsset } from './sitePreviewTypes';
 
-const resolvePreviewImage = (
-  mediaById: ReadonlyMap<string, ImageAssetRecord>,
-  mediaId: string | undefined,
-  fallback: ImageAsset,
-): ImageAsset => {
-  const media = mediaId ? mediaById.get(mediaId) : null;
-  if (!media?.src) {
-    return fallback;
-  }
+const serviceIcons = [ChefHat, Utensils, Package] as const;
+const processIcons = [MessageCircle, ClipboardList, ChefHat, CheckCircle2] as const;
+const trustIcons = [Sparkles, CheckCircle2, HeartHandshake] as const;
 
-  return {
-    src: media.src,
-    width: media.width,
-    height: media.height,
-    sizes: media.sizes || fallback.sizes,
-    responsive: media.responsive ?? fallback.responsive,
-  };
+const galleryCategoryMap: Readonly<Record<PublicGalleryCategory, GalleryCategory>> = {
+  dishes: 'salads',
+  tables: 'tables',
+  trays: 'trays',
 };
 
-export const buildSiteSectionPreviewData = (
-  content: ContentSnapshot,
-  mediaById: ReadonlyMap<string, ImageAssetRecord>,
-): SiteSectionPreviewData => {
-  const defaults = fallbackSiteSectionPreviewData;
-  const heroMedia = content.sections.find((section) => section.id === 'hero-media' && section.active && !section.deletedAt);
-  const heroStatsSections = getActiveSectionsByGroup(content, 'hero-stats');
-  const heroNoteSections = getActiveSectionsByGroup(content, 'hero-notes');
-  const manifestoSections = getActiveSectionsByGroup(content, 'manifesto');
-  const editorialSections = getActiveSectionsByGroup(content, 'editorial');
-  const audienceSections = getActiveSectionsByGroup(content, 'audience');
-  const processSections = getActiveSectionsByGroup(content, 'process');
-  const storySections = getActiveSectionsByGroup(content, 'story');
-  const signatureSections = getActiveSectionsByGroup(content, 'signature');
-  const coordinationSections = getActiveSectionsByGroup(content, 'coordination');
-  const trustSections = getActiveSectionsByGroup(content, 'trust');
-  const faqSections = getActiveSectionsByGroup(content, 'faq');
-  const samplesSections = getActiveSectionsByGroup(content, 'samples');
-  const services = [...content.services]
-    .filter((service) => service.active && !service.deletedAt)
-    .sort((left, right) => left.order - right.order)
-    .map((service, index) => {
-      const base = defaults.services[index] ?? defaults.services[0];
-      return {
-        ...base,
-        title: service.title,
-        subtitle: service.subtitle,
-        description: service.description,
-        bestFor: service.bestFor,
-        promise: service.promise,
-        details: service.details,
-        cta: service.cta,
-        image: resolvePreviewImage(mediaById, service.mediaId, base.image),
-      };
-    });
+const defaultMediaUrl = (asset: PublicMediaAsset): string =>
+  `/media/cms/${asset.id}.${asset.kind === 'image' ? 'webp' : 'mp4'}`;
 
-  const galleryImages = [...content.gallery]
-    .filter((item) => item.active && !item.deletedAt)
-    .sort((left, right) => left.order - right.order)
-    .map((item) => {
-      const fallbackImage = fallbackSiteSectionPreviewData.foodMedia.hostingTableOverview;
-      return {
-        title: item.title,
-        alt: item.alt,
-        image: resolvePreviewImage(mediaById, item.mediaId, fallbackImage),
-        category: item.category as 'all' | 'tables' | 'trays' | 'salads' | 'coffee' | 'fish',
-        tall: item.tall,
-      };
-    });
+export interface BuildSiteSectionPreviewDataOptions {
+  readonly formLabels: ContactFormLabels;
+  readonly resolveMediaUrl?: (asset: PublicMediaAsset) => string;
+}
+
+export const buildSiteSectionPreviewData = (
+  document: PublicSiteDocument,
+  {
+    formLabels,
+    resolveMediaUrl = defaultMediaUrl,
+  }: BuildSiteSectionPreviewDataOptions,
+): SiteSectionPreviewData => {
+  const mediaById = new Map(document.media.map((asset) => [asset.id, asset]));
+  const image = (mediaId: string, sizes: string): ImageAsset => {
+    const asset = mediaById.get(mediaId);
+    if (!asset || asset.kind !== 'image' || asset.archivedAt) {
+      throw new Error(`Active image media is required: ${mediaId}`);
+    }
+    return {
+      height: asset.height,
+      responsive: true,
+      sizes,
+      src: resolveMediaUrl(asset),
+      width: asset.width,
+    };
+  };
+  const { contact, gallery, hero, process, services, trust } = document.sections;
 
   return {
-    ...defaults,
+    contact: {
+      ...contact,
+      formLabels,
+      interestOptions: services.items
+        .filter((service) => service.active)
+        .sort((left, right) => left.order - right.order)
+        .map((service) => service.title),
+    },
+    gallery: {
+      ...gallery,
+      images: [...gallery.items]
+        .sort((left, right) => left.order - right.order)
+        .map((item) => {
+          const asset = mediaById.get(item.mediaId);
+          if (!asset || asset.kind !== 'image' || asset.archivedAt) {
+            throw new Error(`Active gallery image is required: ${item.mediaId}`);
+          }
+          return {
+            alt: asset.alt,
+            category: galleryCategoryMap[item.category],
+            image: image(item.mediaId, '(max-width: 720px) 50vw, 33vw'),
+            title: item.title,
+          };
+        }),
+    },
+    hero: {
+      ...hero,
+      image: image(hero.mediaId, heroImageSizes),
+    },
     phoneHref: businessContact.phoneHref,
+    process: {
+      ...process,
+      steps: [...process.steps]
+        .sort((left, right) => left.order - right.order)
+        .map((step, index) => ({
+          ...step,
+          icon: processIcons[index] ?? CheckCircle2,
+        })),
+    },
+    services: {
+      ...services,
+      items: [...services.items]
+        .sort((left, right) => left.order - right.order)
+        .map((service, index) => ({
+          ...service,
+          description: service.summary,
+          icon: serviceIcons[index] ?? Sparkles,
+          image: image(service.mediaId, '(max-width: 720px) 100vw, 33vw'),
+        })),
+    },
+    trust: {
+      ...trust,
+      image: image(trust.mediaId, '(max-width: 980px) 100vw, 44vw'),
+      points: trust.points.map((point, index) => ({
+        ...point,
+        icon: trustIcons[index] ?? Sparkles,
+      })),
+    },
     whatsappBase: businessContact.whatsappBase,
-    heroContent: {
-      eyebrow: publicHeroDefaults.eyebrow,
-      title: publicHeroDefaults.title,
-      kicker: publicHeroDefaults.description,
-      text: publicHeroDefaults.description,
-    },
-    heroMedia: {
-      background: resolvePreviewImage(mediaById, heroMedia?.items[0], defaults.heroMedia.background),
-      primary: resolvePreviewImage(mediaById, heroMedia?.items[1], defaults.heroMedia.primary),
-      side: resolvePreviewImage(mediaById, heroMedia?.items[2], defaults.heroMedia.side),
-      tall: resolvePreviewImage(mediaById, heroMedia?.items[3], defaults.heroMedia.tall),
-    },
-    heroBadges: publicHeroDefaults.valuePoints,
-    heroStats: heroStatsSections.length
-      ? heroStatsSections.map((section, index) => ({
-          value: section.title || defaults.heroStats[index]?.value || defaults.heroStats[0].value,
-          label: section.text || defaults.heroStats[index]?.label || defaults.heroStats[0].label,
-        }))
-      : defaults.heroStats,
-    heroSceneNotes: heroNoteSections.length
-      ? heroNoteSections.map((section, index) => ({
-          title: section.title || defaults.heroSceneNotes[index]?.title || defaults.heroSceneNotes[0].title,
-          text: section.text || defaults.heroSceneNotes[index]?.text || defaults.heroSceneNotes[0].text,
-        }))
-      : defaults.heroSceneNotes,
-    siteMicrocopy: {
-      ...defaults.siteMicrocopy,
-      heroPrimaryCta: publicHeroDefaults.primaryCta.label,
-      heroSecondaryCta: publicHeroDefaults.secondaryCta.label,
-      heroMicrocopy: getPreviewMicrocopy(content, 'hero-microcopy', defaults.siteMicrocopy.heroMicrocopy),
-      heroShowcaseTitle: getPreviewMicrocopy(content, 'hero-showcase-title', defaults.siteMicrocopy.heroShowcaseTitle),
-      heroShowcaseText: getPreviewMicrocopy(content, 'hero-showcase-text', defaults.siteMicrocopy.heroShowcaseText),
-      heroVideoChip: getPreviewMicrocopy(content, 'hero-video-chip', defaults.siteMicrocopy.heroVideoChip),
-      topbarWhatsappLabel: getPreviewMicrocopy(content, 'topbar-whatsapp-label', defaults.siteMicrocopy.topbarWhatsappLabel),
-      contactPrimaryCta: getPreviewMicrocopy(content, 'contact-primary-cta', defaults.siteMicrocopy.contactPrimaryCta),
-      contactPhoneCta: getPreviewMicrocopy(content, 'contact-phone-cta', defaults.siteMicrocopy.contactPhoneCta),
-      contactLocation: getPreviewMicrocopy(content, 'contact-location', defaults.siteMicrocopy.contactLocation),
-      contactPromiseHeading: getPreviewMicrocopy(content, 'contact-promise-heading', defaults.siteMicrocopy.contactPromiseHeading),
-      formNameLabel: getPreviewMicrocopy(content, 'form-name-label', defaults.siteMicrocopy.formNameLabel),
-      formPhoneLabel: getPreviewMicrocopy(content, 'form-phone-label', defaults.siteMicrocopy.formPhoneLabel),
-      formEmailLabel: getPreviewMicrocopy(content, 'form-email-label', defaults.siteMicrocopy.formEmailLabel),
-      formInterestLabel: getPreviewMicrocopy(content, 'form-interest-label', defaults.siteMicrocopy.formInterestLabel),
-      formDateLabel: getPreviewMicrocopy(content, 'form-date-label', defaults.siteMicrocopy.formDateLabel),
-      formGuestsLabel: getPreviewMicrocopy(content, 'form-guests-label', defaults.siteMicrocopy.formGuestsLabel),
-      formDeliveryLabel: getPreviewMicrocopy(content, 'form-delivery-label', defaults.siteMicrocopy.formDeliveryLabel),
-      formMessageLabel: getPreviewMicrocopy(content, 'form-message-label', defaults.siteMicrocopy.formMessageLabel),
-      formSubmitLabel: getPreviewMicrocopy(content, 'form-submit-label', defaults.siteMicrocopy.formSubmitLabel),
-      whatsappHeroTopic: publicHeroDefaults.primaryCta.message,
-    },
-    contactInterestOptions: getPreviewMicrocopyItems(content, 'contact-interest-options', defaults.contactInterestOptions),
-    contactDeliveryOptions: getPreviewMicrocopyItems(content, 'contact-delivery-options', defaults.contactDeliveryOptions),
-    sectionCopy: {
-      ...defaults.sectionCopy,
-      introBand: getPreviewCopySection(content, 'intro-band', defaults.sectionCopy.introBand),
-      manifesto: getPreviewCopySection(content, 'manifesto', defaults.sectionCopy.manifesto),
-      editorial: getPreviewCopySection(content, 'editorial', defaults.sectionCopy.editorial),
-      audience: getPreviewCopySection(content, 'audience', defaults.sectionCopy.audience),
-      experienceLab: getPreviewCopySection(content, 'experience-lab', defaults.sectionCopy.experienceLab),
-      signature: getPreviewCopySection(content, 'signature', defaults.sectionCopy.signature),
-      process: getPreviewCopySection(content, 'process', defaults.sectionCopy.process),
-      story: getPreviewCopySection(content, 'story', defaults.sectionCopy.story),
-      samples: getPreviewCopySection(content, 'samples', defaults.sectionCopy.samples),
-      coordination: getPreviewCopySection(content, 'coordination', defaults.sectionCopy.coordination),
-      realMedia: getPreviewCopySection(content, 'real-media', defaults.sectionCopy.realMedia),
-      gallery: getPreviewCopySection(content, 'gallery', defaults.sectionCopy.gallery),
-      trust: getPreviewCopySection(content, 'trust', defaults.sectionCopy.trust),
-      faq: getPreviewCopySection(content, 'faq', defaults.sectionCopy.faq),
-      contact: getPreviewCopySection(content, 'contact', defaults.sectionCopy.contact),
-    },
-    manifestoMoments: manifestoSections.length
-      ? manifestoSections.map((section, index) => {
-          const base = defaults.manifestoMoments[index] ?? defaults.manifestoMoments[0];
-          return {
-            ...base,
-            label: section.items[0] || base.label,
-            title: section.title || base.title,
-            text: section.text || base.text,
-            image: resolvePreviewImage(mediaById, section.items[1], base.image),
-          };
-        })
-      : defaults.manifestoMoments,
-    editorialCards: editorialSections.length
-      ? editorialSections.map((section, index) => {
-          const base = defaults.editorialCards[index] ?? defaults.editorialCards[0];
-          return {
-            ...base,
-            label: section.items[0] || base.label,
-            title: section.title || base.title,
-            text: section.text || base.text,
-          };
-        })
-      : defaults.editorialCards,
-    audienceCards: audienceSections.length
-      ? audienceSections.map((section, index) => {
-          const base = defaults.audienceCards[index] ?? defaults.audienceCards[0];
-          return { ...base, title: section.title || base.title, text: section.text || base.text };
-        })
-      : defaults.audienceCards,
-    services: services.length ? services : defaults.services,
-    processSteps: processSections.length
-      ? processSections.map((section, index) => {
-          const base = defaults.processSteps[index] ?? defaults.processSteps[0];
-          return { ...base, title: section.title || base.title, text: section.text || base.text };
-        })
-      : defaults.processSteps,
-    storyMoments: storySections.length
-      ? storySections.map((section, index) => {
-          const base = defaults.storyMoments[index] ?? defaults.storyMoments[0];
-          return { title: section.title || base.title, text: section.text || base.text };
-        })
-      : defaults.storyMoments,
-    signatureMoments: signatureSections.length
-      ? signatureSections.map((section, index) => {
-          const base = defaults.signatureMoments[index] ?? defaults.signatureMoments[0];
-          return { ...base, title: section.title || base.title, text: section.text || base.text };
-        })
-      : defaults.signatureMoments,
-    menuGroups: samplesSections.length
-      ? samplesSections.map((section, index) => {
-          const base = defaults.menuGroups[index] ?? defaults.menuGroups[0];
-          return {
-            ...base,
-            title: section.title || base.title,
-            intro: section.text || base.intro,
-            items: section.items.length ? section.items : base.items,
-          };
-        })
-      : defaults.menuGroups,
-    coordinationCards: coordinationSections.length
-      ? coordinationSections.map((section, index) => {
-          const base = defaults.coordinationCards[index] ?? defaults.coordinationCards[0];
-          return { ...base, title: section.title || base.title, text: section.text || base.text };
-        })
-      : defaults.coordinationCards,
-    galleryImages: galleryImages.length ? galleryImages : defaults.galleryImages,
-    trustCards: trustSections.length
-      ? trustSections.map((section, index) => {
-          const base = defaults.trustCards[index] ?? defaults.trustCards[0];
-          return { ...base, title: section.title || base.title, text: section.text || base.text };
-        })
-      : defaults.trustCards,
-    faqs: faqSections.length
-      ? faqSections.map((section, index) => {
-          const base = defaults.faqs[index] ?? defaults.faqs[0];
-          return { question: section.title || base.question, answer: section.text || base.answer };
-        })
-      : defaults.faqs,
   };
 };

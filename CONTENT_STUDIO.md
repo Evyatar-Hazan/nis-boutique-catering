@@ -18,12 +18,14 @@ npx --yes pnpm@9.15.9 db:migrate:local
 npx --yes pnpm@9.15.9 admin:pages:dev
 ```
 
-להרצת האתר הציבורי מול תוכן מקומי מחויב:
+להרצת האתר הציבורי מול מסמך התוכן הציבורי המחויב:
 
 ```bash
-npx --yes pnpm@9.15.9 content:sync
 npx --yes pnpm@9.15.9 dev
 ```
+
+ה־checkout מחזיק `publicSiteDocument.generated.ts` יחיד עבור פיתוח מקומי. בניית Cloudflare
+מחליפה אותו בגרסה המפורסמת מ־D1/R2 דרך `content:sync:cloudflare`.
 
 לבדיקת מסלול הבנייה של פרודקשן:
 

@@ -6,7 +6,7 @@ export interface ImageAsset {
   readonly responsive?: boolean;
 }
 
-export type GalleryCategory = 'all' | 'tables' | 'trays' | 'salads' | 'coffee' | 'fish';
+export type GalleryCategory = 'all' | 'tables' | 'trays' | 'salads';
 
 export interface GalleryImage {
   readonly title: string;

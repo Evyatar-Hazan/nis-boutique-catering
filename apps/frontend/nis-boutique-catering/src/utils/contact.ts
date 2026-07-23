@@ -1,7 +1,11 @@
+import {
+  buildInquiryWhatsappLink as buildSharedInquiryWhatsappLink,
+  buildWhatsappLink as buildSharedWhatsappLink,
+} from '@monorepo/site-preview';
 import { whatsappBase } from '../data/siteContent';
 
 export const buildWhatsappLink = (message: string): string =>
-  `${whatsappBase}?text=${encodeURIComponent(message)}`;
+  buildSharedWhatsappLink(whatsappBase, message);
 
 export const buildInquiryWhatsappLink = (topic: string): string =>
-  buildWhatsappLink(`שלום Nis, אשמח לשמוע פרטים על ${topic}.`);
+  buildSharedInquiryWhatsappLink(whatsappBase, topic);

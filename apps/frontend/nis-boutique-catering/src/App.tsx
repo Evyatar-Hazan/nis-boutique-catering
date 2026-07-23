@@ -7,8 +7,15 @@ import {
 import { DeferredSections } from './components/DeferredSections';
 import { SectionSkeleton } from './components/SectionSkeleton';
 import { FloatingActions, Footer, LightboxDialog, Topbar } from './components/SiteChrome';
-import { email, galleryImages, sectionIds, siteMicrocopy, siteVersion, type GalleryCategory } from './data/siteContent';
-import { defaultSiteSectionPreviewData } from './data/sitePreviewData';
+import {
+  email,
+  galleryImages,
+  sectionIds,
+  siteMicrocopy,
+  siteSectionData,
+  siteVersion,
+  type GalleryCategory,
+} from './data/siteContent';
 import { PaletteLab } from './features/palette-lab/PaletteLab';
 import { AccessibilityStatementPage } from './features/accessibility/AccessibilityStatementPage';
 import { isAccessibilityStatementPath } from './features/accessibility/isAccessibilityStatementPath';
@@ -54,8 +61,8 @@ function PublicSiteApp() {
   );
 
   const topbarWhatsapp = buildWhatsappLink(siteMicrocopy.whatsappTopbarMessage);
-  const heroWhatsapp = buildInquiryWhatsappLink(siteMicrocopy.whatsappHeroTopic);
-  const contactWhatsapp = buildWhatsappLink(siteMicrocopy.whatsappContactMessage);
+  const heroWhatsapp = buildInquiryWhatsappLink(siteSectionData.hero.primaryCta.message);
+  const contactWhatsapp = buildWhatsappLink(siteSectionData.contact.submitCta.message);
   const footerWhatsapp = buildWhatsappLink(siteMicrocopy.whatsappFooterMessage);
   const floatingWhatsapp = buildWhatsappLink(siteMicrocopy.whatsappFloatingMessage);
 
@@ -66,19 +73,19 @@ function PublicSiteApp() {
 
   const handleContactSubmit = (inquiry: ContactInquiry) => {
     const lines = [
-      `${siteMicrocopy.formNameLabel}: ${inquiry.name}`,
-      `${siteMicrocopy.formPhoneLabel}: ${inquiry.phone}`,
-      `${siteMicrocopy.formInterestLabel}: ${inquiry.interest}`,
-      inquiry.date ? `${siteMicrocopy.formDateLabel}: ${inquiry.date}` : '',
-      inquiry.guests ? `${siteMicrocopy.formGuestsLabel}: ${inquiry.guests}` : '',
-      inquiry.message ? `${siteMicrocopy.formMessageLabel}: ${inquiry.message}` : '',
+      `${siteSectionData.contact.formLabels.name}: ${inquiry.name}`,
+      `${siteSectionData.contact.formLabels.phone}: ${inquiry.phone}`,
+      `${siteSectionData.contact.formLabels.interest}: ${inquiry.interest}`,
+      inquiry.date ? `${siteSectionData.contact.formLabels.date}: ${inquiry.date}` : '',
+      inquiry.guests ? `${siteSectionData.contact.formLabels.guests}: ${inquiry.guests}` : '',
+      inquiry.message ? `${siteSectionData.contact.formLabels.message}: ${inquiry.message}` : '',
     ];
 
     window.location.href = buildWhatsappLink(`שלום Nis,\n${lines.filter(Boolean).join('\n')}`);
   };
 
   return (
-    <SiteSectionPreviewDataProvider value={defaultSiteSectionPreviewData}>
+    <SiteSectionPreviewDataProvider value={siteSectionData}>
     <div className="site-shell" style={{ '--scroll-progress': scrollProgress } as CSSProperties}>
       <a className="skip-link" href="#main" onClick={handleSkipLinkClick}>
         דלג לתוכן המרכזי

@@ -4,8 +4,7 @@ import { resolve } from 'node:path';
 
 const workspaceRoot = resolve(import.meta.dirname, '..');
 const snapshotPaths = [
-  'apps/frontend/nis-boutique-catering/content/fallback-content.json',
-  'apps/frontend/nis-boutique-catering/src/generated/siteContent.generated.json',
+  'backups/legacy-google/20260720T080523Z/generated-snapshot.json',
 ];
 
 const sectionGroupPlan = Object.freeze({
@@ -22,7 +21,13 @@ const sectionGroupPlan = Object.freeze({
   coordination: 'sections.process.operationalNotes',
   'hero-media': 'sections.hero.mediaId',
   'hero-notes': 'sections.hero.valuePoints',
+  'hero-badges': 'archive: duplicate Hero proof',
   'hero-marquee': 'archive: decorative duplicate copy',
+  'hero-stats': 'archive: unverified decorative statistics',
+  'seo-topics': 'archive: legacy search-copy collection',
+  'site-copy': 'archive: superseded by the v2 section contract',
+  'site-microcopy': 'archive: superseded by typed application microcopy',
+  trust: 'sections.trust.points',
 });
 
 const collectionPlan = Object.freeze({
@@ -63,7 +68,7 @@ const auditSnapshot = (relativePath) => {
 
   const isolatedSnapshot = structuredClone(snapshot);
   const archivedSectionIds = isolatedSnapshot.sections
-    .filter((section) => sectionGroupPlan[section.group].startsWith('archive:'))
+    .filter((section) => sectionGroupPlan[section.group]?.startsWith('archive:'))
     .map((section) => section.id);
   const simulatedMutation = structuredClone(isolatedSnapshot);
   simulatedMutation.sections = simulatedMutation.sections.map((section) => (

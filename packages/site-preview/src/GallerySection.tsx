@@ -1,12 +1,9 @@
 import type { GalleryCategory, GalleryImage } from './sitePreviewTypes';
-import { OptimizedImage } from './OptimizedImage';
 import { useSiteSectionPreviewData } from './SiteSectionPreviewData';
-import { SectionHeading, TextParagraphs } from './SectionShared';
+import { OptimizedImage, SectionHeading } from './primitives';
 
 const galleryFilterLabels: Readonly<Record<GalleryCategory, string>> = {
   all: 'הכל',
-  coffee: 'קפה',
-  fish: 'דגים',
   salads: 'סלטים',
   tables: 'שולחנות',
   trays: 'מגשים',
@@ -32,7 +29,7 @@ export const GallerySection = ({
   onFilterChange,
   onOpenImage,
 }: GallerySectionProps) => {
-  const { sectionCopy } = useSiteSectionPreviewData();
+  const { gallery } = useSiteSectionPreviewData();
   const filters = getGalleryFilters(images);
   const filteredImages = activeCategory === 'all'
     ? images
@@ -42,8 +39,8 @@ export const GallerySection = ({
   return (
     <section id="gallery" className="section gallery-media-section scroll-scene scroll-scene--gallery" aria-labelledby="gallery-title">
       <div className="container">
-        <SectionHeading eyebrow={sectionCopy.gallery.eyebrow} title={sectionCopy.gallery.title} id="gallery-title" className="section-heading gallery-heading reveal">
-          <TextParagraphs text={sectionCopy.gallery.text} />
+        <SectionHeading eyebrow={gallery.eyebrow} title={gallery.title} id="gallery-title" className="section-heading gallery-heading reveal">
+          {gallery.description ? <p>{gallery.description}</p> : null}
         </SectionHeading>
         <div className="gallery-tabs reveal" role="group" data-reveal-duration="360" data-reveal-variant="fade" aria-label="סינון גלריה לפי סוג">
           {filters.map((category) => (

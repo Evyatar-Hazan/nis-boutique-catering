@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
+  assertUniquePublicFaqQuestions,
+  deduplicatePublicFaqQuestions,
   getPublicMediaReferenceIds,
   publicHeroDefaults,
   publicContactDefaults,
@@ -101,6 +103,22 @@ const validDocument: PublicSiteDocument = {
 };
 
 describe('public site v2 content contract', () => {
+  it('strips legacy duplicated phone fields from stored revisions', () => {
+    const parsed = publicSiteDocumentSchema.parse({
+      ...validDocument,
+      settings: {
+        ...validDocument.settings,
+        phoneDisplay: '050-0000000',
+        phoneHref: 'tel:+972500000000',
+        whatsappBase: 'https://wa.me/972500000000',
+      },
+    });
+
+    expect(parsed.settings).not.toHaveProperty('phoneDisplay');
+    expect(parsed.settings).not.toHaveProperty('phoneHref');
+    expect(parsed.settings).not.toHaveProperty('whatsappBase');
+  });
+
   it('keeps the approved hero copy and exactly three value points in one shared default', () => {
     expect(publicHeroDefaults.title).toBe('אירוח שנראה מוקפד ומרגיש ביתי.');
     expect(publicHeroDefaults.description).toBe('אוכל לשבת, אירוח קטן ומארזים לדרך בהתאמה אישית.');
@@ -163,6 +181,18 @@ describe('public site v2 content contract', () => {
         services: { ...validDocument.sections.services, items: validDocument.sections.services.items.slice(0, 2) },
       },
     })).toThrow();
+  });
+
+  it('rejects duplicate rendered FAQ questions even when their IDs differ', () => {
+    const faqs = [
+      validDocument.sections.contact.faqs[0],
+      {
+        ...validDocument.sections.contact.faqs[1],
+        question: validDocument.sections.contact.faqs[0].question,
+      },
+    ];
+    expect(deduplicatePublicFaqQuestions(faqs)).toEqual([faqs[0]]);
+    expect(() => assertUniquePublicFaqQuestions(faqs)).toThrow(/Duplicate questions in faqs/);
   });
 
   it('rejects missing, archived, or wrong-kind media references', () => {

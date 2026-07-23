@@ -1,7 +1,7 @@
 import { mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
-import { appRoot } from './media-assets.mjs';
+import { appRoot } from './media-utils.mjs';
 
 const url = process.env.LIGHTHOUSE_URL ?? 'http://localhost:4173/';
 const outputPath = resolve(appRoot, 'reports/performance/lighthouse-local.json');
@@ -25,4 +25,3 @@ if (result.error) {
 }
 
 process.exit(result.status ?? 1);
-

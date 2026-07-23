@@ -305,20 +305,7 @@ a {
   padding: 20px;
 }
 
-.admin-management {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  width: min(1280px, 100%);
-  gap: 18px;
-  margin-inline: auto;
-  border: 1px solid rgba(113, 94, 63, 0.2);
-  border-radius: 20px;
-  padding: 22px;
-  background: rgba(255, 253, 248, 0.94);
-  box-shadow: var(--shadow);
-}
-
+.admin-management,
 .publish-panel {
   position: relative;
   z-index: 1;

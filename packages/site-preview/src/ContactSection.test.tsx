@@ -4,13 +4,13 @@ import { businessContact } from '@monorepo/content-schema';
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { ContactSection } from './ContactSection';
-import { fallbackSiteSectionPreviewData } from './fallbackSiteSectionPreviewData';
 import { SiteSectionPreviewDataProvider } from './SiteSectionPreviewData';
+import { siteSectionPreviewDataFixture } from './test/siteSectionPreviewDataFixture';
 
 const renderContact = (onInquirySubmit = vi.fn()) => ({
   onInquirySubmit,
   ...render(
-    <SiteSectionPreviewDataProvider value={fallbackSiteSectionPreviewData}>
+    <SiteSectionPreviewDataProvider value={siteSectionPreviewDataFixture}>
       <ContactSection
         contactWhatsapp={businessContact.whatsappBase}
         email="nis@example.com"
@@ -51,7 +51,7 @@ describe('ContactSection', () => {
     const { onInquirySubmit } = renderContact();
     fireEvent.change(screen.getByLabelText('שם מלא (חובה)'), { target: { value: 'שרה כהן' } });
     fireEvent.change(screen.getByLabelText('טלפון (חובה)'), { target: { value: '050-1234567' } });
-    fireEvent.change(screen.getByLabelText('במה אתם מתעניינים? (חובה)'), { target: { value: 'ניס בטעם של שבת' } });
+    fireEvent.change(screen.getByLabelText('במה אתם מתעניינים? (חובה)'), { target: { value: 'אוכל לשבת' } });
     fireEvent.change(screen.getByLabelText('מספר סועדים (אופציונלי)'), { target: { value: '12' } });
     fireEvent.change(screen.getByLabelText('הודעה קצרה (אופציונלי)'), { target: { value: 'נשמח לקבל פרטים' } });
     fireEvent.submit(screen.getByRole('button', { name: 'שלחו פנייה בוואטסאפ' }).closest('form')!);
@@ -59,7 +59,7 @@ describe('ContactSection', () => {
     expect(onInquirySubmit).toHaveBeenCalledWith(expect.objectContaining({
       name: 'שרה כהן',
       phone: '050-1234567',
-      interest: 'ניס בטעם של שבת',
+      interest: 'אוכל לשבת',
       guests: '12',
       message: 'נשמח לקבל פרטים',
     }));
