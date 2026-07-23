@@ -1,5 +1,5 @@
 import { ImagePlus, Trash2, Upload } from 'lucide-react';
-import { useId, useState } from 'react';
+import { useEffect, useId, useMemo, useState } from 'react';
 
 import { api, type MediaItem } from './api';
 
@@ -13,6 +13,24 @@ interface QueueItem {
 
 const baseDescription = (name: string): string =>
   name.replace(/\.[^.]+$/u, '').replaceAll(/[-_]+/gu, ' ').trim();
+
+const FilePreview = ({ file }: { readonly file: File }) => {
+  const previewUrl = useMemo(() => {
+    try {
+      return URL.createObjectURL(file);
+    } catch {
+      return '';
+    }
+  }, [file]);
+
+  useEffect(() => () => {
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+  }, [previewUrl]);
+
+  return previewUrl
+    ? <img src={previewUrl} alt="" />
+    : <span className="queue-preview-fallback"><ImagePlus aria-hidden="true" /></span>;
+};
 
 export const UploadPanel = ({
   onUploaded,
@@ -86,15 +104,18 @@ export const UploadPanel = ({
     </label>
     {queue.length > 0 && <div className="upload-queue">
       {queue.map((item) => <div className={`queue-row is-${item.status}`} key={item.id}>
-        <img src={URL.createObjectURL(item.file)} alt="" />
+        <FilePreview file={item.file} />
         <label>
           <span>שם / תיאור לתמונה</span>
           <input
             value={item.description}
             maxLength={140}
             disabled={item.status === 'uploading'}
-            onChange={(event) => setQueue((current) => current.map((candidate) =>
-              candidate.id === item.id ? { ...candidate, description: event.currentTarget.value } : candidate))}
+            onChange={(event) => {
+              const nextDescription = event.currentTarget.value;
+              setQueue((current) => current.map((candidate) =>
+                candidate.id === item.id ? { ...candidate, description: nextDescription } : candidate));
+            }}
           />
         </label>
         {item.status === 'uploading'

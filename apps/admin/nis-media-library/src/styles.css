@@ -404,11 +404,26 @@ h2 {
   background: #fff1ef;
 }
 
-.queue-row img {
+.queue-row img,
+.queue-preview-fallback {
   width: 60px;
   height: 60px;
   border-radius: 10px;
+}
+
+.queue-row img {
   object-fit: cover;
+}
+
+.queue-preview-fallback {
+  display: grid;
+  place-items: center;
+  color: var(--clay);
+  background: var(--paper-deep);
+}
+
+.queue-preview-fallback svg {
+  width: 24px;
 }
 
 .queue-row label {
@@ -734,6 +749,33 @@ h2 {
   text-align: center;
 }
 
+.error-page {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 24px;
+  text-align: center;
+  background: var(--paper-deep);
+}
+
+.error-page section {
+  width: min(520px, 100%);
+  border: 1px solid var(--line);
+  border-radius: 24px 7px 24px 7px;
+  padding: clamp(28px, 7vw, 56px);
+  background: var(--paper);
+  box-shadow: var(--shadow);
+}
+
+.error-page h1 {
+  margin-bottom: 12px;
+  font-size: clamp(38px, 9vw, 64px);
+}
+
+.error-page p:not(.eyebrow) {
+  color: var(--muted);
+}
+
 .connect-drive h1 {
   margin: 0;
   font-size: clamp(40px, 7vw, 64px);
@@ -938,7 +980,8 @@ h2 {
     grid-template-columns: 52px minmax(0, 1fr) auto;
   }
 
-  .queue-row img {
+  .queue-row img,
+  .queue-preview-fallback {
     width: 52px;
     height: 52px;
   }

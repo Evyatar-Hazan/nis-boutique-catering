@@ -1,5 +1,5 @@
-import { fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import type { MediaItem } from './api';
 import { MediaGallery } from './MediaGallery';
@@ -18,6 +18,8 @@ const item: MediaItem = {
   width: 1200,
 };
 
+afterEach(cleanup);
+
 describe('MediaGallery', () => {
   it('filters the visible library by description', () => {
     render(<MediaGallery items={[item]} onChange={vi.fn()} showTrash={false} />);
@@ -30,5 +32,11 @@ describe('MediaGallery', () => {
     render(<MediaGallery items={[item]} onChange={vi.fn()} showTrash={false} />);
     expect(screen.getByRole('button', { name: 'שינוי שם' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'הסרה' })).toBeInTheDocument();
+  });
+
+  it('keeps rendering when Drive omits a valid modified date', () => {
+    render(<MediaGallery items={[{ ...item, modifiedAt: '' }]} onChange={vi.fn()} showTrash={false} />);
+    expect(screen.getByRole('heading', { name: item.description })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'שינוי שם' })).toBeInTheDocument();
   });
 });

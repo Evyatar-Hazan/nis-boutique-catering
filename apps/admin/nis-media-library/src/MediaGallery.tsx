@@ -11,9 +11,12 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { api, type MediaItem } from './api';
 
-const formatDate = (value: string): string => value
-  ? new Intl.DateTimeFormat('he-IL', { dateStyle: 'medium' }).format(new Date(value))
-  : '';
+const formatDate = (value: string): string => {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  return new Intl.DateTimeFormat('he-IL', { dateStyle: 'medium' }).format(date);
+};
 
 const formatBytes = (value: number): string => {
   if (value < 1024 * 1024) return `${Math.max(1, Math.round(value / 1024))}KB`;
