@@ -21,7 +21,7 @@ Image metadata lives in `src/data/siteContent.ts`. Every image used by React sho
 4. Run:
 
 ```sh
-pnpm media:optimize
+pnpm content:check
 pnpm media:check
 ```
 
@@ -42,7 +42,8 @@ Avoid reusing a filename when the visible content changed substantially.
 
 ## Generated Variants
 
-`pnpm media:optimize` creates responsive variants next to the source image:
+`content:sync:cloudflare` creates responsive WebP variants for referenced CMS images,
+and `pnpm content:check` verifies the committed local document and its variants:
 
 - WebP: `*-720w.webp`, `*-1200w.webp`, and full-width WebP when the source is not already WebP.
 - AVIF: `*-720w.avif`, `*-1200w.avif`, and full-width AVIF.
@@ -56,4 +57,3 @@ The app renders responsive images through `<picture>` so modern browsers choose 
 - a registered source file is missing
 - a responsive variant is missing
 - `index.html` points to a missing image or preload candidate
-

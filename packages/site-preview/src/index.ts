@@ -6,14 +6,7 @@ export * from './TrustSection';
 export * from './ContactSection';
 export * from './GallerySection';
 export * from './buildSiteSectionPreviewData';
-export * from './fallbackSiteSectionPreviewData';
-export {
-  SignatureSection,
-  BoutiqueSection,
-  SamplesSection,
-  BookingBasicsSection,
-  SeoSection,
-} from './MainSections';
+export * from './contactHelpers';
 export * from './SiteSectionPreviewData';
 export * from './sitePreviewTypes';
 export * from './primitives';

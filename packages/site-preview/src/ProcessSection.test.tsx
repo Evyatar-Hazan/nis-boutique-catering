@@ -2,12 +2,15 @@
 import '@testing-library/jest-dom/vitest';
 import { cleanup, render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
-import { fallbackSiteSectionPreviewData } from './fallbackSiteSectionPreviewData';
 import { ProcessSection } from './ProcessSection';
 import { SiteSectionPreviewDataProvider } from './SiteSectionPreviewData';
+import { siteSectionPreviewDataFixture } from './test/siteSectionPreviewDataFixture';
 
-const renderProcess = (processSteps = fallbackSiteSectionPreviewData.processSteps) => render(
-  <SiteSectionPreviewDataProvider value={{ ...fallbackSiteSectionPreviewData, processSteps }}>
+const renderProcess = (steps = siteSectionPreviewDataFixture.process.steps) => render(
+  <SiteSectionPreviewDataProvider value={{
+    ...siteSectionPreviewDataFixture,
+    process: { ...siteSectionPreviewDataFixture.process, steps },
+  }}>
     <ProcessSection />
   </SiteSectionPreviewDataProvider>,
 );
@@ -36,7 +39,7 @@ describe('ProcessSection', () => {
   });
 
   it('does not render a partial process when its content source is incomplete', () => {
-    renderProcess(fallbackSiteSectionPreviewData.processSteps.slice(0, 3));
+    renderProcess(siteSectionPreviewDataFixture.process.steps.slice(0, 3));
     expect(screen.getByRole('status')).toHaveTextContent('שלבי ההזמנה מתעדכנים כרגע');
     expect(screen.queryByRole('list')).not.toBeInTheDocument();
   });

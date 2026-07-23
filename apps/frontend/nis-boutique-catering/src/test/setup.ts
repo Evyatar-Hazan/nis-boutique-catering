@@ -44,6 +44,7 @@ if (typeof window !== 'undefined') {
     value: (id: number) => window.clearTimeout(id),
     configurable: true,
   });
+
 }
 
 if (typeof HTMLMediaElement !== 'undefined') {

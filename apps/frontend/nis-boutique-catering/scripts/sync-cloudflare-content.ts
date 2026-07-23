@@ -12,17 +12,18 @@ import {
 import { tmpdir } from 'node:os';
 import { dirname, extname, resolve } from 'node:path';
 import {
+  assertUniquePublicFaqQuestions,
+  deduplicatePublicFaqQuestions,
   getPublicMediaReferenceIds,
   publicSiteDocumentSchema,
 } from '@monorepo/content-schema';
 
-import { adaptPublicSiteDocument } from '../src/data/adaptPublicSiteDocument';
 import {
   appRoot,
   clearCmsMedia,
   optimizeCmsMedia,
-  writeGeneratedSnapshot,
-} from './content-utils.mjs';
+} from './media-utils.mjs';
+import { createHeroPreload } from '../src/utils/heroPreload';
 
 const apiOrigin = process.env.CLOUDFLARE_CONTENT_API_ORIGIN?.replace(/\/$/u, '');
 if (!apiOrigin) {
@@ -53,11 +54,22 @@ const revision = typeof publishedPayload === 'object' && publishedPayload !== nu
   && 'revision' in publishedPayload
   ? publishedPayload.revision
   : null;
-const content = publicSiteDocumentSchema.parse(
+const parsedContent = publicSiteDocumentSchema.parse(
   typeof revision === 'object' && revision !== null && 'content' in revision
     ? revision.content
     : null,
 );
+const content = {
+  ...parsedContent,
+  sections: {
+    ...parsedContent.sections,
+    contact: {
+      ...parsedContent.sections.contact,
+      faqs: deduplicatePublicFaqQuestions(parsedContent.sections.contact.faqs),
+    },
+  },
+};
+assertUniquePublicFaqQuestions(content.sections.contact.faqs);
 const referencedIds = getPublicMediaReferenceIds(content);
 const mediaById = new Map(content.media.map((asset) => [asset.id, asset]));
 const stagingRoot = mkdtempSync(resolve(tmpdir(), 'nis-cloudflare-sync-'));
@@ -127,15 +139,13 @@ try {
     }
   }
 
-  const exactJsonPath = resolve(outputAppRoot, 'src/generated/publicSiteDocument.generated.json');
   const exactTsPath = resolve(outputAppRoot, 'src/generated/publicSiteDocument.generated.ts');
-  mkdirSync(dirname(exactJsonPath), { recursive: true });
-  writeFileSync(exactJsonPath, `${JSON.stringify(content, null, 2)}\n`);
+  mkdirSync(dirname(exactTsPath), { recursive: true });
   writeFileSync(
     exactTsPath,
-    `import type { PublicSiteDocument } from '@monorepo/content-schema';\n\nexport const publicSiteDocument: PublicSiteDocument = ${JSON.stringify(content, null, 2)};\n`,
+    `export const publicSiteDocument = ${JSON.stringify(content, null, 2)} as const;\n\n`
+      + `export const generatedHeroPreload = ${JSON.stringify(createHeroPreload(content), null, 2)} as const;\n`,
   );
-  writeGeneratedSnapshot(adaptPublicSiteDocument(content), outputAppRoot);
   console.log(`Synced published revision with ${referencedIds.length} referenced media objects from Cloudflare.`);
 } finally {
   rmSync(stagingRoot, { force: true, recursive: true });

@@ -1,41 +1,23 @@
-import { publicTrustDefaults } from '@monorepo/content-schema';
-import type { IconComponent } from './primitives/Cards';
 import { OptimizedImage, Section, SectionHeading } from './primitives';
 import { useSiteSectionPreviewData } from './SiteSectionPreviewData';
 
-interface TrustPointSource {
-  readonly icon: IconComponent;
-  readonly text: string;
-  readonly title: string;
-}
-
-export const getPublicTrustPoints = (source: readonly TrustPointSource[]) => {
-  if (source.length !== publicTrustDefaults.points.length) return [];
-
-  return publicTrustDefaults.points.map((point, index) => ({
-    ...point,
-    icon: source[index].icon,
-  }));
-};
-
 export const TrustSection = () => {
-  const { heroMedia, trustCards: sourcePoints } = useSiteSectionPreviewData();
-  const trustPoints = getPublicTrustPoints(sourcePoints);
+  const { trust } = useSiteSectionPreviewData();
 
   return (
     <Section className="trust-section scroll-scene scroll-scene--trust" labelledBy="trust-title">
       <div className="container trust-layout">
         <div className="trust-copy">
           <SectionHeading
-            eyebrow={publicTrustDefaults.eyebrow}
-            title={publicTrustDefaults.title}
+            eyebrow={trust.eyebrow}
+            title={trust.title}
             id="trust-title"
           >
-            <p>{publicTrustDefaults.description}</p>
+            {trust.description ? <p>{trust.description}</p> : null}
           </SectionHeading>
-          {trustPoints.length === 3 ? (
+          {trust.points.length === 3 ? (
             <div className="trust-points" data-reveal-stagger="50">
-              {trustPoints.map((point, index) => {
+              {trust.points.map((point, index) => {
                 const Icon = point.icon;
                 return (
                   <article
@@ -62,7 +44,7 @@ export const TrustSection = () => {
           className="trust-media reveal scroll-driven-media"
           data-reveal-duration="760"
           data-reveal-variant="focus"
-          image={heroMedia.background}
+          image={trust.image}
           alt="שולחן אירוח של Nis עם מנות ומגשים מוכנים להגשה"
           loading="lazy"
           decoding="async"

@@ -1,16 +1,29 @@
 import {
-  getPrimaryHeroMediaId,
   getResponsiveImageSrcSet,
   heroImageSizes,
   type ResponsiveImageAsset,
-} from '@monorepo/content-schema/media';
-import type { ContentSnapshot } from '@monorepo/content-schema';
+} from '@monorepo/content-schema';
+
+interface HeroPreloadDocument {
+  readonly media: readonly {
+    readonly archivedAt?: string;
+    readonly height: number;
+    readonly id: string;
+    readonly kind: 'image' | 'video';
+    readonly width?: number;
+  }[];
+  readonly sections: {
+    readonly hero: {
+      readonly mediaId: string;
+    };
+  };
+}
 
 export interface HeroPreload {
   readonly href: string;
+  readonly imageSizes: string;
   readonly imageSrcSet?: string;
-  readonly imageSizes?: string;
-  readonly type: 'image/avif' | 'image/webp';
+  readonly type: 'image/webp';
 }
 
 const lastSrcSetCandidate = (srcSet: string) => {
@@ -19,19 +32,24 @@ const lastSrcSetCandidate = (srcSet: string) => {
 };
 
 export const createHeroPreload = (
-  content: ContentSnapshot,
-  fallbackMediaId = 'salmon-skewers-lemon',
+  document: HeroPreloadDocument,
 ): HeroPreload => {
-  const mediaId = getPrimaryHeroMediaId(content) ?? fallbackMediaId;
-  const image = content.media.find((item) => item.id === mediaId && !item.deletedAt);
-  if (!image) {
-    throw new Error(`Cannot create the Hero preload: media ${mediaId} is missing.`);
+  const mediaId = document.sections.hero.mediaId;
+  const media = document.media.find(
+    (asset) => asset.id === mediaId && asset.kind === 'image' && !asset.archivedAt,
+  );
+  if (!media || media.kind !== 'image' || media.width === undefined) {
+    throw new Error(`Cannot create the Hero preload: active image ${mediaId} is missing.`);
   }
 
-  const responsiveImage: ResponsiveImageAsset = image;
-  const usesCmsWebp = image.src.includes('/media/cms/');
-  const format = usesCmsWebp ? 'webp' : 'avif';
-  const imageSrcSet = getResponsiveImageSrcSet(responsiveImage, format);
+  const image: ResponsiveImageAsset = {
+    height: media.height,
+    responsive: true,
+    sizes: heroImageSizes,
+    src: `/media/cms/${media.id}.webp`,
+    width: media.width,
+  };
+  const imageSrcSet = getResponsiveImageSrcSet(image, 'webp');
   const href = imageSrcSet ? lastSrcSetCandidate(imageSrcSet) : image.src;
   if (!href) {
     throw new Error(`Cannot create the Hero preload URL for media ${mediaId}.`);
@@ -41,6 +59,6 @@ export const createHeroPreload = (
     href,
     ...(imageSrcSet ? { imageSrcSet } : {}),
     imageSizes: heroImageSizes,
-    type: format === 'avif' ? 'image/avif' : 'image/webp',
+    type: 'image/webp',
   };
 };

@@ -2,12 +2,15 @@
 import '@testing-library/jest-dom/vitest';
 import { cleanup, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
-import { fallbackSiteSectionPreviewData } from './fallbackSiteSectionPreviewData';
 import { SiteSectionPreviewDataProvider } from './SiteSectionPreviewData';
 import { TrustSection } from './TrustSection';
+import { siteSectionPreviewDataFixture } from './test/siteSectionPreviewDataFixture';
 
-const renderTrust = (trustCards = fallbackSiteSectionPreviewData.trustCards) => render(
-  <SiteSectionPreviewDataProvider value={{ ...fallbackSiteSectionPreviewData, trustCards }}>
+const renderTrust = (points = siteSectionPreviewDataFixture.trust.points) => render(
+  <SiteSectionPreviewDataProvider value={{
+    ...siteSectionPreviewDataFixture,
+    trust: { ...siteSectionPreviewDataFixture.trust, points },
+  }}>
     <TrustSection />
   </SiteSectionPreviewDataProvider>,
 );
@@ -31,7 +34,7 @@ describe('TrustSection', () => {
   });
 
   it('does not render partial trust claims', () => {
-    renderTrust(fallbackSiteSectionPreviewData.trustCards.slice(0, 2));
+    renderTrust(siteSectionPreviewDataFixture.trust.points.slice(0, 2));
     expect(screen.getByRole('status')).toHaveTextContent('פרטי השירות מתעדכנים כרגע');
     expect(screen.queryByRole('article')).not.toBeInTheDocument();
   });

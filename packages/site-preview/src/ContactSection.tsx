@@ -1,6 +1,5 @@
 import { useState, type FormEvent } from 'react';
 import { Mail, MessageCircle, Phone, Send } from 'lucide-react';
-import { publicContactDefaults } from '@monorepo/content-schema';
 import { Accordion, Button, FormField, Section } from './primitives';
 import { useSiteSectionPreviewData } from './SiteSectionPreviewData';
 
@@ -34,7 +33,8 @@ interface ContactSectionProps {
 }
 
 export const ContactSection = ({ contactWhatsapp, email, onInquirySubmit }: ContactSectionProps) => {
-  const { contactInterestOptions, phoneHref, siteMicrocopy } = useSiteSectionPreviewData();
+  const { contact, phoneHref } = useSiteSectionPreviewData();
+  const { formLabels } = contact;
   const [errors, setErrors] = useState<ContactErrors>({});
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -65,17 +65,17 @@ export const ContactSection = ({ contactWhatsapp, email, onInquirySubmit }: Cont
     <Section id="contact" className="contact-section scroll-scene scroll-scene--contact" labelledBy="contact-title" tone="dark">
       <div className="container">
         <div className="contact-conversion-heading reveal" data-reveal-duration="680" data-reveal-variant="focus">
-          <p className="eyebrow">{publicContactDefaults.eyebrow}</p>
-          <h2 id="contact-title">{publicContactDefaults.title}</h2>
-          <p>{publicContactDefaults.description}</p>
+          {contact.eyebrow ? <p className="eyebrow">{contact.eyebrow}</p> : null}
+          <h2 id="contact-title">{contact.title}</h2>
+          {contact.description ? <p>{contact.description}</p> : null}
           <div className="contact-actions">
             <Button href={contactWhatsapp} data-event="contact_whatsapp">
               <MessageCircle aria-hidden="true" />
-              {siteMicrocopy.contactPrimaryCta}
+              {contact.submitCta.label}
             </Button>
             <Button href={phoneHref} variant="secondary">
               <Phone aria-hidden="true" />
-              {siteMicrocopy.contactPhoneCta}
+              {formLabels.phoneCta}
             </Button>
             <a className="contact-line" href={`mailto:${email}`}>
               <Mail aria-hidden="true" />
@@ -86,34 +86,34 @@ export const ContactSection = ({ contactWhatsapp, email, onInquirySubmit }: Cont
 
         <div className="contact-conversion-grid" data-reveal-stagger="90">
           <div className="contact-faq reveal" role="region" data-reveal-direction="inline-start" data-reveal-duration="720" aria-label="שאלות נפוצות">
-            <Accordion items={publicContactDefaults.faqs} />
+            <Accordion items={contact.faqs} />
           </div>
 
           <form className="contact-form reveal" data-reveal-direction="inline-end" data-reveal-duration="720" noValidate onSubmit={handleSubmit}>
-            <FormField label={`${siteMicrocopy.formNameLabel} (חובה)`} error={errors.name}>
+            <FormField label={`${formLabels.name} (חובה)`} error={errors.name}>
               <input name="name" autoComplete="name" />
             </FormField>
-            <FormField label={`${siteMicrocopy.formPhoneLabel} (חובה)`} error={errors.phone}>
+            <FormField label={`${formLabels.phone} (חובה)`} error={errors.phone}>
               <input name="phone" type="tel" autoComplete="tel" inputMode="tel" />
             </FormField>
-            <FormField label={`${siteMicrocopy.formInterestLabel} (חובה)`} error={errors.interest}>
+            <FormField label={`${formLabels.interest} (חובה)`} error={errors.interest}>
               <select name="interest" defaultValue="">
                 <option value="" disabled>בחרו סוג הזמנה</option>
-                {contactInterestOptions.map((option) => <option key={option}>{option}</option>)}
+                {contact.interestOptions.map((option) => <option key={option}>{option}</option>)}
               </select>
             </FormField>
-            <FormField label={`${siteMicrocopy.formDateLabel} (אופציונלי)`}>
+            <FormField label={`${formLabels.date} (אופציונלי)`}>
               <input name="date" type="date" />
             </FormField>
-            <FormField label={`${siteMicrocopy.formGuestsLabel} (אופציונלי)`} error={errors.guests}>
+            <FormField label={`${formLabels.guests} (אופציונלי)`} error={errors.guests}>
               <input name="guests" type="number" min="1" inputMode="numeric" />
             </FormField>
-            <FormField label={`${siteMicrocopy.formMessageLabel} (אופציונלי)`}>
+            <FormField label={`${formLabels.message} (אופציונלי)`}>
               <textarea name="message" rows={4} />
             </FormField>
             <Button fullWidth type="submit">
               <Send aria-hidden="true" />
-              {publicContactDefaults.submitCta.label}
+              {contact.submitCta.label}
             </Button>
           </form>
         </div>
