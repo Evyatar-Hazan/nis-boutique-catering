@@ -1,13 +1,14 @@
 export const paletteIds = [
+  'bordeaux-terracotta',
   'original',
   'olive-linen',
-  'bordeaux-terracotta',
   'midnight-copper',
   'forest-butter',
   'stone-coral',
 ] as const;
 
 export type PaletteId = (typeof paletteIds)[number];
+export const defaultPaletteId: PaletteId = 'bordeaux-terracotta';
 
 export interface PaletteOption {
   readonly id: PaletteId;
@@ -17,19 +18,19 @@ export interface PaletteOption {
 
 export const paletteOptions: readonly PaletteOption[] = [
   {
+    id: 'bordeaux-terracotta',
+    name: 'בורדו וטרקוטה',
+    description: 'ברירת המחדל שנבחרה — עשירה, חגיגית וחמה.',
+  },
+  {
     id: 'original',
     name: 'שזיף ושמפניה',
-    description: 'הפלטה הנוכחית — דרמטית, חמה ואלגנטית.',
+    description: 'הפלטה הקודמת — דרמטית, חמה ואלגנטית.',
   },
   {
     id: 'olive-linen',
     name: 'זית ופשתן',
     description: 'טבעית, שקטה ומוקפדת עם תחושה קולינרית.',
-  },
-  {
-    id: 'bordeaux-terracotta',
-    name: 'בורדו וטרקוטה',
-    description: 'עשירה, חגיגית וחמה עם אופי ים־תיכוני.',
   },
   {
     id: 'midnight-copper',

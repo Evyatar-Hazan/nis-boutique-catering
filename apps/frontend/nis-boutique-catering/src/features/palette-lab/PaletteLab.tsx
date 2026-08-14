@@ -7,7 +7,7 @@ import {
   isPaletteLabEnabled,
   persistPalette,
 } from './paletteSelection';
-import { paletteOptions, type PaletteId } from './palettes';
+import { defaultPaletteId, paletteOptions, type PaletteId } from './palettes';
 import './palette-lab.css';
 
 type CopyStatus = 'idle' | 'copied' | 'failed';
@@ -121,9 +121,9 @@ export function PaletteLab() {
               <Copy aria-hidden="true" size={17} />
               {copyStatus === 'copied' ? 'הקישור הועתק' : 'העתקת קישור לפלטה'}
             </button>
-            <button type="button" className="palette-lab__reset" onClick={() => selectPalette('original')}>
+            <button type="button" className="palette-lab__reset" onClick={() => selectPalette(defaultPaletteId)}>
               <RotateCcw aria-hidden="true" size={16} />
-              חזרה למקור
+              חזרה לברירת מחדל
             </button>
             <span className="palette-lab__status" aria-live="polite">
               {copyStatus === 'failed' ? 'לא הצלחנו להעתיק. אפשר להעתיק משורת הכתובת.' : ''}

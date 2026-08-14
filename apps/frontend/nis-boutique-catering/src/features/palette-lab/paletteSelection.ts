@@ -1,4 +1,4 @@
-import { isPaletteId, type PaletteId } from './palettes';
+import { defaultPaletteId, isPaletteId, type PaletteId } from './palettes';
 
 export const paletteStorageKey = 'nis-palette-lab-selection-v1';
 export const paletteLabQueryKey = 'paletteLab';
@@ -20,17 +20,17 @@ export const resolvePalette = (
   const queryPalette = new URLSearchParams(search).get(paletteQueryKey);
 
   if (queryPalette !== null) {
-    return isPaletteId(queryPalette) ? queryPalette : 'original';
+    return isPaletteId(queryPalette) ? queryPalette : defaultPaletteId;
   }
 
-  return readStoredPalette(storage) ?? 'original';
+  return readStoredPalette(storage) ?? defaultPaletteId;
 };
 
 export const isPaletteLabEnabled = (search: string): boolean =>
   new URLSearchParams(search).get(paletteLabQueryKey) === '1';
 
 export const applyPalette = (palette: PaletteId, root: HTMLElement = document.documentElement): void => {
-  if (palette === 'original') {
+  if (palette === defaultPaletteId) {
     delete root.dataset.palette;
     return;
   }
@@ -38,8 +38,13 @@ export const applyPalette = (palette: PaletteId, root: HTMLElement = document.do
   root.dataset.palette = palette;
 };
 
-export const persistPalette = (palette: PaletteId, storage: Pick<Storage, 'setItem'>): void => {
+export const persistPalette = (palette: PaletteId, storage: Pick<Storage, 'removeItem' | 'setItem'>): void => {
   try {
+    if (palette === defaultPaletteId) {
+      storage.removeItem(paletteStorageKey);
+      return;
+    }
+
     storage.setItem(paletteStorageKey, palette);
   } catch {
     // The visual selection remains active when storage is unavailable.
@@ -50,7 +55,7 @@ export const buildPaletteUrl = (palette: PaletteId, currentUrl: URL): URL => {
   const nextUrl = new URL(currentUrl);
   nextUrl.searchParams.set(paletteLabQueryKey, '1');
 
-  if (palette === 'original') {
+  if (palette === defaultPaletteId) {
     nextUrl.searchParams.delete(paletteQueryKey);
   } else {
     nextUrl.searchParams.set(paletteQueryKey, palette);

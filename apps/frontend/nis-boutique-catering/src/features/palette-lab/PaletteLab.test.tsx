@@ -40,14 +40,14 @@ describe('PaletteLab', () => {
     expect(screen.queryByRole('button', { name: 'השוואת צבעים' })).not.toBeInTheDocument();
   });
 
-  it('shows six choices, applies a selection and resets to the original', () => {
+  it('shows six choices, applies a selection and resets to the bordeaux default', () => {
     setUrl('/?paletteLab=1');
     render(<PaletteLab />);
 
     fireEvent.click(screen.getByRole('button', { name: 'השוואת צבעים' }));
     const options = screen.getAllByRole('button', { pressed: false });
     expect(options).toHaveLength(5);
-    expect(screen.getByRole('button', { name: /שזיף ושמפניה/ })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: /בורדו וטרקוטה/ })).toHaveAttribute('aria-pressed', 'true');
 
     fireEvent.click(screen.getByRole('button', { name: /כחול לילה ונחושת/ }));
 
@@ -56,9 +56,11 @@ describe('PaletteLab', () => {
     expect(new URL(window.location.href).searchParams.get('palette')).toBe('midnight-copper');
     expect(screen.getByRole('button', { name: /כחול לילה ונחושת/ })).toHaveAttribute('aria-pressed', 'true');
 
-    fireEvent.click(screen.getByRole('button', { name: 'חזרה למקור' }));
+    fireEvent.click(screen.getByRole('button', { name: 'חזרה לברירת מחדל' }));
     expect(document.documentElement).not.toHaveAttribute('data-palette');
     expect(new URL(window.location.href).searchParams.has('palette')).toBe(false);
+    expect(window.localStorage.getItem(paletteStorageKey)).toBeNull();
+    expect(screen.getByRole('button', { name: /בורדו וטרקוטה/ })).toHaveAttribute('aria-pressed', 'true');
   });
 
   it('restores storage and copies the exact active palette link', async () => {
