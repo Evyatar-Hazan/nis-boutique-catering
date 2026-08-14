@@ -1,11 +1,11 @@
 ---
 title: NIS Public Site Redesign Tracker
-status: in_progress
+status: completed
 owner: Evyatar Hazan
 created: 2026-07-20
 updated: 2026-08-14
 source_of_truth: true
-implementation_gate: ready
+implementation_gate: closed
 ---
 
 # NIS Public Site Redesign — Source of Truth and Execution Tracker
@@ -35,9 +35,9 @@ implementation_gate: ready
 
 ## שער מימוש גלובלי
 
-**סטטוס נוכחי: `READY`**
+**סטטוס נוכחי: `COMPLETED`**
 
-`UI-018` הושלמה ואומתה בפרודקשן: מעבדת הפלטות הזמנית מציגה שש אפשרויות שניתנות להשוואה ושיתוף. ב־2026-08-14 התקבלה בחירה מפורשת בבורדו; `UI-019` הועברה ל־`VERIFYING` במימוש מצומצם שמקדם את `בורדו וטרקוטה` לברירת המחדל, אבל משאיר בכוונה את יכולת ההחלפה. בסך הכול 66 מתוך 67 משימות הן `DONE`.
+כל 67 משימות ה־tracker הן `DONE`. ב־2026-08-14 התקבלה בחירה מפורשת ב־`בורדו וטרקוטה`; `UI-019` נסגרה במימוש מצומצם שמקדם את בורדו לברירת המחדל אבל משאיר בכוונה את יכולת ההחלפה דרך Palette Lab ו־query links.
 
 תוכנית השרת/קליינט, בניית מסך האדמין מחדש והמעבר מ־Google Sheets/Drive ל־Cloudflare D1/R2 נוספו למסמך ב־2026-07-20. שער המימוש נפתח לאחר השלמת:
 
@@ -1388,7 +1388,7 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 
 #### UI-019 — Promote the selected palette while keeping palette switching
 
-- **Status:** `VERIFYING`
+- **Status:** `DONE`
 - **Dependencies:** `UI-018`, בחירה מפורשת של הלקוחה בפלטה אחת.
 - **Definition:** לאחר קבלת הבחירה, להפוך את `בורדו וטרקוטה` לברירת המחדל של האתר הציבורי, אך להשאיר בכוונה את Palette Lab ואת יכולת ההחלפה דרך `paletteLab=1`, ‏`palette` ו־localStorage עד החלטה נפרדת להסרה.
 - **Acceptance criteria:**
@@ -1396,8 +1396,8 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
   - `paletteLab=1` עדיין מציג את כל שש האפשרויות; `palette` חוקי ממשיך להחליף פלטה גם בלי control, כולל `palette=original` לפלטה הקודמת.
   - כפתור האיפוס מחזיר לברירת המחדל, מנקה `palette` מה־URL ומנקה את בחירת ה־localStorage, בלי למחוק בחירות אחרות מה־registry.
   - כל הפלטות ממשיכות לעבור את חוזה ה־tokens וה־contrast; אין raw colors מחוץ ל־`tokens.css`, ואין שינוי schema/API/content, DOM עסקי או dependency.
-- **Verification:** בדיקות unit/component ל־resolution, URL/storage, בחירה, איפוס והעתקת קישור; `design:tokens:check`; ‏tracker/architecture/motion/security/runbook checks, ‏tests/lint/type-check/build/full validation; לפני סגירת `DONE` נדרש push, ‏CI/deploy ואימות Production שהאתר הרגיל נטען בבורדו ושיכולת ההחלפה נשארה תקינה.
-- **Evidence (2026-08-14):** בחירה מפורשת התקבלה: `בורדו וטרקוטה`. המימוש המקומי מקדם את בורדו ל־`defaultPaletteId`, מעביר את ערכי בורדו ל־`:root`, משאיר את `original` כאפשרות בחירה עם `data-palette='original'`, ומשנה את reset ל־`חזרה לברירת מחדל` תוך ניקוי storage/query. `PaletteLab`/`paletteSelection` עברו 7/7 בדיקות; `design:tokens:check` עבר עם 43 זוגות WCAG AA על שש פלטות ו־0 raw colors; full `pnpm validate` עבר עם 161 בדיקות וכל builds. ה־shell המקומי הציג אזהרת engine כי הופעל Node `v22.23.2` מול דרישת repo ‏`>=24 <26`; הבדיקות וה־build עברו למרות זאת. המשימה נשארת `VERIFYING` עד push, ‏CI/deploy ואימות Production.
+- **Verification:** בדיקות unit/component ל־resolution, URL/storage, בחירה, איפוס והעתקת קישור; `design:tokens:check`; ‏tracker/architecture/motion/security/runbook checks, ‏tests/lint/type-check/build/full validation; push, ‏CI/deploy ואימות Production שהאתר הרגיל נטען בבורדו ושיכולת ההחלפה נשארה תקינה.
+- **Evidence (2026-08-14):** בחירה מפורשת התקבלה: `בורדו וטרקוטה`. המימוש מקדם את בורדו ל־`defaultPaletteId`, מעביר את ערכי בורדו ל־`:root`, משאיר את `original` כאפשרות בחירה עם `data-palette='original'`, ומשנה את reset ל־`חזרה לברירת מחדל` תוך ניקוי storage/query. לוקאלית `PaletteLab`/`paletteSelection` עברו 7/7 בדיקות; `design:tokens:check` עבר עם 43 זוגות WCAG AA על שש פלטות ו־0 raw colors; full `pnpm validate` עבר עם 161 בדיקות וכל builds. ה־shell המקומי הציג אזהרת engine כי הופעל Node `v22.23.2` מול דרישת repo ‏`>=24 <26`; הבדיקות וה־build עברו למרות זאת. commit `0a6a682` נדחף ל־`main`, עבר CI ‏`31783504323` ו־Cloudflare deploy ‏`31783504277`; ה־workflow בנה ופרס את public, Studio ו־media library ואימת robots. Production הגיש את `assets/main-aOz_agls.css`, וב־CSS החי אומתו ערכי ברירת המחדל `--palette-lab-dark-1: #250f17`, ‏`--palette-lab-brand: #8e3544` ו־`--palette-lab-premium: #d29a62`. public root, ‏Studio health ו־Media health החזירו `200`.
 
 ### Phase 23 — Accessibility remediation and public statement
 
@@ -1486,16 +1486,22 @@ Non-trivial React components live in dedicated files. Shared primitives contain 
 | Phase 19 — Footer art direction | Done | 1 | 1 |
 | Phase 20 — Navbar art direction | Done | 1 | 1 |
 | Phase 21 — Public rollout status | Done | 1 | 1 |
-| Phase 22 — Temporary palette comparison | Active | 1 | 2 |
+| Phase 22 — Temporary palette comparison | Done | 2 | 2 |
 | Phase 23 — Accessibility remediation | Done | 1 | 1 |
 
 ## Change Log
+
+### 2026-08-14 — UI-019 bordeaux default completed in Production
+
+- commit `0a6a682` נדחף ל־`main`, עבר CI ‏`31783504323` ו־Cloudflare deploy ‏`31783504277`.
+- Production מגיש את `assets/main-aOz_agls.css` עם ערכי ברירת המחדל של בורדו: `#250f17`, ‏`#8e3544`, ‏`#d29a62`.
+- public root, ‏Studio health ו־Media health החזירו `200`; `UI-019`, ‏Phase 22 וכל 67 המשימות נסגרו `DONE`, וה־implementation gate נסגר.
 
 ### 2026-08-14 — UI-019 bordeaux default implemented locally
 
 - התקבלה בחירה מפורשת ב־`בורדו וטרקוטה`; ה־scope עודכן כך שהיכולת להחליף פלטות נשארת זמינה בכוונה במקום להסיר את ה־Palette Lab.
 - `בורדו וטרקוטה` הוגדרה כברירת המחדל של `:root`; הפלטה הקודמת נשארת זמינה דרך `palette=original`, ושאר החלופות נשארות ב־registry.
-- בדיקות `PaletteLab`/`paletteSelection`, ‏`design:tokens:check` ו־full `pnpm validate` עברו לוקאלית; `UI-019` נשארת `VERIFYING` עד push, ‏CI/deploy ואימות Production.
+- בדיקות `PaletteLab`/`paletteSelection`, ‏`design:tokens:check` ו־full `pnpm validate` עברו לוקאלית; `UI-019` עברה ל־`VERIFYING` עד push, ‏CI/deploy ואימות Production.
 
 ### 2026-07-22 — QA-006 accessibility remediation completed in Production
 
