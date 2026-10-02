@@ -17,12 +17,40 @@ type ContactErrors = Partial<Record<ContactField, string>>;
 
 const readField = (formData: FormData, field: ContactField) => String(formData.get(field) ?? '').trim();
 
+const formatLocalDate = (date: Date) => {
+  const year = String(date.getFullYear()).padStart(4, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+const isValidDateInput = (value: string) => {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  if (!match) return false;
+
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const isLeapYear = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+  const daysInMonth = [31, isLeapYear ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  return year > 0 && month >= 1 && month <= 12 && day >= 1 && day <= daysInMonth[month - 1];
+};
+
+const isPositiveInteger = (value: string) => /^\d+$/.test(value) && Number.isSafeInteger(Number(value)) && Number(value) > 0;
+
 export const validateContactInquiry = (inquiry: ContactInquiry): ContactErrors => {
   const errors: ContactErrors = {};
   if (inquiry.name.length < 2) errors.name = 'כתבו שם של לפחות שני תווים.';
   if (inquiry.phone.replace(/\D/g, '').length < 9) errors.phone = 'כתבו מספר טלפון תקין.';
   if (!inquiry.interest) errors.interest = 'בחרו סוג הזמנה.';
-  if (inquiry.guests && Number(inquiry.guests) < 1) errors.guests = 'מספר הסועדים חייב להיות גדול מאפס.';
+  if (inquiry.date && !isValidDateInput(inquiry.date)) {
+    errors.date = 'כתבו תאריך תקין.';
+  } else if (inquiry.date && inquiry.date < formatLocalDate(new Date())) {
+    errors.date = 'תאריך האירוע לא יכול להיות בעבר.';
+  }
+  if (inquiry.guests && !isPositiveInteger(inquiry.guests)) {
+    errors.guests = 'מספר הסועדים חייב להיות מספר שלם גדול מאפס.';
+  }
   return errors;
 };
 
@@ -36,6 +64,7 @@ export const ContactSection = ({ contactWhatsapp, email, onInquirySubmit }: Cont
   const { contact, phoneHref } = useSiteSectionPreviewData();
   const { formLabels } = contact;
   const [errors, setErrors] = useState<ContactErrors>({});
+  const minimumEventDate = formatLocalDate(new Date());
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -102,11 +131,11 @@ export const ContactSection = ({ contactWhatsapp, email, onInquirySubmit }: Cont
                 {contact.interestOptions.map((option) => <option key={option}>{option}</option>)}
               </select>
             </FormField>
-            <FormField label={`${formLabels.date} (אופציונלי)`}>
-              <input name="date" type="date" />
+            <FormField label={`${formLabels.date} (אופציונלי)`} error={errors.date}>
+              <input name="date" type="date" min={minimumEventDate} />
             </FormField>
             <FormField label={`${formLabels.guests} (אופציונלי)`} error={errors.guests}>
-              <input name="guests" type="number" min="1" inputMode="numeric" />
+              <input name="guests" type="number" min="1" step="1" inputMode="numeric" />
             </FormField>
             <FormField label={`${formLabels.message} (אופציונלי)`}>
               <textarea name="message" rows={4} />
