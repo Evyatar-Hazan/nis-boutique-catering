@@ -17,11 +17,34 @@ type ContactErrors = Partial<Record<ContactField, string>>;
 
 const readField = (formData: FormData, field: ContactField) => String(formData.get(field) ?? '').trim();
 
-const formatLocalDate = (date: Date) => {
-  const year = String(date.getFullYear()).padStart(4, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
+const BUSINESS_TIME_ZONE = 'Asia/Jerusalem';
+const MINIMUM_NOTICE_DAYS = 3;
+const israelDateFormatter = new Intl.DateTimeFormat('en-US-u-ca-gregory-nu-latn', {
+  day: '2-digit',
+  month: '2-digit',
+  timeZone: BUSINESS_TIME_ZONE,
+  year: 'numeric',
+});
+
+const formatDateParts = (year: number, month: number, day: number) => {
+  const paddedYear = String(year).padStart(4, '0');
+  const paddedMonth = String(month).padStart(2, '0');
+  const paddedDay = String(day).padStart(2, '0');
+  return `${paddedYear}-${paddedMonth}-${paddedDay}`;
+};
+
+const getMinimumEventDate = (now = new Date()) => {
+  const dateParts = israelDateFormatter.formatToParts(now);
+  const readPart = (type: Intl.DateTimeFormatPartTypes) => Number(dateParts.find((part) => part.type === type)?.value);
+  const minimumDate = new Date(Date.UTC(
+    readPart('year'),
+    readPart('month') - 1,
+    readPart('day') + MINIMUM_NOTICE_DAYS,
+  ));
+  const year = minimumDate.getUTCFullYear();
+  const month = minimumDate.getUTCMonth() + 1;
+  const day = minimumDate.getUTCDate();
+  return formatDateParts(year, month, day);
 };
 
 const isValidDateInput = (value: string) => {
@@ -45,8 +68,8 @@ export const validateContactInquiry = (inquiry: ContactInquiry): ContactErrors =
   if (!inquiry.interest) errors.interest = 'בחרו סוג הזמנה.';
   if (inquiry.date && !isValidDateInput(inquiry.date)) {
     errors.date = 'כתבו תאריך תקין.';
-  } else if (inquiry.date && inquiry.date < formatLocalDate(new Date())) {
-    errors.date = 'תאריך האירוע לא יכול להיות בעבר.';
+  } else if (inquiry.date && inquiry.date < getMinimumEventDate()) {
+    errors.date = 'תאריך האירוע חייב להיות לפחות שלושה ימים מראש.';
   }
   if (inquiry.guests && !isPositiveInteger(inquiry.guests)) {
     errors.guests = 'מספר הסועדים חייב להיות מספר שלם גדול מאפס.';
@@ -64,7 +87,7 @@ export const ContactSection = ({ contactWhatsapp, email, onInquirySubmit }: Cont
   const { contact, phoneHref } = useSiteSectionPreviewData();
   const { formLabels } = contact;
   const [errors, setErrors] = useState<ContactErrors>({});
-  const minimumEventDate = formatLocalDate(new Date());
+  const minimumEventDate = getMinimumEventDate();
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
