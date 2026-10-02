@@ -152,6 +152,9 @@ describe('public site v2 content contract', () => {
   it('keeps four approved FAQs and one WhatsApp conversion CTA', () => {
     expect(publicContactDefaults.faqs).toHaveLength(4);
     expect(new Set(publicContactDefaults.faqs.map(({ id }) => id)).size).toBe(4);
+    expect(publicContactDefaults.faqs.find(({ id }) => id === 'advance-notice')?.answer).toBe(
+      'יש לפנות לפחות שלושה ימים מראש, ומומלץ מוקדם יותר לפני שבתות, חגים ואירועים גדולים. אישור ההזמנה כפוף לתיאום ולזמינות העסק.',
+    );
     expect(publicContactDefaults.submitCta.label).toBe('שלחו פנייה בוואטסאפ');
   });
 

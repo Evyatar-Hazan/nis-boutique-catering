@@ -109,6 +109,16 @@ describe('Nis boutique catering app', () => {
     expect(offers.queryByRole('tablist')).not.toBeInTheDocument();
   });
 
+  it('explains the three-day inquiry policy without promising availability', async () => {
+    render(<App />);
+
+    fireEvent.click(await screen.findByRole('button', { name: 'כמה זמן מראש צריך להזמין?' }));
+
+    expect(screen.getByText(
+      'יש לפנות לפחות שלושה ימים מראש, ומומלץ מוקדם יותר לפני שבתות, חגים ואירועים גדולים. אישור ההזמנה כפוף לתיאום ולזמינות העסק.',
+    )).toBeVisible();
+  });
+
   it('does not render removed duplicate sections', () => {
     render(<App />);
 
