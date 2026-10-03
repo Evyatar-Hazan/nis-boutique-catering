@@ -12,16 +12,23 @@ type LazySiteSectionsProps = {
   readonly activeGalleryCategory: GalleryCategory;
   readonly contactWhatsapp: string;
   readonly onFilterChange: (category: GalleryCategory) => void;
+  readonly onFormStart: () => void;
   readonly onInquirySubmit: (inquiry: ContactInquiry) => void;
   readonly onOpenImage: (index: number | null) => void;
+  readonly onValidationResult: (result: {
+    readonly invalidFieldCount: number;
+    readonly result: 'valid' | 'invalid';
+  }) => void;
 };
 
 export default function LazySiteSections({
   activeGalleryCategory,
   contactWhatsapp,
   onFilterChange,
+  onFormStart,
   onInquirySubmit,
   onOpenImage,
+  onValidationResult,
 }: LazySiteSectionsProps) {
   return (
     <>
@@ -37,7 +44,9 @@ export default function LazySiteSections({
       <ContactSection
         contactWhatsapp={contactWhatsapp}
         email={email}
+        onFormStart={onFormStart}
         onInquirySubmit={onInquirySubmit}
+        onValidationResult={onValidationResult}
       />
     </>
   );

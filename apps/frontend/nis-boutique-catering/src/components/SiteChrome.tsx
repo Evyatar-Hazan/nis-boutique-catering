@@ -48,7 +48,13 @@ export const Topbar = ({ activeNavSection, isScrolled, topbarWhatsapp }: TopbarP
           </a>
         ))}
       </nav>
-      <a className="topbar-cta" href={topbarWhatsapp} data-event="topbar_whatsapp">
+      <a
+        className="topbar-cta"
+        href={topbarWhatsapp}
+        data-event="topbar_whatsapp"
+        data-measurement-cta="topbar_whatsapp"
+        data-measurement-whatsapp-source="topbar"
+      >
         <MessageCircle aria-hidden="true" size={18} />
         {siteMicrocopy.topbarWhatsappLabel}
       </a>
@@ -82,7 +88,13 @@ export const Footer = ({
       <div className="footer-links">
         <a href={phoneHref}>{phoneDisplay}</a>
         <a href={`mailto:${email}`}>{email}</a>
-        <a href={footerWhatsapp}>{siteMicrocopy.footerWhatsappLabel}</a>
+        <a
+          href={footerWhatsapp}
+          data-measurement-cta="footer_whatsapp"
+          data-measurement-whatsapp-source="footer"
+        >
+          {siteMicrocopy.footerWhatsappLabel}
+        </a>
         <a href="/accessibility/">הצהרת נגישות</a>
         <a className="studio-footer-link" href="https://studio.nisboutiquecatering.com/" target="_blank" rel="noreferrer">{siteMicrocopy.studioLoginLabel}</a>
       </div>
@@ -92,12 +104,22 @@ export const Footer = ({
 
 export const FloatingActions = ({ floatingWhatsapp }: { readonly floatingWhatsapp: string }) => (
   <nav aria-label={siteMicrocopy.mobileActionsAria}>
-    <a className="floating-whatsapp" href={floatingWhatsapp} aria-label={siteMicrocopy.floatingWhatsappAria}>
+    <a
+      className="floating-whatsapp"
+      href={floatingWhatsapp}
+      aria-label={siteMicrocopy.floatingWhatsappAria}
+      data-measurement-cta="floating_whatsapp"
+      data-measurement-whatsapp-source="floating"
+    >
       <MessageCircle aria-hidden="true" />
     </a>
 
     <div className="mobile-sticky-cta">
-      <a href={floatingWhatsapp}>
+      <a
+        href={floatingWhatsapp}
+        data-measurement-cta="mobile_sticky_whatsapp"
+        data-measurement-whatsapp-source="mobile_sticky"
+      >
         <MessageCircle aria-hidden="true" size={18} />
         {siteMicrocopy.mobileWhatsappLabel}
       </a>

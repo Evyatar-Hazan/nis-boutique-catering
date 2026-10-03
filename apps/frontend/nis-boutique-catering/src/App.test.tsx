@@ -2,10 +2,17 @@ import { fireEvent, render, screen, within } from '@testing-library/react';
 import { businessContact } from '@monorepo/content-schema';
 import { afterEach, describe, expect, it } from 'vitest';
 import App from './App';
+import {
+  setLeadMeasurementSink,
+  type LeadMeasurementEnvelope,
+} from './analytics/leadMeasurement';
 
 const originalLocation = window.location;
+let restoreMeasurementSink: (() => void) | undefined;
 
 afterEach(() => {
+  restoreMeasurementSink?.();
+  restoreMeasurementSink = undefined;
   window.history.replaceState({}, '', '/');
   Object.defineProperty(window, 'location', {
     value: originalLocation,
@@ -134,6 +141,8 @@ describe('Nis boutique catering app', () => {
   });
 
   it('builds a whatsapp inquiry from the contact form submit', async () => {
+    const measuredEvents: LeadMeasurementEnvelope[] = [];
+    restoreMeasurementSink = setLeadMeasurementSink((event) => measuredEvents.push(event));
     const locationMock = {
       ...window.location,
       href: 'http://localhost:5174/',
@@ -162,6 +171,47 @@ describe('Nis boutique catering app', () => {
     expect(decodeURIComponent(window.location.href)).toContain('שם מלא: שרה כהן');
     expect(decodeURIComponent(window.location.href)).toContain('במה אתם מתעניינים?: ניס בטעם של שבת');
     expect(decodeURIComponent(window.location.href)).toContain('הודעה קצרה: נשמח למארז לדרך');
+    expect(measuredEvents.map((event) => event.name)).toEqual([
+      'nis_lead_form_validation',
+      'nis_lead_form_submit_success',
+      'nis_whatsapp_handoff',
+    ]);
+    expect(measuredEvents).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        name: 'nis_lead_form_validation',
+        properties: { form_id: 'contact', invalid_field_count: 0, result: 'valid' },
+      }),
+      expect.objectContaining({
+        name: 'nis_whatsapp_handoff',
+        properties: { origin: 'lead_form', source: 'lead_form' },
+      }),
+    ]));
+    const measurementPayload = JSON.stringify(measuredEvents);
+    expect(measurementPayload).not.toContain('שרה כהן');
+    expect(measurementPayload).not.toContain('0501234567');
+    expect(measurementPayload).not.toContain('נשמח למארז לדרך');
+  });
+
+  it('measures one form start and local invalidation without a whatsapp handoff', async () => {
+    const measuredEvents: LeadMeasurementEnvelope[] = [];
+    restoreMeasurementSink = setLeadMeasurementSink((event) => measuredEvents.push(event));
+    render(<App />);
+
+    const nameField = await screen.findByLabelText('שם מלא (חובה)');
+    fireEvent.focus(nameField);
+    fireEvent.blur(nameField);
+    fireEvent.focus(nameField);
+    fireEvent.submit(screen.getByRole('button', { name: 'שלחו פנייה בוואטסאפ' }).closest('form')!);
+
+    expect(measuredEvents.map((event) => event.name)).toEqual([
+      'nis_lead_form_start',
+      'nis_lead_form_validation',
+    ]);
+    expect(measuredEvents[1]).toEqual({
+      name: 'nis_lead_form_validation',
+      properties: { form_id: 'contact', invalid_field_count: 3, result: 'invalid' },
+      schema_version: 1,
+    });
   });
 
   it('renders the mobile sticky CTA with whatsapp and phone actions', () => {

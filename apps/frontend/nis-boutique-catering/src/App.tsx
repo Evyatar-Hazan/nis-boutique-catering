@@ -23,6 +23,7 @@ import { usePointerGlow } from './hooks/usePointerGlow';
 import { useRevealOnScroll } from './hooks/useRevealOnScroll';
 import { useScrollState } from './hooks/useScrollState';
 import { buildInquiryWhatsappLink, buildWhatsappLink } from './utils/contact';
+import { trackLeadEvent, trackMeasuredCtaClick } from './analytics/leadMeasurement';
 import './App.css';
 
 const LazySiteSections = lazy(() => import('./components/LazySiteSections'));
@@ -81,12 +82,24 @@ function PublicSiteApp() {
       inquiry.message ? `${siteSectionData.contact.formLabels.message}: ${inquiry.message}` : '',
     ];
 
+    trackLeadEvent({
+      name: 'nis_lead_form_submit_success',
+      properties: { form_id: 'contact', next_step: 'whatsapp_handoff' },
+    });
+    trackLeadEvent({
+      name: 'nis_whatsapp_handoff',
+      properties: { origin: 'lead_form', source: 'lead_form' },
+    });
     window.location.href = buildWhatsappLink(`שלום Nis,\n${lines.filter(Boolean).join('\n')}`);
   };
 
   return (
     <SiteSectionPreviewDataProvider value={siteSectionData}>
-    <div className="site-shell" style={{ '--scroll-progress': scrollProgress } as CSSProperties}>
+    <div
+      className="site-shell"
+      style={{ '--scroll-progress': scrollProgress } as CSSProperties}
+      onClickCapture={(event) => trackMeasuredCtaClick(event.target)}
+    >
       <a className="skip-link" href="#main" onClick={handleSkipLinkClick}>
         דלג לתוכן המרכזי
       </a>
@@ -110,7 +123,23 @@ function PublicSiteApp() {
                 setSelectedImageIndex(null);
               }}
               onInquirySubmit={handleContactSubmit}
+              onFormStart={() => {
+                trackLeadEvent({
+                  name: 'nis_lead_form_start',
+                  properties: { form_id: 'contact' },
+                });
+              }}
               onOpenImage={setSelectedImageIndex}
+              onValidationResult={({ invalidFieldCount, result }) => {
+                trackLeadEvent({
+                  name: 'nis_lead_form_validation',
+                  properties: {
+                    form_id: 'contact',
+                    invalid_field_count: invalidFieldCount,
+                    result,
+                  },
+                });
+              }}
             />
           </Suspense>
         </DeferredSections>

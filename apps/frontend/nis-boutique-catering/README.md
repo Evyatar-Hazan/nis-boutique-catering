@@ -31,7 +31,7 @@ src/
 - Lead time: contact as early as possible
 - Images: local Nis food and hosting media under `public/media/food`
 - Responsive media: generated AVIF/WebP variants are checked by `pnpm media:check`
-- Analytics: placeholders only, not connected yet
+- Lead measurement: privacy-safe local event contract only; no analytics provider or live collection is connected. See [`docs/lead-measurement-taxonomy.md`](../../../docs/lead-measurement-taxonomy.md).
 
 ## Commands
 

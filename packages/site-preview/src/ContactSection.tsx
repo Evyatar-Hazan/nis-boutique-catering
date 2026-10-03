@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useRef, useState, type FormEvent } from 'react';
 import { Mail, MessageCircle, Phone, Send } from 'lucide-react';
 import { Accordion, Button, FormField, Section } from './primitives';
 import { useSiteSectionPreviewData } from './SiteSectionPreviewData';
@@ -80,14 +80,32 @@ export const validateContactInquiry = (inquiry: ContactInquiry): ContactErrors =
 interface ContactSectionProps {
   readonly contactWhatsapp: string;
   readonly email: string;
+  readonly onFormStart?: () => void;
   readonly onInquirySubmit: (inquiry: ContactInquiry) => void;
+  readonly onValidationResult?: (result: {
+    readonly invalidFieldCount: number;
+    readonly result: 'valid' | 'invalid';
+  }) => void;
 }
 
-export const ContactSection = ({ contactWhatsapp, email, onInquirySubmit }: ContactSectionProps) => {
+export const ContactSection = ({
+  contactWhatsapp,
+  email,
+  onFormStart,
+  onInquirySubmit,
+  onValidationResult,
+}: ContactSectionProps) => {
   const { contact, phoneHref } = useSiteSectionPreviewData();
   const { formLabels } = contact;
   const [errors, setErrors] = useState<ContactErrors>({});
   const minimumEventDate = getMinimumEventDate();
+  const hasStarted = useRef(false);
+
+  const handleFormStart = () => {
+    if (hasStarted.current) return;
+    hasStarted.current = true;
+    onFormStart?.();
+  };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -103,6 +121,11 @@ export const ContactSection = ({ contactWhatsapp, email, onInquirySubmit }: Cont
     };
     const nextErrors = validateContactInquiry(inquiry);
     setErrors(nextErrors);
+    const invalidFieldCount = Object.keys(nextErrors).length;
+    onValidationResult?.({
+      invalidFieldCount,
+      result: invalidFieldCount === 0 ? 'valid' : 'invalid',
+    });
 
     const firstInvalidField = Object.keys(nextErrors)[0] as ContactField | undefined;
     if (firstInvalidField) {
@@ -121,7 +144,12 @@ export const ContactSection = ({ contactWhatsapp, email, onInquirySubmit }: Cont
           <h2 id="contact-title">{contact.title}</h2>
           {contact.description ? <p>{contact.description}</p> : null}
           <div className="contact-actions">
-            <Button href={contactWhatsapp} data-event="contact_whatsapp">
+            <Button
+              href={contactWhatsapp}
+              data-event="contact_whatsapp"
+              data-measurement-cta="contact_whatsapp"
+              data-measurement-whatsapp-source="contact"
+            >
               <MessageCircle aria-hidden="true" />
               {contact.submitCta.label}
             </Button>
@@ -141,7 +169,14 @@ export const ContactSection = ({ contactWhatsapp, email, onInquirySubmit }: Cont
             <Accordion items={contact.faqs} />
           </div>
 
-          <form className="contact-form reveal" data-reveal-direction="inline-end" data-reveal-duration="720" noValidate onSubmit={handleSubmit}>
+          <form
+            className="contact-form reveal"
+            data-reveal-direction="inline-end"
+            data-reveal-duration="720"
+            noValidate
+            onFocusCapture={handleFormStart}
+            onSubmit={handleSubmit}
+          >
             <FormField label={`${formLabels.name} (חובה)`} error={errors.name}>
               <input name="name" autoComplete="name" />
             </FormField>

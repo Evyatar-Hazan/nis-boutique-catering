@@ -14,7 +14,12 @@ export const HeroSection = ({ heroWhatsapp }: { readonly heroWhatsapp: string })
           <h1 id="hero-title">{hero.title}</h1>
           <p className="hero-text">{hero.description}</p>
           <div className="hero-actions" role="group" aria-label="פעולות ראשיות">
-            <Button href={heroWhatsapp} data-event="hero_whatsapp">
+            <Button
+              href={heroWhatsapp}
+              data-event="hero_whatsapp"
+              data-measurement-cta="hero_whatsapp"
+              data-measurement-whatsapp-source="hero"
+            >
               <MessageCircle aria-hidden="true" />
               {hero.primaryCta.label}
             </Button>
