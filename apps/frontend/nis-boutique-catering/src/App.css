@@ -76,8 +76,8 @@ button { color: inherit; }
 .product-price span { color: var(--nis-muted); font-size: .68rem; font-weight: 600; }
 .product-description { min-height: 2.8em; margin: 0; color: var(--nis-muted); font-size: .88rem; line-height: 1.55; }
 .product-kosher { margin: 0; color: var(--nis-ink); font-size: .71rem; font-weight: 700; }
-.product-actions { display: grid; grid-template-columns: auto 1fr; gap: .7rem; }
-.quantity-stepper { display: grid; grid-template-columns: 2.2rem 2rem 2.2rem; align-items: center; overflow: hidden; border: 1px solid var(--nis-border); border-radius: 999px; background: white; }
+.product-actions { display: grid; gap: .7rem; }
+.quantity-stepper { display: grid; grid-template-columns: 2.8rem 1fr 2.8rem; align-items: center; overflow: hidden; border: 1px solid var(--nis-border); border-radius: 999px; background: white; }
 .quantity-stepper button, .cart-line-actions button { display: grid; border: 0; background: transparent; place-items: center; cursor: pointer; }
 .quantity-stepper button { height: 2.6rem; }
 .quantity-stepper svg, .cart-line-actions svg { width: .95rem; }

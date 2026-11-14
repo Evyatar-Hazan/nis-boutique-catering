@@ -26,11 +26,11 @@ const orderTerms = [
 
 interface ProductCardProps {
   readonly product: CatalogProduct;
-  readonly onAdd: (quantity: number) => void;
+  readonly quantity: number;
+  readonly onQuantityChange: (quantity: number) => void;
 }
 
-const ProductCard = ({ product, onAdd }: ProductCardProps) => {
-  const [quantity, setQuantity] = useState(1);
+const ProductCard = ({ product, quantity, onQuantityChange }: ProductCardProps) => {
   return (
     <article className="product-card" data-product-seq={product.seq}>
       <div className={`product-media${product.images.length > 1 ? ' product-media--split' : ''}`}>
@@ -55,13 +55,10 @@ const ProductCard = ({ product, onAdd }: ProductCardProps) => {
         <p className="product-kosher">בד״ץ העדה החרדית והרב לנדא</p>
         <div className="product-actions">
           <div className="quantity-stepper" aria-label={`כמות עבור ${product.name}`}>
-            <button type="button" onClick={() => setQuantity((value) => Math.max(1, value - 1))} aria-label={`הפחת כמות של ${product.name}`}><Minus /></button>
+            <button type="button" onClick={() => onQuantityChange(Math.max(0, quantity - 1))} aria-label={`הפחת כמות של ${product.name}`}><Minus /></button>
             <output aria-live="polite">{quantity}</output>
-            <button type="button" onClick={() => setQuantity((value) => value + 1)} aria-label={`הוסף כמות של ${product.name}`}><Plus /></button>
+            <button type="button" onClick={() => onQuantityChange(quantity + 1)} aria-label={`הוסף כמות של ${product.name}`}><Plus /></button>
           </div>
-          <button className="add-to-cart" type="button" onClick={() => { onAdd(quantity); setQuantity(1); }}>
-            הוספה לעגלה <ChevronLeft aria-hidden="true" />
-          </button>
         </div>
       </div>
     </article>
@@ -74,7 +71,7 @@ interface OrderingSiteProps {
 
 export const OrderingSite = ({ catalog }: OrderingSiteProps) => {
   const categories = useMemo(() => [...new Set(catalog.map((product) => product.category))], [catalog]);
-  const { add, clear, itemCount, lines, setQuantity, total } = useOrderCart(catalog);
+  const { clear, itemCount, lines, quantities, setQuantity, total } = useOrderCart(catalog);
   const [cartOpen, setCartOpen] = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [termsOpen, setTermsOpen] = useState(false);
@@ -178,7 +175,12 @@ export const OrderingSite = ({ catalog }: OrderingSiteProps) => {
               </div>
               <div className="product-grid">
                 {catalog.filter((product) => product.category === category).map((product) => (
-                  <ProductCard key={product.seq} product={product} onAdd={(quantity) => add(product.seq, quantity)} />
+                  <ProductCard
+                    key={product.seq}
+                    product={product}
+                    quantity={quantities[product.seq] ?? 0}
+                    onQuantityChange={(quantity) => setQuantity(product.seq, quantity)}
+                  />
                 ))}
               </div>
             </section>

@@ -45,7 +45,8 @@ describe('NIS ordering site', () => {
   it('adds a product to the persistent cart and updates its quantity', () => {
     render(<App />);
 
-    fireEvent.click(screen.getAllByRole('button', { name: /הוספה לעגלה/u })[0]!);
+    expect(screen.getAllByText('0', { selector: 'output' })).toHaveLength(products.length);
+    fireEvent.click(screen.getByRole('button', { name: `הוסף כמות של ${products[0]!.name}` }));
     fireEvent.click(screen.getAllByRole('button', { name: /^העגלה שלי/u })[0]!);
 
     const dialog = screen.getByRole('dialog', { name: 'סל ההזמנה' });
@@ -56,11 +57,16 @@ describe('NIS ordering site', () => {
 
     fireEvent.click(within(dialog).getByRole('button', { name: `הוסף ${products[0]!.name}` }));
     expect(within(dialog).getByText('2')).toBeInTheDocument();
+
+    fireEvent.click(within(dialog).getByRole('button', { name: `הפחת ${products[0]!.name}` }));
+    fireEvent.click(within(dialog).getByRole('button', { name: `הפחת ${products[0]!.name}` }));
+    expect(within(dialog).queryByText(products[0]!.name)).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: `הוסף כמות של ${products[0]!.name}` }).parentElement).toHaveTextContent('0');
   });
 
   it('requires customer details and acceptance of the order terms', () => {
     render(<App />);
-    fireEvent.click(screen.getAllByRole('button', { name: /הוספה לעגלה/u })[0]!);
+    fireEvent.click(screen.getByRole('button', { name: `הוסף כמות של ${products[0]!.name}` }));
     fireEvent.click(screen.getAllByRole('button', { name: /^העגלה שלי/u })[0]!);
     fireEvent.click(screen.getByRole('button', { name: /לפרטי ההזמנה/u }));
 
@@ -76,7 +82,7 @@ describe('NIS ordering site', () => {
     const events: LeadMeasurementEnvelope[] = [];
     restoreMeasurementSink = setLeadMeasurementSink((event) => events.push(event));
     render(<App />);
-    fireEvent.click(screen.getAllByRole('button', { name: /הוספה לעגלה/u })[0]!);
+    fireEvent.click(screen.getByRole('button', { name: `הוסף כמות של ${products[0]!.name}` }));
     fireEvent.click(screen.getAllByRole('button', { name: /^העגלה שלי/u })[0]!);
     fireEvent.click(screen.getByRole('button', { name: /לפרטי ההזמנה/u }));
 

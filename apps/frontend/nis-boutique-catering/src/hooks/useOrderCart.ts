@@ -50,7 +50,6 @@ export const useOrderCart = (catalog: readonly CatalogProduct[]) => {
     });
   };
 
-  const add = (seq: number, quantity = 1) => setQuantity(seq, (cart[seq] ?? 0) + quantity);
   const clear = () => setCart({});
-  return { add, clear, itemCount, lines, setQuantity, total } as const;
+  return { clear, itemCount, lines, quantities: cart, setQuantity, total } as const;
 };
