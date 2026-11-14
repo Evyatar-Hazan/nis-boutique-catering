@@ -12,7 +12,7 @@ const phoneE164 = toIsraeliE164(businessPhoneNational);
 
 export const businessContact = Object.freeze({
   phoneNational: businessPhoneNational,
-  phoneDisplay: `${businessPhoneNational.slice(0, 3)}-${businessPhoneNational.slice(3)}`,
+  phoneDisplay: `${businessPhoneNational.slice(0, 3)}-${businessPhoneNational.slice(3, 6)}-${businessPhoneNational.slice(6)}`,
   phoneE164,
   phoneHref: `tel:${phoneE164}`,
   whatsappBase: `https://wa.me/${phoneE164.slice(1)}`,

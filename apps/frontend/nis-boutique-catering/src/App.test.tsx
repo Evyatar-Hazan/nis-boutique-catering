@@ -1,256 +1,106 @@
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import { businessContact } from '@monorepo/content-schema';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { products } from '../data/products.js';
 import App from './App';
 import {
   setLeadMeasurementSink,
   type LeadMeasurementEnvelope,
 } from './analytics/leadMeasurement';
 
-const originalLocation = window.location;
 let restoreMeasurementSink: (() => void) | undefined;
+
+beforeEach(() => {
+  window.localStorage.clear();
+  window.history.replaceState({}, '', '/');
+});
 
 afterEach(() => {
   restoreMeasurementSink?.();
   restoreMeasurementSink = undefined;
-  window.history.replaceState({}, '', '/');
-  Object.defineProperty(window, 'location', {
-    value: originalLocation,
-    configurable: true,
-  });
+  document.body.classList.remove('has-order-overlay');
 });
 
-describe('Nis boutique catering app', () => {
-  it('moves focus past repeated navigation with the skip link', () => {
-    render(<App />);
-
-    fireEvent.click(screen.getByRole('link', { name: 'דלג לתוכן המרכזי' }));
-
-    expect(screen.getByRole('main')).toHaveFocus();
-  });
-
-  it('renders the main navigation and hero content', () => {
+describe('NIS ordering site', () => {
+  it('renders only products that passed the publication gate', () => {
     const { container } = render(<App />);
+    const cards = container.querySelectorAll('[data-product-seq]');
 
-    expect(screen.getByRole('navigation', { name: 'עמודי האתר' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'מה מזמינים' })).toHaveAttribute('href', '#experiences');
-    expect(screen.getByRole('link', { name: 'גלריה' })).toHaveAttribute('href', '#gallery');
-    expect(
-      screen.getByRole('heading', {
-        name: 'אירוח שנראה מוקפד ומרגיש ביתי.',
-      }),
-    ).toBeInTheDocument();
-    const hero = container.querySelector<HTMLElement>('.hero--public');
-    expect(hero).not.toBeNull();
-    if (!hero) {
-      throw new Error('Public hero was not found');
+    expect(cards).toHaveLength(products.length);
+    expect(products).toHaveLength(28);
+    expect(products.every((product) => product.status === 'approved')).toBe(true);
+    expect(products.some((product) => [59, 64, 65, 67].includes(product.seq))).toBe(false);
+    expect(container).not.toHaveTextContent('050-3502615');
+  });
+
+  it('uses the one approved business phone number', () => {
+    render(<App />);
+
+    expect(screen.getAllByText(businessContact.phoneDisplay).length).toBeGreaterThan(0);
+    for (const link of screen.getAllByRole('link', { name: businessContact.phoneDisplay })) {
+      expect(link).toHaveAttribute('href', businessContact.phoneHref);
     }
-    const heroView = within(hero);
-    expect(heroView.getByText('אוכל לשבת, אירוח קטן ומארזים לדרך בהתאמה אישית.')).toBeInTheDocument();
-    const primaryCta = heroView.getByRole('link', { name: 'דברו איתנו בוואטסאפ' });
-    expect(decodeURIComponent(primaryCta.getAttribute('href') ?? '')).toContain('אוכל לשבת, אירוח קטן או מארזים לדרך');
-    expect(heroView.getByRole('link', { name: 'לגלריה' })).toHaveAttribute('href', '#gallery');
-    expect(within(heroView.getByRole('list', { name: 'היתרונות של Nis' })).getAllByRole('listitem')).toHaveLength(3);
-    expect(heroView.getByText('הכנה טרייה')).toBeInTheDocument();
-    expect(heroView.getByText('הגשה מוכנה')).toBeInTheDocument();
-    expect(heroView.getByText('תיאום אישי')).toBeInTheDocument();
-    expect(heroView.getByRole('img', {
-      name: 'שולחן בופה של Nis עם רולים, מאפים, סלטים אישיים ומנות מוכנות להגשה',
-    })).toHaveAttribute('width', '1200');
-    expect(hero.querySelector('video')).not.toBeInTheDocument();
-    expect(container.querySelector('.intro-band')).not.toBeInTheDocument();
-    expect(container.querySelector('.manifesto-section')).not.toBeInTheDocument();
-    expect(container.querySelector('#audience-title')).not.toBeInTheDocument();
   });
 
-  it('filters the gallery by category', async () => {
-    const { container } = render(<App />);
-
-    const initialButtons = await screen.findAllByRole('button', { name: /פתח תמונה:/i });
-    expect(initialButtons).toHaveLength(6);
-
-    fireEvent.click(screen.getByRole('button', { name: 'סלטים' }));
-
-    const filteredButtons = await screen.findAllByRole('button', { name: /פתח תמונה:/i });
-    expect(filteredButtons).toHaveLength(2);
-    expect(screen.getByRole('button', { name: 'סלטים' })).toHaveAttribute('aria-pressed', 'true');
-    expect(container.querySelectorAll('#gallery video')).toHaveLength(0);
-    expect(container.querySelector('.real-media-section')).not.toBeInTheDocument();
-  });
-
-  it('opens the lightbox and closes it on escape', async () => {
+  it('adds a product to the persistent cart and updates its quantity', () => {
     render(<App />);
 
-    const triggerButton = await screen.findByRole('button', { name: 'פתח תמונה: שולחן אירוח מוכן' });
-    triggerButton.focus();
-    fireEvent.click(triggerButton);
+    fireEvent.click(screen.getAllByRole('button', { name: /הוספה לעגלה/u })[0]!);
+    fireEvent.click(screen.getAllByRole('button', { name: /^העגלה שלי/u })[0]!);
 
-    const dialog = await screen.findByRole('dialog', { name: /שולחן אירוח מוכן/i });
-    const closeButton = within(dialog).getByRole('button', { name: 'סגור תמונה' });
-    expect(dialog).toBeInTheDocument();
-    expect(document.body).toHaveClass('is-lightbox-open');
-    expect(closeButton).toHaveFocus();
-
-    fireEvent.keyDown(window, { key: 'Escape' });
-
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-    expect(document.body).not.toHaveClass('is-lightbox-open');
-    expect(triggerButton).toHaveFocus();
-  });
-
-  it('shows all three service offers without a hidden carousel state', async () => {
-    render(<App />);
-
-    const experienceHeading = await screen.findByRole('heading', { name: 'שלוש דרכים לארח עם Nis.' });
-    const experienceSection = experienceHeading.closest('section');
-    expect(experienceSection).not.toBeNull();
-    if (!experienceSection) {
-      throw new Error('Experience section was not found');
-    }
-
-    const offers = within(experienceSection);
-    expect(offers.getAllByRole('article')).toHaveLength(3);
-    expect(offers.getByRole('heading', { level: 3, name: 'ניס בטעם של שבת' })).toBeInTheDocument();
-    expect(offers.getByRole('heading', { level: 3, name: 'ניס בכיס' })).toBeInTheDocument();
-    expect(offers.getByRole('heading', { level: 3, name: 'Travel Nis' })).toBeInTheDocument();
-    expect(offers.queryByRole('tablist')).not.toBeInTheDocument();
-  });
-
-  it('explains the three-day inquiry policy without promising availability', async () => {
-    render(<App />);
-
-    fireEvent.click(await screen.findByRole('button', { name: 'כמה זמן מראש צריך להזמין?' }));
-
-    expect(screen.getByText(
-      'יש לפנות לפחות שלושה ימים מראש, ומומלץ מוקדם יותר לפני שבתות, חגים ואירועים גדולים. אישור ההזמנה כפוף לתיאום ולזמינות העסק.',
-    )).toBeVisible();
-  });
-
-  it('does not render removed duplicate sections', () => {
-    render(<App />);
-
-    expect(screen.queryByRole('heading', { name: 'הפרטים הקטנים שעוזרים להחליט מהר יותר.' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('heading', { name: 'כל מה שצריך לדעת כדי לשלוח פנייה בלי להתלבט.' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('heading', { name: 'שלוש אפשרויות ברורות. בוחרים כיוון וממשיכים לפנייה.' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('heading', { name: 'קייטרינג בוטיק מביתר עילית לשבת, אירוח קטן ומארזים לדרך.' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('heading', { name: 'שלוש קטגוריות ברורות. שפה אחת של אירוח.' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('heading', { name: 'בוטיק זו לא מילה. זו הדרך שבה כל פרט מרגיש נכון יותר.' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('heading', { name: 'כיוונים טעימים שקל להתחיל מהם שיחה.' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('heading', { name: 'פחות סימני שאלה, יותר תחושה שיש עם מי לדבר.' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('heading', { name: /קייטרינג בוטיק ביתי.*לשבתות ואירועים קטנים/i })).not.toBeInTheDocument();
-  });
-
-  it('builds a whatsapp inquiry from the contact form submit', async () => {
-    const measuredEvents: LeadMeasurementEnvelope[] = [];
-    restoreMeasurementSink = setLeadMeasurementSink((event) => measuredEvents.push(event));
-    const locationMock = {
-      ...window.location,
-      href: 'http://localhost:5174/',
-    };
-
-    Object.defineProperty(window, 'location', {
-      value: locationMock,
-      configurable: true,
+    const dialog = screen.getByRole('dialog', { name: 'סל ההזמנה' });
+    expect(within(dialog).getByText(products[0]!.name)).toBeInTheDocument();
+    expect(JSON.parse(window.localStorage.getItem('nis-order-cart-v1') ?? '{}')).toEqual({
+      [products[0]!.seq]: 1,
     });
 
-    render(<App />);
-
-    fireEvent.change(await screen.findByLabelText('שם מלא (חובה)'), { target: { value: 'שרה כהן' } });
-    fireEvent.change(screen.getByLabelText('טלפון (חובה)'), { target: { value: '0501234567' } });
-    fireEvent.change(screen.getByLabelText('במה אתם מתעניינים? (חובה)'), {
-      target: { value: 'ניס בטעם של שבת' },
-    });
-    fireEvent.change(screen.getByLabelText('מספר סועדים (אופציונלי)'), { target: { value: '12' } });
-    fireEvent.change(screen.getByLabelText('הודעה קצרה (אופציונלי)'), {
-      target: { value: 'נשמח למארז לדרך' },
-    });
-
-    fireEvent.submit(screen.getByRole('button', { name: 'שלחו פנייה בוואטסאפ' }).closest('form')!);
-
-    expect(window.location.href).toContain(`${businessContact.whatsappBase}?text=`);
-    expect(decodeURIComponent(window.location.href)).toContain('שם מלא: שרה כהן');
-    expect(decodeURIComponent(window.location.href)).toContain('במה אתם מתעניינים?: ניס בטעם של שבת');
-    expect(decodeURIComponent(window.location.href)).toContain('הודעה קצרה: נשמח למארז לדרך');
-    expect(measuredEvents.map((event) => event.name)).toEqual([
-      'nis_lead_form_validation',
-      'nis_lead_form_submit_success',
-      'nis_whatsapp_handoff',
-    ]);
-    expect(measuredEvents).toEqual(expect.arrayContaining([
-      expect.objectContaining({
-        name: 'nis_lead_form_validation',
-        properties: { form_id: 'contact', invalid_field_count: 0, result: 'valid' },
-      }),
-      expect.objectContaining({
-        name: 'nis_whatsapp_handoff',
-        properties: { origin: 'lead_form', source: 'lead_form' },
-      }),
-    ]));
-    const measurementPayload = JSON.stringify(measuredEvents);
-    expect(measurementPayload).not.toContain('שרה כהן');
-    expect(measurementPayload).not.toContain('0501234567');
-    expect(measurementPayload).not.toContain('נשמח למארז לדרך');
+    fireEvent.click(within(dialog).getByRole('button', { name: `הוסף ${products[0]!.name}` }));
+    expect(within(dialog).getByText('2')).toBeInTheDocument();
   });
 
-  it('measures one form start and local invalidation without a whatsapp handoff', async () => {
-    const measuredEvents: LeadMeasurementEnvelope[] = [];
-    restoreMeasurementSink = setLeadMeasurementSink((event) => measuredEvents.push(event));
+  it('requires customer details and acceptance of the order terms', () => {
     render(<App />);
+    fireEvent.click(screen.getAllByRole('button', { name: /הוספה לעגלה/u })[0]!);
+    fireEvent.click(screen.getAllByRole('button', { name: /^העגלה שלי/u })[0]!);
+    fireEvent.click(screen.getByRole('button', { name: /לפרטי ההזמנה/u }));
 
-    const nameField = await screen.findByLabelText('שם מלא (חובה)');
-    fireEvent.focus(nameField);
-    fireEvent.blur(nameField);
-    fireEvent.focus(nameField);
-    fireEvent.submit(screen.getByRole('button', { name: 'שלחו פנייה בוואטסאפ' }).closest('form')!);
+    expect(screen.getByRole('dialog', { name: 'פרטי ההזמנה' })).toBeInTheDocument();
+    expect(screen.getByLabelText('שם מלא')).toBeRequired();
+    expect(screen.getByLabelText('טלפון')).toBeRequired();
+    expect(screen.getByLabelText('תאריך האירוע')).toBeRequired();
+    expect(screen.getByRole('checkbox', { name: /קראתי את תנאי ההזמנה/u })).toBeRequired();
+    expect(screen.getByRole('button', { name: 'שליחת הזמנה ב־WhatsApp' })).toBeInTheDocument();
+  });
 
-    expect(measuredEvents.map((event) => event.name)).toEqual([
+  it('measures checkout start and validation without collecting customer data', () => {
+    const events: LeadMeasurementEnvelope[] = [];
+    restoreMeasurementSink = setLeadMeasurementSink((event) => events.push(event));
+    render(<App />);
+    fireEvent.click(screen.getAllByRole('button', { name: /הוספה לעגלה/u })[0]!);
+    fireEvent.click(screen.getAllByRole('button', { name: /^העגלה שלי/u })[0]!);
+    fireEvent.click(screen.getByRole('button', { name: /לפרטי ההזמנה/u }));
+
+    fireEvent.focus(screen.getByLabelText('שם מלא'));
+    fireEvent.submit(screen.getByRole('button', { name: 'שליחת הזמנה ב־WhatsApp' }).closest('form')!);
+
+    expect(events.map((event) => event.name)).toEqual([
       'nis_lead_form_start',
       'nis_lead_form_validation',
     ]);
-    expect(measuredEvents[1]).toEqual({
+    expect(events[1]).toEqual({
       name: 'nis_lead_form_validation',
-      properties: { form_id: 'contact', invalid_field_count: 3, result: 'invalid' },
+      properties: { form_id: 'contact', invalid_field_count: 4, result: 'invalid' },
       schema_version: 1,
     });
+    expect(JSON.stringify(events)).not.toContain('name:');
+    expect(JSON.stringify(events)).not.toContain('phone:');
   });
 
-  it('renders the mobile sticky CTA with whatsapp and phone actions', () => {
-    render(<App />);
-
-    const stickyCta = document.querySelector('.mobile-sticky-cta');
-    expect(stickyCta).not.toBeNull();
-    if (!stickyCta) {
-      throw new Error('Mobile sticky CTA was not found');
-    }
-    const links = stickyCta.querySelectorAll('a');
-
-    expect(links).toHaveLength(2);
-    expect(links[0]).toHaveAttribute('href', expect.stringContaining(businessContact.whatsappBase));
-    expect(links[1]).toHaveAttribute('href', businessContact.phoneHref);
-  });
-
-  it('places floating contact actions in a named navigation landmark', () => {
-    render(<App />);
-
-    const actions = screen.getByRole('navigation', { name: 'פעולות מהירות ליצירת קשר' });
-    expect(actions.querySelector('.floating-whatsapp')).toBeInTheDocument();
-    expect(actions.querySelector('.mobile-sticky-cta')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'הצהרת נגישות' })).toHaveAttribute('href', '/accessibility/');
-  });
-
-  it('renders the dedicated accessibility statement route without the public sections', () => {
+  it('keeps the accessibility statement route available', () => {
     window.history.replaceState({}, '', '/accessibility/');
-
     render(<App />);
 
     expect(screen.getByRole('heading', { level: 1, name: 'הצהרת נגישות' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { level: 2, name: 'תקן היעד והבדיקות' })).toBeInTheDocument();
-    expect(screen.getByText(/ת״י 5568 חלק 1/)).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: `טלפון: ${businessContact.phoneDisplay}` })).toHaveAttribute(
-      'href',
-      businessContact.phoneHref,
-    );
-    expect(screen.getByRole('link', { name: /דואר אלקטרוני:/ })).toHaveAttribute('href', 'mailto:nisboutiquecatering@gmail.com');
-    expect(screen.queryByRole('heading', { name: 'אירוח שנראה מוקפד ומרגיש ביתי.' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'תפריט בוטיק חלבי' })).not.toBeInTheDocument();
   });
 });
