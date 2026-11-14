@@ -542,7 +542,7 @@ export const products = [
   {
     "seq": 70,
     "category": "מוצרים חדשים",
-    "name": "מוס - 24 יחידות",
+    "name": "מוס טעמים משתנים - 24 יחידות",
     "description": "טעמים משתנים. פרווה / חלבי.",
     "priceIls": 240,
     "priceLabel": null,

@@ -31,6 +31,7 @@ describe('NIS ordering site', () => {
     expect(products.every((product) => product.status === 'approved')).toBe(true);
     expect(products.some((product) => product.seq === 59)).toBe(false);
     expect(products.filter((product) => [50, 51, 55, 56, 57, 58, 63, 64, 65, 66, 67, 68, 69, 70, 71].includes(product.seq))).toHaveLength(15);
+    expect(products.find((product) => product.seq === 70)?.name).toBe('מוס טעמים משתנים - 24 יחידות');
     expect(screen.getByRole('heading', { name: 'מגשי מיקס ושייקים' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'מוצרים חדשים' })).toBeInTheDocument();
     expect(screen.getAllByText('מחיר בהתאמה אישית')).toHaveLength(3);
