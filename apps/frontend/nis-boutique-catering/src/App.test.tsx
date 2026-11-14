@@ -66,7 +66,7 @@ describe('NIS ordering site', () => {
     fireEvent.click(within(dialog).getByRole('button', { name: `הפחת ${products[0]!.name}` }));
     expect(within(dialog).queryByText(products[0]!.name)).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: `הוסף כמות של ${products[0]!.name}` }).parentElement).toHaveTextContent('0');
-  }, 15_000);
+  });
 
   it('requires customer details and acceptance of the order terms', () => {
     render(<App />);
@@ -80,7 +80,7 @@ describe('NIS ordering site', () => {
     expect(screen.getByLabelText('תאריך האירוע')).toBeRequired();
     expect(screen.getByRole('checkbox', { name: /קראתי את תנאי ההזמנה/u })).toBeRequired();
     expect(screen.getByRole('button', { name: 'שליחת הזמנה ב־WhatsApp' })).toBeInTheDocument();
-  }, 15_000);
+  });
 
   it('measures checkout start and validation without collecting customer data', () => {
     const events: LeadMeasurementEnvelope[] = [];
