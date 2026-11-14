@@ -6,7 +6,7 @@ const storageKey = 'nis-order-cart-v1';
 export interface CartLine {
   readonly product: CatalogProduct;
   readonly quantity: number;
-  readonly lineTotal: number;
+  readonly lineTotal: number | null;
 }
 
 type CartState = Readonly<Record<number, number>>;
@@ -34,12 +34,15 @@ export const useOrderCart = (catalog: readonly CatalogProduct[]) => {
   const lines = useMemo<CartLine[]>(
     () => catalog.flatMap((product) => {
       const quantity = cart[product.seq] ?? 0;
-      return quantity > 0 ? [{ product, quantity, lineTotal: product.priceIls * quantity }] : [];
+      return quantity > 0
+        ? [{ product, quantity, lineTotal: product.priceIls === null ? null : product.priceIls * quantity }]
+        : [];
     }),
     [cart, catalog],
   );
   const itemCount = lines.reduce((total, line) => total + line.quantity, 0);
-  const total = lines.reduce((sum, line) => sum + line.lineTotal, 0);
+  const total = lines.reduce((sum, line) => sum + (line.lineTotal ?? 0), 0);
+  const hasCustomPricing = lines.some((line) => line.lineTotal === null);
 
   const setQuantity = (seq: number, quantity: number) => {
     setCart((current) => {
@@ -51,5 +54,5 @@ export const useOrderCart = (catalog: readonly CatalogProduct[]) => {
   };
 
   const clear = () => setCart({});
-  return { clear, itemCount, lines, quantities: cart, setQuantity, total } as const;
+  return { clear, hasCustomPricing, itemCount, lines, quantities: cart, setQuantity, total } as const;
 };

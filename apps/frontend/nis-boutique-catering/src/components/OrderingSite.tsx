@@ -47,8 +47,8 @@ const ProductCard = ({ product, quantity, onQuantityChange }: ProductCardProps) 
         <div className="product-card__heading">
           <h3>{product.name}</h3>
           <p className="product-price">
-            <bdi>{formatPrice(product.priceIls)} ₪</bdi>
-            {product.priceUnit === 'per_unit' ? <span>ליחידה</span> : null}
+            {product.priceIls === null ? product.priceLabel : <bdi>{formatPrice(product.priceIls)} ₪</bdi>}
+            {product.priceIls !== null && product.priceUnit === 'per_unit' ? <span>ליחידה</span> : null}
           </p>
         </div>
         {product.description ? <p className="product-description">{product.description}</p> : null}
@@ -71,7 +71,7 @@ interface OrderingSiteProps {
 
 export const OrderingSite = ({ catalog }: OrderingSiteProps) => {
   const categories = useMemo(() => [...new Set(catalog.map((product) => product.category))], [catalog]);
-  const { clear, itemCount, lines, quantities, setQuantity, total } = useOrderCart(catalog);
+  const { clear, hasCustomPricing, itemCount, lines, quantities, setQuantity, total } = useOrderCart(catalog);
   const [cartOpen, setCartOpen] = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [termsOpen, setTermsOpen] = useState(false);
@@ -109,12 +109,12 @@ export const OrderingSite = ({ catalog }: OrderingSiteProps) => {
     const date = String(formData.get('date') ?? '').trim();
     const notes = String(formData.get('notes') ?? '').trim();
     const itemLines = lines.map((line, index) =>
-      `${index + 1}. ${line.product.name} ×${line.quantity} — ${formatPrice(line.lineTotal)} ₪`,
+      `${index + 1}. ${line.product.name} ×${line.quantity} — ${line.lineTotal === null ? line.product.priceLabel : `${formatPrice(line.lineTotal)} ₪`}`,
     );
     const message = [
       'הזמנה חדשה מהאתר — NIS Boutique Catering', '',
       `שם: ${name}`, `טלפון: ${phone}`, `תאריך האירוע: ${date}`, `פרטים: ${notes || 'ללא'}`, '',
-      'פריטים:', ...itemLines, '', `סה״כ: ${formatPrice(total)} ₪`,
+      'פריטים:', ...itemLines, '', `סה״כ ידוע: ${formatPrice(total)} ₪${hasCustomPricing ? ' + פריטים במחיר בהתאמה אישית' : ''}`,
     ].join('\n');
     trackLeadEvent({
       name: 'nis_lead_form_submit_success',
@@ -229,7 +229,7 @@ export const OrderingSite = ({ catalog }: OrderingSiteProps) => {
                   {lines.map((line) => (
                     <li key={line.product.seq}>
                       <img src={`/images/${line.product.images[0]}`} alt="" />
-                      <div><h3>{line.product.name}</h3><span>{formatPrice(line.lineTotal)} ₪</span></div>
+                      <div><h3>{line.product.name}</h3><span>{line.lineTotal === null ? line.product.priceLabel : `${formatPrice(line.lineTotal)} ₪`}</span></div>
                       <div className="cart-line-actions">
                         <button type="button" onClick={() => setQuantity(line.product.seq, line.quantity - 1)} aria-label={`הפחת ${line.product.name}`}><Minus /></button>
                         <output>{line.quantity}</output>
@@ -239,7 +239,8 @@ export const OrderingSite = ({ catalog }: OrderingSiteProps) => {
                     </li>
                   ))}
                 </ul>
-                <div className="cart-total"><span>סה״כ</span><strong>{formatPrice(total)} ₪</strong></div>
+                <div className="cart-total"><span>{hasCustomPricing ? 'סה״כ ידוע' : 'סה״כ'}</span><strong>{formatPrice(total)} ₪</strong></div>
+                {hasCustomPricing ? <p className="cart-custom-price">פריטים בהתאמה אישית יתומחרו בשיחת WhatsApp.</p> : null}
                 <button className="primary-order-button" type="button" onClick={() => { setCartOpen(false); setCheckoutOpen(true); }}>לפרטי ההזמנה <ChevronLeft /></button>
                 <button className="clear-cart" type="button" onClick={clear}>ריקון העגלה</button>
               </>
@@ -268,7 +269,7 @@ export const OrderingSite = ({ catalog }: OrderingSiteProps) => {
               <label>טלפון<input name="phone" type="tel" inputMode="tel" autoComplete="tel" required /></label>
               <label>תאריך האירוע<input name="date" type="date" required /></label>
               <label>פרטים / הערות<textarea name="notes" rows={4} /></label>
-              <div className="checkout-summary"><span>{itemCount} פריטים</span><strong>{formatPrice(total)} ₪</strong></div>
+              <div className="checkout-summary"><span>{itemCount} פריטים{hasCustomPricing ? ' · כולל תמחור אישי' : ''}</span><strong>{formatPrice(total)} ₪</strong></div>
               <button className="terms-link" type="button" onClick={() => setTermsOpen(true)}>לקריאת תנאי ההזמנה</button>
               <label className="terms-check"><input name="terms" type="checkbox" required /><span><Check /> קראתי את תנאי ההזמנה</span></label>
               <button className="whatsapp-submit" type="submit">שליחת הזמנה ב־WhatsApp</button>

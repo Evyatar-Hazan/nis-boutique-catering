@@ -126,6 +126,7 @@ button { color: inherit; }
 .cart-line-actions output { min-width: 1.5rem; text-align: center; font-weight: 900; }
 .cart-total { display: flex; justify-content: space-between; padding: 1.25rem; font-size: 1.3rem; }
 .cart-total strong { font-size: 1.7rem; }
+.cart-custom-price { margin: -.65rem 1.25rem 1rem; color: var(--nis-muted); font-size: .82rem; }
 .cart-drawer .primary-order-button, .cart-drawer .clear-cart { width: calc(100% - 2rem); margin: 0 1rem; }
 .clear-cart, .terms-link { border: 0; background: transparent; padding: 1rem; text-decoration: underline; cursor: pointer; }
 

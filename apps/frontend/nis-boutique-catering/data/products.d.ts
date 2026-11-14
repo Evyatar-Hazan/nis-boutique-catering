@@ -3,7 +3,8 @@ export interface CatalogProduct {
   readonly category: string;
   readonly name: string;
   readonly description: string;
-  readonly priceIls: number;
+  readonly priceIls: number | null;
+  readonly priceLabel: string | null;
   readonly priceUnit: 'per_unit' | null;
   readonly status: 'approved';
   readonly images: readonly string[];

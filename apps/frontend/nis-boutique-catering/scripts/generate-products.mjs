@@ -5,11 +5,8 @@ import path from 'node:path';
 const appRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const sourcePath = path.join(appRoot, 'data', 'products.csv');
 const outputPath = path.join(appRoot, 'data', 'products.js');
-const forbiddenSeqs = new Set([59, 64, 65, 67]);
-const approvedCatalogSeqs = new Set([
-  1, 2, 5, 6, 7, 8, 11, 12, 14, 18, 19, 23, 26, 27, 28, 30, 31, 34, 35, 36, 37, 39, 41,
-  42, 45, 46, 47, 49,
-]);
+const forbiddenSeqs = new Set([59]);
+const expectedApprovedCount = 43;
 
 const parseCsv = (source) => {
   const rows = [];
@@ -61,14 +58,14 @@ const source = await readFile(sourcePath, 'utf8');
 const sourceRows = parseCsv(source);
 const publishedProducts = sourceRows
   .filter((row) => row.status.trim() === 'approved')
-  .filter((row) => approvedCatalogSeqs.has(Number(row.seq)))
   .filter((row) => !forbiddenSeqs.has(Number(row.seq)))
   .map((row) => ({
     seq: Number(row.seq),
     category: row.category.trim(),
     name: row.name.trim(),
     description: row.description.trim(),
-    priceIls: Number(row.price_ils),
+    priceIls: row.price_ils.trim() ? Number(row.price_ils) : null,
+    priceLabel: row.price_label.trim() || null,
     priceUnit: row.price_unit.trim() === 'per_unit' ? 'per_unit' : null,
     status: 'approved',
     images: row.images.split('|').map((image) => image.trim()).filter(Boolean),
@@ -77,13 +74,17 @@ const publishedProducts = sourceRows
 if (publishedProducts.some((product) => forbiddenSeqs.has(product.seq))) {
   throw new Error('A forbidden product passed the publication gate.');
 }
-if (publishedProducts.length !== approvedCatalogSeqs.size) {
+if (publishedProducts.length !== expectedApprovedCount) {
   throw new Error(
-    `Expected ${approvedCatalogSeqs.size} approved products, received ${publishedProducts.length}.`,
+    `Expected ${expectedApprovedCount} approved products, received ${publishedProducts.length}.`,
   );
 }
-if (publishedProducts.some((product) => !Number.isFinite(product.priceIls) || product.images.length === 0)) {
-  throw new Error('Every published product must have a numeric price and at least one image.');
+if (publishedProducts.some((product) =>
+  (product.priceIls !== null && !Number.isFinite(product.priceIls))
+  || (product.priceIls === null && !product.priceLabel)
+  || product.images.length === 0
+)) {
+  throw new Error('Every published product must have a numeric price or price label and at least one image.');
 }
 
 const generated = `// Generated from data/products.csv. Do not edit manually.\n` +

@@ -27,9 +27,13 @@ describe('NIS ordering site', () => {
     const cards = container.querySelectorAll('[data-product-seq]');
 
     expect(cards).toHaveLength(products.length);
-    expect(products).toHaveLength(28);
+    expect(products).toHaveLength(43);
     expect(products.every((product) => product.status === 'approved')).toBe(true);
-    expect(products.some((product) => [59, 64, 65, 67].includes(product.seq))).toBe(false);
+    expect(products.some((product) => product.seq === 59)).toBe(false);
+    expect(products.filter((product) => [50, 51, 55, 56, 57, 58, 63, 64, 65, 66, 67, 68, 69, 70, 71].includes(product.seq))).toHaveLength(15);
+    expect(screen.getByRole('heading', { name: 'מגשי מיקס ושייקים' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'מוצרים חדשים' })).toBeInTheDocument();
+    expect(screen.getAllByText('מחיר בהתאמה אישית')).toHaveLength(3);
     expect(container).not.toHaveTextContent('050-3502615');
   });
 
