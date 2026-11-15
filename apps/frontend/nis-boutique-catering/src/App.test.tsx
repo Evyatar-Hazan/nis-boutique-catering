@@ -34,6 +34,8 @@ describe('NIS ordering site', () => {
     expect(products.find((product) => product.seq === 70)?.name).toBe('מוס טעמים משתנים - 24 יחידות');
     expect(screen.getByRole('heading', { name: 'מגשי מיקס ושייקים' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'מוצרים חדשים' })).toBeInTheDocument();
+    expect(screen.getByRole('list', { name: 'שלב 1 מתוך 3' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'ומה הלאה?' })).toBeInTheDocument();
     expect(screen.getAllByText('מחיר בהתאמה אישית')).toHaveLength(3);
     expect(container).not.toHaveTextContent('050-3502615');
   });
@@ -52,6 +54,8 @@ describe('NIS ordering site', () => {
 
     expect(screen.getAllByText('0', { selector: 'output' })).toHaveLength(products.length);
     fireEvent.click(screen.getByRole('button', { name: `הוסף כמות של ${products[0]!.name}` }));
+    expect(screen.getByRole('region', { name: 'הבחירות שלכם' })).toHaveTextContent(`${products[0]!.name} · 1`);
+    expect(screen.getByText(/נוסף לעגלה/u, { selector: '.cart-toast' })).toBeInTheDocument();
     fireEvent.click(screen.getAllByRole('button', { name: /^העגלה שלי/u })[0]!);
 
     const dialog = screen.getByRole('dialog', { name: 'סל ההזמנה' });
@@ -61,7 +65,7 @@ describe('NIS ordering site', () => {
     });
 
     fireEvent.click(within(dialog).getByRole('button', { name: `הוסף ${products[0]!.name}` }));
-    expect(within(dialog).getByText('2')).toBeInTheDocument();
+    expect(within(dialog).getByText('2', { selector: 'output' })).toBeInTheDocument();
 
     fireEvent.click(within(dialog).getByRole('button', { name: `הפחת ${products[0]!.name}` }));
     fireEvent.click(within(dialog).getByRole('button', { name: `הפחת ${products[0]!.name}` }));
@@ -79,8 +83,14 @@ describe('NIS ordering site', () => {
     expect(screen.getByLabelText('שם מלא')).toBeRequired();
     expect(screen.getByLabelText('טלפון')).toBeRequired();
     expect(screen.getByLabelText('תאריך האירוע')).toBeRequired();
+    expect(screen.getByLabelText('שעת האירוע')).not.toBeRequired();
+    expect(screen.getByRole('radio', { name: 'איסוף עצמי' })).toBeChecked();
+    expect(screen.getByRole('list', { name: 'שלב 3 מתוך 3' })).toBeInTheDocument();
     expect(screen.getByRole('checkbox', { name: /קראתי את תנאי ההזמנה/u })).toBeRequired();
     expect(screen.getByRole('button', { name: 'שליחת הזמנה ב־WhatsApp' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('radio', { name: 'משלוח' }));
+    expect(screen.getByLabelText('כתובת למשלוח')).toBeRequired();
+    expect(screen.getByRole('group', { name: 'סיכום הפריטים' })).toHaveTextContent(products[0]!.name);
   });
 
   it('measures checkout start and validation without collecting customer data', () => {
