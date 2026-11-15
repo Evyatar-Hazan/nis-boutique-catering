@@ -6,7 +6,8 @@ const appRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const sourcePath = path.join(appRoot, 'data', 'products.csv');
 const outputPath = path.join(appRoot, 'data', 'products.js');
 const forbiddenSeqs = new Set([59]);
-const expectedApprovedCount = 43;
+const expectedProductCount = 64;
+const expectedNoImageCount = 21;
 
 const parseCsv = (source) => {
   const rows = [];
@@ -57,34 +58,41 @@ const parseCsv = (source) => {
 const source = await readFile(sourcePath, 'utf8');
 const sourceRows = parseCsv(source);
 const publishedProducts = sourceRows
-  .filter((row) => row.status.trim() === 'approved')
+  .filter((row) => row.status.trim() !== 'excluded')
+  .filter((row) => row.wording_approved.trim() === 'yes')
+  .filter((row) => row.price_approved.trim() === 'yes')
   .filter((row) => !forbiddenSeqs.has(Number(row.seq)))
-  .map((row) => ({
-    seq: Number(row.seq),
-    category: row.category.trim(),
-    name: row.name.trim(),
-    description: row.description.trim(),
-    priceIls: row.price_ils.trim() ? Number(row.price_ils) : null,
-    priceLabel: row.price_label.trim() || null,
-    priceUnit: row.price_unit.trim() === 'per_unit' ? 'per_unit' : null,
-    status: 'approved',
-    images: row.images.split('|').map((image) => image.trim()).filter(Boolean),
-  }));
+  .map((row) => {
+    const price = row.price_ils.trim();
+    return {
+      seq: Number(row.seq),
+      category: row.category.trim(),
+      name: row.name.trim(),
+      description: row.description.trim(),
+      priceIls: price === '' ? null : Number(price),
+      priceUnit: row.price_unit.trim() === 'per_unit' ? 'per_unit' : null,
+      priceLabel: row.price_label.trim() || null,
+      status: 'approved',
+      images: row.images.split('|').map((image) => image.trim()).filter(Boolean),
+    };
+  });
 
 if (publishedProducts.some((product) => forbiddenSeqs.has(product.seq))) {
   throw new Error('A forbidden product passed the publication gate.');
 }
-if (publishedProducts.length !== expectedApprovedCount) {
+if (publishedProducts.length !== expectedProductCount) {
   throw new Error(
-    `Expected ${expectedApprovedCount} approved products, received ${publishedProducts.length}.`,
+    `Expected ${expectedProductCount} approved products, received ${publishedProducts.length}.`,
   );
 }
-if (publishedProducts.some((product) =>
-  (product.priceIls !== null && !Number.isFinite(product.priceIls))
-  || (product.priceIls === null && !product.priceLabel)
-  || product.images.length === 0
-)) {
-  throw new Error('Every published product must have a numeric price or price label and at least one image.');
+if (publishedProducts.filter((product) => product.images.length === 0).length !== expectedNoImageCount) {
+  throw new Error(`Expected ${expectedNoImageCount} approved products without images.`);
+}
+if (publishedProducts.some((product) => product.priceIls === null && product.priceLabel === null)) {
+  throw new Error('Every published product must have a numeric price or an approved price label.');
+}
+if (publishedProducts.some((product) => product.priceIls !== null && !Number.isFinite(product.priceIls))) {
+  throw new Error('Every numeric product price must be finite.');
 }
 
 const generated = `// Generated from data/products.csv. Do not edit manually.\n` +

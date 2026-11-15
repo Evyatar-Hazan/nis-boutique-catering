@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
-import { Check, ChevronLeft, Clock3, MapPin, Menu, MessageCircle, Minus, Plus, ShoppingBag, Trash2, Users, X } from 'lucide-react';
+import { Check, ChevronLeft, Clock3, ImageOff, MapPin, Menu, MessageCircle, Minus, Plus, ShoppingBag, Trash2, Users, X } from 'lucide-react';
 import { businessContact } from '@monorepo/content-schema';
 import type { CatalogProduct } from '../../data/products.js';
 import { useOrderCart } from '../hooks/useOrderCart';
@@ -45,7 +45,12 @@ const ProductCard = ({ product, quantity, onQuantityChange }: ProductCardProps) 
   return (
     <article className={`product-card${quantity > 0 ? ' product-card--selected' : ''}`} data-product-seq={product.seq}>
       <div className={`product-media${product.images.length > 1 ? ' product-media--split' : ''}`}>
-        {product.images.map((image, index) => (
+        {product.images.length === 0 ? (
+          <div className="product-media__placeholder" role="img" aria-label={`אין תמונה עבור ${product.name}`}>
+            <ImageOff aria-hidden="true" />
+            <span>אין תמונה</span>
+          </div>
+        ) : product.images.map((image, index) => (
           <img
             key={image}
             src={`/images/${image}`}
@@ -178,7 +183,7 @@ export const OrderingSite = ({ catalog }: OrderingSiteProps) => {
           <div className="ordering-hero__content">
             <p className="hero-new"><span>חדש!</span> אתר ההזמנות עלה לאוויר</p>
             <p className="hero-kosher">בד״ץ העדה החרדית והרב לנדא</p>
-            <img src="/brand/logo-nis-ordering.png" alt="NIS Boutique Catering" />
+            <img src="/hero.jpg" alt="NIS Boutique Catering" />
             <h1>תפריט בוטיק חלבי</h1>
             <p className="hero-slogan">אסתטי. בטוב טעם.</p>
             <a className="hero-cta" href="#catalog">לתפריט</a>
@@ -290,7 +295,11 @@ export const OrderingSite = ({ catalog }: OrderingSiteProps) => {
                 <ul className="cart-lines">
                   {lines.map((line) => (
                     <li key={line.product.seq}>
-                      <img src={`/images/${line.product.images[0]}`} alt="" />
+                      {line.product.images[0] ? (
+                        <img src={`/images/${line.product.images[0]}`} alt="" />
+                      ) : (
+                        <span className="cart-line-placeholder" aria-label="אין תמונה"><ImageOff aria-hidden="true" /></span>
+                      )}
                       <div><h3>{line.product.name}</h3><span>{line.lineTotal === null ? line.product.priceLabel : `${formatPrice(line.lineTotal)} ₪`}</span></div>
                       <div className="cart-line-actions">
                         <button type="button" onClick={() => setQuantity(line.product.seq, line.quantity - 1)} aria-label={`הפחת ${line.product.name}`}><Minus /></button>

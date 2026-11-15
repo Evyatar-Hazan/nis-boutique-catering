@@ -2,7 +2,6 @@ import { fileURLToPath } from 'node:url';
 import { businessContact } from '@monorepo/content-schema/contact';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import { generatedHeroPreload } from './src/generated/publicSiteDocument.generated';
 
 const heroPreloadPlugin = () => ({
   name: 'nis-hero-preload',
@@ -17,10 +16,8 @@ const heroPreloadPlugin = () => ({
         attrs: {
           rel: 'preload',
           as: 'image',
-          type: generatedHeroPreload.type,
-          href: generatedHeroPreload.href,
-          ...(generatedHeroPreload.imageSrcSet ? { imagesrcset: generatedHeroPreload.imageSrcSet } : {}),
-          ...(generatedHeroPreload.imageSizes ? { imagesizes: generatedHeroPreload.imageSizes } : {}),
+          type: 'image/jpeg',
+          href: '/hero.jpg',
           fetchpriority: 'high',
         },
         injectTo: 'head' as const,

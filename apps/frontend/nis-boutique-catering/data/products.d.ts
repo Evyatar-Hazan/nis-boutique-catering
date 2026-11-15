@@ -4,8 +4,8 @@ export interface CatalogProduct {
   readonly name: string;
   readonly description: string;
   readonly priceIls: number | null;
-  readonly priceLabel: string | null;
   readonly priceUnit: 'per_unit' | null;
+  readonly priceLabel: string | null;
   readonly status: 'approved';
   readonly images: readonly string[];
 }
