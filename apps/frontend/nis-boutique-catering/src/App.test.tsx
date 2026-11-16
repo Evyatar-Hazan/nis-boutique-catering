@@ -52,16 +52,38 @@ describe('NIS ordering site', () => {
     expect(products.some((product) => product.seq === 59)).toBe(false);
     expect(products.filter((product) => [50, 51, 55, 56, 57, 58, 63, 64, 65, 66, 67, 68, 69, 70, 71].includes(product.seq))).toHaveLength(15);
     expect(products.find((product) => product.seq === 70)?.name).toBe('מוס טעמים משתנים - 24 יחידות');
+    expect(products.find((product) => product.seq === 65)).toMatchObject({ category: 'ארוחות בוקר', name: 'ארוחת בוקר זוגית', priceIls: 300 });
+    expect(products.find((product) => product.seq === 66)).toMatchObject({ category: 'ארוחות בוקר', name: 'ארוחת בוקר יחיד', priceIls: 160 });
     expect(products.filter((product) => product.images.length === 0)).toHaveLength(21);
     expect(screen.getAllByAltText(/^לוגו NIS —/u)).toHaveLength(21);
     expect(screen.queryByText('אין תמונה')).not.toBeInTheDocument();
     expect(container.querySelector('.ordering-hero img')).toHaveAttribute('src', '/hero.jpg');
     expect(screen.getByRole('heading', { name: 'מגשי מיקס ושייקים' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'מוצרים חדשים' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'ארוחות בוקר' })).toBeInTheDocument();
+    expect(within(screen.getByRole('navigation', { name: 'קטגוריות התפריט' })).getAllByRole('link')[0]).toHaveTextContent('ארוחות בוקר');
+    expect(container.querySelector('.catalog-category:first-child')).toHaveTextContent('ארוחת בוקר זוגית');
+    expect(container.querySelector('.catalog-category:first-child')).toHaveTextContent('ארוחת בוקר יחיד');
+    expect(container.querySelector('.catalog-facts')).toHaveTextContent('10 קטגוריות');
     expect(screen.getByRole('list', { name: 'שלב 1 מתוך 3' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'ומה הלאה?' })).toBeInTheDocument();
     expect(screen.getAllByText('מחיר בהתאמה אישית')).toHaveLength(3);
     expect(container).not.toHaveTextContent('050-3502615');
+    expect(screen.getByText('ביתר עילית', { selector: '.ordering-location' })).toBeInTheDocument();
+  });
+
+  it('connects the single-breakfast planner option to the existing individual product', () => {
+    render(<App />);
+    const guestOptions = screen.getByRole('group', { name: 'כמה אורחים?' });
+    const optionButtons = within(guestOptions).getAllByRole('button');
+
+    expect(optionButtons.map((button) => button.textContent)).toEqual(['ארוחת בוקר ליחיד', '20', '40', '80', '150']);
+    fireEvent.click(optionButtons[0]!);
+
+    expect(optionButtons[0]).toHaveClass('is-selected');
+    expect(screen.getByRole('region', { name: 'הבחירות שלכם' })).toHaveTextContent('ארוחת בוקר ליחיד');
+    expect(screen.getByRole('region', { name: 'הבחירות שלכם' })).toHaveTextContent('ארוחת בוקר יחיד · 1');
+    expect(JSON.parse(window.localStorage.getItem('nis-order-cart-v1') ?? '{}')).toEqual({ 66: 1 });
   });
 
   it('uses the one approved business phone number', () => {

@@ -7,6 +7,11 @@ import { trackLeadEvent } from '../analytics/leadMeasurement';
 
 const formatPrice = (value: number) => new Intl.NumberFormat('he-IL').format(value);
 const kosherNotice = 'המוצרים בהכשר הבד״ץ, הרב לנדא ורובין.';
+const breakfastCategory = 'ארוחות בוקר';
+const singleBreakfastName = 'ארוחת בוקר יחיד';
+const singleBreakfastSelection = 'single-breakfast' as const;
+
+type GuestSelection = number | typeof singleBreakfastSelection;
 
 const categoryNotes: Readonly<Record<string, string>> = {
   מאפים: 'מאפים וכריכונים לאירוח קל, נקי ואלגנטי',
@@ -91,12 +96,21 @@ interface OrderingSiteProps {
 }
 
 export const OrderingSite = ({ catalog }: OrderingSiteProps) => {
-  const categories = useMemo(() => [...new Set(catalog.map((product) => product.category))], [catalog]);
+  const categories = useMemo(() => {
+    const availableCategories = [...new Set(catalog.map((product) => product.category))];
+    return availableCategories.includes(breakfastCategory)
+      ? [breakfastCategory, ...availableCategories.filter((category) => category !== breakfastCategory)]
+      : availableCategories;
+  }, [catalog]);
+  const singleBreakfastProduct = useMemo(
+    () => catalog.find((product) => product.name === singleBreakfastName) ?? null,
+    [catalog],
+  );
   const { clear, hasCustomPricing, itemCount, lines, quantities, setQuantity, total } = useOrderCart(catalog);
   const [cartOpen, setCartOpen] = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [termsOpen, setTermsOpen] = useState(false);
-  const [guestCount, setGuestCount] = useState<number | null>(null);
+  const [guestSelection, setGuestSelection] = useState<GuestSelection | null>(null);
   const [occasion, setOccasion] = useState('');
   const [fulfillment, setFulfillment] = useState('איסוף עצמי');
   const [toast, setToast] = useState('');
@@ -123,6 +137,12 @@ export const OrderingSite = ({ catalog }: OrderingSiteProps) => {
     setQuantity(product.seq, quantity);
     if (quantity > previousQuantity) setToast(`${product.name} נוסף לעגלה`);
     if (quantity === 0 && previousQuantity > 0) setToast(`${product.name} הוסר מהעגלה`);
+  };
+
+  const selectSingleBreakfast = () => {
+    if (!singleBreakfastProduct) return;
+    setGuestSelection(singleBreakfastSelection);
+    updateQuantity(singleBreakfastProduct, Math.max(1, quantities[singleBreakfastProduct.seq] ?? 0));
   };
 
   const submitOrder = (event: FormEvent<HTMLFormElement>) => {
@@ -154,7 +174,7 @@ export const OrderingSite = ({ catalog }: OrderingSiteProps) => {
     );
     const message = [
       'הזמנה חדשה מהאתר — NIS Boutique Catering', '',
-      `שם: ${name}`, `טלפון: ${phone}`, `תאריך האירוע: ${date}`, `שעת האירוע: ${time || 'טרם נקבעה'}`, `מספר אורחים: ${guestCount ?? 'טרם נקבע'}`, `סוג האירוח: ${occasion || 'טרם נקבע'}`, `אופן קבלה: ${fulfillment}`, ...(address ? [`כתובת למשלוח: ${address}`] : []), `פרטים: ${notes || 'ללא'}`, '',
+      `שם: ${name}`, `טלפון: ${phone}`, `תאריך האירוע: ${date}`, `שעת האירוע: ${time || 'טרם נקבעה'}`, `מספר אורחים: ${guestSelection === singleBreakfastSelection ? '1 — ארוחת בוקר ליחיד' : guestSelection ?? 'טרם נקבע'}`, `סוג האירוח: ${occasion || 'טרם נקבע'}`, `אופן קבלה: ${fulfillment}`, ...(address ? [`כתובת למשלוח: ${address}`] : []), `פרטים: ${notes || 'ללא'}`, '',
       'פריטים:', ...itemLines, '', `סה״כ ידוע: ${formatPrice(total)} ₪${hasCustomPricing ? ' + פריטים במחיר בהתאמה אישית' : ''}`,
     ].join('\n');
     trackLeadEvent({
@@ -200,13 +220,13 @@ export const OrderingSite = ({ catalog }: OrderingSiteProps) => {
           <div>{categories.map((category) => <a key={category} href={`#category-${category}`}>{category}</a>)}</div>
         </nav>
 
-        <aside className={`selection-rail${lines.length > 0 || guestCount || occasion ? ' selection-rail--active' : ''}`} role="region" aria-label="הבחירות שלכם">
+        <aside className={`selection-rail${lines.length > 0 || guestSelection || occasion ? ' selection-rail--active' : ''}`} role="region" aria-label="הבחירות שלכם">
           <div className="selection-rail__summary"><span>הבחירות שלכם</span><strong>{lines.length} סוגים · {itemCount} יחידות</strong></div>
           <div className="selection-chips">
-            {guestCount ? <button type="button" onClick={() => setGuestCount(null)}><Users /> {guestCount} אורחים <X /></button> : null}
+            {guestSelection ? <button type="button" onClick={() => setGuestSelection(null)}><Users /> {guestSelection === singleBreakfastSelection ? 'ארוחת בוקר ליחיד' : `${guestSelection} אורחים`} <X /></button> : null}
             {occasion ? <button type="button" onClick={() => setOccasion('')}>{occasion} <X /></button> : null}
             {lines.map((line) => <button type="button" key={line.product.seq} onClick={() => updateQuantity(line.product, 0)}>{line.product.name} · {line.quantity} <X /></button>)}
-            {lines.length === 0 && !guestCount && !occasion ? <span>הבחירות שתוסיפו יופיעו כאן</span> : null}
+            {lines.length === 0 && !guestSelection && !occasion ? <span>הבחירות שתוסיפו יופיעו כאן</span> : null}
           </div>
           <button className="selection-rail__cart" type="button" onClick={() => setCartOpen(true)} disabled={lines.length === 0}><ShoppingBag /> לסל</button>
         </aside>
@@ -215,10 +235,14 @@ export const OrderingSite = ({ catalog }: OrderingSiteProps) => {
           <OrderProgress activeStep={1} />
           <p>שלב ראשון · בוחרים, מוסיפים ושולחים</p>
           <h2 id="catalog-title">האירוח שלכם מתחיל כאן.</h2>
-          <div className="catalog-facts" aria-label="פרטי הקטלוג"><span>{catalog.length} מוצרים</span><span>9 קטגוריות</span><span>הזמנה ב־WhatsApp</span></div>
+          <div className="catalog-facts" aria-label="פרטי הקטלוג"><span>{catalog.length} מוצרים</span><span>{categories.length} קטגוריות</span><span>הזמנה ב־WhatsApp</span></div>
           <div className="event-planner" aria-label="עוזר תכנון האירוח">
             <div><Users /><span><b>מתכננים אירוח?</b> סמנו כמה אורחים ומה אופי האירוע — הבחירה תישמר למעלה ותצורף להזמנה.</span></div>
-            <fieldset><legend>כמה אורחים?</legend>{[20, 40, 80, 150].map((count) => <button className={guestCount === count ? 'is-selected' : ''} type="button" key={count} onClick={() => setGuestCount(count)}>{count}</button>)}</fieldset>
+            <fieldset>
+              <legend>כמה אורחים?</legend>
+              {singleBreakfastProduct ? <button className={guestSelection === singleBreakfastSelection ? 'is-selected' : ''} type="button" onClick={selectSingleBreakfast}>ארוחת בוקר ליחיד</button> : null}
+              {[20, 40, 80, 150].map((count) => <button className={guestSelection === count ? 'is-selected' : ''} type="button" key={count} onClick={() => setGuestSelection(count)}>{count}</button>)}
+            </fieldset>
             <fieldset><legend>מה אופי האירוע?</legend>{['כיבוד קל', 'אירוע חגיגי', 'אירוע ישיבה'].map((type) => <button className={occasion === type ? 'is-selected' : ''} type="button" key={type} onClick={() => setOccasion(type)}>{type}</button>)}</fieldset>
           </div>
         </section>
@@ -271,6 +295,7 @@ export const OrderingSite = ({ catalog }: OrderingSiteProps) => {
       <footer className="ordering-footer">
         <div className="ordering-brand ordering-brand--footer"><span className="ordering-brand__mark">nis</span><span>BOUTIQUE CATERING</span></div>
         <p>תפריט בוטיק חלבי — אסתטי. בטוב טעם.</p>
+        <span className="ordering-location"><MapPin aria-hidden="true" /> ביתר עילית</span>
         <a href={businessContact.phoneHref}>{businessContact.phoneDisplay}</a>
         <a href="/accessibility/">הצהרת נגישות</a>
       </footer>
