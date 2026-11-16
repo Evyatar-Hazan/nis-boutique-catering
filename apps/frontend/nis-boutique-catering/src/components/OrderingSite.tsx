@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type FormEvent, type MouseEvent as ReactMouseEvent, type RefObject } from 'react';
 import { Check, ChevronLeft, Clock3, MapPin, Menu, MessageCircle, Minus, Plus, ShoppingBag, Trash2, Users, X } from 'lucide-react';
 import { businessContact } from '@monorepo/content-schema';
 import type { CatalogProduct } from '../../data/products.js';
@@ -12,6 +12,84 @@ const singleBreakfastName = 'ארוחת בוקר יחיד';
 const singleBreakfastSelection = 'single-breakfast' as const;
 
 type GuestSelection = number | typeof singleBreakfastSelection;
+
+const focusableSelector = [
+  'a[href]',
+  'button:not([disabled])',
+  'input:not([disabled]):not([type="hidden"])',
+  'select:not([disabled])',
+  'textarea:not([disabled])',
+  '[tabindex]:not([tabindex="-1"])',
+].join(',');
+
+interface DialogFocusOptions {
+  readonly active: boolean;
+  readonly dialogRef: RefObject<HTMLElement | null>;
+  readonly initialFocusRef: RefObject<HTMLElement | null>;
+  readonly onClose: () => void;
+  readonly open: boolean;
+  readonly returnFocusRef?: RefObject<HTMLElement | null>;
+}
+
+const useDialogFocus = ({ active, dialogRef, initialFocusRef, onClose, open, returnFocusRef }: DialogFocusOptions) => {
+  const activeRef = useRef(active);
+  const onCloseRef = useRef(onClose);
+
+  useEffect(() => {
+    activeRef.current = active;
+  }, [active]);
+
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
+  useEffect(() => {
+    if (!open) return undefined;
+
+    const previouslyFocused = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const explicitReturnTarget = returnFocusRef?.current ?? null;
+    if (activeRef.current) initialFocusRef.current?.focus();
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (!activeRef.current) return;
+
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        onCloseRef.current();
+        return;
+      }
+
+      if (event.key !== 'Tab') return;
+
+      const dialog = dialogRef.current;
+      if (!dialog) return;
+      const focusableElements = [...dialog.querySelectorAll<HTMLElement>(focusableSelector)];
+      const firstFocusable = focusableElements[0];
+      const lastFocusable = focusableElements.at(-1);
+      if (!firstFocusable || !lastFocusable) {
+        event.preventDefault();
+        return;
+      }
+
+      const focusIsOutside = !(document.activeElement instanceof Node) || !dialog.contains(document.activeElement);
+      if (event.shiftKey && (document.activeElement === firstFocusable || focusIsOutside)) {
+        event.preventDefault();
+        lastFocusable.focus();
+      } else if (!event.shiftKey && (document.activeElement === lastFocusable || focusIsOutside)) {
+        event.preventDefault();
+        firstFocusable.focus();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      const returnTarget = explicitReturnTarget
+        ?? (previouslyFocused?.isConnected && previouslyFocused !== document.body ? previouslyFocused : null);
+      returnTarget?.focus();
+    };
+  }, [dialogRef, initialFocusRef, open, returnFocusRef]);
+};
 
 const categoryNotes: Readonly<Record<string, string>> = {
   מאפים: 'מאפים וכריכונים לאירוח קל, נקי ואלגנטי',
@@ -114,17 +192,45 @@ export const OrderingSite = ({ catalog }: OrderingSiteProps) => {
   const [occasion, setOccasion] = useState('');
   const [fulfillment, setFulfillment] = useState('איסוף עצמי');
   const [toast, setToast] = useState('');
+  const cartReturnFocusRef = useRef<HTMLButtonElement>(null);
+  const cartDialogRef = useRef<HTMLElement>(null);
   const cartCloseRef = useRef<HTMLButtonElement>(null);
+  const checkoutDialogRef = useRef<HTMLElement>(null);
+  const checkoutCloseRef = useRef<HTMLButtonElement>(null);
+  const termsDialogRef = useRef<HTMLElement>(null);
+  const termsCloseRef = useRef<HTMLButtonElement>(null);
+  const termsTriggerRef = useRef<HTMLButtonElement>(null);
   const checkoutStartedRef = useRef(false);
+
+  useDialogFocus({
+    active: cartOpen,
+    dialogRef: cartDialogRef,
+    initialFocusRef: cartCloseRef,
+    onClose: () => setCartOpen(false),
+    open: cartOpen,
+    returnFocusRef: cartReturnFocusRef,
+  });
+  useDialogFocus({
+    active: checkoutOpen && !termsOpen,
+    dialogRef: checkoutDialogRef,
+    initialFocusRef: checkoutCloseRef,
+    onClose: () => setCheckoutOpen(false),
+    open: checkoutOpen,
+    returnFocusRef: cartReturnFocusRef,
+  });
+  useDialogFocus({
+    active: termsOpen,
+    dialogRef: termsDialogRef,
+    initialFocusRef: termsCloseRef,
+    onClose: () => setTermsOpen(false),
+    open: termsOpen,
+    returnFocusRef: termsTriggerRef,
+  });
 
   useEffect(() => {
     document.body.classList.toggle('has-order-overlay', cartOpen || checkoutOpen || termsOpen);
     return () => document.body.classList.remove('has-order-overlay');
   }, [cartOpen, checkoutOpen, termsOpen]);
-
-  useEffect(() => {
-    if (cartOpen) cartCloseRef.current?.focus();
-  }, [cartOpen]);
 
   useEffect(() => {
     if (!toast) return undefined;
@@ -137,6 +243,11 @@ export const OrderingSite = ({ catalog }: OrderingSiteProps) => {
     setQuantity(product.seq, quantity);
     if (quantity > previousQuantity) setToast(`${product.name} נוסף לעגלה`);
     if (quantity === 0 && previousQuantity > 0) setToast(`${product.name} הוסר מהעגלה`);
+  };
+
+  const openCart = (event: ReactMouseEvent<HTMLButtonElement>) => {
+    cartReturnFocusRef.current = event.currentTarget;
+    setCartOpen(true);
   };
 
   const selectSingleBreakfast = () => {
@@ -196,7 +307,7 @@ export const OrderingSite = ({ catalog }: OrderingSiteProps) => {
         <a className="ordering-brand" href="#top" aria-label="NIS Boutique Catering — ראש העמוד">
           <span className="ordering-brand__mark">Nis</span><span>BOUTIQUE CATERING</span>
         </a>
-        <button className="header-cart" type="button" onClick={() => setCartOpen(true)}>
+        <button className="header-cart" type="button" onClick={openCart}>
           <ShoppingBag aria-hidden="true" /><span>העגלה שלי</span><strong>{itemCount}</strong>
         </button>
       </header>
@@ -228,7 +339,7 @@ export const OrderingSite = ({ catalog }: OrderingSiteProps) => {
             {lines.map((line) => <button type="button" key={line.product.seq} onClick={() => updateQuantity(line.product, 0)}>{line.product.name} · {line.quantity} <X /></button>)}
             {lines.length === 0 && !guestSelection && !occasion ? <span>הבחירות שתוסיפו יופיעו כאן</span> : null}
           </div>
-          <button className="selection-rail__cart" type="button" onClick={() => setCartOpen(true)} disabled={lines.length === 0}><ShoppingBag /> לסל</button>
+          <button className="selection-rail__cart" type="button" onClick={openCart} disabled={lines.length === 0}><ShoppingBag /> לסל</button>
         </aside>
 
         <section className="catalog-intro" id="catalog" aria-labelledby="catalog-title">
@@ -300,7 +411,7 @@ export const OrderingSite = ({ catalog }: OrderingSiteProps) => {
         <a href="/accessibility/">הצהרת נגישות</a>
       </footer>
 
-      <button className="floating-cart" type="button" onClick={() => setCartOpen(true)}>
+      <button className="floating-cart" type="button" onClick={openCart}>
         <ShoppingBag aria-hidden="true" /><span>העגלה שלי</span><strong>{itemCount}</strong>
       </button>
 
@@ -312,7 +423,7 @@ export const OrderingSite = ({ catalog }: OrderingSiteProps) => {
             if (event.target === event.currentTarget) setCartOpen(false);
           }}
         >
-          <aside className="cart-drawer" role="dialog" aria-modal="true" aria-labelledby="cart-title">
+          <aside ref={cartDialogRef} className="cart-drawer" role="dialog" aria-modal="true" aria-labelledby="cart-title">
             <OrderProgress activeStep={2} />
             <div className="drawer-heading">
               <div><span>{itemCount} פריטים</span><h2 id="cart-title">סל ההזמנה</h2></div>
@@ -352,9 +463,9 @@ export const OrderingSite = ({ catalog }: OrderingSiteProps) => {
 
       {checkoutOpen ? (
         <div className="overlay overlay--centered" role="presentation">
-          <section className="checkout-dialog" role="dialog" aria-modal="true" aria-labelledby="checkout-title">
+          <section ref={checkoutDialogRef} className="checkout-dialog" role="dialog" aria-modal="true" aria-labelledby="checkout-title">
             <OrderProgress activeStep={3} />
-            <div className="drawer-heading"><div><span>כמעט סיימנו</span><h2 id="checkout-title">פרטי ההזמנה</h2></div><button type="button" onClick={() => setCheckoutOpen(false)} aria-label="סגירת פרטי ההזמנה"><X /></button></div>
+            <div className="drawer-heading"><div><span>כמעט סיימנו</span><h2 id="checkout-title">פרטי ההזמנה</h2></div><button ref={checkoutCloseRef} type="button" onClick={() => setCheckoutOpen(false)} aria-label="סגירת פרטי ההזמנה"><X /></button></div>
             <form
               noValidate
               onSubmit={submitOrder}
@@ -378,7 +489,7 @@ export const OrderingSite = ({ catalog }: OrderingSiteProps) => {
               <label>פרטים / הערות<textarea name="notes" rows={4} /></label>
               <div className="checkout-order-lines" role="group" aria-label="סיכום הפריטים"><h3>סיכום ההזמנה</h3><ul>{lines.map((line) => <li key={line.product.seq}><span>{line.product.name} ×{line.quantity}</span><b>{line.lineTotal === null ? line.product.priceLabel : `${formatPrice(line.lineTotal)} ₪`}</b></li>)}</ul></div>
               <div className="checkout-summary"><span>{itemCount} פריטים{hasCustomPricing ? ' · כולל תמחור אישי' : ''}</span><strong>{formatPrice(total)} ₪</strong></div>
-              <button className="terms-link" type="button" onClick={() => setTermsOpen(true)}>לקריאת תנאי ההזמנה</button>
+              <button ref={termsTriggerRef} className="terms-link" type="button" onClick={() => setTermsOpen(true)}>לקריאת תנאי ההזמנה</button>
               <label className="terms-check"><input name="terms" type="checkbox" required /><span><Check /> קראתי את תנאי ההזמנה</span></label>
               <button className="whatsapp-submit" type="submit"><MessageCircle /> שליחת הזמנה ב־WhatsApp</button>
             </form>
@@ -388,14 +499,14 @@ export const OrderingSite = ({ catalog }: OrderingSiteProps) => {
 
       {termsOpen ? (
         <div className="overlay overlay--centered overlay--top" role="presentation">
-          <section className="terms-dialog" role="dialog" aria-modal="true" aria-labelledby="terms-title">
-            <div className="drawer-heading"><h2 id="terms-title">תנאי הזמנה ותשלום</h2><button type="button" onClick={() => setTermsOpen(false)} aria-label="סגירת התנאים"><X /></button></div>
+          <section ref={termsDialogRef} className="terms-dialog" role="dialog" aria-modal="true" aria-labelledby="terms-title">
+            <div className="drawer-heading"><h2 id="terms-title">תנאי הזמנה ותשלום</h2><button ref={termsCloseRef} type="button" onClick={() => setTermsOpen(false)} aria-label="סגירת התנאים"><X /></button></div>
             <ul>{orderTerms.map((term) => <li key={term}>{term}</li>)}</ul>
             <button className="primary-order-button" type="button" onClick={() => setTermsOpen(false)}>הבנתי</button>
           </section>
         </div>
       ) : null}
-      {toast ? <div className="cart-toast" role="status"><Check /> {toast}</div> : null}
+      {toast ? <div className={`cart-toast${cartOpen || checkoutOpen || termsOpen ? ' cart-toast--with-overlay' : ''}`} role="status"><Check /> {toast}</div> : null}
     </div>
   );
 };

@@ -223,6 +223,7 @@ button { color: inherit; }
 .terms-dialog ul { display: grid; gap: .8rem; margin: 0; padding: 1.2rem 2.2rem 1rem 1.2rem; color: var(--nis-muted); font-size: .88rem; line-height: 1.55; }
 .terms-dialog .primary-order-button { width: calc(100% - 2rem); margin-inline: 1rem; }
 .cart-toast { position: fixed; z-index: 80; inset: 1rem 50% auto auto; display: flex; align-items: center; gap: .5rem; width: max-content; max-width: calc(100% - 2rem); transform: translateX(50%); border-radius: 999px; background: var(--nis-ink); color: white; padding: .75rem 1rem; box-shadow: var(--nis-shadow); font-size: .8rem; font-weight: 900; animation: pop-in .2s ease both; }
+.cart-toast--with-overlay { inset-block: auto max(1rem, env(safe-area-inset-bottom)); }
 .cart-toast svg { width: 1rem; color: var(--nis-accent); }
 
 @keyframes drawer-in { from { transform: translateX(-100%); } }

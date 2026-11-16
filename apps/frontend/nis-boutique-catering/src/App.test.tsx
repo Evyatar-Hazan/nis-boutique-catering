@@ -123,6 +123,57 @@ describe('NIS ordering site', () => {
     expect(screen.getByRole('button', { name: `הוסף כמות של ${products[0]!.name}` }).parentElement).toHaveTextContent('0');
   });
 
+  it('keeps keyboard focus inside the cart and closes it with Escape', () => {
+    render(<App />);
+    const cartTrigger = screen.getAllByRole('button', { name: /^העגלה שלי/u })[0]!;
+    fireEvent.click(cartTrigger);
+
+    const dialog = screen.getByRole('dialog', { name: 'סל ההזמנה' });
+    const closeButton = within(dialog).getByRole('button', { name: 'סגירת העגלה' });
+    expect(closeButton).toHaveFocus();
+
+    fireEvent.keyDown(document, { key: 'Tab', shiftKey: true });
+    expect(dialog).toContainElement(document.activeElement as HTMLElement);
+
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(screen.queryByRole('dialog', { name: 'סל ההזמנה' })).not.toBeInTheDocument();
+    expect(cartTrigger).toHaveFocus();
+  });
+
+  it('manages focus and Escape across checkout and the nested terms dialog', () => {
+    render(<App />);
+    const cartTrigger = screen.getAllByRole('button', { name: /^העגלה שלי/u })[0]!;
+    fireEvent.click(screen.getByRole('button', { name: `הוסף כמות של ${products[0]!.name}` }));
+    fireEvent.click(cartTrigger);
+    fireEvent.click(screen.getByRole('button', { name: /לפרטי ההזמנה/u }));
+
+    const checkout = screen.getByRole('dialog', { name: 'פרטי ההזמנה' });
+    expect(within(checkout).getByRole('button', { name: 'סגירת פרטי ההזמנה' })).toHaveFocus();
+    const termsTrigger = within(checkout).getByRole('button', { name: 'לקריאת תנאי ההזמנה' });
+    fireEvent.click(termsTrigger);
+
+    const terms = screen.getByRole('dialog', { name: 'תנאי הזמנה ותשלום' });
+    expect(within(terms).getByRole('button', { name: 'סגירת התנאים' })).toHaveFocus();
+    fireEvent.keyDown(document, { key: 'Tab', shiftKey: true });
+    expect(terms).toContainElement(document.activeElement as HTMLElement);
+
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(screen.queryByRole('dialog', { name: 'תנאי הזמנה ותשלום' })).not.toBeInTheDocument();
+    expect(termsTrigger).toHaveFocus();
+
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(screen.queryByRole('dialog', { name: 'פרטי ההזמנה' })).not.toBeInTheDocument();
+    expect(cartTrigger).toHaveFocus();
+  });
+
+  it('moves the cart toast away from the progress header while an overlay is open', () => {
+    render(<App />);
+    fireEvent.click(screen.getByRole('button', { name: `הוסף כמות של ${products[0]!.name}` }));
+    fireEvent.click(screen.getAllByRole('button', { name: /^העגלה שלי/u })[0]!);
+
+    expect(document.querySelector('.cart-toast')).toHaveClass('cart-toast--with-overlay');
+  });
+
   it('requires customer details and acceptance of the order terms', () => {
     render(<App />);
     fireEvent.click(screen.getByRole('button', { name: `הוסף כמות של ${products[0]!.name}` }));
