@@ -22,6 +22,26 @@ afterEach(() => {
 });
 
 describe('NIS ordering site', () => {
+  it('uses the approved product kosher wording in the banner, product cards, and order terms', () => {
+    const kosherNotice = 'המוצרים בהכשר הבד״ץ, הרב לנדא ורובין.';
+    const { container } = render(<App />);
+
+    expect(container.querySelector('.hero-kosher')).toHaveTextContent(kosherNotice);
+    expect(container.querySelectorAll('.product-kosher')).toHaveLength(products.length);
+    for (const productKosher of container.querySelectorAll('.product-kosher')) {
+      expect(productKosher).toHaveTextContent(kosherNotice);
+    }
+
+    const firstCard = container.querySelector(`[data-product-seq="${products[0]!.seq}"]`);
+    fireEvent.click(within(firstCard as HTMLElement).getByRole('button', { name: `הוסף כמות של ${products[0]!.name}` }));
+    fireEvent.click(screen.getAllByRole('button', { name: /^העגלה שלי/u })[0]!);
+    fireEvent.click(screen.getByRole('button', { name: /לפרטי ההזמנה/u }));
+    fireEvent.click(screen.getByRole('button', { name: 'לקריאת תנאי ההזמנה' }));
+
+    expect(within(screen.getByRole('dialog', { name: 'תנאי הזמנה ותשלום' })).getByText(kosherNotice)).toBeInTheDocument();
+    expect(container).not.toHaveTextContent('בד״ץ העדה החרדית והרב לנדא');
+  });
+
   it('renders only products that passed the publication gate', () => {
     const { container } = render(<App />);
     const cards = container.querySelectorAll('[data-product-seq]');

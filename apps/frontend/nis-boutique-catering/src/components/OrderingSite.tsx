@@ -6,6 +6,7 @@ import { useOrderCart } from '../hooks/useOrderCart';
 import { trackLeadEvent } from '../analytics/leadMeasurement';
 
 const formatPrice = (value: number) => new Intl.NumberFormat('he-IL').format(value);
+const kosherNotice = 'המוצרים בהכשר הבד״ץ, הרב לנדא ורובין.';
 
 const categoryNotes: Readonly<Record<string, string>> = {
   מאפים: 'מאפים וכריכונים לאירוח קל, נקי ואלגנטי',
@@ -21,7 +22,7 @@ const orderTerms = [
   'ביטול או שינוי ביום האירוע — חיוב מלא.',
   'אירוע ליום שישי / מוצ״ש / יציאת הזמנה לפני 8:30 בבוקר — תוספת 150 ₪.',
   'מארזים אישיים: ניתן להזמין בהתאמה אישית ובתקציב שלכם.',
-  'כל המוצרים בכשרות בד״ץ העדה החרדית והרב לנדא. ייתכנו שינויים בהתאם למלאי ולעונה.',
+  kosherNotice,
 ] as const;
 
 const orderProgress = ['בוחרים מגשים', 'סל ההזמנה', 'פרטי ההזמנה'] as const;
@@ -68,7 +69,7 @@ const ProductCard = ({ product, quantity, onQuantityChange }: ProductCardProps) 
           </p>
         </div>
         {product.description ? <p className="product-description">{product.description}</p> : null}
-        <p className="product-kosher">בד״ץ העדה החרדית והרב לנדא</p>
+        <p className="product-kosher">{kosherNotice}</p>
         <div className="product-actions">
           <div className="quantity-stepper" aria-label={`כמות עבור ${product.name}`}>
             <button type="button" disabled={quantity === 0} onClick={() => onQuantityChange(Math.max(0, quantity - 1))} aria-label={`הפחת כמות של ${product.name}`}><Minus /></button>
@@ -182,7 +183,7 @@ export const OrderingSite = ({ catalog }: OrderingSiteProps) => {
           <span className="hero-shape hero-shape--two" aria-hidden="true" />
           <div className="ordering-hero__content">
             <p className="hero-new"><span>חדש!</span> אתר ההזמנות עלה לאוויר</p>
-            <p className="hero-kosher">בד״ץ העדה החרדית והרב לנדא</p>
+            <p className="hero-kosher">{kosherNotice}</p>
             <img src="/hero.jpg" alt="NIS Boutique Catering" />
             <h1>תפריט בוטיק חלבי</h1>
             <p className="hero-slogan">אסתטי. בטוב טעם.</p>
