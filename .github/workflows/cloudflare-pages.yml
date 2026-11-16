@@ -202,7 +202,7 @@ jobs:
             local url="$1"
             local expected_line="$2"
             local body
-            body="$(curl -fsS "${url}")"
+            body="$(curl --retry 5 --retry-delay 2 --retry-max-time 30 --retry-connrefused -fsS "${url}")"
             if printf '%s' "${body}" | grep -q "Cloudflare Managed content"; then
               if [ "${ROBOTS_OWNERSHIP_ENFORCED:-false}" = "true" ]; then
                 echo "Cloudflare managed robots.txt is still active for ${url}"
