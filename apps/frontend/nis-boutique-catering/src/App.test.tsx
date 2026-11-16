@@ -53,7 +53,8 @@ describe('NIS ordering site', () => {
     expect(products.filter((product) => [50, 51, 55, 56, 57, 58, 63, 64, 65, 66, 67, 68, 69, 70, 71].includes(product.seq))).toHaveLength(15);
     expect(products.find((product) => product.seq === 70)?.name).toBe('מוס טעמים משתנים - 24 יחידות');
     expect(products.filter((product) => product.images.length === 0)).toHaveLength(21);
-    expect(screen.getAllByText('אין תמונה')).toHaveLength(21);
+    expect(screen.getAllByAltText(/^לוגו NIS —/u)).toHaveLength(21);
+    expect(screen.queryByText('אין תמונה')).not.toBeInTheDocument();
     expect(container.querySelector('.ordering-hero img')).toHaveAttribute('src', '/hero.jpg');
     expect(screen.getByRole('heading', { name: 'מגשי מיקס ושייקים' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'מוצרים חדשים' })).toBeInTheDocument();

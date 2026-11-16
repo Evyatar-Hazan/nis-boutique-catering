@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
-import { Check, ChevronLeft, Clock3, ImageOff, MapPin, Menu, MessageCircle, Minus, Plus, ShoppingBag, Trash2, Users, X } from 'lucide-react';
+import { Check, ChevronLeft, Clock3, MapPin, Menu, MessageCircle, Minus, Plus, ShoppingBag, Trash2, Users, X } from 'lucide-react';
 import { businessContact } from '@monorepo/content-schema';
 import type { CatalogProduct } from '../../data/products.js';
 import { useOrderCart } from '../hooks/useOrderCart';
@@ -47,9 +47,13 @@ const ProductCard = ({ product, quantity, onQuantityChange }: ProductCardProps) 
     <article className={`product-card${quantity > 0 ? ' product-card--selected' : ''}`} data-product-seq={product.seq}>
       <div className={`product-media${product.images.length > 1 ? ' product-media--split' : ''}`}>
         {product.images.length === 0 ? (
-          <div className="product-media__placeholder" role="img" aria-label={`אין תמונה עבור ${product.name}`}>
-            <ImageOff aria-hidden="true" />
-            <span>אין תמונה</span>
+          <div className="product-media__placeholder">
+            <img
+              className="product-media__logo"
+              src="/brand/nis-logo.svg"
+              alt={`לוגו NIS — ${product.name}`}
+              loading="lazy"
+            />
           </div>
         ) : product.images.map((image, index) => (
           <img
@@ -299,7 +303,7 @@ export const OrderingSite = ({ catalog }: OrderingSiteProps) => {
                       {line.product.images[0] ? (
                         <img src={`/images/${line.product.images[0]}`} alt="" />
                       ) : (
-                        <span className="cart-line-placeholder" aria-label="אין תמונה"><ImageOff aria-hidden="true" /></span>
+                        <img className="cart-line-logo" src="/brand/nis-logo.svg" alt="" />
                       )}
                       <div><h3>{line.product.name}</h3><span>{line.lineTotal === null ? line.product.priceLabel : `${formatPrice(line.lineTotal)} ₪`}</span></div>
                       <div className="cart-line-actions">
