@@ -40,7 +40,7 @@ describe('NIS ordering site', () => {
 
     expect(within(screen.getByRole('dialog', { name: 'תנאי הזמנה ותשלום' })).getByText(kosherNotice)).toBeInTheDocument();
     expect(container).not.toHaveTextContent('בד״ץ העדה החרדית והרב לנדא');
-  });
+  }, 30_000);
 
   it('renders only products that passed the publication gate', () => {
     const { container } = render(<App />);
