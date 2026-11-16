@@ -70,6 +70,10 @@ describe('NIS ordering site', () => {
     expect(screen.getAllByText('מחיר בהתאמה אישית')).toHaveLength(3);
     expect(container).not.toHaveTextContent('050-3502615');
     expect(screen.getByText('ביתר עילית', { selector: '.ordering-location' })).toBeInTheDocument();
+    expect(container.querySelectorAll('.ordering-brand__mark')).toHaveLength(2);
+    for (const brandMark of container.querySelectorAll('.ordering-brand__mark')) {
+      expect(brandMark).toHaveTextContent(/^Nis$/u);
+    }
   });
 
   it('connects the single-breakfast planner option to the existing individual product', () => {

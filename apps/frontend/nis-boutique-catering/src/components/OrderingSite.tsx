@@ -194,7 +194,7 @@ export const OrderingSite = ({ catalog }: OrderingSiteProps) => {
       <header className="ordering-header">
         <a className="header-menu" href="#catalog" aria-label="מעבר לתפריט"><Menu aria-hidden="true" /><span>תפריט</span></a>
         <a className="ordering-brand" href="#top" aria-label="NIS Boutique Catering — ראש העמוד">
-          <span className="ordering-brand__mark">nis</span><span>BOUTIQUE CATERING</span>
+          <span className="ordering-brand__mark">Nis</span><span>BOUTIQUE CATERING</span>
         </a>
         <button className="header-cart" type="button" onClick={() => setCartOpen(true)}>
           <ShoppingBag aria-hidden="true" /><span>העגלה שלי</span><strong>{itemCount}</strong>
@@ -293,7 +293,7 @@ export const OrderingSite = ({ catalog }: OrderingSiteProps) => {
       </main>
 
       <footer className="ordering-footer">
-        <div className="ordering-brand ordering-brand--footer"><span className="ordering-brand__mark">nis</span><span>BOUTIQUE CATERING</span></div>
+        <div className="ordering-brand ordering-brand--footer"><span className="ordering-brand__mark">Nis</span><span>BOUTIQUE CATERING</span></div>
         <p>תפריט בוטיק חלבי — אסתטי. בטוב טעם.</p>
         <span className="ordering-location"><MapPin aria-hidden="true" /> ביתר עילית</span>
         <a href={businessContact.phoneHref}>{businessContact.phoneDisplay}</a>
