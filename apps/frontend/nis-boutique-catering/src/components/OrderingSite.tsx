@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent, type MouseEvent as ReactMouseEvent, type RefObject } from 'react';
-import { Check, ChevronLeft, Clock3, MapPin, Menu, MessageCircle, Minus, Plus, ShoppingBag, Trash2, Users, X } from 'lucide-react';
+import { Check, ChevronLeft, Clock3, MapPin, Menu, MessageCircle, Minus, Plus, ShieldCheck, ShoppingBag, Trash2, Users, X } from 'lucide-react';
 import { businessContact } from '@monorepo/content-schema';
 import type { CatalogProduct } from '../../data/products.js';
 import { useOrderCart } from '../hooks/useOrderCart';
@@ -156,7 +156,7 @@ const ProductCard = ({ product, quantity, onQuantityChange }: ProductCardProps) 
           </p>
         </div>
         {product.description ? <p className="product-description">{product.description}</p> : null}
-        <p className="product-kosher">{kosherNotice}</p>
+        <p className="product-kosher"><ShieldCheck aria-hidden="true" /><span>{kosherNotice}</span></p>
         <div className="product-actions">
           <div className="quantity-stepper" aria-label={`כמות עבור ${product.name}`}>
             <button type="button" disabled={quantity === 0} onClick={() => onQuantityChange(Math.max(0, quantity - 1))} aria-label={`הפחת כמות של ${product.name}`}><Minus /></button>
@@ -180,10 +180,31 @@ export const OrderingSite = ({ catalog }: OrderingSiteProps) => {
       ? [breakfastCategory, ...availableCategories.filter((category) => category !== breakfastCategory)]
       : availableCategories;
   }, [catalog]);
+  const [observedCategory, setObservedCategory] = useState('');
+  const activeCategory = categories.includes(observedCategory) ? observedCategory : (categories[0] ?? '');
   const singleBreakfastProduct = useMemo(
     () => catalog.find((product) => product.name === singleBreakfastName) ?? null,
     [catalog],
   );
+
+  useEffect(() => {
+    if (typeof IntersectionObserver === 'undefined') return undefined;
+
+    const observer = new IntersectionObserver((entries) => {
+      const visibleEntry = entries
+        .filter((entry) => entry.isIntersecting)
+        .sort((first, second) => second.intersectionRatio - first.intersectionRatio)[0];
+      if (!visibleEntry) return;
+      setObservedCategory(visibleEntry.target.id.replace('category-', ''));
+    }, { rootMargin: '-18% 0px -68%', threshold: [0, 0.15, 0.35] });
+
+    const categorySections = categories
+      .map((category) => document.getElementById(`category-${category}`))
+      .filter((section): section is HTMLElement => section !== null);
+    categorySections.forEach((section) => observer.observe(section));
+
+    return () => observer.disconnect();
+  }, [categories]);
   const { clear, hasCustomPricing, itemCount, lines, quantities, setQuantity, total } = useOrderCart(catalog);
   const [cartOpen, setCartOpen] = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
@@ -328,7 +349,17 @@ export const OrderingSite = ({ catalog }: OrderingSiteProps) => {
         </section>
 
         <nav className="category-nav" aria-label="קטגוריות התפריט">
-          <div>{categories.map((category) => <a key={category} href={`#category-${category}`}>{category}</a>)}</div>
+          <div className="category-nav__track">{categories.map((category) => (
+            <a
+              className={activeCategory === category ? 'is-active' : ''}
+              href={`#category-${category}`}
+              aria-current={activeCategory === category ? 'location' : undefined}
+              key={category}
+              onClick={() => setObservedCategory(category)}
+            >
+              {category}
+            </a>
+          ))}</div>
         </nav>
 
         <aside className={`selection-rail${lines.length > 0 || guestSelection || occasion ? ' selection-rail--active' : ''}`} role="region" aria-label="הבחירות שלכם">

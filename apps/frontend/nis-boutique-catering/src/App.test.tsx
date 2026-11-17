@@ -62,6 +62,7 @@ describe('NIS ordering site', () => {
     expect(screen.getByRole('heading', { name: 'מוצרים חדשים' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'ארוחות בוקר' })).toBeInTheDocument();
     expect(within(screen.getByRole('navigation', { name: 'קטגוריות התפריט' })).getAllByRole('link')[0]).toHaveTextContent('ארוחות בוקר');
+    expect(within(screen.getByRole('navigation', { name: 'קטגוריות התפריט' })).getAllByRole('link')[0]).toHaveAttribute('aria-current', 'location');
     expect(container.querySelector('.catalog-category:first-child')).toHaveTextContent('ארוחת בוקר זוגית');
     expect(container.querySelector('.catalog-category:first-child')).toHaveTextContent('ארוחת בוקר יחיד');
     expect(container.querySelector('.catalog-facts')).toHaveTextContent('10 קטגוריות');
@@ -74,6 +75,7 @@ describe('NIS ordering site', () => {
     for (const brandMark of container.querySelectorAll('.ordering-brand__mark')) {
       expect(brandMark).toHaveTextContent(/^Nis$/u);
     }
+    expect(container.querySelectorAll('.product-kosher svg')).toHaveLength(products.length);
   });
 
   it('connects the single-breakfast planner option to the existing individual product', () => {
