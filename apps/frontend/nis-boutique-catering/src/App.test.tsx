@@ -47,13 +47,21 @@ describe('NIS ordering site', () => {
     const cards = container.querySelectorAll('[data-product-seq]');
 
     expect(cards).toHaveLength(products.length);
-    expect(products).toHaveLength(64);
+    expect(products).toHaveLength(65);
     expect(products.every((product) => product.status === 'approved')).toBe(true);
     expect(products.some((product) => product.seq === 59)).toBe(false);
     expect(products.filter((product) => [50, 51, 55, 56, 57, 58, 63, 64, 65, 66, 67, 68, 69, 70, 71].includes(product.seq))).toHaveLength(15);
     expect(products.find((product) => product.seq === 70)?.name).toBe('מוס טעמים משתנים - 24 יחידות');
     expect(products.find((product) => product.seq === 65)).toMatchObject({ category: 'ארוחות בוקר', name: 'ארוחת בוקר זוגית', priceIls: 300 });
     expect(products.find((product) => product.seq === 66)).toMatchObject({ category: 'ארוחות בוקר', name: 'ארוחת בוקר יחיד', priceIls: 160 });
+    expect(products.find((product) => product.seq === 72)).toMatchObject({
+      category: 'קינוחים',
+      name: "קינוחי קראנץ' פירות",
+      description: 'פטל, מנגו, פיסטוק, בננה',
+      priceIls: 45,
+      priceUnit: 'per_unit',
+      images: ["72_קינוחי-קראנץ'-פירות.jpg"],
+    });
     expect(products.filter((product) => product.images.length === 0)).toHaveLength(21);
     expect(screen.getAllByAltText(/^לוגו NIS —/u)).toHaveLength(21);
     expect(screen.queryByText('אין תמונה')).not.toBeInTheDocument();

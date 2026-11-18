@@ -792,5 +792,18 @@ export const products = [
     "images": [
       "71_מגשי-חיתוכי-עוגות-לשמחות.jpg"
     ]
+  },
+  {
+    "seq": 72,
+    "category": "קינוחים",
+    "name": "קינוחי קראנץ' פירות",
+    "description": "פטל, מנגו, פיסטוק, בננה",
+    "priceIls": 45,
+    "priceUnit": "per_unit",
+    "priceLabel": null,
+    "status": "approved",
+    "images": [
+      "72_קינוחי-קראנץ'-פירות.jpg"
+    ]
   }
 ];
