@@ -109,6 +109,12 @@ describe('NIS ordering site', () => {
     for (const link of screen.getAllByRole('link', { name: businessContact.phoneDisplay })) {
       expect(link).toHaveAttribute('href', businessContact.phoneHref);
     }
+
+    const floatingWhatsapp = screen.getByRole('link', { name: 'דברו איתנו ב־WhatsApp' });
+    expect(floatingWhatsapp).toHaveAttribute('href', `${businessContact.whatsappBase}?text=${encodeURIComponent('שלום Nis, אשמח לקבל פרטים על הזמנה.')}`);
+    expect(floatingWhatsapp).toHaveAttribute('target', '_blank');
+    expect(floatingWhatsapp).toHaveAttribute('data-measurement-cta', 'floating_whatsapp');
+    expect(floatingWhatsapp).toHaveAttribute('data-measurement-whatsapp-source', 'floating');
   });
 
   it('adds a product to the persistent cart and updates its quantity', () => {

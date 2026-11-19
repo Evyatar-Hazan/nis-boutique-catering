@@ -7,6 +7,8 @@ import { trackLeadEvent } from '../analytics/leadMeasurement';
 
 const formatPrice = (value: number) => new Intl.NumberFormat('he-IL').format(value);
 const kosherNotice = 'המוצרים בהכשר הבד״ץ, הרב לנדא ורובין.';
+const floatingWhatsappMessage = 'שלום Nis, אשמח לקבל פרטים על הזמנה.';
+const floatingWhatsappHref = `${businessContact.whatsappBase}?text=${encodeURIComponent(floatingWhatsappMessage)}`;
 const breakfastCategory = 'ארוחות בוקר';
 const singleBreakfastName = 'ארוחת בוקר יחיד';
 const singleBreakfastSelection = 'single-breakfast' as const;
@@ -434,6 +436,19 @@ export const OrderingSite = ({ catalog }: OrderingSiteProps) => {
         <a href={businessContact.phoneHref}>{businessContact.phoneDisplay}</a>
         <a href="/accessibility/">הצהרת נגישות</a>
       </footer>
+
+      <a
+        className="floating-whatsapp"
+        href={floatingWhatsappHref}
+        target="_blank"
+        rel="noreferrer"
+        aria-label="דברו איתנו ב־WhatsApp"
+        data-measurement-cta="floating_whatsapp"
+        data-measurement-whatsapp-source="floating"
+      >
+        <span className="floating-whatsapp__icon" aria-hidden="true"><MessageCircle /></span>
+        <span className="floating-whatsapp__copy"><small>יש לכם שאלה?</small><strong>דברו איתנו ב־WhatsApp</strong></span>
+      </a>
 
       <button className="floating-cart" type="button" onClick={openCart}>
         <ShoppingBag aria-hidden="true" /><span>העגלה שלי</span><strong>{itemCount}</strong>
