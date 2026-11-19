@@ -348,30 +348,32 @@ export const OrderingSite = ({ catalog }: OrderingSiteProps) => {
           </div>
         </section>
 
-        <nav className="category-nav" aria-label="קטגוריות התפריט">
-          <div className="category-nav__track">{categories.map((category) => (
-            <a
-              className={activeCategory === category ? 'is-active' : ''}
-              href={`#category-${category}`}
-              aria-current={activeCategory === category ? 'location' : undefined}
-              key={category}
-              onClick={() => setObservedCategory(category)}
-            >
-              {category}
-            </a>
-          ))}</div>
-        </nav>
+        <div className="order-toolbar">
+          <nav className="category-nav" aria-label="קטגוריות התפריט">
+            <div className="category-nav__track">{categories.map((category) => (
+              <a
+                className={activeCategory === category ? 'is-active' : ''}
+                href={`#category-${category}`}
+                aria-current={activeCategory === category ? 'location' : undefined}
+                key={category}
+                onClick={() => setObservedCategory(category)}
+              >
+                {category}
+              </a>
+            ))}</div>
+          </nav>
 
-        <aside className={`selection-rail${lines.length > 0 || guestSelection || occasion ? ' selection-rail--active' : ''}`} role="region" aria-label="הבחירות שלכם">
-          <div className="selection-rail__summary"><span>הבחירות שלכם</span><strong>{lines.length} סוגים · {itemCount} יחידות</strong></div>
-          <div className="selection-chips">
-            {guestSelection ? <button type="button" onClick={() => setGuestSelection(null)}><Users /> {guestSelection === singleBreakfastSelection ? 'ארוחת בוקר ליחיד' : `${guestSelection} אורחים`} <X /></button> : null}
-            {occasion ? <button type="button" onClick={() => setOccasion('')}>{occasion} <X /></button> : null}
-            {lines.map((line) => <button type="button" key={line.product.seq} onClick={() => updateQuantity(line.product, 0)}>{line.product.name} · {line.quantity} <X /></button>)}
-            {lines.length === 0 && !guestSelection && !occasion ? <span>הבחירות שתוסיפו יופיעו כאן</span> : null}
-          </div>
-          <button className="selection-rail__cart" type="button" onClick={openCart} disabled={lines.length === 0}><ShoppingBag /> לסל</button>
-        </aside>
+          <aside className={`selection-rail${lines.length > 0 || guestSelection || occasion ? ' selection-rail--active' : ''}`} role="region" aria-label="הבחירות שלכם">
+            <div className="selection-rail__summary"><span>הבחירות שלכם</span><strong>{lines.length} סוגים · {itemCount} יחידות</strong></div>
+            <div className="selection-chips">
+              {guestSelection ? <button type="button" onClick={() => setGuestSelection(null)}><Users /> {guestSelection === singleBreakfastSelection ? 'ארוחת בוקר ליחיד' : `${guestSelection} אורחים`} <X /></button> : null}
+              {occasion ? <button type="button" onClick={() => setOccasion('')}>{occasion} <X /></button> : null}
+              {lines.map((line) => <button type="button" key={line.product.seq} onClick={() => updateQuantity(line.product, 0)}>{line.product.name} · {line.quantity} <X /></button>)}
+              {lines.length === 0 && !guestSelection && !occasion ? <span>הבחירות שתוסיפו יופיעו כאן</span> : null}
+            </div>
+            <button className="selection-rail__cart" type="button" onClick={openCart} disabled={lines.length === 0}><ShoppingBag /> לסל</button>
+          </aside>
+        </div>
 
         <section className="catalog-intro" id="catalog" aria-labelledby="catalog-title">
           <OrderProgress activeStep={1} />
@@ -413,19 +415,10 @@ export const OrderingSite = ({ catalog }: OrderingSiteProps) => {
           ))}
         </div>
 
-        <section className="ordering-steps" aria-labelledby="steps-title">
-          <p>ומכאן זה פשוט</p><h2 id="steps-title">שלושה צעדים וההזמנה בדרך.</h2>
-          <ol>
-            <li><b>1</b><div><h3>בוחרים מהתפריט</h3><p>מוסיפים לעגלה ומשנים כמויות בקלות.</p></div></li>
-            <li><b>2</b><div><h3>ממלאים פרטים</h3><p>שם, טלפון, תאריך וכל מה שחשוב לנו לדעת.</p></div></li>
-            <li><b>3</b><div><h3>שולחים ב־WhatsApp</h3><p>ההזמנה מגיעה מוכנה לשיחה ולאישור.</p></div></li>
-          </ol>
-        </section>
-
         <section className="after-order" aria-labelledby="after-order-title">
           <span className="after-order__eyebrow">אחרי השליחה</span>
           <h2 id="after-order-title">ומה הלאה?</h2>
-          <p>פשוט, שקוף ובלי הפתעות.</p>
+          <p>עוברים על ההזמנה, מאשרים יחד ומתחילים להכין.</p>
           <ol>
             <li><b>1</b><div><h3>מקבלים הצעה</h3><p>אנחנו עוברים על הפריטים וחוזרים אליכם עם סיכום מסודר.</p></div></li>
             <li><b>2</b><div><h3>מאשרים ב־WhatsApp</h3><p>מוודאים תאריך, שעה, אופן קבלה ותשלום.</p></div></li>

@@ -76,6 +76,8 @@ describe('NIS ordering site', () => {
     expect(container.querySelector('.catalog-facts')).toHaveTextContent('10 קטגוריות');
     expect(screen.getByRole('list', { name: 'שלב 1 מתוך 3' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'ומה הלאה?' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'שלושה צעדים וההזמנה בדרך.' })).not.toBeInTheDocument();
+    expect(container.querySelector('.order-toolbar')).toContainElement(screen.getByRole('region', { name: 'הבחירות שלכם' }));
     expect(screen.getAllByText('מחיר בהתאמה אישית')).toHaveLength(3);
     expect(container).not.toHaveTextContent('050-3502615');
     expect(screen.getByText('ביתר עילית', { selector: '.ordering-location' })).toBeInTheDocument();
