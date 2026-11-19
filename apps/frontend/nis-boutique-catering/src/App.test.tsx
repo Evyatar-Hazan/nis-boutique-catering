@@ -103,7 +103,7 @@ describe('NIS ordering site', () => {
   });
 
   it('uses the one approved business phone number', () => {
-    render(<App />);
+    const { container } = render(<App />);
 
     expect(screen.getAllByText(businessContact.phoneDisplay).length).toBeGreaterThan(0);
     for (const link of screen.getAllByRole('link', { name: businessContact.phoneDisplay })) {
@@ -115,6 +115,11 @@ describe('NIS ordering site', () => {
     expect(floatingWhatsapp).toHaveAttribute('target', '_blank');
     expect(floatingWhatsapp).toHaveAttribute('data-measurement-cta', 'floating_whatsapp');
     expect(floatingWhatsapp).toHaveAttribute('data-measurement-whatsapp-source', 'floating');
+    expect(within(screen.getByRole('navigation', { name: 'פעולות מהירות' })).getByRole('link', { name: 'דברו איתנו ב־WhatsApp' })).toBe(floatingWhatsapp);
+    expect(container.querySelectorAll('.quantity-stepper[role="group"]')).toHaveLength(products.length);
+    expect(container.querySelector('.catalog-facts')).toHaveAttribute('role', 'group');
+    expect(container.querySelector('.event-planner')).toHaveAttribute('role', 'group');
+    expect(screen.getAllByRole('link', { name: 'הצהרת נגישות' })).toHaveLength(2);
   });
 
   it('adds a product to the persistent cart and updates its quantity', () => {
@@ -142,12 +147,13 @@ describe('NIS ordering site', () => {
   });
 
   it('keeps keyboard focus inside the cart and closes it with Escape', () => {
-    render(<App />);
+    const { container } = render(<App />);
     const cartTrigger = screen.getAllByRole('button', { name: /^העגלה שלי/u })[0]!;
     fireEvent.click(cartTrigger);
 
     const dialog = screen.getByRole('dialog', { name: 'סל ההזמנה' });
     const closeButton = within(dialog).getByRole('button', { name: 'סגירת העגלה' });
+    expect(container.querySelector('.ordering-site__background')).toHaveAttribute('inert');
     expect(closeButton).toHaveFocus();
 
     fireEvent.keyDown(document, { key: 'Tab', shiftKey: true });
@@ -155,11 +161,12 @@ describe('NIS ordering site', () => {
 
     fireEvent.keyDown(document, { key: 'Escape' });
     expect(screen.queryByRole('dialog', { name: 'סל ההזמנה' })).not.toBeInTheDocument();
+    expect(container.querySelector('.ordering-site__background')).not.toHaveAttribute('inert');
     expect(cartTrigger).toHaveFocus();
   });
 
   it('manages focus and Escape across checkout and the nested terms dialog', () => {
-    render(<App />);
+    const { container } = render(<App />);
     const cartTrigger = screen.getAllByRole('button', { name: /^העגלה שלי/u })[0]!;
     fireEvent.click(screen.getByRole('button', { name: `הוסף כמות של ${products[0]!.name}` }));
     fireEvent.click(cartTrigger);
@@ -171,12 +178,14 @@ describe('NIS ordering site', () => {
     fireEvent.click(termsTrigger);
 
     const terms = screen.getByRole('dialog', { name: 'תנאי הזמנה ותשלום' });
+    expect(container.querySelector('.checkout-dialog')?.closest('.overlay')).toHaveAttribute('inert');
     expect(within(terms).getByRole('button', { name: 'סגירת התנאים' })).toHaveFocus();
     fireEvent.keyDown(document, { key: 'Tab', shiftKey: true });
     expect(terms).toContainElement(document.activeElement as HTMLElement);
 
     fireEvent.keyDown(document, { key: 'Escape' });
     expect(screen.queryByRole('dialog', { name: 'תנאי הזמנה ותשלום' })).not.toBeInTheDocument();
+    expect(container.querySelector('.checkout-dialog')?.closest('.overlay')).not.toHaveAttribute('inert');
     expect(termsTrigger).toHaveFocus();
 
     fireEvent.keyDown(document, { key: 'Escape' });
@@ -241,6 +250,10 @@ describe('NIS ordering site', () => {
     render(<App />);
 
     expect(screen.getByRole('heading', { level: 1, name: 'הצהרת נגישות' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 2, name: 'סביבת בדיקה ותאימות' })).toBeInTheDocument();
+    expect(screen.getByText(/בדיקה ידנית מלאה ב־VoiceOver, ב־NVDA וב־TalkBack טרם הושלמה/u)).toBeInTheDocument();
+    expect(screen.getByText(/פירוט מלא ומאומת של הסדרי הנגישות הפיזיים/u)).toBeInTheDocument();
+    expect(screen.getByText(/19 בנובמבר 2026/u)).toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: 'תפריט בוטיק חלבי' })).not.toBeInTheDocument();
   });
 });

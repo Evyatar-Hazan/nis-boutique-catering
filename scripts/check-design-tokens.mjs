@@ -6,10 +6,12 @@ const tokensPath = resolve(workspaceRoot, 'packages/site-preview/src/styles/toke
 const basePath = resolve(workspaceRoot, 'packages/site-preview/src/styles/base.css');
 const themePath = resolve(workspaceRoot, 'packages/site-preview/src/styles/theme.css');
 const indexCssPath = resolve(workspaceRoot, 'apps/frontend/nis-boutique-catering/src/index.css');
+const orderingCssPath = resolve(workspaceRoot, 'apps/frontend/nis-boutique-catering/src/App.css');
 const htmlPath = resolve(workspaceRoot, 'apps/frontend/nis-boutique-catering/index.html');
 const tokens = readFileSync(tokensPath, 'utf8');
 const publicStyles = [basePath, themePath, indexCssPath].map((path) => readFileSync(path, 'utf8')).join('\n');
 const html = readFileSync(htmlPath, 'utf8');
+const orderingCss = readFileSync(orderingCssPath, 'utf8');
 const errors = [];
 
 const requiredTokenGroups = {
@@ -100,6 +102,36 @@ const contrastHex = (foreground, background) => {
 
 const contrast = (foreground, background) => contrastHex(parseHexToken(foreground), parseHexToken(background));
 
+const parseOrderingHexToken = (name) => {
+  const match = orderingCss.match(new RegExp(`--${name}:\\s*(#[0-9a-fA-F]{6})`));
+  if (!match) throw new Error(`Cannot read ordering color token: ${name}`);
+  return match[1];
+};
+
+const orderingAccentContrast = contrastHex(parseOrderingHexToken('nis-ink-deep'), parseOrderingHexToken('nis-accent'));
+if (orderingAccentContrast < 4.5) {
+  errors.push(`ordering ink-deep/accent contrast is ${orderingAccentContrast.toFixed(2)}:1`);
+}
+if (!/\.hero-new span[^}]*color:\s*var\(--nis-ink-deep\)/s.test(orderingCss)) {
+  errors.push('ordering hero-new badge must use the AA-safe ink-deep token');
+}
+if (!/\.hero-cta[^}]*color:\s*var\(--nis-ink-deep\)/s.test(orderingCss)) {
+  errors.push('ordering hero CTA must use the AA-safe ink-deep token');
+}
+if (!/\.skip-link[^}]*color:\s*var\(--nis-ink-deep\)/s.test(orderingCss)) {
+  errors.push('ordering skip links must use the AA-safe ink-deep token');
+}
+const whatsappBackground = orderingCss.match(/\.floating-whatsapp\s*\{[^}]*background:\s*(#[0-9a-fA-F]{6})/s)?.[1];
+if (!whatsappBackground || contrastHex('#ffffff', whatsappBackground) < 4.5) {
+  errors.push('ordering floating WhatsApp control must meet WCAG AA contrast with white text');
+}
+for (const selector of ['.header-cart strong, .floating-cart strong', '.order-progress .is-active b', '.order-progress .is-complete b', '.after-order li:nth-child(3) b']) {
+  const escapedSelector = selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  if (!new RegExp(`${escapedSelector}[^}]*color:\\s*var\\(--nis-ink-deep\\)`, 's').test(orderingCss)) {
+    errors.push(`${selector} must use the AA-safe ink-deep token on the accent background`);
+  }
+}
+
 const textPairs = [
   ['ink', 'paper'],
   ['ink', 'cream'],
@@ -150,5 +182,5 @@ if (errors.length > 0) {
   for (const error of errors) console.error(`Design token error: ${error}`);
   process.exitCode = 1;
 } else {
-  console.log(`Design token check passed: ${Object.keys(requiredTokenGroups).length} token groups, ${textPairs.length + (paletteLabIds.length * paletteLabPairs.length)} WCAG AA text pairs across six palettes, zero raw colors in authored theme styles, Noto Serif Hebrew with display=swap.`);
+  console.log(`Design token check passed: ${Object.keys(requiredTokenGroups).length} token groups, ${textPairs.length + (paletteLabIds.length * paletteLabPairs.length) + 1} WCAG AA text pairs across six palettes and the ordering surface, zero raw colors in authored theme styles, Noto Serif Hebrew with display=swap.`);
 }

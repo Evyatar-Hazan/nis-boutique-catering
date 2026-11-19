@@ -160,7 +160,7 @@ const ProductCard = ({ product, quantity, onQuantityChange }: ProductCardProps) 
         {product.description ? <p className="product-description">{product.description}</p> : null}
         <p className="product-kosher"><ShieldCheck aria-hidden="true" /><span>{kosherNotice}</span></p>
         <div className="product-actions">
-          <div className="quantity-stepper" aria-label={`כמות עבור ${product.name}`}>
+          <div className="quantity-stepper" role="group" aria-label={`כמות עבור ${product.name}`}>
             <button type="button" disabled={quantity === 0} onClick={() => onQuantityChange(Math.max(0, quantity - 1))} aria-label={`הפחת כמות של ${product.name}`}><Minus /></button>
             <output aria-live="polite">{quantity}</output>
             <button type="button" onClick={() => onQuantityChange(quantity + 1)} aria-label={`הוסף כמות של ${product.name}`}><Plus /></button>
@@ -324,8 +324,12 @@ export const OrderingSite = ({ catalog }: OrderingSiteProps) => {
 
   return (
     <div className="ordering-site">
-      <a className="skip-link" href="#catalog">דלג לתפריט</a>
-      <header className="ordering-header">
+      <div className="ordering-site__background" inert={cartOpen || checkoutOpen || termsOpen}>
+        <nav aria-label="קיצורי נגישות">
+          <a className="skip-link" href="#catalog">דלג לתפריט</a>
+          <a className="skip-link" href="/accessibility/">הצהרת נגישות</a>
+        </nav>
+        <header className="ordering-header">
         <a className="header-menu" href="#catalog" aria-label="מעבר לתפריט"><Menu aria-hidden="true" /><span>תפריט</span></a>
         <a className="ordering-brand" href="#top" aria-label="NIS Boutique Catering — ראש העמוד">
           <span className="ordering-brand__mark">Nis</span><span>BOUTIQUE CATERING</span>
@@ -381,8 +385,8 @@ export const OrderingSite = ({ catalog }: OrderingSiteProps) => {
           <OrderProgress activeStep={1} />
           <p>שלב ראשון · בוחרים, מוסיפים ושולחים</p>
           <h2 id="catalog-title">האירוח שלכם מתחיל כאן.</h2>
-          <div className="catalog-facts" aria-label="פרטי הקטלוג"><span>{catalog.length} מוצרים</span><span>{categories.length} קטגוריות</span><span>הזמנה ב־WhatsApp</span></div>
-          <div className="event-planner" aria-label="עוזר תכנון האירוח">
+          <div className="catalog-facts" role="group" aria-label="פרטי הקטלוג"><span>{catalog.length} מוצרים</span><span>{categories.length} קטגוריות</span><span>הזמנה ב־WhatsApp</span></div>
+          <div className="event-planner" role="group" aria-label="עוזר תכנון האירוח">
             <div><Users /><span><b>מתכננים אירוח?</b> סמנו כמה אורחים ומה אופי האירוע — הבחירה תישמר למעלה ותצורף להזמנה.</span></div>
             <fieldset>
               <legend>כמה אורחים?</legend>
@@ -437,22 +441,25 @@ export const OrderingSite = ({ catalog }: OrderingSiteProps) => {
         <a href="/accessibility/">הצהרת נגישות</a>
       </footer>
 
-      <a
-        className="floating-whatsapp"
-        href={floatingWhatsappHref}
-        target="_blank"
-        rel="noreferrer"
-        aria-label="דברו איתנו ב־WhatsApp"
-        data-measurement-cta="floating_whatsapp"
-        data-measurement-whatsapp-source="floating"
-      >
-        <span className="floating-whatsapp__icon" aria-hidden="true"><MessageCircle /></span>
-        <span className="floating-whatsapp__copy"><small>יש לכם שאלה?</small><strong>דברו איתנו ב־WhatsApp</strong></span>
-      </a>
+      <nav className="floating-actions" aria-label="פעולות מהירות">
+        <a
+          className="floating-whatsapp"
+          href={floatingWhatsappHref}
+          target="_blank"
+          rel="noreferrer"
+          aria-label="דברו איתנו ב־WhatsApp"
+          data-measurement-cta="floating_whatsapp"
+          data-measurement-whatsapp-source="floating"
+        >
+          <span className="floating-whatsapp__icon" aria-hidden="true"><MessageCircle /></span>
+          <span className="floating-whatsapp__copy"><small>יש לכם שאלה?</small><strong>דברו איתנו ב־WhatsApp</strong></span>
+        </a>
 
-      <button className="floating-cart" type="button" onClick={openCart}>
-        <ShoppingBag aria-hidden="true" /><span>העגלה שלי</span><strong>{itemCount}</strong>
-      </button>
+        <button className="floating-cart" type="button" onClick={openCart}>
+          <ShoppingBag aria-hidden="true" /><span>העגלה שלי</span><strong>{itemCount}</strong>
+        </button>
+        </nav>
+      </div>
 
       {cartOpen ? (
         <div
@@ -462,7 +469,7 @@ export const OrderingSite = ({ catalog }: OrderingSiteProps) => {
             if (event.target === event.currentTarget) setCartOpen(false);
           }}
         >
-          <aside ref={cartDialogRef} className="cart-drawer" role="dialog" aria-modal="true" aria-labelledby="cart-title">
+          <section ref={cartDialogRef} className="cart-drawer" role="dialog" aria-modal="true" aria-labelledby="cart-title">
             <OrderProgress activeStep={2} />
             <div className="drawer-heading">
               <div><span>{itemCount} פריטים</span><h2 id="cart-title">סל ההזמנה</h2></div>
@@ -496,12 +503,12 @@ export const OrderingSite = ({ catalog }: OrderingSiteProps) => {
                 <button className="clear-cart" type="button" onClick={clear}>ריקון העגלה</button>
               </>
             )}
-          </aside>
+          </section>
         </div>
       ) : null}
 
       {checkoutOpen ? (
-        <div className="overlay overlay--centered" role="presentation">
+        <div className="overlay overlay--centered" role="presentation" inert={termsOpen}>
           <section ref={checkoutDialogRef} className="checkout-dialog" role="dialog" aria-modal="true" aria-labelledby="checkout-title">
             <OrderProgress activeStep={3} />
             <div className="drawer-heading"><div><span>כמעט סיימנו</span><h2 id="checkout-title">פרטי ההזמנה</h2></div><button ref={checkoutCloseRef} type="button" onClick={() => setCheckoutOpen(false)} aria-label="סגירת פרטי ההזמנה"><X /></button></div>
