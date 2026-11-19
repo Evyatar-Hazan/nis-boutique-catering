@@ -796,7 +796,7 @@ export const products = [
   {
     "seq": 72,
     "category": "קינוחים",
-    "name": "קינוחי קראנץ' פירות",
+    "name": "קינוחי קראנץ' פרות",
     "description": "פטל, מנגו, פיסטוק, בננה",
     "priceIls": 45,
     "priceUnit": "per_unit",

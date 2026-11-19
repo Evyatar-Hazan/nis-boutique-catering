@@ -56,7 +56,7 @@ describe('NIS ordering site', () => {
     expect(products.find((product) => product.seq === 66)).toMatchObject({ category: 'ארוחות בוקר', name: 'ארוחת בוקר יחיד', priceIls: 160 });
     expect(products.find((product) => product.seq === 72)).toMatchObject({
       category: 'קינוחים',
-      name: "קינוחי קראנץ' פירות",
+      name: "קינוחי קראנץ' פרות",
       description: 'פטל, מנגו, פיסטוק, בננה',
       priceIls: 45,
       priceUnit: 'per_unit',
