@@ -337,7 +337,7 @@ export const products = [
     "priceLabel": null,
     "status": "approved",
     "images": [
-      "30_סלטים-בכוסיות---24-יחידות.jpg",
+      "30_סלטים-בכוסיות---24-יחידות_2.jpg",
       "30_סלטים-בכוסיות---24-יחידות_2.jpg"
     ]
   },
@@ -711,7 +711,7 @@ export const products = [
     "priceLabel": null,
     "status": "approved",
     "images": [
-      "65_ארוחת-בוקר-זוגית.jpg"
+      "65_ארוחת-בוקר-זוגית_רקע-שיש-בהיר.jpg"
     ]
   },
   {
@@ -738,7 +738,8 @@ export const products = [
     "status": "approved",
     "images": [
       "67_מארזי-טיסה.jpg",
-      "67_מארזי-טיסה_2.jpg"
+      "67_מארזי-טיסה_2.jpg",
+      "67_מארזי-טיסה_סנדוויצים-ארוזים.jpg"
     ]
   },
   {
