@@ -738,7 +738,6 @@ export const products = [
     "status": "approved",
     "images": [
       "67_מארזי-טיסה.jpg",
-      "67_מארזי-טיסה_2.jpg",
       "67_מארזי-טיסה_סנדוויצים-ארוזים.jpg"
     ]
   },
