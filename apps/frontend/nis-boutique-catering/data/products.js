@@ -540,9 +540,9 @@ export const products = [
   {
     "seq": 47,
     "category": "קינוחים",
-    "name": "קינוחי כוסות מוס חלביים - 20 יחידות",
+    "name": "קינוחי כוסות מוס פרווה - 20 יחידות",
     "description": "שוקולד / פסיפלורה / אוכמניות.",
-    "priceIls": 300,
+    "priceIls": 360,
     "priceUnit": null,
     "priceLabel": null,
     "status": "approved",
