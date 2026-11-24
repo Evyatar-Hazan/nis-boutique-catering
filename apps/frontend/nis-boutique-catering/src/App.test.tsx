@@ -62,8 +62,8 @@ describe('NIS ordering site', () => {
       priceUnit: 'per_unit',
       images: ["72_קינוחי-קראנץ'-פירות.jpg"],
     });
-    expect(products.filter((product) => product.images.length === 0)).toHaveLength(21);
-    expect(screen.getAllByAltText(/^לוגו NIS —/u)).toHaveLength(21);
+    expect(products.filter((product) => product.images.length === 0)).toHaveLength(20);
+    expect(screen.getAllByAltText(/^לוגו NIS —/u)).toHaveLength(20);
     expect(screen.queryByText('אין תמונה')).not.toBeInTheDocument();
     expect(container.querySelector('.ordering-hero img')).toHaveAttribute('src', '/hero.jpg');
     expect(screen.getByRole('heading', { name: 'מגשי מיקס ושייקים' })).toBeInTheDocument();

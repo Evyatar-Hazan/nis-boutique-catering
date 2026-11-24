@@ -7,7 +7,7 @@ const sourcePath = path.join(appRoot, 'data', 'products.csv');
 const outputPath = path.join(appRoot, 'data', 'products.js');
 const forbiddenSeqs = new Set([59]);
 const expectedProductCount = 65;
-const expectedNoImageCount = 21;
+const expectedNoImageCount = 20;
 
 const parseCsv = (source) => {
   const rows = [];
